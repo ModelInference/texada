@@ -28,7 +28,15 @@ int main(){
 
 	texada::array_trace_checker* checker = new texada::array_trace_checker();
 
-	std::cout << checker->check(f,trace);
+	std::cout << checker->check(f,trace) << "\n";
+
+	input = "G(a->Fa)";
+	f = spot::ltl::parse(input, pel);
+	std::cout << checker->check(f,trace) << "\n";
+
+	input = "G(a->XFa)";
+	f = spot::ltl::parse(input, pel);
+	std::cout << checker->check(f,trace) << "\n";
 
 	input = "G(b->Fa)";
 	f = spot::ltl::parse(input, pel);
