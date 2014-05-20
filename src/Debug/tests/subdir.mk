@@ -4,13 +4,19 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
-../tests/arraytracechecker_test.cpp 
+../tests/arraytracechecker_test.cpp \
+../tests/eventpermutator_test.cpp \
+../tests/formulainstantiator_test.cpp 
 
 OBJS += \
-./tests/arraytracechecker_test.o 
+./tests/arraytracechecker_test.o \
+./tests/eventpermutator_test.o \
+./tests/formulainstantiator_test.o 
 
 CPP_DEPS += \
-./tests/arraytracechecker_test.d 
+./tests/arraytracechecker_test.d \
+./tests/eventpermutator_test.d \
+./tests/formulainstantiator_test.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes

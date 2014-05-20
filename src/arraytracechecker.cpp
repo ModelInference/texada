@@ -149,7 +149,7 @@ bool array_trace_checker::check(const spot::ltl::binop *node, const std::string 
 	case spot::ltl::binop::R:
 		//if we get here, second always held: true
 		if (trace[0] == END_VAR){
-			return false;
+			return true;
 		}
 		// if the f & s is satisfied and we have gotten here,
 		// the second condition held all the way up here, so true
@@ -190,7 +190,7 @@ bool array_trace_checker::check(const spot::ltl::binop *node, const std::string 
 
 	//TODO: do I need strong release, the dual of weak until?
 	default:
-		std::cerr << "Unsupported binop. Returning False. \n";
+		std::cerr << "Unsupported binary operator. Returning false. \n";
 		return false;
 
 	}
@@ -245,9 +245,10 @@ bool array_trace_checker::check(const spot::ltl::unop *node,  const std::string 
 		// (e.g. PSPSPSPSPSP)
 		// however in the case that the last event is S, we want to return true
 		// overall. (e.g. PSPSPSPSPS)
-		// putting down false for now because in most cases that's what we want
+		// Making the base case the same as the other one seems to make it work.
+		// ....for the case above. but this is still some weird stuff.
 		if (trace[1]== END_VAR){
-			return false;
+			return check(node->child(), trace+1);
 		}
 		return check(node->child(), trace+1);
 
@@ -257,7 +258,7 @@ bool array_trace_checker::check(const spot::ltl::unop *node,  const std::string 
 
 	// Other operators are not LTL, don't support them
 	default:
-		std::cerr << "Unsupported Operator. Returning false. \n" ;
+		std::cerr << "Unsupported unary operator. Returning false. \n" ;
 		return false;
 
 	}
@@ -304,7 +305,7 @@ bool array_trace_checker::check(const spot::ltl::multop* node,  const std::strin
 		return true;
 	}
 	default:
-		std::cerr << "Operator is not supported. Returning False. \n";
+		std::cerr << "Unsupported multiple operator. Returning false. \n";
 		return false;
 
 	}

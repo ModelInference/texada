@@ -23,7 +23,8 @@ tests/arraytracechecker_test.d: ../tests/arraytracechecker_test.cpp \
  /usr/local/include/spot/misc/position.hh \
  /usr/local/include/spot/ltlenv/defaultenv.hh \
  /usr/local/include/spot/ltlenv/environment.hh \
- /usr/local/include/spot/ltlvisit/tostring.hh
+ /usr/local/include/spot/ltlvisit/tostring.hh \
+ /usr/local/include/spot/ltlvisit/relabel.hh
 
 ../tests/../src/arraytracechecker.h:
 
@@ -74,3 +75,5 @@ tests/arraytracechecker_test.d: ../tests/arraytracechecker_test.cpp \
 /usr/local/include/spot/ltlenv/environment.hh:
 
 /usr/local/include/spot/ltlvisit/tostring.hh:
+
+/usr/local/include/spot/ltlvisit/relabel.hh:
