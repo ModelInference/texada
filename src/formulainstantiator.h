@@ -10,6 +10,10 @@
 
 #include <ltlast/allnodes.hh>
 
+/**
+ * Header file to be used to instantiate a formula with a given mapping from oldvars -> newvars.
+ */
+
 namespace texada {
 
 const spot::ltl::formula* instantiate(const spot::ltl::formula*, std::map<std::string, std::string>*);
