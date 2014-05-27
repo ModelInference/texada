@@ -10,10 +10,9 @@
 #include "../src/arraytracechecker.h"
 #include <ltlparse/public.hh>
 #include <ltlvisit/tostring.hh>
+#include <gtest/gtest.h>
 
-/*
-int main(){
-	std::cout << "Simple AFby test: \n";
+TEST(ArrayTraceCheckerTest, AFbyTest){
 	std::string* trace = new std::string[5];
 	trace[0] = "a";
 	trace[1] = "a";
@@ -24,34 +23,24 @@ int main(){
 	std::string input = "G(a->Fb)";
 	spot::ltl::parse_error_list pel;
 	const spot::ltl::formula* f = spot::ltl::parse(input, pel);
-	std::cout << spot::ltl::to_string(f) << ": ";
 
 	texada::array_trace_checker* checker = new texada::array_trace_checker();
 
-	std::cout << checker->check(f,trace) << "\n";
+	ASSERT_TRUE(checker->check(f,trace)) << "Test G(a->Fb) on [a,a,b,b] returned false.";
 
 	input = "G(a->Fa)";
 	f = spot::ltl::parse(input, pel);
-	std::cout << spot::ltl::to_string(f) << ": ";
-	std::cout << checker->check(f,trace) << "\n";
+	ASSERT_TRUE(checker->check(f,trace)) << "Test G(a->Fa) on [a,a,b,b] returned false.";
 
 	input = "G(a->XFa)";
 	f = spot::ltl::parse(input, pel);
-	std::cout << spot::ltl::to_string(f) << ": ";
-	std::cout << checker->check(f,trace) << "\n";
+	ASSERT_FALSE(checker->check(f,trace)) << "Test G(a->XFa) on [a,a,b,b] returned true.";
 
 	input = "G(b->Fa)";
 	f = spot::ltl::parse(input, pel);
-	std::cout << spot::ltl::to_string(f) << ": ";
-	std::cout << checker->check(f,trace) << "\n";
-
-	/*
-	input = "F(b->(Xb&XXb& XXXb))";
-	f = spot::ltl::parse(input, pel);
-	std::cout << spot::ltl::to_string(f) << ": ";
-	std::cout << checker->check(f,trace) << "\n";
-	*//*
-
+	ASSERT_FALSE(checker->check(f,trace)) << "Test G(b->Fa) on [a,a,b,b] returned true.";
+}
+/*
 	std::string* psSucceed = new std::string[5];
 	psSucceed[0] = "p";
 	psSucceed[1] = "s";

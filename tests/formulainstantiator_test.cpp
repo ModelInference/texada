@@ -11,20 +11,27 @@
 #include <ltlvisit/tostring.hh>
 #include <map>
 #include <string>
+#include <gtest/gtest.h>
 
-int main(){
+TEST(FormulaInstantiatorTest, SimpleTest){
 
 	std::map<std::string, std::string>* map = new std::map<std::string, std::string>();
 
 	map->insert(std::pair<std::string,std::string>("x","a"));
     map->insert(std::pair<std::string,std::string>("y","b"));
 
-    std::string input = "G(x->Fy)";
+    std::string input = "G(x -> Fy)";
     spot::ltl::parse_error_list pel;
     const spot::ltl::formula* f = spot::ltl::parse(input, pel);
-    std::cout << spot::ltl::to_string(f) << "\n";
+    ASSERT_EQ(input,spot::ltl::to_string(f));
 
     const spot::ltl::formula* instantiatedf = texada::instantiate(f,map);
-    std::cout << spot::ltl::to_string(instantiatedf) << "\n";
+    ASSERT_EQ("G(a -> Fb)", to_string(instantiatedf));
 
+
+}
+
+int main(int argc, char **argv) {
+  ::testing::InitGoogleTest(&argc, argv);
+  return RUN_ALL_TESTS();
 }
