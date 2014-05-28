@@ -3,6 +3,12 @@
 	<storageModule moduleId="org.eclipse.cdt.core.settings">
 		<cconfiguration id="cdt.managedbuild.config.gnu.exe.debug.156883815">
 			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="cdt.managedbuild.config.gnu.exe.debug.156883815" moduleId="org.eclipse.cdt.core.settings" name="Debug">
+				<macros>
+					<stringMacro name="SPOT_LIB" type="VALUE_TEXT" value="/home/clemieux/workspace/texada/Texada"/>
+					<stringMacro name="SPOT_INCL" type="VALUE_TEXT" value="/usr/local/include/spot"/>
+					<stringMacro name="GTEST_LIB" type="VALUE_TEXT" value="/usr/src/gtest-1.7.0/build"/>
+					<stringMacro name="GTEST_INCL" type="VALUE_TEXT" value="/usr/src/gtest-1.7.0/include"/>
+				</macros>
 				<externalSettings/>
 				<extensions>
 					<extension id="org.eclipse.cdt.core.GmakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
@@ -18,7 +24,7 @@
 					<folderInfo id="cdt.managedbuild.config.gnu.exe.debug.156883815." name="/" resourcePath="">
 						<toolChain id="cdt.managedbuild.toolchain.gnu.exe.debug.195365238" name="Linux GCC" superClass="cdt.managedbuild.toolchain.gnu.exe.debug">
 							<targetPlatform id="cdt.managedbuild.target.gnu.platform.exe.debug.1882443956" name="Debug Platform" superClass="cdt.managedbuild.target.gnu.platform.exe.debug"/>
-							<builder buildPath="${workspace_loc:/Texada}/Debug" id="cdt.managedbuild.target.gnu.builder.exe.debug.702521130" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" superClass="cdt.managedbuild.target.gnu.builder.exe.debug"/>
+							<builder buildPath="${workspace_loc:/Texada}/bin" id="cdt.managedbuild.target.gnu.builder.exe.debug.702521130" keepEnvironmentInBuildfile="false" managedBuildOn="false" name="Gnu Make Builder" superClass="cdt.managedbuild.target.gnu.builder.exe.debug"/>
 							<tool id="cdt.managedbuild.tool.gnu.archiver.base.2032862899" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.base"/>
 							<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.67662848" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug">
 								<option id="gnu.cpp.compiler.exe.debug.option.optimization.level.2132173442" name="Optimization Level" superClass="gnu.cpp.compiler.exe.debug.option.optimization.level" value="gnu.cpp.compiler.optimization.level.none" valueType="enumerated"/>

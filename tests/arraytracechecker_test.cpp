@@ -19,7 +19,7 @@ TEST(ArrayTraceCheckerTest, AFbyTest){
 	trace[2] = "b";
 	trace[3] = "b";
 	trace[4] = "EndOfTraceVar";
-
+//helo
 	std::string input = "G(a->Fb)";
 	spot::ltl::parse_error_list pel;
 	const spot::ltl::formula* f = spot::ltl::parse(input, pel);

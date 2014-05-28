@@ -24,7 +24,6 @@ array_instantitator::array_instantitator(std::set<std::string>* events,
 	return_array = new inst_fxn[array_size];
 	//TODO: finish this
 
-
 }
 
 array_instantitator::~array_instantitator() {
@@ -32,5 +31,6 @@ array_instantitator::~array_instantitator() {
 	// TODO I probably shouldn't delete that new array since it's intended
 	// to be used??
 }
+
 
 } /* namespace texada */
