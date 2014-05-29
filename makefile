@@ -11,6 +11,7 @@ LIBS := -lspot -lgtest -lpthread -lgtest_main
 # Include local 
 -include uservars.mk
 
+# this is auto-generated eclipse code, unsure of its necessity
 ifneq ($(MAKECMDGOALS),clean)
 ifneq ($(strip $(C++_DEPS)),)
 -include $(C++_DEPS)
