@@ -2,7 +2,7 @@
 # Automatically-generated file. Do not edit!
 ################################################################################
 
--include ../makefile.init
+-include makefile.init
 
 RM := rm -rf
 
@@ -12,6 +12,7 @@ RM := rm -rf
 -include src/subdir.mk
 -include subdir.mk
 -include objects.mk
+-include uservars.mk
 
 ifneq ($(MAKECMDGOALS),clean)
 ifneq ($(strip $(C++_DEPS)),)
@@ -34,7 +35,7 @@ ifneq ($(strip $(C_UPPER_DEPS)),)
 endif
 endif
 
--include ../makefile.defs
+-include makefile.defs
 
 # Add inputs and outputs from these tool invocations to the build variables 
 
@@ -45,7 +46,7 @@ all: Texada
 Texada: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: GCC C++ Linker'
-	g++ -L$(SPOT_LIB) -L$(GTEST_LIB)-o "Texada" $(OBJS) $(USER_OBJS) $(LIBS)
+	g++ -L$(SPOT_LIB) -L$(GTEST_LIB) -o "Texada" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 
@@ -57,4 +58,4 @@ clean:
 .PHONY: all clean dependents
 .SECONDARY:
 
--include ../makefile.targets
+-include makefile.targets

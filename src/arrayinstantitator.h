@@ -11,7 +11,7 @@
 #include <set>
 #include <string>
 #include <map>
-#include <ltlast/predecl.hh>
+#include <ltlast/allnodes.hh>
 
 namespace texada {
 
@@ -19,11 +19,12 @@ namespace texada {
  * class which creates an array of instantiating functions (i.e. maps) given
  * the number of variables in an LTL formula and a set of events from traces.
  */
-class array_instantitator {
+class array_instantiator {
 public:
-	array_instantitator(std::set<std::string>* events,
+	array_instantiator(std::set<std::string>* events,
 			std::set<const spot::ltl::atomic_prop*>*);
-	virtual ~array_instantitator();
+	virtual ~array_instantiator();
+	void traverse_and_fill(std::string event, int i);
 	struct inst_fxn{
 		std::map<std::string, std::string> inst_map;
 		bool validity;
