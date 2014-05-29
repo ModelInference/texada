@@ -6,12 +6,9 @@
 
 RM := rm -rf
 
-# All of the sources participating in the build are defined here
--include sources.mk
--include tests/subdir.mk
--include src/subdir.mk
--include subdir.mk
--include objects.mk
+LIBS := -lspot -lgtest -lpthread -lgtest_main
+
+# Include local 
 -include uservars.mk
 
 ifneq ($(MAKECMDGOALS),clean)
@@ -39,6 +36,31 @@ endif
 
 # Add inputs and outputs from these tool invocations to the build variables 
 
+CPP_SRCS += \
+./src/arrayinstantitator.cpp \
+./src/arraytracechecker.cpp \
+./src/formulainstantiator.cpp \
+./tests/arrayinstantitator_test.cpp \
+./tests/arraytracechecker_test.cpp \
+./tests/formulainstantiator_test.cpp 
+
+OBJS += \
+./bin/src/arrayinstantitator.o \
+./bin/src/arraytracechecker.o \
+./bin/src/formulainstantiator.o \
+./bin/tests/arrayinstantitator_test.o \
+./bin/tests/arraytracechecker_test.o \
+./bin/tests/formulainstantiator_test.o 
+
+CPP_DEPS += \
+./bin/src/arrayinstantitator.d \
+./bin/src/arraytracechecker.d \
+./bin/src/formulainstantiator.d \
+./bin/tests/arrayinstantitator_test.d \
+./bin/tests/arraytracechecker_test.d \
+./bin/tests/formulainstantiator_test.d 
+
+
 # All Target
 all: Texada
 
@@ -49,6 +71,26 @@ Texada: $(OBJS) $(USER_OBJS)
 	g++ -L$(SPOT_LIB) -L$(GTEST_LIB) -o "Texada" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
+	
+	
+# Each subdirectory must supply rules for building sources it contributes
+./bin/src/%.o: ./src/%.cpp
+	@echo 'Building file: $<'
+	@echo 'Invoking: GCC C++ Compiler'
+	g++ -I$(SPOT_INCL) -I$(GTEST_INCL) -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o "$@" "$<"
+	@echo 'Finished building: $<'
+	@echo ' '
+
+
+
+# Each subdirectory must supply rules for building sources it contributes
+./bin/tests/%.o: ./tests/%.cpp
+	@echo 'Building file: $<'
+	@echo 'Invoking: GCC C++ Compiler'
+	g++ -I$(SPOT_INCL) -I$(GTEST_INCL) -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o "$@" "$<"
+	@echo 'Finished building: $<'
+	@echo ' '
+	
 
 # Other Targets
 clean:
