@@ -24,7 +24,7 @@ public:
 	array_instantiator(std::set<std::string>* events,
 			std::set<const spot::ltl::atomic_prop*>*);
 	virtual ~array_instantiator();
-	void traverse_and_fill(std::string event, int i);
+	void traverse_and_fill(std::string event, int i, int k);
 	struct inst_fxn{
 		std::map<std::string, std::string> inst_map;
 		bool validity;
@@ -33,6 +33,7 @@ public:
 private:
 	inst_fxn* return_array;
 	std::set<const spot::ltl::atomic_prop*>* formula_vars;
+	std::set<std::string>* events;
 	int length;
 };
 
