@@ -28,7 +28,7 @@ public:
 	void traverse_and_fill(std::string event, int i, int k);
 	struct inst_fxn{
 		std::map<std::string, std::string> inst_map;
-		bool validity = false;
+		bool validity = true;
 	};
 	inst_fxn* return_instantiations();
 private:

@@ -5,7 +5,7 @@
  *      Author: clemieux
  */
 
-#include "arrayinstantitator.h"
+#include "arrayinstantiator.h"
 #include <math.h>
 
 namespace texada {

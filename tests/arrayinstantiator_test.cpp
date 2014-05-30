@@ -5,7 +5,7 @@
  *      Author: clemieux
  */
 
-#include "../src/arrayinstantitator.h"
+#include "../src/arrayinstantiator.h"
 #include <gtest/gtest.h>
 #include <ltlparse/public.hh>
 #include <ltlvisit/apcollect.hh>
@@ -25,6 +25,7 @@ TEST(ArrayInstantiatorTest,TwoBindingsThreeEvents){
 	 // now create the event instantiator
 	texada::array_instantiator* instantiator = new texada::array_instantiator(events,formula_vars);
 	texada::array_instantiator::inst_fxn* returned_array = instantiator->return_instantiations();
+	//check that all expected mappings occur
 	ASSERT_EQ(returned_array[0].inst_map.at("x"),"a");
 	ASSERT_EQ(returned_array[0].inst_map.at("y"),"a");
 	ASSERT_EQ(returned_array[1].inst_map.at("x"),"b");
@@ -43,7 +44,6 @@ TEST(ArrayInstantiatorTest,TwoBindingsThreeEvents){
 	ASSERT_EQ(returned_array[7].inst_map.at("y"),"c");
 	ASSERT_EQ(returned_array[8].inst_map.at("x"),"c");
 	ASSERT_EQ(returned_array[8].inst_map.at("y"),"c");
-
 
 }
 

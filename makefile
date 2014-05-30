@@ -38,28 +38,34 @@ endif
 # Add inputs and outputs from these tool invocations to the build variables 
 
 CPP_SRCS += \
-./src/arrayinstantitator.cpp \
+./src/arrayinstantiator.cpp \
 ./src/arraytracechecker.cpp \
 ./src/formulainstantiator.cpp \
-./tests/arrayinstantitator_test.cpp \
+./src/formulatracechecker.cpp \
+./tests/arrayinstantiator_test.cpp \
 ./tests/arraytracechecker_test.cpp \
-./tests/formulainstantiator_test.cpp 
+./tests/formulainstantiator_test.cpp \
+./tests/formulatracechecker_test.cpp
 
 OBJS += \
-./bin/src/arrayinstantitator.o \
+./bin/src/arrayinstantiator.o \
 ./bin/src/arraytracechecker.o \
 ./bin/src/formulainstantiator.o \
-./bin/tests/arrayinstantitator_test.o \
+./bin/src/formulatracechecker.o \
+./bin/tests/arrayinstantiator_test.o \
 ./bin/tests/arraytracechecker_test.o \
-./bin/tests/formulainstantiator_test.o 
+./bin/tests/formulainstantiator_test.o \
+./bin/tests/formulatracechecker_test.o
 
 CPP_DEPS += \
-./bin/src/arrayinstantitator.d \
+./bin/src/arrayinstantiator.d \
 ./bin/src/arraytracechecker.d \
 ./bin/src/formulainstantiator.d \
-./bin/tests/arrayinstantitator_test.d \
+./bin/src/formulatracechecker.d \
+./bin/tests/arrayinstantiator_test.d \
 ./bin/tests/arraytracechecker_test.d \
-./bin/tests/formulainstantiator_test.d 
+./bin/tests/formulainstantiator_test.d \
+./bin/tests/formulatracechecker_test.d
 
 
 # All Target
