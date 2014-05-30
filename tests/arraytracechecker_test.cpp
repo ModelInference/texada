@@ -12,7 +12,7 @@
 #include <ltlvisit/tostring.hh>
 #include <gtest/gtest.h>
 
-TEST(ArrayTraceCheckerTest, AFbyTest){
+TEST(ArrayTraceCheckerTest, AFby){
 	std::string* trace = new std::string[5];
 	trace[0] = "a";
 	trace[1] = "a";
@@ -40,6 +40,7 @@ TEST(ArrayTraceCheckerTest, AFbyTest){
 	f = spot::ltl::parse(input, pel);
 	ASSERT_FALSE(checker->check(f,trace)) << "Test G(b->Fa) on [a,a,b,b] returned true.";
 }
+
 /*
 	std::string* psSucceed = new std::string[5];
 	psSucceed[0] = "p";

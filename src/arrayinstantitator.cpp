@@ -16,7 +16,7 @@ namespace texada {
  * @param ltlevents set of atomic propositions to be replaced
  */
 array_instantiator::array_instantiator(std::set<std::string>* events_,
-		std::set<const spot::ltl::atomic_prop*> *ltlevents) :
+		spot::ltl::atomic_prop_set *ltlevents) :
 			formula_vars(ltlevents), events(events_){
 	//setting up some things
 	length = formula_vars->size();
@@ -51,6 +51,7 @@ array_instantiator::array_instantiator(std::set<std::string>* events_,
 		const spot::ltl::atomic_prop* event_var = *formula_it;
 		std::string name = event_var->name();
 		traverse_and_fill(name, i, k);
+		i++;
 	}
 
 }
