@@ -10,17 +10,18 @@
 #include <ltlparse/public.hh>
 #include "../src/arrayinstantiator.h"
 #include <ltlvisit/apcollect.hh>
+#include "../src/stringevent.h"
 
 TEST(FormulaTraceCheckerTest,AFbyOnSmallTrace){
 	//set up the trace
-	std::string* trace = new std::string[7];
-	trace[0] = "a";
-	trace[1] = "a";
-	trace[2] = "b";
-	trace[3] = "b";
-	trace[4] = "c";
-	trace[5] = "b";
-	trace[6] = "EndOfTraceVar";
+	texada::string_event* trace = new texada::string_event[7];
+	trace[0] = *(new texada::string_event("a",false));
+	trace[1] = *(new texada::string_event("a",false));
+	trace[2] = *(new texada::string_event("b",false));
+	trace[3] = *(new texada::string_event("b",false));
+	trace[4] = *(new texada::string_event("c",false));
+	trace[5] = *(new texada::string_event("b",false));
+	trace[6] = *(new texada::string_event("EndOfTraceVar",true));
 	// set up the events
 	std::set<std::string>* events = new std::set<std::string>();
 	events->insert("a");

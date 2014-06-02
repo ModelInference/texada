@@ -42,6 +42,7 @@ CPP_SRCS += \
 ./src/arraytracechecker.cpp \
 ./src/formulainstantiator.cpp \
 ./src/formulatracechecker.cpp \
+./src/stringevent.cpp \
 ./tests/arrayinstantiator_test.cpp \
 ./tests/arraytracechecker_test.cpp \
 ./tests/formulainstantiator_test.cpp \
@@ -52,6 +53,7 @@ OBJS += \
 ./bin/src/arraytracechecker.o \
 ./bin/src/formulainstantiator.o \
 ./bin/src/formulatracechecker.o \
+./bin/src/stringevent.o \
 ./bin/tests/arrayinstantiator_test.o \
 ./bin/tests/arraytracechecker_test.o \
 ./bin/tests/formulainstantiator_test.o \
@@ -62,6 +64,7 @@ CPP_DEPS += \
 ./bin/src/arraytracechecker.d \
 ./bin/src/formulainstantiator.d \
 ./bin/src/formulatracechecker.d \
+./bin/src/stringevent.d \
 ./bin/tests/arrayinstantiator_test.d \
 ./bin/tests/arraytracechecker_test.d \
 ./bin/tests/formulainstantiator_test.d \

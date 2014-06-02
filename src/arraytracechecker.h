@@ -9,7 +9,7 @@
 #define ARRAYTRACECHECKER_H_
 
 #include <ltlast/allnodes.hh>
-#include <string>
+#include "stringevent.h"
 #include <iostream>
 
 namespace texada {
@@ -24,13 +24,13 @@ public:
 	array_trace_checker();
 	virtual ~array_trace_checker();
 
-	bool check(const spot::ltl::formula* node, const std::string *trace);
+	bool check(const spot::ltl::formula* node, const string_event *trace);
 
-    bool check(const spot::ltl::atomic_prop* node, const std::string *trace);
-    bool check(const spot::ltl::constant* node, const std::string *trace);
-    bool check(const spot::ltl::binop* node, const std::string *trace);
-    bool check(const spot::ltl::unop* node,  const std::string *trace);
-    bool check(const spot::ltl::multop* node,  const std::string *trace);
+    bool check(const spot::ltl::atomic_prop* node, const string_event *trace);
+    bool check(const spot::ltl::constant* node, const string_event *trace);
+    bool check(const spot::ltl::binop* node, const string_event *trace);
+    bool check(const spot::ltl::unop* node,  const string_event *trace);
+    bool check(const spot::ltl::multop* node,  const string_event *trace);
 
     /**
      * both the next types are not supported.
@@ -44,7 +44,6 @@ public:
     	return false;
     };
 
-    const std::string END_VAR = "EndOfTraceVar";
 };
 
 } /* namespace texada */

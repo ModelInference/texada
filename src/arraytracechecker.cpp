@@ -31,7 +31,7 @@ array_trace_checker::~array_trace_checker() {
 	 * @return whether node holds on trace
 	 */
 
-bool array_trace_checker::check(const spot::ltl::formula* node, const std::string *trace){
+bool array_trace_checker::check(const spot::ltl::formula* node, const string_event *trace){
 	switch (node->kind()){
 	case spot::ltl::formula::Constant:
 		return check(static_cast<const spot::ltl::unop*>(node), trace);
@@ -58,8 +58,8 @@ bool array_trace_checker::check(const spot::ltl::formula* node, const std::strin
  * @param trace: pointer to the start of the trace
  * @return whether node holds on trace
  */
-bool array_trace_checker::check(const spot::ltl::atomic_prop *node, const std::string *trace){
-	return (trace[0] == node->name())? true : false;
+bool array_trace_checker::check(const spot::ltl::atomic_prop *node, const string_event *trace){
+	return (trace[0].get_name() == node->name())? true : false;
 }
 
 /**
@@ -70,7 +70,7 @@ bool array_trace_checker::check(const spot::ltl::atomic_prop *node, const std::s
  * @param trace: pointer to the start of the trace
  * @return whether node holds on trace
  */
-bool array_trace_checker::check(const spot::ltl::constant *node, const std::string *trace){
+bool array_trace_checker::check(const spot::ltl::constant *node, const string_event *trace){
 	spot::ltl::constant::type value = node->val();
 	switch (value){
 	case spot::ltl::constant::True:
@@ -99,7 +99,7 @@ bool array_trace_checker::check(const spot::ltl::constant *node, const std::stri
  * @param trace: pointer to the start of the trace
  * @return whether node holds on trace
  */
-bool array_trace_checker::check(const spot::ltl::binop *node, const std::string *trace){
+bool array_trace_checker::check(const spot::ltl::binop *node, const string_event *trace){
 	spot::ltl::binop::type opkind = node->op();
 
 	switch(opkind){
@@ -128,7 +128,7 @@ bool array_trace_checker::check(const spot::ltl::binop *node, const std::string 
 	//Until case
 	case spot::ltl::binop::U:
 		//if we get here, we did not see second: thus, false
-		if (trace[0] == END_VAR){
+		if (trace[0].is_terminal()){
 			return false;
 		}
 		// if the second condition is satisfied and we have gotten here,
@@ -148,7 +148,7 @@ bool array_trace_checker::check(const spot::ltl::binop *node, const std::string 
 	//Until case
 	case spot::ltl::binop::R:
 		//if we get here, second always held: true
-		if (trace[0] == END_VAR){
+		if (trace[0].is_terminal()){
 			return true;
 		}
 		// if the f & s is satisfied and we have gotten here,
@@ -171,7 +171,7 @@ bool array_trace_checker::check(const spot::ltl::binop *node, const std::string 
 	//Weak until case: identical to until except base case
 	case spot::ltl::binop::W:
 		//if we get here, we did not see second and first was true throughout
-		if (trace[0] == END_VAR){
+		if (trace[0].is_terminal()){
 			return true;
 		}
 		// if the second condition is satisfied and we have gotten here,
@@ -207,7 +207,7 @@ bool array_trace_checker::check(const spot::ltl::binop *node, const std::string 
  * @param trace: pointer to the start of the trace
  * @return whether node holds on trace
  */
-bool array_trace_checker::check(const spot::ltl::unop *node,  const std::string *trace){
+bool array_trace_checker::check(const spot::ltl::unop *node,  const string_event *trace){
 
 	spot::ltl::unop::type optype = node->op();
 
@@ -216,7 +216,7 @@ bool array_trace_checker::check(const spot::ltl::unop *node,  const std::string 
 	// Globally case
 	case spot::ltl::unop::G:
 		// base case: if we're at END_VAR, return true to not effect &&
-		if (trace[0] == END_VAR) {
+		if (trace[0].is_terminal()) {
 			return true;
 		}
 		else{
@@ -228,7 +228,7 @@ bool array_trace_checker::check(const spot::ltl::unop *node,  const std::string 
 	// Finally case
 	case spot::ltl::unop::F:
 		// base case: if we're at END_VAR, return false to not effect ||
-		if (trace[0] == END_VAR) {
+		if (trace[0].is_terminal()) {
 			return false;
 		}
 		else{
@@ -247,7 +247,7 @@ bool array_trace_checker::check(const spot::ltl::unop *node,  const std::string 
 		// overall. (e.g. PSPSPSPSPS)
 		// Making the base case the same as the other one seems to make it work.
 		// ....for the case above. but this is still some weird stuff.
-		if (trace[1]== END_VAR){
+		if (trace[1].is_terminal()){
 			return check(node->child(), trace+1);
 		}
 		return check(node->child(), trace+1);
@@ -273,7 +273,7 @@ bool array_trace_checker::check(const spot::ltl::unop *node,  const std::string 
  * @param trace: pointer to the start of the trace
  * @return whether node holds on the trace
  */
-bool array_trace_checker::check(const spot::ltl::multop* node,  const std::string *trace){
+bool array_trace_checker::check(const spot::ltl::multop* node,  const string_event *trace){
 	spot::ltl::multop::type opkind = node->op();
 
 	switch(opkind){

@@ -22,7 +22,7 @@ namespace texada {
  * @return updated instantiations, with invalid ones set to false
  */
 array_instantiator::inst_fxn* check_instants_on_trace(array_instantiator::inst_fxn* instantiations,
-		int size, const spot::ltl::formula* formula, const std::string* trace){
+		int size, const spot::ltl::formula* formula, const string_event* trace){
 	array_trace_checker* checker = new array_trace_checker();
 	for (int i=0; i<size; i++){
 		// if it's invalid, ignore
