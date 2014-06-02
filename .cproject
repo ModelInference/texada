@@ -6,8 +6,8 @@
 				<macros>
 					<stringMacro name="SPOT_LIB" type="VALUE_TEXT" value="/home/clemieux/spot-1.2.4/src/.libs/"/>
 					<stringMacro name="SPOT_INCL" type="VALUE_TEXT" value="/usr/local/include/spot"/>
-					<stringMacro name="GTEST_INCL" type="VALUE_TEXT" value="/usr/src/gtest-1.7.0/include"/>
 					<stringMacro name="GTEST_LIB" type="VALUE_TEXT" value="/usr/src/gtest-1.7.0/build"/>
+					<stringMacro name="GTEST_INCL" type="VALUE_TEXT" value="/usr/src/gtest-1.7.0/include"/>
 				</macros>
 				<externalSettings/>
 				<extensions>
@@ -33,6 +33,7 @@
 									<listOptionValue builtIn="false" value="/usr/local/include/spot"/>
 									<listOptionValue builtIn="false" value="/usr/src/gtest-1.7.0/include"/>
 								</option>
+								<option id="gnu.cpp.compiler.option.preprocessor.def.1639491487" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" valueType="definedSymbols"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.793776521" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.c.compiler.exe.debug.2083499576" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.exe.debug">
