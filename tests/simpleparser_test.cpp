@@ -26,5 +26,10 @@ TEST(SimpleParserTest, MultipleTracesOneFile){
 	texada::simple_parser * parser = new texada::simple_parser();
 	std::set<std::vector<texada::string_event> > * trace_set = parser->parse(infile);
 	ASSERT_EQ(trace_set->size(),20) << "Unexpected number of traces parsed";
+	for(std::set<std::vector<texada::string_event> >::iterator it =trace_set->begin();
+			it != trace_set->end(); it++){
+		std::vector<texada::string_event> current_vector = *it;
+		ASSERT_EQ(current_vector.size(), 251);
+	}
 
 }

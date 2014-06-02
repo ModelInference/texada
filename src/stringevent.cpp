@@ -31,8 +31,22 @@ string_event::string_event() :
 string_event::~string_event() {
 }
 
+/**
+ * Overrides < operator to allow for set creation.
+ * @param other
+ * @return
+ */
 bool string_event::operator<(const string_event& other) const{
 	return name < other.get_name();
+}
+
+/**
+ * Overrides == operator.
+ * @param other
+ * @return
+ */
+bool string_event::operator==(const string_event& other) const{
+	return (name == other.get_name() && isTerminal == other.is_terminal());
 }
 
 /**

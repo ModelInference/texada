@@ -25,6 +25,7 @@ public:
 	array_instantiator(std::set<std::string>* events,
 			spot::ltl::atomic_prop_set*);
 	virtual ~array_instantiator();
+	void instantiate_array();
 	void traverse_and_fill(std::string event, int i, int k);
 	struct inst_fxn{
 		std::map<std::string, std::string> inst_map;

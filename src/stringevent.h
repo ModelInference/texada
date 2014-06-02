@@ -21,6 +21,7 @@ public:
 	string_event();
 	virtual ~string_event();
 	bool operator<(const string_event&) const;
+	bool operator==(const string_event& other) const;
 	std::string get_name() const;
 	bool is_terminal() const;
 private:
