@@ -80,6 +80,7 @@ TEST(FormulaTraceCheckerTest,AFby250){
 	std::ifstream infile("/home/clemieux/workspace/texada/Texada/traces/vary-tracelen/etypes-10_events-250_execs-20.txt");
 	texada::simple_parser * parser = new texada::simple_parser();
 	std::set<std::vector<texada::string_event> > * trace_set = parser->parse(infile);
+	delete parser;
 
 	std::set<std::string> * event_set = parser->return_events();
 	//set up the array of instantiations
@@ -124,6 +125,7 @@ TEST(FormulaTraceCheckerTest,AFby2250){
 	std::ifstream infile("/home/clemieux/workspace/texada/Texada/traces/vary-tracelen/etypes-10_events-2250_execs-20.txt");
 	texada::simple_parser * parser = new texada::simple_parser();
 	std::set<std::vector<texada::string_event> > * trace_set = parser->parse(infile);
+	delete parser;
 
 	std::set<std::string> * event_set = parser->return_events();
 	//set up the array of instantiations

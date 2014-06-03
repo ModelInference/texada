@@ -40,8 +40,11 @@ TEST(ArrayTraceCheckerTest, AFby){
 	input = "G(b->Fa)";
 	f = spot::ltl::parse(input, pel);
 	ASSERT_FALSE(checker->check(f,trace)) << "Test G(b->Fa) on [a,a,b,b] returned true.";
+
+
 }
 
+//former next base case check
 /*
 	std::string* psSucceed = new std::string[5];
 	psSucceed[0] = "p";

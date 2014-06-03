@@ -31,6 +31,7 @@ array_instantiator::inst_fxn* check_instants_on_trace(array_instantiator::inst_f
 		const spot::ltl::formula* instantiated_form =	instantiate(formula, current_map);
 		(instantiations+i)->validity = checker->check(instantiated_form,trace);
 	}
+	delete checker;
 	return instantiations;
 
 }

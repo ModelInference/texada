@@ -50,7 +50,7 @@ std::set<std::vector<string_event> > * simple_parser::parse(std::ifstream &infil
 
 
 	}
-
+	delete return_vec;
 	has_been_parsed = true;
 	return return_set;
 }

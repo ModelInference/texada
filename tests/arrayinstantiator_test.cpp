@@ -24,6 +24,7 @@ TEST(ArrayInstantiatorTest,TwoBindingsThreeEvents){
 	 events->insert("c");
 	 // now create the event instantiator
 	texada::array_instantiator* instantiator = new texada::array_instantiator(events,formula_vars);
+	instantiator->instantiate_array();
 	texada::array_instantiator::inst_fxn* returned_array = instantiator->return_instantiations();
 	//check that all expected mappings occur
 	ASSERT_EQ(returned_array[0].inst_map.at("x"),"a");

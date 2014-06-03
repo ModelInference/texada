@@ -24,36 +24,6 @@ array_instantiator::array_instantiator(std::set<std::string>* events_,
 	int array_size = pow(k,length);
 	return_array = new inst_fxn[array_size];
 
-	// We must produce all permutations with replacement of length length
-	// of the events. This can be done by recursion, but here it is done
-	// by iteration, going through the entire return array multiple times
-	// in order to construct all permutations. Each pass adds a "level"
-	// of mapping to each map. For the simple example with two bindings
-	// x and y and three events a, b, c, the process goes like this:
-	// INITIAL ARRAY:
-	// |____|____|____|____|____|____|____|____|____|
-	// FIRST PASS, i=0:
-	// |x->a|x->b|x->c|x->a|x->b|x->c|x->a|x->b|x->c|
-	// SECOND PASS, i=1:
-	// |x->a|x->b|x->c|x->a|x->b|x->c|x->a|x->b|x->c|
-	// |y->a|y->a|y->a|y->b|y->b|y->b|y->c|y->c|y->c|
-	// at this point, the iteration terminates.
-
-	// i is the "level" of the pass, i.e. how deep in formula_vars we are
-	int i = 0;
-	for (std::set<const spot::ltl::atomic_prop*>::iterator
-			formula_it=formula_vars->begin(); formula_it!=formula_vars->end();
-			++formula_it){
-		//we really should never get to here, as formula_vars ends at length
-		if (i >= length) break;
-		// since inst_fxn has a string->string map, we obtain the name
-		// of the atomic_prop the iterator is pointing to.
-		const spot::ltl::atomic_prop* event_var = *formula_it;
-		std::string name = event_var->name();
-		traverse_and_fill(name, i, k);
-		i++;
-	}
-
 }
 
 array_instantiator::~array_instantiator() {
