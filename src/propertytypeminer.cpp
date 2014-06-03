@@ -50,6 +50,8 @@ void mine_property_type(std::string formula_string, std::string trace_source){
 		check_instants_on_trace(instantiations,pow(k,n),formula,current_trace);
 	}
 
+
+	//TODO: some other method to output
 	std::cout << "Valid instantiations: \n";
 	for (int i = 0; i <pow(k,n);i++){
 		if ((instantiations+i)->validity){

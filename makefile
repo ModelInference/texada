@@ -50,7 +50,8 @@ CPP_SRCS += \
 ./tests/formulainstantiator_test.cpp \
 ./tests/formulatracechecker_test.cpp \
 ./tests/simpleparser_test.cpp \
-./tests/propertytypeminer_test.cpp
+./tests/propertytypeminer_test.cpp \
+./tests/timingtests.cpp 
 
 OBJS += \
 ./bin/src/arrayinstantiator.o \
@@ -65,7 +66,8 @@ OBJS += \
 ./bin/tests/formulainstantiator_test.o \
 ./bin/tests/formulatracechecker_test.o \
 ./bin/tests/simpleparser_test.o \
-./bin/tests/propertytypeminer_test.o
+./bin/tests/propertytypeminer_test.o \
+./bin/tests/timingtests.o
 
 CPP_DEPS += \
 ./bin/src/arrayinstantiator.d \
@@ -80,7 +82,8 @@ CPP_DEPS += \
 ./bin/tests/formulainstantiator_test.d \
 ./bin/tests/formulatracechecker_test.d \
 ./bin/tests/simpleparser_test.d \
-./bin/tests/propertytypeminer_test.d
+./bin/tests/propertytypeminer_test.d \
+./bin/tests/timingtests.d
 
 
 # All Target
