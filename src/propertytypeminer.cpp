@@ -22,6 +22,8 @@ std::set<const spot::ltl::formula*> mine_property_type(std::string formula_strin
 	//parse the ltl formula
 	spot::ltl::parse_error_list pel;
 	const spot::ltl::formula* formula = spot::ltl::parse(formula_string, pel);
+	std::cout << "## Number of parser errors: "<<pel.size() << "\n";
+	//TODO: get some way for the user to check this.
 
 	// currently just using simple parser, assumedly could replace this by a
 	// more complex parser once we have one
@@ -31,11 +33,18 @@ std::set<const spot::ltl::formula*> mine_property_type(std::string formula_strin
 	std::set<std::string>  event_set = parser.return_events();
 
 	spot::ltl::atomic_prop_set * variables = spot::ltl::atomic_prop_collect(formula);
+	std::cout << "## Number of variables: " <<variables->size() << "\n";
 	//create the instantiation array
 	array_instantiator instantiator = array_instantiator(event_set, *variables);
 	instantiator.instantiate_array();
 	std::vector<array_instantiator::inst_fxn> instantiations = instantiator.return_instantiations();
 
+	//debugging stuff below
+	/*
+	for (std::map<std::string, std::string>::iterator it =instantiations[0].inst_map.begin();
+			it !=instantiations[0].inst_map.end(); it++){
+		std::cout << it->first << " -> " << it->second << "\n";
+	}*/
 
 	//number of events
 	int k = event_set.size();
