@@ -61,6 +61,7 @@ std::set<const spot::ltl::formula*> mine_property_type(std::string formula_strin
 		std::vector<texada::string_event> current_vec = *it;
 		texada::string_event* current_trace = &current_vec[0];
 		check_instants_on_trace(instantiations,formula,current_trace);
+		//## the rest is debugging
 		numvalid =0;
 		for (int i = 0; i <size; i++){
 			if (instantiations[i].validity){

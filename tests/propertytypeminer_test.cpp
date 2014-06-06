@@ -162,7 +162,7 @@ std::array<bool,8> set_up_perracotta_tests(std::string formula, std::string abst
 	return output_array;
 }
 
-TEST(STUPIDTEST,lol){
+TEST(BugFindingTest,one){
 		//parse the ltl formula
 		spot::ltl::parse_error_list pel;
 		const spot::ltl::formula* formula = spot::ltl::parse("G((a -> X(!a U b)) & (b -> X(!b W a)))", pel);

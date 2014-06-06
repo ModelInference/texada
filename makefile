@@ -8,6 +8,10 @@ RM := rm -rf
 
 LIBS := -lspot -lgtest -lpthread -lgtest_main
 
+BINSRC = bin/src
+BINTESTS = bin/tests
+
+
 # Include local 
 -include uservars.mk
 
@@ -99,7 +103,7 @@ Texada: $(OBJS) $(USER_OBJS)
 	
 	
 # Each subdirectory must supply rules for building sources it contributes
-./bin/src/%.o: ./src/%.cpp
+./bin/src/%.o: ./src/%.cpp | $(BINSRC)
 	@echo 'Building file: $<'
 	@echo 'Invoking: GCC C++ Compiler'
 	g++ -std=c++11 -I$(SPOT_INCL) -I$(GTEST_INCL) -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o "$@" "$<"
@@ -109,13 +113,20 @@ Texada: $(OBJS) $(USER_OBJS)
 
 
 # Each subdirectory must supply rules for building sources it contributes
-./bin/tests/%.o: ./tests/%.cpp
+./bin/tests/%.o: ./tests/%.cpp | $(BINTESTS)
 	@echo 'Building file: $<'
 	@echo 'Invoking: GCC C++ Compiler'
 	g++ -std=c++11 -I$(SPOT_INCL) -I$(GTEST_INCL) -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o "$@" "$<"
 	@echo 'Finished building: $<'
 	@echo ' '
-	
+
+$(BINSRC):
+	mkdir -p bin
+	mkdir -p $@
+    
+$(BINTESTS):
+	mkdir -p bin
+	mkdir -p $@	
 
 # Other Targets
 clean:
@@ -124,5 +135,7 @@ clean:
 
 .PHONY: all clean dependents
 .SECONDARY:
+
+
 
 -include makefile.targets
