@@ -16,7 +16,7 @@
 namespace texada {
 
 //TODO: determine return value
-void mine_property_type(std::string formula_string, std::string trace_source);
+std::set<const spot::ltl::formula*> mine_property_type(std::string formula_string, std::string trace_source);
 } /* namespace texada */
 
 #endif /* PROPERTYTYPEMINER_H_ */

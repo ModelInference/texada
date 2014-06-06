@@ -21,17 +21,17 @@ namespace texada {
  * @param trace the trace to check on
  * @return updated instantiations, with invalid ones set to false
  */
-array_instantiator::inst_fxn* check_instants_on_trace(array_instantiator::inst_fxn* instantiations,
-		int size, const spot::ltl::formula* formula, const string_event* trace){
-	array_trace_checker* checker = new array_trace_checker();
+std::vector<array_instantiator::inst_fxn> check_instants_on_trace(std::vector<array_instantiator::inst_fxn>& instantiations,
+		const spot::ltl::formula* formula, const string_event* trace){
+	array_trace_checker checker = array_trace_checker();
+	int size = instantiations.size();
 	for (int i=0; i<size; i++){
 		// if it's invalid, ignore
-		if (!((instantiations+i)->validity)) continue;
-		std::map<std::string, std::string>* current_map = &(instantiations+i)->inst_map;
+		if (!(instantiations[i].validity)) continue;
+		std::map<std::string, std::string> current_map = instantiations[i].inst_map;
 		const spot::ltl::formula* instantiated_form =	instantiate(formula, current_map);
-		(instantiations+i)->validity = checker->check(instantiated_form,trace);
+		instantiations[i].validity = checker.check(instantiated_form,trace);
 	}
-	delete checker;
 	return instantiations;
 
 }

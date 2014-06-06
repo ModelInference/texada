@@ -15,27 +15,26 @@ namespace texada {
  * @param events events in all traces inputted
  * @param ltlevents set of atomic propositions to be replaced
  */
-array_instantiator::array_instantiator(std::set<std::string>* events_,
-		spot::ltl::atomic_prop_set *ltlevents) :
+array_instantiator::array_instantiator(std::set<std::string>& events_,
+		spot::ltl::atomic_prop_set ltlevents) :
 			formula_vars(ltlevents), events(events_){
 	//setting up some things
-	length = formula_vars->size();
-	int k = events->size();
-	int array_size = pow(k,length);
-	return_array = new inst_fxn[array_size];
+	length = formula_vars.size();
+	int k = events.size();
+	size = pow(k,length);
+	return_array = std::vector<inst_fxn>(size);
 
 }
 
 array_instantiator::~array_instantiator() {
 	// TODO Auto-generated destructor stub
-	// TODO I probably shouldn't delete that new array since it's intended
-	// to be used??
+
 }
 /**
  * Places all instantiations into the array.
  */
 void array_instantiator::instantiate_array(){
-	int k = events->size();
+	int k = events.size();
 	// We must produce all permutations with replacement of length length
 	// of the events. This can be done by recursion, but here it is done
 	// by iteration, going through the entire return array multiple times
@@ -54,7 +53,7 @@ void array_instantiator::instantiate_array(){
 	// i is the "level" of the pass, i.e. how deep in formula_vars we are
 	int i = 0;
 	for (std::set<const spot::ltl::atomic_prop*>::iterator
-			formula_it=formula_vars->begin(); formula_it!=formula_vars->end();
+			formula_it=formula_vars.begin(); formula_it!=formula_vars.end();
 			++formula_it){
 		//we really should never get to here, as formula_vars ends at length
 		if (i >= length) break;
@@ -78,16 +77,14 @@ void array_instantiator::traverse_and_fill(std::string formula_event, int i,
 	//indicates when to continue iteration through events
 	int switch_var = pow(k,i);
 	// find array size
-	length = formula_vars->size();
-	int array_size = pow(k,length);
 	//begin with the first event
-	std::set<std::string>::iterator event_iterator = events->begin();
-	for (int j = 0; j < array_size ; j++){
+	std::set<std::string>::iterator event_iterator = events.begin();
+	for (int j = 0; j < size ; j++){
 		// if we are at switching point, iterate to next event
 		if (switch_var == 0){
 			++event_iterator;
 			// if we've finished passing through the events, go back to the start
-			if (event_iterator == events->end()) event_iterator = events->begin();
+			if (event_iterator == events.end()) event_iterator = events.begin();
 			// and reset the switch to the top value
 			switch_var = pow(k,i);
 		}
@@ -98,7 +95,7 @@ void array_instantiator::traverse_and_fill(std::string formula_event, int i,
 	}
 }
 
-array_instantiator::inst_fxn* array_instantiator::return_instantiations(){
+std::vector<array_instantiator::inst_fxn>  array_instantiator::return_instantiations() const{
 	return return_array;
 }
 

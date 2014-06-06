@@ -247,8 +247,8 @@ bool array_trace_checker::check(const spot::ltl::unop *node,  const string_event
 		// overall. (e.g. PSPSPSPSPS)
 		// Making the base case the same as the other one seems to make it work.
 		// ....for the case above. but this is still some weird stuff.
-		if (trace[1].is_terminal()){
-			return check(node->child(), trace+1);
+		if (trace[0].is_terminal()){
+			return check(node->child(), trace);
 		}
 		return check(node->child(), trace+1);
 

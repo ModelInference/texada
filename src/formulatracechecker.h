@@ -12,7 +12,7 @@
 
 namespace texada {
 
-	array_instantiator::inst_fxn* check_instants_on_trace(array_instantiator::inst_fxn*, int,
+std::vector<array_instantiator::inst_fxn> check_instants_on_trace(std::vector<array_instantiator::inst_fxn>&,
 			const spot::ltl::formula*, const string_event*);
 
 

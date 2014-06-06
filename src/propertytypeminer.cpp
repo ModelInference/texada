@@ -17,63 +17,63 @@
 
 namespace texada {
 
-void mine_property_type(std::string formula_string, std::string trace_source){
+std::set<const spot::ltl::formula*> mine_property_type(std::string formula_string, std::string trace_source){
 
 	//parse the ltl formula
 	spot::ltl::parse_error_list pel;
 	const spot::ltl::formula* formula = spot::ltl::parse(formula_string, pel);
+	std::cout << "## Number of parser errors: "<<pel.size() << "\n";
+	//TODO: get some way for the user to check this.
 
 	// currently just using simple parser, assumedly could replace this by a
 	// more complex parser once we have one
 	std::ifstream infile(trace_source);
-	simple_parser * parser = new simple_parser();
-	std::set<std::vector<string_event> > * trace_set = parser->parse(infile);
-	std::set<std::string> * event_set = parser->return_events();
-	delete parser;
+	simple_parser parser =  simple_parser();
+	std::set<std::vector<string_event> >  trace_set = parser.parse(infile);
+	std::set<std::string>  event_set = parser.return_events();
 
 	spot::ltl::atomic_prop_set * variables = spot::ltl::atomic_prop_collect(formula);
+	std::cout << "## Number of variables: " <<variables->size() << "\n";
 	//create the instantiation array
-	array_instantiator * instantiator = new array_instantiator(event_set, variables);
-	instantiator->instantiate_array();
-	array_instantiator::inst_fxn* instantiations = instantiator->return_instantiations();
-	delete instantiator;
+	array_instantiator instantiator = array_instantiator(event_set, *variables);
+	instantiator.instantiate_array();
+	std::vector<array_instantiator::inst_fxn> instantiations = instantiator.return_instantiations();
+
+	//debugging stuff below
+	/*
+	for (std::map<std::string, std::string>::iterator it =instantiations[0].inst_map.begin();
+			it !=instantiations[0].inst_map.end(); it++){
+		std::cout << it->first << " -> " << it->second << "\n";
+	}*/
 
 	//number of events
-	int k = event_set->size();
+	int k = event_set.size();
 	//number of bindings
 	int n = variables->size();
 
-	for(std::set<std::vector<string_event> >::iterator it = trace_set->begin();
-			it !=trace_set->end(); it++){
+	for(std::set<std::vector<string_event> >::iterator it = trace_set.begin();
+			it !=trace_set.end(); it++){
 		std::vector<texada::string_event> current_vec = *it;
 		texada::string_event* current_trace = &current_vec[0];
-		check_instants_on_trace(instantiations,pow(k,n),formula,current_trace);
+		check_instants_on_trace(instantiations,formula,current_trace);
 	}
 
+	std::set<const spot::ltl::formula*>  return_set;
 
-	//TODO: some other method to output
-	std::cout << "Valid instantiations: \n";
-	for (int i = 0; i <pow(k,n);i++){
-		if ((instantiations+i)->validity){
+	int size = instantiations.size();
+
+	for (int i = 0; i <size; i++){
+		if (instantiations[i].validity){
 			const spot::ltl::formula * valid_form =
-					instantiate(formula, &((instantiations+i)->inst_map));
-			std::cout << spot::ltl::to_string(valid_form) << "\n";
+					instantiate(formula, instantiations[i].inst_map);
+			return_set.insert(valid_form);
 		}
 	}
-	std::cout << "If no instantiations are listed, no valid instantiations found. \n";
+    return return_set;
 
-    std::cout << "Deleting event set... \n";
-	delete event_set;
-    std::cout << "Deleted event set. Deleting variables... \n";
-	delete variables;
-	std::cout << instantiations;
+
 }
 
-class property_type_miner {
-public:
-	property_type_miner();
-	virtual ~property_type_miner();
-};
 
 
 } /* namespace texada */
