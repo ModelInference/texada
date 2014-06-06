@@ -22,7 +22,7 @@ std::set<const spot::ltl::formula*> mine_property_type(std::string formula_strin
 	//parse the ltl formula
 	spot::ltl::parse_error_list pel;
 	const spot::ltl::formula* formula = spot::ltl::parse(formula_string, pel);
-	std::cout << "## Number of parser errors: "<<pel.size() << "\n";
+	//std::cout << "## Number of parser errors: "<<pel.size() << "\n";
 	//TODO: get some way for the user to check this.
 
 	// currently just using simple parser, assumedly could replace this by a
@@ -33,7 +33,7 @@ std::set<const spot::ltl::formula*> mine_property_type(std::string formula_strin
 	std::set<std::string>  event_set = parser.return_events();
 
 	spot::ltl::atomic_prop_set * variables = spot::ltl::atomic_prop_collect(formula);
-	std::cout << "## Number of variables: " <<variables->size() << "\n";
+	//std::cout << "## Number of variables: " <<variables->size() << "\n";
 	//create the instantiation array
 	array_instantiator instantiator = array_instantiator(event_set, *variables);
 	instantiator.instantiate_array();
@@ -50,17 +50,30 @@ std::set<const spot::ltl::formula*> mine_property_type(std::string formula_strin
 	int k = event_set.size();
 	//number of bindings
 	int n = variables->size();
+	//size of instnatiations
+	int size = instantiations.size();
+
+	//## debugging
+	int numvalid;
 
 	for(std::set<std::vector<string_event> >::iterator it = trace_set.begin();
 			it !=trace_set.end(); it++){
 		std::vector<texada::string_event> current_vec = *it;
 		texada::string_event* current_trace = &current_vec[0];
 		check_instants_on_trace(instantiations,formula,current_trace);
+		numvalid =0;
+		for (int i = 0; i <size; i++){
+			if (instantiations[i].validity){
+				std::cout << to_string(instantiate(formula,instantiations[i].inst_map))<< "\n";
+				numvalid++;
+			}
+		}
+		std::cout << "Numvalid: "<< numvalid << "\n";
 	}
 
 	std::set<const spot::ltl::formula*>  return_set;
 
-	int size = instantiations.size();
+
 
 	for (int i = 0; i <size; i++){
 		if (instantiations[i].validity){
