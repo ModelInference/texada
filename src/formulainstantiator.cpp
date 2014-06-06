@@ -25,12 +25,12 @@ class formula_instantiator : public spot::ltl::clone_visitor{
 
 private:
 	// Maps each atomic proposition in the formula.
-	std::map<std::string, std::string>* replacement_map;
+	std::map<std::string, std::string> replacement_map;
 
 public:
 
 	//instantiates the replacement map with the one given
-	formula_instantiator(std::map<std::string,std::string>* replacement_map_):
+	formula_instantiator(std::map<std::string,std::string>& replacement_map_):
 		replacement_map(replacement_map_) {};
 	~formula_instantiator() {};
 
@@ -44,7 +44,7 @@ public:
 	 */
 	const spot::ltl::formula* rename(const spot::ltl::atomic_prop* toreplace){
 			try{
-			std::string newname = replacement_map->at(toreplace->name());
+			std::string newname = replacement_map.at(toreplace->name());
 			return spot::ltl::default_environment::instance().require(newname);
 			} catch (std::exception &e){
 				std::cerr << "Mapping not found for " << toreplace->name()
@@ -76,10 +76,9 @@ public:
  * @return formula with oldvars replaced with the corresponding newvars
  */
 const spot::ltl::formula* instantiate(const spot::ltl::formula *node,
-		std::map<std::string, std::string>* map){
-	formula_instantiator* instantiator = new formula_instantiator(map);
-	const spot::ltl::formula* return_formula = instantiator->recurse(node);
-	delete instantiator;
+		std::map<std::string, std::string>& map){
+	formula_instantiator instantiator = formula_instantiator(map);
+	const spot::ltl::formula* return_formula = instantiator.recurse(node);
 	return return_formula;
 }
 

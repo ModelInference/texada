@@ -11,7 +11,7 @@
 
 
 TEST(PropertyTypeMinerTest, EventuallyEvent){
-	texada::mine_property_type("Fx",
+	std::set<const spot::ltl::formula*> set =texada::mine_property_type("Fx",
 			"/home/clemieux/workspace/texada/Texada/traces/vary-tracelen/etypes-10_events-250_execs-20.txt");
-	ASSERT_TRUE(true);
+	ASSERT_EQ(set.size(),10);
 }

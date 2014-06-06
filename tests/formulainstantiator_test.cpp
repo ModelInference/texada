@@ -15,10 +15,10 @@
 
 TEST(FormulaInstantiatorTest, SimpleTest){
 
-	std::map<std::string, std::string>* map = new std::map<std::string, std::string>();
+	std::map<std::string, std::string> map = std::map<std::string, std::string>();
 
-	map->insert(std::pair<std::string,std::string>("x","a"));
-    map->insert(std::pair<std::string,std::string>("y","b"));
+	map.insert(std::pair<std::string,std::string>("x","a"));
+    map.insert(std::pair<std::string,std::string>("y","b"));
 
     std::string input = "G(x -> Fy)";
     spot::ltl::parse_error_list pel;

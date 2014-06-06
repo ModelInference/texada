@@ -24,13 +24,13 @@ class simple_parser {
 public:
 	simple_parser();
 	virtual ~simple_parser();
-	std::set<std::vector<string_event> >* parse(std::ifstream &infile);
+	std::set<std::vector<string_event> > parse(std::ifstream &infile);
 	/**
 	 * Returns set of events in a file if a file has been parsed,
 	 * else an empty set.
 	 * @return
 	 */
-	std::set<std::string>* return_events(){
+	std::set<std::string> return_events(){
 		if (has_been_parsed){
 			return events;
 		} else {
@@ -39,7 +39,7 @@ public:
 		}
 	}
 private:
-	std::set<std::string>* events;
+	std::set<std::string> events;
 	bool has_been_parsed = false;
 
 };
