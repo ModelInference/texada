@@ -39,12 +39,6 @@ std::set<const spot::ltl::formula*> mine_property_type(std::string formula_strin
 	instantiator.instantiate_array();
 	std::vector<array_instantiator::inst_fxn> instantiations = instantiator.return_instantiations();
 
-	//debugging stuff below
-	/*
-	for (std::map<std::string, std::string>::iterator it =instantiations[0].inst_map.begin();
-			it !=instantiations[0].inst_map.end(); it++){
-		std::cout << it->first << " -> " << it->second << "\n";
-	}*/
 
 	//number of events
 	int k = event_set.size();
@@ -62,14 +56,14 @@ std::set<const spot::ltl::formula*> mine_property_type(std::string formula_strin
 		texada::string_event* current_trace = &current_vec[0];
 		check_instants_on_trace(instantiations,formula,current_trace);
 		//## the rest is debugging
-		numvalid =0;
+		/*numvalid =0;
 		for (int i = 0; i <size; i++){
 			if (instantiations[i].validity){
 				std::cout << to_string(instantiate(formula,instantiations[i].inst_map))<< "\n";
 				numvalid++;
 			}
 		}
-		std::cout << "Numvalid: "<< numvalid << "\n";
+		std::cout << "Numvalid: "<< numvalid << "\n";*/
 	}
 
 	std::set<const spot::ltl::formula*>  return_set;
