@@ -2,12 +2,12 @@
 
 ### Directory Structure
 
-Texada
-   /bin  -- contains top-level makefile object files
-      /src -- contains src objects
-      /tests -- contains test objects
-   /src -- source code for main project
-   /tests -- main project tests
+      Texada
+         /bin  -- created by makefile
+            /src -- contains src objects
+            /tests -- contains test objects
+         /src -- source code for main project
+         /tests -- main project tests
 
 ### Required Libraries
 
@@ -54,19 +54,15 @@ GTEST_INCL: the location of gtest header files
 
 For example, uservars.mk might look like
 
-*\# User-Specific Variables
-
-\# Specify path to SPOT library
-SPOT_LIB:=/path/to/libspot.a/
-
-\# Specify path to GTest Libraries
-GTEST_LIB:=/path/to/libgtest.a/
-
-\# Specify path to SPOT headers
-SPOT_INCL:=/path/to/spot/headers/
-
-\# Specify path to GTest headers
-GTEST_INCL:=/path/to/gtest/headers/*
+      # User-Specific Variables
+      # Specify path to SPOT library
+      SPOT_LIB:=/path/to/libspot.a/
+      # Specify path to GTest Libraries
+      GTEST_LIB:=/path/to/libgtest.a/
+      # Specify path to SPOT headers
+      SPOT_INCL:=/path/to/spot/headers/
+      # Specify path to GTest headers
+      GTEST_INCL:=/path/to/gtest/headers/*
 
 with all dummy paths replaced by real paths. SPOT\_LIB will probably point to pathtospot/spot/src/.libs/ if that is where libspot.a is. On a ubuntu machine, SPOT\_INCL will likely point to /usr/local/include/spot. The GTest libraries will be located wherever you build GTest and the GTest headers should be in pathtogtest/gtest/include (GTEST_INCL should point there). 
 
