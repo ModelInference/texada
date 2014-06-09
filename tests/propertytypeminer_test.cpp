@@ -22,24 +22,25 @@ std::string causefirst_string = "((!y)Wx)&G(x->XFy)";
 std::string onecause_string = "G(x->X((!x)Uy)))";
 std::string oneeffect_string = "G((x->X(Fy))&(y->X((!y)Wx)))";
 
+std::string texada_base = "/home/clemieux/workspace/texada/Texada";
 //TODO: not use definite paths.
 
 TEST(PropertyTypeMinerTest, EventuallyEvent){
 	std::set<const spot::ltl::formula*> set =texada::mine_property_type("Fx",
-			"/home/clemieux/workspace/texada/Texada/traces/vary-tracelen/etypes-10_events-250_execs-20.txt");
+			texada_base + "/traces/vary-tracelen/etypes-10_events-250_execs-20.txt");
 	ASSERT_EQ(set.size(),10);
 }
 
 
 TEST(PropertyTypeMinerTest, ResourceAllocation){
 	std::set<const spot::ltl::formula*> set =texada::mine_property_type("(!(y | z) W x) & G((x -> X((!x U z)&(!z U y)))&(y->XFz)&(z->X(!(y | z) W x)))",
-			"/home/clemieux/workspace/texada/Texada/traces/resource-allocation/abc.txt");
+			texada_base + "/traces/resource-allocation/abc.txt");
 	ASSERT_EQ(set.size(),1);
 }
 
 TEST(PropertyTypeMinerTest, STprecedesPafterQ){
 	std::set<const spot::ltl::formula*> set =texada::mine_property_type("(G!y) | (!y U (y & XFx -> (!x U (a & !x & X(!x U z))))",
-			"/home/clemieux/workspace/texada/Texada/traces/resource-allocation/abb4cad.txt");
+			texada_base + "/traces/resource-allocation/abb4cad.txt");
 	std::map<std::string,std::string> inst_map;
 	inst_map.insert(std::pair<std::string,std::string>("x", "c"));
 	inst_map.insert(std::pair<std::string,std::string>("y", "d"));
@@ -65,21 +66,21 @@ std::array<bool,8> set_up_perracotta_tests(std::string formula, std::string abst
 	std::array<bool,8> output_array;
 	//order of sources
 	// Response
-	std::string response_source = "/home/clemieux/workspace/texada/Texada/traces/testing1/response.txt";
+	std::string response_source = texada_base + "/traces/testing1/response.txt";
 	// Alternating
-	std::string alternating_source = "/home/clemieux/workspace/texada/Texada/traces/testing1/alternating.txt";
+	std::string alternating_source = texada_base + "/traces/testing1/alternating.txt";
 	// MultiEffect
-	std::string multieffect_source = "/home/clemieux/workspace/texada/Texada/traces/testing1/multieffect.txt";
+	std::string multieffect_source = texada_base + "/traces/testing1/multieffect.txt";
 	// MultiCause
-	std::string multicause_source = "/home/clemieux/workspace/texada/Texada/traces/testing1/multicause.txt";
+	std::string multicause_source = texada_base + "/traces/testing1/multicause.txt";
 	// EffectFirst
-	std::string effectfirst_source = "/home/clemieux/workspace/texada/Texada/traces/testing1/effectfirst.txt";
+	std::string effectfirst_source = texada_base + "/traces/testing1/effectfirst.txt";
 	// CauseFirst
-	std::string causefirst_source = "/home/clemieux/workspace/texada/Texada/traces/testing1/causefirst.txt";
+	std::string causefirst_source = texada_base + "/traces/testing1/causefirst.txt";
 	// OneCause
-	std::string onecause_source = "/home/clemieux/workspace/texada/Texada/traces/testing1/onecause.txt";
+	std::string onecause_source = texada_base + "/traces/testing1/onecause.txt";
 	// OneEffect
-	std::string oneeffect_source = "/home/clemieux/workspace/texada/Texada/traces/testing1/oneffect.txt";
+	std::string oneeffect_source = texada_base + "/traces/testing1/oneffect.txt";
 
 
 	//creating the formulas that should exist

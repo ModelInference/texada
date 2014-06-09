@@ -17,6 +17,8 @@
  * TODO: TEMPORARY~~~~ so do this a better way (perhaps automate writing times to a file).
  *  */
 
+std::string texada_base = "/home/clemieux/workspace/texada/Texada";
+
 double set_up_afby(std::string source_file){
 	//set up the AFby formula:
 	std::string input = "G(x->XFy)";
@@ -54,58 +56,58 @@ double set_up_afby(std::string source_file){
 /*
 TEST(TimingLengthTest, 250){
 	std::cout << "250 \n" <<
-			set_up_afby("/home/clemieux/workspace/texada/Texada/traces/vary-tracelen/etypes-10_events-250_execs-20.txt")
+			set_up_afby(texada_base + "/traces/vary-tracelen/etypes-10_events-250_execs-20.txt")
 			<< "\n";
 	ASSERT_TRUE(true);
 }
 
 TEST(TimingLengthTest, 500){
 	std::cout << "500 \n " <<
-			set_up_afby("/home/clemieux/workspace/texada/Texada/traces/vary-tracelen/etypes-10_events-500_execs-20.txt")
+			set_up_afby(texada_base + "/traces/vary-tracelen/etypes-10_events-500_execs-20.txt")
 			<< "\n";
 	ASSERT_TRUE(true);
 }
 TEST(TimingLengthTest, 750){
 	std::cout << "750 \n" <<
-			set_up_afby("/home/clemieux/workspace/texada/Texada/traces/vary-tracelen/etypes-10_events-750_execs-20.txt")
+			set_up_afby(texada_base + "/traces/vary-tracelen/etypes-10_events-750_execs-20.txt")
 			<< "\n";
 	ASSERT_TRUE(true);
 }
 TEST(TimingLengthTest, 1000){
 	std::cout << "100 \n " <<
-			set_up_afby("/home/clemieux/workspace/texada/Texada/traces/vary-tracelen/etypes-10_events-1000_execs-20.txt")
+			set_up_afby(texada_base + "/traces/vary-tracelen/etypes-10_events-1000_execs-20.txt")
 			<< "\n";
 	ASSERT_TRUE(true);
 }
 
 TEST(TimingLengthTest, 1250){
 	std::cout << "1250 \n" <<
-			set_up_afby("/home/clemieux/workspace/texada/Texada/traces/vary-tracelen/etypes-10_events-1250_execs-20.txt")
+			set_up_afby(texada_base + "/traces/vary-tracelen/etypes-10_events-1250_execs-20.txt")
 			<< "\n";
 	ASSERT_TRUE(true);
 }
 
 TEST(TimingLengthTest, 1500){
 	std::cout << "1500 \n " <<
-			set_up_afby("/home/clemieux/workspace/texada/Texada/traces/vary-tracelen/etypes-10_events-1500_execs-20.txt")
+			set_up_afby(texada_base + "/traces/vary-tracelen/etypes-10_events-1500_execs-20.txt")
 			<< "\n";
 	ASSERT_TRUE(true);
 }
 TEST(TimingLengthTest, 1750){
 	std::cout << "1750 \n " <<
-			set_up_afby("/home/clemieux/workspace/texada/Texada/traces/vary-tracelen/etypes-10_events-1750_execs-20.txt")
+			set_up_afby(texada_base + "/traces/vary-tracelen/etypes-10_events-1750_execs-20.txt")
 			<< "\n";
 	ASSERT_TRUE(true);
 }
 TEST(TimingLengthTest, 2000){
 	std::cout << "2000 \n" <<
-			set_up_afby("/home/clemieux/workspace/texada/Texada/traces/vary-tracelen/etypes-10_events-2000_execs-20.txt")
+			set_up_afby(texada_base + "/traces/vary-tracelen/etypes-10_events-2000_execs-20.txt")
 			<< "\n";
 	ASSERT_TRUE(true);
 }
 TEST(TimingLengthTest, 2250){
 	std::cout << "2250 \n " <<
-			set_up_afby("/home/clemieux/workspace/texada/Texada/traces/vary-tracelen/etypes-10_events-2250_execs-20.txt")
+			set_up_afby(texada_base + "/traces/vary-tracelen/etypes-10_events-2250_execs-20.txt")
 			<< "\n";
 	ASSERT_TRUE(true);
 }*/
@@ -118,7 +120,7 @@ double set_up_form_length_2(std::string input){
 	const spot::ltl::formula* f = spot::ltl::parse(input, pel);
 	std::cout << spot::ltl::length(f) << " \n";
 	//set up the traces
-	std::ifstream infile("/home/clemieux/workspace/texada/Texada/traces/vary-tracelen/etypes-10_events-2250_execs-20.txt");
+	std::ifstream infile(texada_base + "/traces/vary-tracelen/etypes-10_events-2250_execs-20.txt");
 	texada::simple_parser parser = texada::simple_parser();
 	std::set<std::vector<texada::string_event> >  trace_set = parser.parse(infile);
 	std::set<std::string> event_set = parser.return_events();
@@ -223,7 +225,7 @@ double set_up_variable_num(std::string input, int k){
 	const spot::ltl::formula* f = spot::ltl::parse(input, pel);
 	std::cout << k << "\n";
 	//set up the traces
-	std::ifstream infile("/home/clemieux/workspace/texada/Texada/traces/vary-tracelen/etypes-10_events-2250_execs-20.txt");
+	std::ifstream infile(texada_base + "/traces/vary-tracelen/etypes-10_events-2250_execs-20.txt");
 	texada::simple_parser parser = texada::simple_parser();
 	std::set<std::vector<texada::string_event> >  trace_set = parser.parse(infile);
 	std::set<std::string> event_set = parser.return_events();
@@ -308,195 +310,195 @@ void set_up_total_mining_test(std::string form, std::string source){
 }
 /*
 TEST(TotalMiningNumInvsTest,4F){
-	set_up_total_mining_test("Fx","/home/clemieux/workspace/texada/Texada/traces/vary-invs-fixed2/log-25000_invs-3.txt");
+	set_up_total_mining_test("Fx",texada_base + "/traces/vary-invs-fixed2/log-25000_invs-3.txt");
 }
 TEST(TotalMiningNumInvsTest,5F){
-	set_up_total_mining_test("Fx","/home/clemieux/workspace/texada/Texada/traces/vary-invs-fixed2/log-25000_invs-4.txt");
+	set_up_total_mining_test("Fx",texada_base + "/traces/vary-invs-fixed2/log-25000_invs-4.txt");
 }
 TEST(TotalMiningNumInvsTest,6F){
-	set_up_total_mining_test("Fx","/home/clemieux/workspace/texada/Texada/traces/vary-invs-fixed2/log-25000_invs-5.txt");
+	set_up_total_mining_test("Fx",texada_base + "/traces/vary-invs-fixed2/log-25000_invs-5.txt");
 }
 TEST(TotalMiningNumInvsTest,7F){
-	set_up_total_mining_test("Fx","/home/clemieux/workspace/texada/Texada/traces/vary-invs-fixed2/log-25000_invs-6.txt");
+	set_up_total_mining_test("Fx",texada_base + "/traces/vary-invs-fixed2/log-25000_invs-6.txt");
 }
 TEST(TotalMiningNumInvsTest,8F){
-	set_up_total_mining_test("Fx","/home/clemieux/workspace/texada/Texada/traces/vary-invs-fixed2/log-25000_invs-7.txt");
+	set_up_total_mining_test("Fx",texada_base + "/traces/vary-invs-fixed2/log-25000_invs-7.txt");
 }
 TEST(TotalMiningNumInvsTest,9F){
-	set_up_total_mining_test("Fx","/home/clemieux/workspace/texada/Texada/traces/vary-invs-fixed2/log-25000_invs-8.txt");
+	set_up_total_mining_test("Fx",texada_base + "/traces/vary-invs-fixed2/log-25000_invs-8.txt");
 
 }
 TEST(TotalMiningNumInvsTest,13F){
-	set_up_total_mining_test("Fx","/home/clemieux/workspace/texada/Texada/traces/vary-invs-fixed2/log-25000_invs-12.txt");
+	set_up_total_mining_test("Fx",texada_base + "/traces/vary-invs-fixed2/log-25000_invs-12.txt");
 }
 TEST(TotalMiningNumInvsTest,16F){
-	set_up_total_mining_test("Fx","/home/clemieux/workspace/texada/Texada/traces/vary-invs-fixed2/log-25000_invs-15.txt");
+	set_up_total_mining_test("Fx",texada_base + "/traces/vary-invs-fixed2/log-25000_invs-15.txt");
 }
 TEST(TotalMiningNumInvsTest,19F){
-	set_up_total_mining_test("Fx","/home/clemieux/workspace/texada/Texada/traces/vary-invs-fixed2/log-25000_invs-18.txt");
+	set_up_total_mining_test("Fx",texada_base + "/traces/vary-invs-fixed2/log-25000_invs-18.txt");
 }
 TEST(TotalMiningNumInvsTest,22F){
-	set_up_total_mining_test("Fx","/home/clemieux/workspace/texada/Texada/traces/vary-invs-fixed2/log-25000_invs-21.txt");
+	set_up_total_mining_test("Fx",texada_base + "/traces/vary-invs-fixed2/log-25000_invs-21.txt");
 }
 TEST(TotalMiningNumInvsTest,25F){
-	set_up_total_mining_test("Fx","/home/clemieux/workspace/texada/Texada/traces/vary-invs-fixed2/log-25000_invs-24.txt");
+	set_up_total_mining_test("Fx",texada_base + "/traces/vary-invs-fixed2/log-25000_invs-24.txt");
 }
 TEST(TotalMiningNumInvsTest,28F){
-	set_up_total_mining_test("Fx","/home/clemieux/workspace/texada/Texada/traces/vary-invs-fixed2/log-25000_invs-27.txt");
+	set_up_total_mining_test("Fx",texada_base + "/traces/vary-invs-fixed2/log-25000_invs-27.txt");
 
 }
 TEST(TotalMiningNumInvsTest,31F){
-	set_up_total_mining_test("Fx","/home/clemieux/workspace/texada/Texada/traces/vary-invs-fixed2/log-25000_invs-30.txt");
+	set_up_total_mining_test("Fx",texada_base + "/traces/vary-invs-fixed2/log-25000_invs-30.txt");
 }
 TEST(TotalMiningNumInvsTest,34F){
-	set_up_total_mining_test("Fx","/home/clemieux/workspace/texada/Texada/traces/vary-invs-fixed2/log-25000_invs-33.txt");
+	set_up_total_mining_test("Fx",texada_base + "/traces/vary-invs-fixed2/log-25000_invs-33.txt");
 }
 TEST(TotalMiningNumInvsTest,37F){
-	set_up_total_mining_test("Fx","/home/clemieux/workspace/texada/Texada/traces/vary-invs-fixed2/log-25000_invs-36.txt");
+	set_up_total_mining_test("Fx",texada_base + "/traces/vary-invs-fixed2/log-25000_invs-36.txt");
 
 }
 
 TEST(TotalMiningNumInvsTest,4AFby){
-	set_up_total_mining_test("G(x->XFy)","/home/clemieux/workspace/texada/Texada/traces/vary-invs-fixed2/log-25000_invs-3.txt");
+	set_up_total_mining_test("G(x->XFy)",texada_base + "/traces/vary-invs-fixed2/log-25000_invs-3.txt");
 }
 TEST(TotalMiningNumInvsTest,5AFby){
-	set_up_total_mining_test("G(x->XFy)","/home/clemieux/workspace/texada/Texada/traces/vary-invs-fixed2/log-25000_invs-4.txt");
+	set_up_total_mining_test("G(x->XFy)",texada_base + "/traces/vary-invs-fixed2/log-25000_invs-4.txt");
 }
 TEST(TotalMiningNumInvsTest,6AFby){
-	set_up_total_mining_test("G(x->XFy)","/home/clemieux/workspace/texada/Texada/traces/vary-invs-fixed2/log-25000_invs-5.txt");
+	set_up_total_mining_test("G(x->XFy)",texada_base + "/traces/vary-invs-fixed2/log-25000_invs-5.txt");
 }
 TEST(TotalMiningNumInvsTest,7AFby){
-	set_up_total_mining_test("G(x->XFy)","/home/clemieux/workspace/texada/Texada/traces/vary-invs-fixed2/log-25000_invs-6.txt");
+	set_up_total_mining_test("G(x->XFy)",texada_base + "/traces/vary-invs-fixed2/log-25000_invs-6.txt");
 }
 TEST(TotalMiningNumInvsTest,8AFby){
-	set_up_total_mining_test("G(x->XFy)","/home/clemieux/workspace/texada/Texada/traces/vary-invs-fixed2/log-25000_invs-7.txt");
+	set_up_total_mining_test("G(x->XFy)",texada_base + "/traces/vary-invs-fixed2/log-25000_invs-7.txt");
 }
 TEST(TotalMiningNumInvsTest,9AFby){
-	set_up_total_mining_test("G(x->XFy)","/home/clemieux/workspace/texada/Texada/traces/vary-invs-fixed2/log-25000_invs-8.txt");
+	set_up_total_mining_test("G(x->XFy)",texada_base + "/traces/vary-invs-fixed2/log-25000_invs-8.txt");
 
 }
 TEST(TotalMiningNumInvsTest,13AFby){
-	set_up_total_mining_test("G(x->XFy)","/home/clemieux/workspace/texada/Texada/traces/vary-invs-fixed2/log-25000_invs-12.txt");
+	set_up_total_mining_test("G(x->XFy)",texada_base + "/traces/vary-invs-fixed2/log-25000_invs-12.txt");
 }
 TEST(TotalMiningNumInvsTest,16AFby){
-	set_up_total_mining_test("G(x->XFy)","/home/clemieux/workspace/texada/Texada/traces/vary-invs-fixed2/log-25000_invs-15.txt");
+	set_up_total_mining_test("G(x->XFy)",texada_base + "/traces/vary-invs-fixed2/log-25000_invs-15.txt");
 }
 TEST(TotalMiningNumInvsTest,19AFby){
-	set_up_total_mining_test("G(x->XFy)","/home/clemieux/workspace/texada/Texada/traces/vary-invs-fixed2/log-25000_invs-18.txt");
+	set_up_total_mining_test("G(x->XFy)",texada_base + "/traces/vary-invs-fixed2/log-25000_invs-18.txt");
 }
 TEST(TotalMiningNumInvsTest,22AFby){
-	set_up_total_mining_test("G(x->XFy)","/home/clemieux/workspace/texada/Texada/traces/vary-invs-fixed2/log-25000_invs-21.txt");
+	set_up_total_mining_test("G(x->XFy)",texada_base + "/traces/vary-invs-fixed2/log-25000_invs-21.txt");
 }
 TEST(TotalMiningNumInvsTest,25AFby){
-	set_up_total_mining_test("G(x->XFy)","/home/clemieux/workspace/texada/Texada/traces/vary-invs-fixed2/log-25000_invs-24.txt");
+	set_up_total_mining_test("G(x->XFy)",texada_base + "/traces/vary-invs-fixed2/log-25000_invs-24.txt");
 }
 TEST(TotalMiningNumInvsTest,28AFby){
-	set_up_total_mining_test("G(x->XFy)","/home/clemieux/workspace/texada/Texada/traces/vary-invs-fixed2/log-25000_invs-27.txt");
+	set_up_total_mining_test("G(x->XFy)",texada_base + "/traces/vary-invs-fixed2/log-25000_invs-27.txt");
 }
 TEST(TotalMiningNumInvsTest,31AFby){
-	set_up_total_mining_test("G(x->XFy)","/home/clemieux/workspace/texada/Texada/traces/vary-invs-fixed2/log-25000_invs-30.txt");
+	set_up_total_mining_test("G(x->XFy)",texada_base + "/traces/vary-invs-fixed2/log-25000_invs-30.txt");
 }
 TEST(TotalMiningNumInvsTest,34AFby){
-	set_up_total_mining_test("G(x->XFy)","/home/clemieux/workspace/texada/Texada/traces/vary-invs-fixed2/log-25000_invs-33.txt");
+	set_up_total_mining_test("G(x->XFy)",texada_base + "/traces/vary-invs-fixed2/log-25000_invs-33.txt");
 }
 TEST(TotalMiningNumInvsTest,37AFby){
-	set_up_total_mining_test("G(x->XFy)","/home/clemieux/workspace/texada/Texada/traces/vary-invs-fixed2/log-25000_invs-36.txt");
+	set_up_total_mining_test("G(x->XFy)",texada_base + "/traces/vary-invs-fixed2/log-25000_invs-36.txt");
 
 }
 
 TEST(TotalMiningNumInvsTest,4PbwQR){
-	set_up_total_mining_test("G((c & !a & Fa) -> (!b U a))","/home/clemieux/workspace/texada/Texada/traces/vary-invs-fixed2/log-25000_invs-3.txt");
+	set_up_total_mining_test("G((c & !a & Fa) -> (!b U a))",texada_base + "/traces/vary-invs-fixed2/log-25000_invs-3.txt");
 }
 TEST(TotalMiningNumInvsTest,5PbwQR){
-	set_up_total_mining_test("G((c & !a & Fa) -> (!b U a))","/home/clemieux/workspace/texada/Texada/traces/vary-invs-fixed2/log-25000_invs-4.txt");
+	set_up_total_mining_test("G((c & !a & Fa) -> (!b U a))",texada_base + "/traces/vary-invs-fixed2/log-25000_invs-4.txt");
 }
 TEST(TotalMiningNumInvsTest,6PbwQR){
-	set_up_total_mining_test("G((c & !a & Fa) -> (!b U a))","/home/clemieux/workspace/texada/Texada/traces/vary-invs-fixed2/log-25000_invs-5.txt");
+	set_up_total_mining_test("G((c & !a & Fa) -> (!b U a))",texada_base + "/traces/vary-invs-fixed2/log-25000_invs-5.txt");
 }
 TEST(TotalMiningNumInvsTest,7PbwQR){
-	set_up_total_mining_test("G((c & !a & Fa) -> (!b U a))","/home/clemieux/workspace/texada/Texada/traces/vary-invs-fixed2/log-25000_invs-6.txt");
+	set_up_total_mining_test("G((c & !a & Fa) -> (!b U a))",texada_base + "/traces/vary-invs-fixed2/log-25000_invs-6.txt");
 }
 TEST(TotalMiningNumInvsTest,8PbwQR){
-	set_up_total_mining_test("G((c & !a & Fa) -> (!b U a))","/home/clemieux/workspace/texada/Texada/traces/vary-invs-fixed2/log-25000_invs-7.txt");
+	set_up_total_mining_test("G((c & !a & Fa) -> (!b U a))",texada_base + "/traces/vary-invs-fixed2/log-25000_invs-7.txt");
 }
 TEST(TotalMiningNumInvsTest,9PbwQR){
-	set_up_total_mining_test("G((c & !a & Fa) -> (!b U a))","/home/clemieux/workspace/texada/Texada/traces/vary-invs-fixed2/log-25000_invs-8.txt");
+	set_up_total_mining_test("G((c & !a & Fa) -> (!b U a))",texada_base + "/traces/vary-invs-fixed2/log-25000_invs-8.txt");
 
 }
 TEST(TotalMiningNumInvsTest,13PbwQR){
-	set_up_total_mining_test("G((c & !a & Fa) -> (!b U a))","/home/clemieux/workspace/texada/Texada/traces/vary-invs-fixed2/log-25000_invs-12.txt");
+	set_up_total_mining_test("G((c & !a & Fa) -> (!b U a))",texada_base + "/traces/vary-invs-fixed2/log-25000_invs-12.txt");
 }
 TEST(TotalMiningNumInvsTest,16PbwQR){
-	set_up_total_mining_test("G((c & !a & Fa) -> (!b U a))","/home/clemieux/workspace/texada/Texada/traces/vary-invs-fixed2/log-25000_invs-15.txt");
+	set_up_total_mining_test("G((c & !a & Fa) -> (!b U a))",texada_base + "/traces/vary-invs-fixed2/log-25000_invs-15.txt");
 }
 TEST(TotalMiningNumInvsTest,19PbwQR){
-	set_up_total_mining_test("G((c & !a & Fa) -> (!b U a))","/home/clemieux/workspace/texada/Texada/traces/vary-invs-fixed2/log-25000_invs-18.txt");
+	set_up_total_mining_test("G((c & !a & Fa) -> (!b U a))",texada_base + "/traces/vary-invs-fixed2/log-25000_invs-18.txt");
 }
 TEST(TotalMiningNumInvsTest,22PbwQR){
-	set_up_total_mining_test("G((c & !a & Fa) -> (!b U a))","/home/clemieux/workspace/texada/Texada/traces/vary-invs-fixed2/log-25000_invs-21.txt");
+	set_up_total_mining_test("G((c & !a & Fa) -> (!b U a))",texada_base + "/traces/vary-invs-fixed2/log-25000_invs-21.txt");
 }
 TEST(TotalMiningNumInvsTest,25PbwQR){
-	set_up_total_mining_test("G((c & !a & Fa) -> (!b U a))","/home/clemieux/workspace/texada/Texada/traces/vary-invs-fixed2/log-25000_invs-24.txt");
+	set_up_total_mining_test("G((c & !a & Fa) -> (!b U a))",texada_base + "/traces/vary-invs-fixed2/log-25000_invs-24.txt");
 }
 TEST(TotalMiningNumInvsTest,28PbwQR){
-	set_up_total_mining_test("G((c & !a & Fa) -> (!b U a))","/home/clemieux/workspace/texada/Texada/traces/vary-invs-fixed2/log-25000_invs-27.txt");
+	set_up_total_mining_test("G((c & !a & Fa) -> (!b U a))",texada_base + "/traces/vary-invs-fixed2/log-25000_invs-27.txt");
 }
 TEST(TotalMiningNumInvsTest,31PbwQR){
-	set_up_total_mining_test("G((c & !a & Fa) -> (!b U a))","/home/clemieux/workspace/texada/Texada/traces/vary-invs-fixed2/log-25000_invs-30.txt");
+	set_up_total_mining_test("G((c & !a & Fa) -> (!b U a))",texada_base + "/traces/vary-invs-fixed2/log-25000_invs-30.txt");
 }
 TEST(TotalMiningNumInvsTest,34PbwQR){
-	set_up_total_mining_test("G((c & !a & Fa) -> (!b U a))","/home/clemieux/workspace/texada/Texada/traces/vary-invs-fixed2/log-25000_invs-33.txt");
+	set_up_total_mining_test("G((c & !a & Fa) -> (!b U a))",texada_base + "/traces/vary-invs-fixed2/log-25000_invs-33.txt");
 }
 TEST(TotalMiningNumInvsTest,37PbwQR){
-	set_up_total_mining_test("G((c & !a & Fa) -> (!b U a))","/home/clemieux/workspace/texada/Texada/traces/vary-invs-fixed2/log-25000_invs-36.txt");
+	set_up_total_mining_test("G((c & !a & Fa) -> (!b U a))",texada_base + "/traces/vary-invs-fixed2/log-25000_invs-36.txt");
 
 }
 
 TEST(TotalMiningNumInvsTest,4SpPaQuR){
-	set_up_total_mining_test("G(c & !a -> (!b W (d | a)))","/home/clemieux/workspace/texada/Texada/traces/vary-invs-fixed2/log-25000_invs-3.txt");
+	set_up_total_mining_test("G(c & !a -> (!b W (d | a)))",texada_base + "/traces/vary-invs-fixed2/log-25000_invs-3.txt");
 }
 TEST(TotalMiningNumInvsTest,5SpPaQuR){
-	set_up_total_mining_test("G(c & !a -> (!b W (d | a)))","/home/clemieux/workspace/texada/Texada/traces/vary-invs-fixed2/log-25000_invs-4.txt");
+	set_up_total_mining_test("G(c & !a -> (!b W (d | a)))",texada_base + "/traces/vary-invs-fixed2/log-25000_invs-4.txt");
 }
 TEST(TotalMiningNumInvsTest,6SpPaQuR){
-	set_up_total_mining_test("G(c & !a -> (!b W (d | a)))","/home/clemieux/workspace/texada/Texada/traces/vary-invs-fixed2/log-25000_invs-5.txt");
+	set_up_total_mining_test("G(c & !a -> (!b W (d | a)))",texada_base + "/traces/vary-invs-fixed2/log-25000_invs-5.txt");
 }
 TEST(TotalMiningNumInvsTest,7SpPaQuR){
-	set_up_total_mining_test("G(c & !a -> (!b W (d | a)))","/home/clemieux/workspace/texada/Texada/traces/vary-invs-fixed2/log-25000_invs-6.txt");
+	set_up_total_mining_test("G(c & !a -> (!b W (d | a)))",texada_base + "/traces/vary-invs-fixed2/log-25000_invs-6.txt");
 }
 TEST(TotalMiningNumInvsTest,8SpPaQuR){
-	set_up_total_mining_test("G(c & !a -> (!b W (d | a)))","/home/clemieux/workspace/texada/Texada/traces/vary-invs-fixed2/log-25000_invs-7.txt");
+	set_up_total_mining_test("G(c & !a -> (!b W (d | a)))",texada_base + "/traces/vary-invs-fixed2/log-25000_invs-7.txt");
 }
 TEST(TotalMiningNumInvsTest,9SpPaQuR){
-	set_up_total_mining_test("G(c & !a -> (!b W (d | a)))","/home/clemieux/workspace/texada/Texada/traces/vary-invs-fixed2/log-25000_invs-8.txt");
+	set_up_total_mining_test("G(c & !a -> (!b W (d | a)))",texada_base + "/traces/vary-invs-fixed2/log-25000_invs-8.txt");
 
 }
 TEST(TotalMiningNumInvsTest,13SpPaQuR){
-	set_up_total_mining_test("G(c & !a -> (!b W (d | a)))","/home/clemieux/workspace/texada/Texada/traces/vary-invs-fixed2/log-25000_invs-12.txt");
+	set_up_total_mining_test("G(c & !a -> (!b W (d | a)))",texada_base + "/traces/vary-invs-fixed2/log-25000_invs-12.txt");
 }
 TEST(TotalMiningNumInvsTest,16SpPaQuR){
-	set_up_total_mining_test("G(c & !a -> (!b W (d | a)))","/home/clemieux/workspace/texada/Texada/traces/vary-invs-fixed2/log-25000_invs-15.txt");
+	set_up_total_mining_test("G(c & !a -> (!b W (d | a)))",texada_base + "/traces/vary-invs-fixed2/log-25000_invs-15.txt");
 }
 TEST(TotalMiningNumInvsTest,19SpPaQuR){
-	set_up_total_mining_test("G(c & !a -> (!b W (d | a)))","/home/clemieux/workspace/texada/Texada/traces/vary-invs-fixed2/log-25000_invs-18.txt");
+	set_up_total_mining_test("G(c & !a -> (!b W (d | a)))",texada_base + "/traces/vary-invs-fixed2/log-25000_invs-18.txt");
 }
 TEST(TotalMiningNumInvsTest,22SpPaQuR){
-	set_up_total_mining_test("G(c & !a -> (!b W (d | a)))","/home/clemieux/workspace/texada/Texada/traces/vary-invs-fixed2/log-25000_invs-21.txt");
+	set_up_total_mining_test("G(c & !a -> (!b W (d | a)))",texada_base + "/traces/vary-invs-fixed2/log-25000_invs-21.txt");
 }
 TEST(TotalMiningNumInvsTest,25SpPaQuR){
-	set_up_total_mining_test("G(c & !a -> (!b W (d | a)))","/home/clemieux/workspace/texada/Texada/traces/vary-invs-fixed2/log-25000_invs-24.txt");
+	set_up_total_mining_test("G(c & !a -> (!b W (d | a)))",texada_base + "/traces/vary-invs-fixed2/log-25000_invs-24.txt");
 }
 TEST(TotalMiningNumInvsTest,28SpPaQuR){
-	set_up_total_mining_test("G(c & !a -> (!b W (d | a)))","/home/clemieux/workspace/texada/Texada/traces/vary-invs-fixed2/log-25000_invs-27.txt");
+	set_up_total_mining_test("G(c & !a -> (!b W (d | a)))",texada_base + "/traces/vary-invs-fixed2/log-25000_invs-27.txt");
 }
 TEST(TotalMiningNumInvsTest,31SpPaQuR){
-	set_up_total_mining_test("G(c & !a -> (!b W (d | a)))","/home/clemieux/workspace/texada/Texada/traces/vary-invs-fixed2/log-25000_invs-30.txt");
+	set_up_total_mining_test("G(c & !a -> (!b W (d | a)))",texada_base + "/traces/vary-invs-fixed2/log-25000_invs-30.txt");
 }
 TEST(TotalMiningNumInvsTest,34SpPaQuR){
-	set_up_total_mining_test("G(c & !a -> (!b W (d | a)))","/home/clemieux/workspace/texada/Texada/traces/vary-invs-fixed2/log-25000_invs-33.txt");
+	set_up_total_mining_test("G(c & !a -> (!b W (d | a)))",texada_base + "/traces/vary-invs-fixed2/log-25000_invs-33.txt");
 }
 TEST(TotalMiningNumInvsTest,37SpPaQuR){
-	set_up_total_mining_test("G(c & !a -> (!b W (d | a)))","/home/clemieux/workspace/texada/Texada/traces/vary-invs-fixed2/log-25000_invs-36.txt");
+	set_up_total_mining_test("G(c & !a -> (!b W (d | a)))",texada_base + "/traces/vary-invs-fixed2/log-25000_invs-36.txt");
 
 }
 */
