@@ -14,12 +14,11 @@
 namespace texada {
 
 array_trace_checker::array_trace_checker() {
-	// TODO Auto-generated constructor stub
 
 }
 
 array_trace_checker::~array_trace_checker() {
-	// TODO Auto-generated destructor stub
+
 }
 
 /**
@@ -239,14 +238,16 @@ bool array_trace_checker::check(const spot::ltl::unop *node,  const string_event
 
 	// Next case
 	case spot::ltl::unop::X:
-		// TODO: It's actually really tricky to know what to put in the end case.
-		// e.g. the Alternating Pattern: (!S W P) & (P ->X(!P U S) & S->X(!S W P))
-		// in the case that the last event is P, we'd want to return false overall.
-		// (e.g. PSPSPSPSPSP)
-		// however in the case that the last event is S, we want to return true
-		// overall. (e.g. PSPSPSPSPS)
-		// Making the base case the same as the other one seems to make it work.
-		// ....for the case above. but this is still some weird stuff.
+		// Here we are effectively extending the end of the trace into an infinite
+		// sequence of terminal variables.
+		// We will never go past the end of the array:
+		// if node->child() or any subsequent child is a propositional logic
+		// operation, constant or atomic proposition, we don't advance to trace+1.
+		// if node->child() or any subsequent child is F, G, U, R or W then
+		// the first base case (if (trace[0].is_terminal())) is evaluated
+		// and a boolean is returned
+		// if node->child() or any subsequent child is X, we enter the base case
+		// below, remaining in the array.
 		if (trace[0].is_terminal()){
 			return check(node->child(), trace);
 		}
