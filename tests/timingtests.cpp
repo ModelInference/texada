@@ -216,8 +216,8 @@ TEST(TimingFormulaLengthTest, MultiEffect){
 TEST(TimingFormulaLengthTest,Alternating){
 	std::cout << set_up_form_length_2("(!bWa)&(G((a->X(!aUb))&(b->X(!bUa))))")	<< "\n";
 
-}
-*/
+}*/
+
 double set_up_variable_num(std::string input, int k){
 	//set up the AFby formula:
 	spot::ltl::parse_error_list pel;
