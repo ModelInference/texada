@@ -42,53 +42,16 @@ endif
 # Add inputs and outputs from these tool invocations to the build variables 
 
 CPP_SRCS += \
-./src/arrayinstantiator.cpp \
-./src/arraytracechecker.cpp \
-./src/formulainstantiator.cpp \
-./src/formulatracechecker.cpp \
-./src/stringevent.cpp \
-./src/simpleparser.cpp \
-./src/propertytypeminer.cpp \
-./tests/arrayinstantiator_test.cpp \
-./tests/arraytracechecker_test.cpp \
-./tests/formulainstantiator_test.cpp \
-./tests/formulatracechecker_test.cpp \
-./tests/simpleparser_test.cpp \
-./tests/propertytypeminer_test.cpp \
-./tests/timingtests.cpp 
+./src/*.cpp \
+./tests/*.cpp 
 
 OBJS += \
-./bin/src/arrayinstantiator.o \
-./bin/src/arraytracechecker.o \
-./bin/src/formulainstantiator.o \
-./bin/src/formulatracechecker.o \
-./bin/src/stringevent.o \
-./bin/src/simpleparser.o \
-./bin/src/propertytypeminer.o \
-./bin/tests/arrayinstantiator_test.o \
-./bin/tests/arraytracechecker_test.o \
-./bin/tests/formulainstantiator_test.o \
-./bin/tests/formulatracechecker_test.o \
-./bin/tests/simpleparser_test.o \
-./bin/tests/propertytypeminer_test.o \
-./bin/tests/timingtests.o
+./bin/src/*.o \
+./bin/tests/*.o 
 
 CPP_DEPS += \
-./bin/src/arrayinstantiator.d \
-./bin/src/arraytracechecker.d \
-./bin/src/formulainstantiator.d \
-./bin/src/formulatracechecker.d \
-./bin/src/stringevent.d \
-./bin/src/simpleparser.d \
-./bin/src/propertytypeminer.d \
-./bin/tests/arrayinstantiator_test.d \
-./bin/tests/arraytracechecker_test.d \
-./bin/tests/formulainstantiator_test.d \
-./bin/tests/formulatracechecker_test.d \
-./bin/tests/simpleparser_test.d \
-./bin/tests/propertytypeminer_test.d \
-./bin/tests/timingtests.d
-
+./bin/src/*.d \
+./bin/tests/*.d
 
 # All Target
 all: Texada

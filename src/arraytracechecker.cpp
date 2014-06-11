@@ -33,7 +33,7 @@ array_trace_checker::~array_trace_checker() {
 bool array_trace_checker::check(const spot::ltl::formula* node, const string_event *trace){
 	switch (node->kind()){
 	case spot::ltl::formula::Constant:
-		return check(static_cast<const spot::ltl::unop*>(node), trace);
+		return check(static_cast<const spot::ltl::constant*>(node), trace);
 	case spot::ltl::formula::AtomicProp:
 		return check(static_cast<const spot::ltl::atomic_prop*>(node),trace);
 	case spot::ltl::formula::UnOp:
