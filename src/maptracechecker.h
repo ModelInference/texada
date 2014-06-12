@@ -15,6 +15,11 @@
 
 namespace texada {
 
+/**
+ * Class to check whether an LTL formula holds on a trace in the form of a map.
+ * Note that this class uses LONG_MAX as infinity. Once we get to traces that
+ * are longer than that, all the long will have to be change to long long.
+ */
 class map_trace_checker {
 public:
 	map_trace_checker(std::map<string_event,std::vector<long>>);
@@ -24,6 +29,12 @@ public:
 		long start = 0;
 		long end = LONG_MAX;
 	};
+	/**
+	 * This class uses relative positions to check to occurrence of events. As
+	 * such, it has three extra groups of functions: find first, last and all
+	 * occurrence(s). These take in the formula and an interval and first the
+	 * first, last or all occurrence(s) of the formula in that interval.
+	 */
 private:
 	std::map<string_event,std::vector<long>> trace_map;
 	bool check(const spot::ltl::formula *, interval);
@@ -32,8 +43,30 @@ private:
 	bool check(const spot::ltl::unop *, interval);
 	bool check(const spot::ltl::multop *, interval);
 	bool check(const spot::ltl::binop *, interval);
+
+	long find_first_occurrence(const spot::ltl::formula*, interval);
+	long find_first_occurrence(const spot::ltl::multop*, interval);
+	long find_first_occurrence(const spot::ltl::unop*, interval);
+	long find_first_occurrence(const spot::ltl::constant*, interval);
+	long find_first_occurrence(const spot::ltl::binop*, interval);
+	// on atomic prop is public right now
+
+	long find_last_occurrence(const spot::ltl::formula*, interval);
+	long find_last_occurrence(const spot::ltl::atomic_prop*, interval);
+	long find_last_occurrence(const spot::ltl::multop*, interval);
+	long find_last_occurrence(const spot::ltl::unop*, interval);
+	long find_last_occurrence(const spot::ltl::constant*, interval);
+	long find_last_occurrence(const spot::ltl::binop*, interval);
+
+	std::vector<long> find_all_occurrence(const spot::ltl::formula*, interval);
+	std::vector<long> find_all_occurrence(const spot::ltl::atomic_prop*, interval);
+	std::vector<long> find_all_occurrence(const spot::ltl::multop*, interval);
+	std::vector<long> find_all_occurrence(const spot::ltl::unop*, interval);
+	std::vector<long> find_all_occurrence(const spot::ltl::constant*, interval);
+	std::vector<long> find_all_occurrence(const spot::ltl::binop*, interval);
+
     /**
-     * both the next types are not supported.
+     * automatop and bunop are not supported.
      */
     bool check(const spot::ltl::automatop* node) {
     	std::cerr << "Type automatop unsupported. \n";
@@ -42,10 +75,26 @@ private:
     bool check(const spot::ltl::bunop* node) {
     	std::cerr << "Type bunop unsupported. \n";
     	return false;
-    };
-	long find_first_occurrence(const spot::ltl::formula*, interval);
-	long find_first_occurrence(const spot::ltl::multop*, interval);
-	long find_first_occurrence(const spot::ltl::unop*, interval);
+    }
+	long find_first_occurrence(const spot::ltl::automatop*){
+    	std::cerr << "Type automatop unsupported. \n";
+    	    	return -1;
+    }
+	long find_first_occurrence(const spot::ltl::bunop*){
+    	std::cerr << "Type bunop unsupported. \n";
+    	    	return -1;
+    }
+
+	std::vector<long> find_all_occurrence(const spot::ltl::automatop*){
+    	std::cerr << "Type automatop unsupported. \n";
+    	std::vector<long> blank_vec;
+    	return blank_vec;
+    }
+	std::vector<long> find_all_occurrence(const spot::ltl::bunop*){
+    	std::cerr << "Type bunop unsupported. \n";
+    	std::vector<long> blank_vec;
+    	return blank_vec;
+    }
 
 public:
 	long find_first_occurrence(const spot::ltl::atomic_prop*,interval);

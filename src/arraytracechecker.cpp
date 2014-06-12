@@ -144,7 +144,7 @@ bool array_trace_checker::check(const spot::ltl::binop *node, const string_event
 			return check(node,trace+1);
 		}
 
-	//Until case
+	//Release case
 	case spot::ltl::binop::R:
 		//if we get here, second always held: true
 		if (trace[0].is_terminal()){
