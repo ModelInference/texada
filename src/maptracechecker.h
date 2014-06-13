@@ -85,6 +85,15 @@ private:
     	    	return -1;
     }
 
+	long find_last_occurrence(const spot::ltl::automatop*){
+    	std::cerr << "Type automatop unsupported. \n";
+    	    	return -1;
+    }
+	long find_last_occurrence(const spot::ltl::bunop*){
+    	std::cerr << "Type bunop unsupported. \n";
+    	    	return -1;
+    }
+
 	std::vector<long> find_all_occurrence(const spot::ltl::automatop*){
     	std::cerr << "Type automatop unsupported. \n";
     	std::vector<long> blank_vec;
