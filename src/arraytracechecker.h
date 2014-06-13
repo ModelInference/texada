@@ -25,7 +25,7 @@ public:
 	virtual ~array_trace_checker();
 
 	bool check(const spot::ltl::formula* node, const string_event *trace);
-
+private:
     bool check(const spot::ltl::atomic_prop* node, const string_event *trace);
     bool check(const spot::ltl::constant* node, const string_event *trace);
     bool check(const spot::ltl::binop* node, const string_event *trace);
@@ -42,7 +42,7 @@ public:
     bool check(const spot::ltl::bunop* node) {
     	std::cerr << "Type bunop unsupported. \n";
     	return false;
-    };
+    }
 
 };
 

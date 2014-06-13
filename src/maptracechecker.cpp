@@ -7,6 +7,7 @@
 
 #include "maptracechecker.h"
 #include <ltlvisit/nenoform.hh>
+#include <algorithm>
 
 namespace texada {
 
@@ -440,7 +441,7 @@ long map_trace_checker::find_first_occurrence(const spot::ltl::multop* node, int
 		}
 
 		// And case:
-		// TODO: THIS IS WRONG. FIX THIS
+		// TODO: This may be wrong. Check again.
 		case spot::ltl::multop::And:{
 			int numkids = node->size();
 			long total_max_occurrence = -1;
@@ -448,17 +449,19 @@ long map_trace_checker::find_first_occurrence(const spot::ltl::multop* node, int
 			// in the first if statement and return -1: else we find
 			// the last first occurrence, since this is the only possible
 			// place where all events can occur
-			for (int i =0; i<numkids ; i++){
-				long first_occ =find_first_occurrence(node->nth(i), intvl);
-				if ( first_occ == -1){
-					return first_occ;
-				} else if (first_occ > total_max_occurrence){
-					total_max_occurrence = first_occ;
+			std::vector<long> child_occs = find_all_occurrence(node->nth(0),intvl);
+			std::list<long> common_occs (child_occs.begin(), child_occs.end());
+			for (int i =1; i<numkids ; i++){
+				child_occs = find_all_occurrence(node->nth(i),intvl);
+				for(std::list<long>::iterator it = common_occs.begin(); it != common_occs.end(); it++){
+					if (!(std::binary_search(child_occs.begin(),child_occs.end(),*it))){
+						common_occs.erase(it);
+					}
 				}
+				if (common_occs.size() == 0) break;
 			}
-			// now we check if all the events hold at the possible
-			// first occurrence; if they do not, return false
-			return -1;
+			if (common_occs.size() == 0) return -1;
+			else return (*common_occs.begin());
 
 		}
 		default:
@@ -612,7 +615,7 @@ long map_trace_checker::find_last_occurrence(const spot::ltl::binop* node, inter
 	return -1;
 }
 
-
+//TODO: MAKE SURE ALL THESE ARE IN SORTED ORDER PLEASE
 /**
  * Finds all occurrences of a formula in a given interval. Switch
  * method to helper functions.

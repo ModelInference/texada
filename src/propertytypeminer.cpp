@@ -6,14 +6,18 @@
  */
 
 #include "propertytypeminer.h"
+
 #include <fstream>
+
 #include <ltlparse/public.hh>
-#include "simpleparser.h"
 #include <ltlvisit/apcollect.hh>
+#include <ltlvisit/tostring.hh>
+
+#include "simpleparser.h"
 #include "arrayinstantiator.h"
 #include "formulatracechecker.h"
 #include "formulainstantiator.h"
-#include "ltlvisit/tostring.hh"
+
 
 namespace texada {
 
