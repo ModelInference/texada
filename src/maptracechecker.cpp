@@ -12,7 +12,6 @@
 #include <deque>
 
 
-//TODO: turns out I had the negative normal form wrong. See line 529.
 
 namespace texada {
 
@@ -114,6 +113,7 @@ bool map_trace_checker::check(const spot::ltl::unop* node, interval intvl){
 		// Globally case
 		case spot::ltl::unop::G:{
 			long first_occ = find_first_occurrence(spot::ltl::negative_normal_form(node->child(),true), intvl);
+			std::cout << "The first occurrence was " << first_occ << "\n";
 			if (first_occ == -1) return true;
 			else return false;
 		}
@@ -461,6 +461,7 @@ long map_trace_checker::find_first_occurrence(const spot::ltl::multop* node, int
 		// occurrence of all the children.
 		case spot::ltl::multop::And:{
 			std::vector<long> common_occs = find_all_occurrence(node, intvl);
+			std::cout << common_occs.size()<<"Are we finding the first occurrence? \n";
 			if (common_occs.size() == 0) return -1;
 			else return (*common_occs.begin());
 
@@ -526,7 +527,6 @@ long map_trace_checker::find_first_occurrence(const spot::ltl::unop* node, inter
 	// be after that.
 	case spot::ltl::unop::G:{
 		long last_neg_occ = find_last_occurrence(spot::ltl::negative_normal_form(node->child(),true),intvl);
-		std::cout << "The last occurrence of "<< to_string(spot::ltl::negative_normal_form(node->child(),false)) << " was" << last_neg_occ << "\n";
 		if (last_neg_occ == -1) return intvl.start;
 		if (last_neg_occ == intvl.end) return -1;
 		else return ++last_neg_occ;
@@ -1154,6 +1154,13 @@ std::vector<long> map_trace_checker::find_all_occurrence(const spot::ltl::multop
 			for (int i =1; i<numkids ; i++){
 				std::cout << "Do we enter the and loop \n";
 				child_occs = find_all_occurrence(node->nth(i),intvl);
+				if (child_occs.size() == 0) {
+					common_occs.empty();
+					std::vector<long> blank_vec;
+					return blank_vec;
+					//TODO: apply what I learned here to all other cases.
+				}
+				std::cout << "Size of child_occs: " << child_occs.size() << "\n";
 				for(std::list<long>::iterator it = common_occs.begin(); it != common_occs.end(); it++){
 					if (!(std::binary_search(child_occs.begin(),child_occs.end(),*it))){
 						common_occs.erase(it);

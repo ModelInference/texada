@@ -95,5 +95,5 @@ TEST(MapCheckerTest,AFby){
 
 	texada::map_trace_checker checker = texada::map_trace_checker(trace_map);
 
-	std::cout << checker.check_on_trace(f);
+	std::cout << "so we have... " << checker.check_on_trace(f);
 }
