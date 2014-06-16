@@ -7,7 +7,12 @@
 
 #include "maptracechecker.h"
 #include <ltlvisit/nenoform.hh>
+#include <ltlvisit/tostring.hh>
 #include <algorithm>
+#include <deque>
+
+
+//TODO: turns out I had the negative normal form wrong. See line 529.
 
 namespace texada {
 
@@ -27,6 +32,8 @@ map_trace_checker::~map_trace_checker() {
  */
 bool map_trace_checker::check_on_trace(const spot::ltl::formula* node){
 	interval base_interval;
+	std::vector<long> end_vector = trace_map.at(texada::string_event("EndOfTraceVar",true));
+	base_interval.end = end_vector[0] -1;
 	return check(node, base_interval);
 
 }
@@ -319,6 +326,8 @@ long map_trace_checker::find_first_occurrence(const spot::ltl::formula* node,int
  */
 long map_trace_checker::find_first_occurrence(const spot::ltl::atomic_prop* node,interval intvl){
 	// REQUIRES: to_search is sorted. this should be assured earlier on.
+	std::cout << "in find_first_occ, for " <<node->name() << " over: " <<
+			intvl.start << "-" << intvl.end <<".\n";
 	std::vector<long> to_search = trace_map.at(string_event(node->name(),false));
 	long left = 0;
 	long right = to_search.size();
@@ -477,6 +486,7 @@ long map_trace_checker::find_first_occurrence(const spot::ltl::unop* node, inter
 	//Ideally everything should be in negative normal form so this only runs on
 	//individual events, in which case the recursion should not be too brutal.
 	case spot::ltl::unop::Not:{
+		std::cout << "Did we call not? \n";
 		long first_true = find_first_occurrence(node->child(),intvl);
 		// if the expression in the not never occurs or first occurs
 		// after the first element, then the first not occurrence is
@@ -516,6 +526,7 @@ long map_trace_checker::find_first_occurrence(const spot::ltl::unop* node, inter
 	// be after that.
 	case spot::ltl::unop::G:{
 		long last_neg_occ = find_last_occurrence(spot::ltl::negative_normal_form(node->child(),true),intvl);
+		std::cout << "The last occurrence of "<< to_string(spot::ltl::negative_normal_form(node->child(),false)) << " was" << last_neg_occ << "\n";
 		if (last_neg_occ == -1) return intvl.start;
 		if (last_neg_occ == intvl.end) return -1;
 		else return ++last_neg_occ;
@@ -556,9 +567,10 @@ long map_trace_checker::find_first_occurrence(const spot::ltl::binop* node, inte
 		else if (first_occ_second == -1) return first_occ_first;
 		else if (first_occ_first < first_occ_second) return first_occ_first;
 		else if (first_occ_first > first_occ_second) return first_occ_second;
-		else if (intvl.start>= intvl.end) return -1;
+		// at this point we know first and second are equal.
+		else if (first_occ_second == intvl.end) return -1;
 		else {
-			intvl.start++;
+			intvl.start= first_occ_second + 1;
 			return find_first_occurrence(node,intvl);
 		}
 	}
@@ -728,13 +740,18 @@ long map_trace_checker::find_last_occurrence(const spot::ltl::formula* node, int
  */
 long map_trace_checker::find_last_occurrence(const spot::ltl::atomic_prop* node, interval intvl){
 	// REQUIRES: to_search is sorted. this should be assured earlier on.
+		std::cout << "in find_last_occ, for " <<node->name() << " over: " <<
+				intvl.start << "-" << intvl.end <<".\n";
 		std::vector<long> to_search = trace_map.at(string_event(node->name(),false));
+
 		long left = 0;
-		long right = to_search.size();
+		long right = to_search.size() - 1;
 		long newpos;
 		while (true){
 			newpos = (right + left ) / 2;
+			std::cout << newpos << "\n";
 			if (to_search[newpos] > intvl.end){
+
 				// case where all is to the left
 				if (newpos == 0) {
 					return -1;
@@ -755,10 +772,14 @@ long map_trace_checker::find_last_occurrence(const spot::ltl::atomic_prop* node,
 			}
 			// else to_search[newpos]<intvl.end
 			else{
+				std:: cout << "Do we get into the else \n";
 				// if it's the last element
 				if (newpos >= to_search.size() -1) {
+					std::cout << "are we at the last element \n";
 					// and it's larger than the start, then it's the last event
-					if (to_search[newpos]>= intvl.start) {return to_search[newpos];}
+					if (to_search[newpos]>= intvl.start) {
+						std::cout << "We're returning " << to_search[newpos] << "\n";
+						return to_search[newpos];}
 					// else if it's smaller than the start, it's not in the interval
 					else {return -1;}
 				}
@@ -813,8 +834,60 @@ long map_trace_checker::find_last_occurrence(const spot::ltl::multop* node, inte
  * @return last occurrence of node in intvl, -1 if not found.
  */
 long map_trace_checker::find_last_occurrence(const spot::ltl::unop* node, interval intvl){
-	//TODO:FINISH
-	return -1;
+	spot::ltl::unop::type optype = node->op();
+
+		switch (optype){
+
+		// Not case: find the last occurrence of the child in the interval.
+		// If the child is the last event and the interval is one long, then
+		// we never have not child. If it's the last event in a longer intvl,
+		// we can check for the second-last event by reducing the interval
+		// length at the back.
+		// Otherwise, if the last occurrence of the child is not the last
+		// event, then the last event is the last negation.
+		case spot::ltl::unop::Not:{
+			long last_child = find_last_occurrence(node->child(),intvl);
+			if (last_child == intvl.end){
+				if (intvl.start == intvl.end) return -1;
+				else{
+					intvl.end--;
+					return find_last_occurrence(node,intvl);
+				}
+			}
+			else return intvl.end;
+		}
+
+		// Next case: find the last occurrence of the next (P). If P never
+		// occurs, neither does XP. If the last occurrence of P is the first
+		// event in an interval, then XP does not occur on that interval.
+		// Any other last value is valid.
+		case spot::ltl::unop::X:{
+			long last_operand = find_last_occurrence(node->child(),intvl);
+			if (last_operand == -1) return -1;
+			if (last_operand ==  intvl.start) return -1;
+			else return --last_operand;
+		}
+
+		// Globally case: find the last occurrence of the negation of the
+		// child. If this last occurrence is the last event, we never
+		// have G. In any other case, the last event is the last appearance of G.
+		case spot::ltl::unop::G:{
+			long last_neg_child = find_last_occurrence(spot::ltl::negative_normal_form(node->child(),true),intvl);
+			if (last_neg_child == intvl.end) return -1;
+			else return intvl.end;
+		}
+
+		// Finally case: the last occurrence of the child. This is the last
+		// occurrence of "eventually".
+		case spot::ltl::unop::F:
+			return find_last_occurrence(node->child(),intvl);
+
+
+		default:
+			std::cerr << "Unsupported unary operator. Returning -1. \n";
+			return -1;
+
+		}
 }
 
 /**
@@ -844,7 +917,131 @@ long map_trace_checker::find_last_occurrence(const spot::ltl::constant* node, in
  * @return last occurrence of node in intvl
  */
 long map_trace_checker::find_last_occurrence(const spot::ltl::binop* node, interval intvl){
-	//TODO:FINISH
+	spot::ltl::binop::type opkind = node->op();
+
+		switch(opkind){
+
+		// Xor case: if both lasts are at the same location, we have a problem.
+		// If they are at the same location in a one unit interval, XOR does not
+		// occur. Else we know last_second is greater than the start of the
+		// interval, so we can set the end of the interval to right
+		// before the double occurrence correctly.
+		// Else we know they do not occur at the same spot so we return the
+		// one that occurs later.
+		case spot::ltl::binop::Xor:{
+			long last_first = find_last_occurrence(node->first(),intvl);
+			long last_second = find_last_occurrence(node->second(),intvl);
+			if (last_second == last_first){
+				if (last_second == -1) return -1;
+				if (last_second == intvl.start) return -1;
+				else {
+					intvl.end = last_second -1;
+					return find_last_occurrence(node,intvl);
+				}
+			}
+			if (last_second > last_first) return last_second;
+			else return last_first;
+		}
+
+		// Return the last negation of the first or occurrence of the last.
+		// If they are both equal to -1, then the last else will be entered
+		// and -1 will be returned.
+		case spot::ltl::binop::Implies:{
+			long last_neg_first = find_last_occurrence(spot::ltl::negative_normal_form(node->first(),true),intvl);
+			long last_second = find_last_occurrence(node->second(),intvl);
+			if (last_neg_first >last_second) return last_neg_first;
+			else return last_second;
+		}
+
+		// Equiv case: if both are equal, then the last occurrence is at
+		// the end (we know that at the end, there is not only one of
+		// first or second occurring)
+		// Else we just step by 1 because the event before the last could
+		// have neither the first nor the second, thus be an occurrence
+		// of equiv
+		case::spot::ltl::binop::Equiv:{
+			long last_first = find_last_occurrence(node->first(),intvl);
+			long last_second = find_last_occurrence(node->second(),intvl);
+			if (last_first == last_second) return intvl.end;
+			else if (last_first == intvl.end || last_second == intvl.end){
+				if (intvl.end == intvl.start) return -1;
+				else {
+					intvl.end--;
+					return find_last_occurrence(node,intvl);
+				}
+
+			}
+			else return intvl.end;
+
+		}
+
+		// Note that p U q -> <>q, so we need only find the last occurrence
+		// of q to find the last occurrence of p U q. (And if it never occurs,
+		// neither does the until.
+		case::spot::ltl::binop::U:{
+			return find_last_occurrence(node->second(),intvl);
+		}
+
+		// Similar to until, but if the last event does not violate the first,
+		// then the last event is the last occurrence.
+		case::spot::ltl::binop::W:{
+			interval temp;
+			temp.start = intvl.end;
+			temp.end = intvl.end;
+			if (check(node->first(), temp)){
+				return intvl.end;
+			}
+			else return find_last_occurrence(node->second(),intvl);
+		}
+
+		// Release case: q R p
+		// if the last is p, then that is the last occurrence.
+		// else we must find the last occurrence of q -- if it
+		// does not occur then we return -1. Id p holds at that
+		// last occurrence, then that is the last occurrence
+		// of the release -- else we need to check for the
+		// next las occurrence.
+		case::spot::ltl::binop::R:{
+			interval temp;
+			temp.start = intvl.end;
+			temp.end = intvl.end;
+			if (check(node->second(), temp)){
+				return temp.end;
+			}
+			long last_occ_first = find_last_occurrence(node->first(),intvl);
+			if (last_occ_first == -1) return -1;
+			temp.start = last_occ_first;
+			temp.end = last_occ_first;
+			if (check (node->second(),temp)){
+				return temp.end;
+			}
+			else if (last_occ_first == intvl.start) return -1;
+			else {
+				intvl.end = last_occ_first - 1;
+				return find_last_occurrence(node,intvl);
+			}
+
+		}
+
+		// Same as weak release, but we don't consider whether the last
+		// element is p, as that is not valid for strong release.
+		case::spot::ltl::binop::M:{
+			interval temp;
+			long last_occ_first = find_last_occurrence(node->first(),intvl);
+			if (last_occ_first == -1) return -1;
+			temp.start = last_occ_first;
+			temp.end = last_occ_first;
+			if (check (node->second(),temp)){
+				return temp.end;
+			}
+			else if (last_occ_first == intvl.start) return -1;
+			else {
+				intvl.end = last_occ_first - 1;
+				return find_last_occurrence(node,intvl);
+			}
+		}
+
+		}
 	return -1;
 }
 
@@ -886,6 +1083,7 @@ std::vector<long> map_trace_checker::find_all_occurrence(const spot::ltl::formul
  */
 std::vector<long> map_trace_checker::find_all_occurrence(const spot::ltl::atomic_prop* node, interval intvl){
 	//TODO:FINISH... make sure bounds are correct and stuff....
+	std::cout << "In find all occurrence \n";
 	std::vector<long> to_search = trace_map.at(string_event(node->name(),false));
 	long first_element = find_first_occurrence(node, intvl);
 	long last_element = find_last_occurrence(node,intvl);
@@ -893,21 +1091,29 @@ std::vector<long> map_trace_checker::find_all_occurrence(const spot::ltl::atomic
 	int left = 0;
 	int right = to_search.size()-1;
 	int probe = (left+right)/2;
+	std::cout << "probe: " << probe << ".\n";
 	while (true){
+		std::cout << "In the loop \n";
 		probe = (left+right)/2;
+		std::cout << "probe: " << probe << ".\n";
 		if (to_search.at(probe)==first_element){
+			std::cout << "In the first if \n";
 			break;
 		}
 		if (to_search.at(probe)<first_element){
+			std::cout << "In the second if \n";
 			left = probe + 1;
 			continue;
 		}
 		if (to_search.at(probe)>first_element){
+			std::cout << "In the third if \n";
 			right = probe - 1;
 			continue;
 		}
 	}
-	for (int i=0; to_search.at(probe + i)<= last_element; i++){
+	for (int i=0; i < to_search.size(); i++){
+		std::cout << "probe: " << probe + i << ".\n";
+		if (to_search.at(probe + i)> last_element) break;
 		ret_vec.push_back(to_search.at(probe+i));
 	}
 
@@ -921,9 +1127,10 @@ std::vector<long> map_trace_checker::find_all_occurrence(const spot::ltl::atomic
  */
 std::vector<long> map_trace_checker::find_all_occurrence(const spot::ltl::multop* node, interval intvl){
 	spot::ltl::multop::type opkind = node->op();
+	std::cout << "Do we get into multop find all \n";
 	std::vector<long> blank_vec;
 		switch(opkind){
-		// Or case: for each child, find all occurences, and insert into a set
+		// Or case: for each child, find all occurrences, and insert into a set
 		// of all occurrences, which will be returned.
 		case spot::ltl::multop::Or:{
 			int numkids = node->size();
@@ -945,6 +1152,7 @@ std::vector<long> map_trace_checker::find_all_occurrence(const spot::ltl::multop
 			std::vector<long> child_occs = find_all_occurrence(node->nth(0),intvl);
 			std::list<long> common_occs (child_occs.begin(), child_occs.end());
 			for (int i =1; i<numkids ; i++){
+				std::cout << "Do we enter the and loop \n";
 				child_occs = find_all_occurrence(node->nth(i),intvl);
 				for(std::list<long>::iterator it = common_occs.begin(); it != common_occs.end(); it++){
 					if (!(std::binary_search(child_occs.begin(),child_occs.end(),*it))){
@@ -971,9 +1179,91 @@ std::vector<long> map_trace_checker::find_all_occurrence(const spot::ltl::multop
  * @return all occurrences of node in intvl
  */
 std::vector<long> map_trace_checker::find_all_occurrence(const spot::ltl::unop* node, interval intvl){
-	//TODO:FINISH
-	std::vector<long> blank_vec;
-	return blank_vec;
+	spot::ltl::unop::type optype = node->op();
+	std::vector<long> return_vec;
+
+		switch (optype){
+
+		// Again, as negatives are usually pushed in as negative normal form,
+		// this shouldn't be too awful...
+		// Not case: find all the nots, and not those.
+		// i begins at the start. We increment it by one and add it to return_vec
+		// until we reach an event in not_occs. At this point we set i to one
+		// beyond the event, and find the next event. Then we repeat the process.
+		// When we exit the loop, i will be one beyond the last event, but
+		// those occurrences of not i will not have been added, so we must
+		// do that after
+		case spot::ltl::unop::Not:{
+			std::vector<long> not_occs = find_all_occurrence(node->child(),intvl);
+			int i = intvl.start;
+			for(std::vector<long>::iterator it = not_occs.begin();
+					it != not_occs.end(); it++){
+				while (i<*it){
+					return_vec.push_back(i);
+					i++;
+				}
+				i = *it+1;
+			}
+			while (i<=intvl.end){
+				return_vec.push_back(i);
+				i++;
+			}
+			return return_vec;
+		}
+
+		// Find all occurrences of the child, one minus those. Unless it's the
+		// first event, in which case we skip it.
+		// return_vec will be ordered because find_all_occurrence should return
+		// an ordered vector.
+		case::spot::ltl::unop::X:{
+			std::vector<long> child_occs = find_all_occurrence(node->child(),intvl);
+			for (std::vector<long>::iterator it = child_occs.begin();
+					it != child_occs.end(); it++){
+				if (*it == intvl.start) continue;
+				return_vec.push_back(--*it);
+			}
+			return return_vec;
+		}
+
+		// Globally: By definition of G (P) as P holding on all suffix traces,
+		// all occurrences of globally will simply be from the first to the end.
+		// RETURN_VEC will be ordered because each subsequent i inserted
+		// is one larger than the one preceding it.
+		case spot::ltl::unop::G:{
+			std::cout<< "Finding all occurrence of the thing \n";
+			long first_occ = find_first_occurrence(node, intvl);
+			std::cout << "The first occurrence was..." << first_occ << "\n";
+			if (first_occ == -1) return return_vec;
+			else{
+				for (int i = first_occ; i<=intvl.end; i++){
+					std::cout << "Pushing back " << i <<"\n";
+					return_vec.push_back(i);
+				}
+				return return_vec;
+			}
+
+		}
+
+		// Eventually: Eventually holds until the last occurrence of its child,
+		// i.e. its last occurrence.
+		// RETURN_VEC will be ordered because each subsequent i inserted
+		// is one larger than the one preceding it.
+		case spot::ltl::unop::F:{
+			long last_occ = find_last_occurrence(node,intvl);
+			if (last_occ == -1) return return_vec;
+			else{
+				for (int i =intvl.start; i<=last_occ; i++){
+					return_vec.push_back(i);
+				}
+				return return_vec;
+			}
+		}
+
+		default:
+			std::cerr << "Unsupported unop. Returning empty vector. \n";
+			return return_vec;
+		}
+
 }
 
 /**
@@ -1010,8 +1300,61 @@ std::vector<long> map_trace_checker::find_all_occurrence(const spot::ltl::consta
  * @return all occurrences of node in intvl
  */
 std::vector<long> map_trace_checker::find_all_occurrence(const spot::ltl::binop* node, interval intvl){
-	//TODO:FINISH
-	std::vector<long> blank_vec;
-	return blank_vec;
-}
+	std::cout <<"Entered unfinished method \n";
+	spot::ltl::binop::type opkind = node->op();
+	std::vector<long> return_vec;
+
+		switch(opkind){
+
+		//Complicated, finish later
+		case spot::ltl::binop::Xor:{/*
+			std::vector<long> first_vec = find_all_occurrence(node->first(),intvl);
+			std::vector<long> second_vec = find_all_occurrence(node->second(),intvl);
+
+			//making sure neither are empty
+			if (first_vec.empty()) return second_vec;
+			else if (second_vec.empty()) return first_vec;
+
+			std::deque<long> first_q = std::deque<long>(first_vec.begin(),first_vec.end());
+			std::deque<long> second_q = std::deque<long>(second_vec.begin(),second_vec.end());
+
+			// setting these both to -1 will get them to be set correctly
+			// on first run through the loop....
+			long next_first = -1;
+			long next_second = -1;
+
+
+			while (!first_q.empty() && !second_q.empty()){
+				if (next_first == next_second){
+					next_first = first_q.pop_front();
+					next_second = second_q.pop_front();
+				}
+				else if (next_first < next_second){
+					return_vec.push_back(next_first);
+					next_first = first_q.pop_front();
+				}
+				else {
+					return_vec.push_back(next_second);
+					next_second = second_q.pop_front();
+				}
+			}
+
+			if (first_q.empty()){
+				if (next_first == next_second){
+
+				}
+			}
+
+
+		*/}
+
+		case::spot::ltl::binop::Implies:{
+
+		}
+
+		return return_vec;
+		}
+
+
+	}
 } /* namespace texada */

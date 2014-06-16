@@ -7,6 +7,7 @@
 
 #include "../src/maptracechecker.h"
 #include <gtest/gtest.h>
+#include <ltlparse/public.hh>
 #include <ltlenv/defaultenv.hh>
 #include <climits>
 
@@ -57,7 +58,7 @@ TEST(SearchCheckerTest,AtomicProp){
 	intvl.end = 2;
 	ASSERT_EQ(-1,checker.find_first_occurrence(aprop,intvl));
 
-	//First occurence is last
+	//First occurrence is last
 	intvl.start = 90;
 	intvl.end = LONG_MAX;
 	ASSERT_EQ(97,checker.find_first_occurrence(aprop,intvl));
@@ -73,3 +74,26 @@ TEST(SearchCheckerTest,AtomicProp){
 
 }
 
+TEST(MapCheckerTest,AFby){
+	std::map<texada::string_event, std::vector<long>> trace_map;
+	texada::string_event aevent = texada::string_event("a",false);
+	long aposns[] = {0,1};
+	std::vector<long> apos_vec (aposns, aposns + sizeof(aposns) / sizeof(long) );
+	trace_map.insert(std::pair<texada::string_event, std::vector<long>>(aevent,apos_vec));
+	texada::string_event bevent = texada::string_event("b",false);
+	long bposns[] = {2,3};
+	std::vector<long> bpos_vec (bposns, bposns + sizeof(bposns) / sizeof(long) );
+	trace_map.insert(std::pair<texada::string_event, std::vector<long>>(bevent,bpos_vec));
+	texada::string_event termvent = texada::string_event("EndOfTraceVar",true);
+	std::vector<long> tpos_vec;
+	tpos_vec.push_back(4);
+	trace_map.insert(std::pair<texada::string_event, std::vector<long>>(termvent,tpos_vec));
+
+	std::string input = "G(a->Fb)";
+	spot::ltl::parse_error_list pel;
+	const spot::ltl::formula* f = spot::ltl::parse(input, pel);
+
+	texada::map_trace_checker checker = texada::map_trace_checker(trace_map);
+
+	std::cout << checker.check_on_trace(f);
+}
