@@ -113,7 +113,6 @@ bool map_trace_checker::check(const spot::ltl::unop* node, interval intvl){
 		// Globally case
 		case spot::ltl::unop::G:{
 			long first_occ = find_first_occurrence(spot::ltl::negative_normal_form(node->child(),true), intvl);
-			std::cout << "The first occurrence was " << first_occ << "\n";
 			if (first_occ == -1) return true;
 			else return false;
 		}
@@ -127,9 +126,11 @@ bool map_trace_checker::check(const spot::ltl::unop* node, interval intvl){
 		// Next case
 		case spot::ltl::unop::X:{
 			if (intvl.start == intvl.end){
-				//TODO: something
-				std::cerr<< "Something is wrong here \n";
-				return false;
+				//TODO: tests for this
+				std::vector<long> lastevent = trace_map.at(string_event("EndOfTraceVar",true));
+				intvl.start=lastevent[0];
+				intvl.end=lastevent[0];
+				return check(node->child(),intvl);
 			}
 			intvl.start++;
 			return check(node->child(),intvl);
@@ -326,8 +327,6 @@ long map_trace_checker::find_first_occurrence(const spot::ltl::formula* node,int
  */
 long map_trace_checker::find_first_occurrence(const spot::ltl::atomic_prop* node,interval intvl){
 	// REQUIRES: to_search is sorted. this should be assured earlier on.
-	std::cout << "in find_first_occ, for " <<node->name() << " over: " <<
-			intvl.start << "-" << intvl.end <<".\n";
 	std::vector<long> to_search = trace_map.at(string_event(node->name(),false));
 	long left = 0;
 	long right = to_search.size();
@@ -473,7 +472,7 @@ long map_trace_checker::find_first_occurrence(const spot::ltl::multop* node, int
 				if (!check(node->nth(i),intvl)) {
 					if (intvl.start != intvl.end){
 						intvl.start++;
-						return find_last_occurrence(node,intvl);
+						return find_first_occurrence(node,intvl);
 					}
 					else return -1;
 				}
@@ -502,7 +501,6 @@ long map_trace_checker::find_first_occurrence(const spot::ltl::unop* node, inter
 	//Ideally everything should be in negative normal form so this only runs on
 	//individual events, in which case the recursion should not be too brutal.
 	case spot::ltl::unop::Not:{
-		std::cout << "Did we call not? \n";
 		long first_true = find_first_occurrence(node->child(),intvl);
 		// if the expression in the not never occurs or first occurs
 		// after the first element, then the first not occurrence is
@@ -755,8 +753,6 @@ long map_trace_checker::find_last_occurrence(const spot::ltl::formula* node, int
  */
 long map_trace_checker::find_last_occurrence(const spot::ltl::atomic_prop* node, interval intvl){
 	// REQUIRES: to_search is sorted. this should be assured earlier on.
-		std::cout << "in find_last_occ, for " <<node->name() << " over: " <<
-				intvl.start << "-" << intvl.end <<".\n";
 		std::vector<long> to_search = trace_map.at(string_event(node->name(),false));
 
 		long left = 0;
@@ -764,7 +760,6 @@ long map_trace_checker::find_last_occurrence(const spot::ltl::atomic_prop* node,
 		long newpos;
 		while (true){
 			newpos = (right + left ) / 2;
-			std::cout << newpos << "\n";
 			if (to_search[newpos] > intvl.end){
 
 				// case where all is to the left
@@ -787,13 +782,10 @@ long map_trace_checker::find_last_occurrence(const spot::ltl::atomic_prop* node,
 			}
 			// else to_search[newpos]<intvl.end
 			else{
-				std:: cout << "Do we get into the else \n";
 				// if it's the last element
 				if (newpos >= to_search.size() -1) {
-					std::cout << "are we at the last element \n";
 					// and it's larger than the start, then it's the last event
 					if (to_search[newpos]>= intvl.start) {
-						std::cout << "We're returning " << to_search[newpos] << "\n";
 						return to_search[newpos];}
 					// else if it's smaller than the start, it's not in the interval
 					else {return -1;}

@@ -10,6 +10,7 @@
 
 #include "stringevent.h"
 #include <set>
+#include <map>
 #include <vector>
 #include <iostream>
 
@@ -25,6 +26,7 @@ public:
 	simple_parser();
 	virtual ~simple_parser();
 	std::set<std::vector<string_event> > parse(std::ifstream &infile);
+	std::set<std::map<string_event,std::vector<long>>> parse_to_map(std::ifstream &infile);
 	/**
 	 * Returns set of events in a file if a file has been parsed,
 	 * else an empty set.

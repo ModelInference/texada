@@ -6,8 +6,11 @@
  */
 
 #include "../src/maptracechecker.h"
+#include "../src/simpleparser.h"
 #include <gtest/gtest.h>
 #include <ltlparse/public.hh>
+#include <ltlvisit/nenoform.hh>
+#include <ltlvisit/tostring.hh>
 #include <ltlenv/defaultenv.hh>
 #include <climits>
 
@@ -15,7 +18,7 @@
 /**
  * need both interval and find_first_occurence(const spot::ltl::atomic_prop*,interval) to be
  * public for this test to run
- */
+ *//*
 TEST(SearchCheckerTest,AtomicProp){
 
 	std::map<texada::string_event, std::vector<long>> trace_map;
@@ -72,9 +75,9 @@ TEST(SearchCheckerTest,AtomicProp){
 	intvl.end = 85;
 	ASSERT_EQ(-1,checker.find_first_occurrence(aprop,intvl));
 
-}
+}*/
 
-TEST(MapCheckerTest,AFby){
+TEST(MapCheckerTest,SmallTrace){
 	std::map<texada::string_event, std::vector<long>> trace_map;
 	texada::string_event aevent = texada::string_event("a",false);
 	long aposns[] = {0,1};
@@ -89,13 +92,113 @@ TEST(MapCheckerTest,AFby){
 	tpos_vec.push_back(4);
 	trace_map.insert(std::pair<texada::string_event, std::vector<long>>(termvent,tpos_vec));
 
-	std::string input = "G(a->Fb)";
-	spot::ltl::parse_error_list pel;
-	const spot::ltl::formula* f = spot::ltl::parse(input, pel);
+
+
 
 	texada::map_trace_checker checker = texada::map_trace_checker(trace_map);
+	spot::ltl::parse_error_list pel;
 
-	std::cout << "so we have... " << checker.check_on_trace(f);
+	/*
+	const spot::ltl::formula* test = spot::ltl::parse("a R b", pel);
+	const spot::ltl::formula* nf = spot::ltl::negative_normal_form(test,true);
+	std::cout << spot::ltl::to_string(nf) << "\n";*/
+
+	//tests for top level check.
+
+	std::string input = "G(a->Fb)";
+	const spot::ltl::formula* f = spot::ltl::parse(input, pel);
+	ASSERT_TRUE(checker.check_on_trace(f));
+
+	input = "a U b";
+	f = spot::ltl::parse(input,pel);
+	ASSERT_TRUE(checker.check_on_trace(f));
+
+	input = "a W b";
+	f = spot::ltl::parse(input,pel);
+	ASSERT_TRUE(checker.check_on_trace(f));
+
+	input = "b R a";
+	f = spot::ltl::parse(input,pel);
+	ASSERT_FALSE(checker.check_on_trace(f));
+
+	input = "b M a";
+	f = spot::ltl::parse(input,pel);
+	ASSERT_FALSE(checker.check_on_trace(f));
+
+	input = "b xor a";
+	f = spot::ltl::parse(input,pel);
+	ASSERT_TRUE(checker.check_on_trace(f));
+
+	input = "b <-> a";
+	f = spot::ltl::parse(input,pel);
+	ASSERT_FALSE(checker.check_on_trace(f));
+
+	input = "a -> b";
+	f = spot::ltl::parse(input,pel);
+	ASSERT_FALSE(checker.check_on_trace(f));
+
+	input = "a -> Fb";
+	f = spot::ltl::parse(input,pel);
+	ASSERT_TRUE(checker.check_on_trace(f));
+
+	input = "a | b";
+	f = spot::ltl::parse(input,pel);
+	ASSERT_TRUE(checker.check_on_trace(f));
+
+	input = "a & b";
+	f = spot::ltl::parse(input,pel);
+	ASSERT_FALSE(checker.check_on_trace(f));
+
+	input = "Fa";
+	f = spot::ltl::parse(input,pel);
+	ASSERT_TRUE(checker.check_on_trace(f));
+
+	input = "Xa";
+	f = spot::ltl::parse(input,pel);
+	ASSERT_TRUE(checker.check_on_trace(f));
+
+	input = "!b";
+	f = spot::ltl::parse(input,pel);
+	ASSERT_TRUE(checker.check_on_trace(f));
+
+	//tests for find_first_occ
+
+	// first occ next
+	input = "G(X!a)";
+	f = spot::ltl::parse(input,pel);
+	ASSERT_FALSE(checker.check_on_trace(f));
+
+	// first occ U
+	input = "G(!a R !b)";
+	f = spot::ltl::parse(input,pel);
+	ASSERT_FALSE(checker.check_on_trace(f));
+
+	//first occ W
+	input = "G(!a M !b)";
+	f = spot::ltl::parse(input,pel);
+	ASSERT_FALSE(checker.check_on_trace(f));
+
+	// first occ R
+	input = "G(!b U !a)";
+	f = spot::ltl::parse(input,pel);
+	ASSERT_TRUE(checker.check_on_trace(f));
+
+	// first occ M
+	input = "G(!b W !a)";
+	f = spot::ltl::parse(input,pel);
+	ASSERT_TRUE(checker.check_on_trace(f));
+
+	//first occ G
+	input = "F(G b)";
+	f = spot::ltl::parse(input,pel);
+	ASSERT_TRUE(checker.check_on_trace(f));
+
+	//first occ F
+	input = "F(F a)";
+	f = spot::ltl::parse(input,pel);
+	ASSERT_TRUE(checker.check_on_trace(f));
 }
+
+
 
 

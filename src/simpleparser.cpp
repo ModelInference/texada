@@ -35,7 +35,7 @@ std::set<std::vector<string_event> >  simple_parser::parse(std::ifstream &infile
 		// and exit the loop
 		if (line == "--"){
 			return_vec.push_back(string_event("EndOfTraceVar", true));
-			return_set.emplace(return_vec);
+			return_set.insert(return_vec);
 			return_vec.clear();
 		} else {
 			// this is on the very wide assumption that this method
@@ -45,6 +45,50 @@ std::set<std::vector<string_event> >  simple_parser::parse(std::ifstream &infile
 			if ((events.find(line)==events.end())){
 					events.insert(line);
 		}
+
+		}
+
+
+	}
+
+	has_been_parsed = true;
+	return return_set;
+}
+
+/**
+ * Parses the given file into maps, fills the event set
+ * @param filename
+ * @return pointer to first element of vector
+ */
+std::set<std::map<string_event,std::vector<long>>> simple_parser::parse_to_map(std::ifstream &infile){
+	events.clear();
+	std::map<string_event,std::vector<long>> return_map;
+	std::set<std::map<string_event,std::vector<long>>> return_set;
+	std::string line;
+	long pos_count = 0;
+	while (std::getline(infile,line)){
+		// if we're at the end of the trace, add the end of trace variable
+		// and exit the loop
+		if (line == "--"){
+			std::vector<long> pos_vec;
+			pos_vec.push_back(pos_count);
+			return_map.emplace(string_event("EndOfTraceVar", true),pos_vec);
+			return_set.insert(return_map);
+			return_map.clear();
+			pos_count = 0;
+		} else {
+			if ((return_map.find(string_event(line,false))==return_map.end())){
+					events.insert(line);
+					std::vector<long> pos_vec;
+					pos_vec.push_back(pos_count);
+					return_map.emplace(string_event(line,false),pos_vec);
+					pos_count++;
+			}
+			else {
+				return_map.at(string_event(line,false)).push_back(pos_count);
+				pos_count++;
+			}
+
 
 		}
 

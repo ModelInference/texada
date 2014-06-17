@@ -49,7 +49,7 @@ private:
 	long find_first_occurrence(const spot::ltl::unop*, interval);
 	long find_first_occurrence(const spot::ltl::constant*, interval);
 	long find_first_occurrence(const spot::ltl::binop*, interval);
-	// on atomic prop is public right now
+	long find_first_occurrence(const spot::ltl::atomic_prop*,interval);
 
 	long find_last_occurrence(const spot::ltl::formula*, interval);
 	long find_last_occurrence(const spot::ltl::atomic_prop*, interval);
@@ -88,9 +88,6 @@ private:
     	    	return -1;
     }
 
-
-public:
-	long find_first_occurrence(const spot::ltl::atomic_prop*,interval);
 };
 
 } /* namespace texada */

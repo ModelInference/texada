@@ -3,6 +3,7 @@
 #include <ltlparse/public.hh>
 #include "../src/simpleparser.h"
 #include <ltlvisit/apcollect.hh>
+#include "../src/maptracechecker.h"
 #include "../src/arrayinstantiator.h"
 #include "../src/formulatracechecker.h"
 #include "../src/formulainstantiator.h"
@@ -45,6 +46,48 @@ double set_up_afby(std::string source_file){
 		instantiations = instantiator.return_instantiations();
 		begin = clock();
 		texada::check_instants_on_trace(instantiations,f,current_trace);
+		end = clock();
+		time_spent += (double)(end - begin) / CLOCKS_PER_SEC;
+		}
+
+	return time_spent / 20;
+
+}
+
+double set_up_afbymap(std::string source_file){
+	//set up the AFby formula:
+	std::string input = "G(x->XFy)";
+	spot::ltl::parse_error_list pel;
+	const spot::ltl::formula* f = spot::ltl::parse(input, pel);
+	//set up the traces
+	std::ifstream infile(source_file);
+	texada::simple_parser parser = texada::simple_parser();
+	std::set<std::map<texada::string_event,std::vector<long>> > trace_set = parser.parse_to_map(infile);
+	std::set<std::string> event_set = parser.return_events();
+	//set up the array of instantiations
+	texada::array_instantiator instantiator = texada::array_instantiator(event_set,
+			*spot::ltl::atomic_prop_collect(f));
+	std::vector<texada::array_instantiator::inst_fxn> instantiations;
+
+
+	clock_t begin, end;
+	double time_spent;
+
+	for(std::set<std::map<texada::string_event,std::vector<long>> >::iterator it = trace_set.begin();
+			it !=trace_set.end(); it++){
+		std::map<texada::string_event,std::vector<long>> current_trace = *it;
+		instantiator.instantiate_array();
+		instantiations = instantiator.return_instantiations();
+		begin = clock();
+		texada::map_trace_checker checker = texada::map_trace_checker(current_trace);
+		int size = instantiations.size();
+		for (int i=0; i<size; i++){
+				// if it's invalid, ignore
+				if (!(instantiations[i].validity)) continue;
+				std::map<std::string, std::string> current_map = instantiations[i].inst_map;
+				const spot::ltl::formula* instantiated_form =	texada::instantiate(f, current_map);
+				instantiations[i].validity = checker.check_on_trace(instantiated_form);
+			}
 		end = clock();
 		time_spent += (double)(end - begin) / CLOCKS_PER_SEC;
 		}
@@ -109,10 +152,66 @@ TEST(TimingLengthTest, 2250){
 			set_up_afby(texada_base1 + "/traces/vary-tracelen/etypes-10_events-2250_execs-20.txt")
 			<< "\n";
 	ASSERT_TRUE(true);
-}*/
+}
 
+TEST(TimingLengthMapTest, 250){
+	std::cout << "250 \n" <<
+			set_up_afbymap(texada_base1 + "/traces/vary-tracelen/etypes-10_events-250_execs-20.txt")
+			<< "\n";
+	ASSERT_TRUE(true);
+}
 
+TEST(TimingLengthMapTest, 500){
+	std::cout << "500 \n " <<
+			set_up_afbymap(texada_base1 + "/traces/vary-tracelen/etypes-10_events-500_execs-20.txt")
+			<< "\n";
+	ASSERT_TRUE(true);
+}
+TEST(TimingLengthMapTest, 750){
+	std::cout << "750 \n" <<
+			set_up_afbymap(texada_base1 + "/traces/vary-tracelen/etypes-10_events-750_execs-20.txt")
+			<< "\n";
+	ASSERT_TRUE(true);
+}
+TEST(TimingLengthMapTest, 1000){
+	std::cout << "100 \n " <<
+			set_up_afbymap(texada_base1 + "/traces/vary-tracelen/etypes-10_events-1000_execs-20.txt")
+			<< "\n";
+	ASSERT_TRUE(true);
+}
 
+TEST(TimingLengthMapTest, 1250){
+	std::cout << "1250 \n" <<
+			set_up_afbymap(texada_base1 + "/traces/vary-tracelen/etypes-10_events-1250_execs-20.txt")
+			<< "\n";
+	ASSERT_TRUE(true);
+}
+
+TEST(TimingLengthMapTest, 1500){
+	std::cout << "1500 \n " <<
+			set_up_afbymap(texada_base1 + "/traces/vary-tracelen/etypes-10_events-1500_execs-20.txt")
+			<< "\n";
+	ASSERT_TRUE(true);
+}
+TEST(TimingLengthMapTest, 1750){
+	std::cout << "1750 \n " <<
+			set_up_afbymap(texada_base1 + "/traces/vary-tracelen/etypes-10_events-1750_execs-20.txt")
+			<< "\n";
+	ASSERT_TRUE(true);
+}
+TEST(TimingLengthMapTest, 2000){
+	std::cout << "2000 \n" <<
+			set_up_afbymap(texada_base1 + "/traces/vary-tracelen/etypes-10_events-2000_execs-20.txt")
+			<< "\n";
+	ASSERT_TRUE(true);
+}
+TEST(TimingLengthMapTest, 2250){
+	std::cout << "2250 \n " <<
+			set_up_afbymap(texada_base1 + "/traces/vary-tracelen/etypes-10_events-2250_execs-20.txt")
+			<< "\n";
+	ASSERT_TRUE(true);
+}
+*/
 double set_up_form_length_2(std::string input){
 	//set up the AFby formula:
 	spot::ltl::parse_error_list pel;
@@ -147,8 +246,51 @@ double set_up_form_length_2(std::string input){
 	return time_spent / 20;
 
 }
-/*
+
+double set_up_form_length_3(std::string input){
+	//set up the AFby formula:
+	spot::ltl::parse_error_list pel;
+	const spot::ltl::formula* f = spot::ltl::parse(input, pel);
+	std::cout << spot::ltl::length(f) << " \n";
+	//set up the traces
+	std::ifstream infile(texada_base1 + "/traces/vary-tracelen/etypes-10_events-2250_execs-20.txt");
+	texada::simple_parser parser = texada::simple_parser();
+	std::set<std::map<texada::string_event,std::vector<long>> > trace_set = parser.parse_to_map(infile);
+	std::set<std::string> event_set = parser.return_events();
+	//set up the array of instantiations
+	texada::array_instantiator  instantiator =  texada::array_instantiator(event_set,
+			*spot::ltl::atomic_prop_collect(f));
+	std::vector<texada::array_instantiator::inst_fxn> instantiations;
+
+
+	clock_t begin, end;
+	double time_spent;
+
+	for(std::set<std::map<texada::string_event,std::vector<long>> >::iterator it = trace_set.begin();
+				it !=trace_set.end(); it++){
+			std::map<texada::string_event,std::vector<long>> current_trace = *it;
+			instantiator.instantiate_array();
+			instantiations = instantiator.return_instantiations();
+			begin = clock();
+			texada::map_trace_checker checker = texada::map_trace_checker(current_trace);
+			int size = instantiations.size();
+			for (int i=0; i<size; i++){
+					// if it's invalid, ignore
+					if (!(instantiations[i].validity)) continue;
+					std::map<std::string, std::string> current_map = instantiations[i].inst_map;
+					const spot::ltl::formula* instantiated_form =	texada::instantiate(f, current_map);
+					instantiations[i].validity = checker.check_on_trace(instantiated_form);
+				}
+			end = clock();
+			time_spent += (double)(end - begin) / CLOCKS_PER_SEC;
+			}
+
+	return time_spent / 20;
+
+}
+
 //Formula Length
+/*
 TEST(TimingFormulaLengthTest, 3){
 	std::cout << set_up_form_length_2("a | b")	<< "\n";
 
@@ -216,6 +358,75 @@ TEST(TimingFormulaLengthTest, MultiEffect){
 TEST(TimingFormulaLengthTest,Alternating){
 	std::cout << set_up_form_length_2("(!bWa)&(G((a->X(!aUb))&(b->X(!bUa))))")	<< "\n";
 
+}
+
+TEST(TimingFormulaLengthMapTest, 3){
+	std::cout << set_up_form_length_3("a | b")	<< "\n";
+
+}TEST(TimingFormulaLengthMapTest, 4G){
+	std::cout << set_up_form_length_3("G(a | b)")	<< "\n";
+
+}
+TEST(TimingFormulaLengthMapTest, 5G){
+	std::cout << set_up_form_length_3("G(a->Fb)")	<< "\n";
+
+}
+TEST(TimingFormulaLengthMapTest, 5){
+	std::cout << set_up_form_length_3("b R (a W 0)")	<< "\n";
+
+}
+TEST(TimingFormulaLengthMapTest, 7){
+	std::cout << set_up_form_length_3("!X(!a <-> Gb)")	<< "\n";
+
+}
+
+TEST(TimingFormulaLengthMapTest, 8){
+	std::cout << set_up_form_length_3("G((0 R Xb) R Gb)")	<< "\n";
+
+}
+TEST(TimingFormulaLengthMapTest, 9){
+	std::cout << set_up_form_length_3("!(!G(a | Ga) -> b)")	<< "\n";
+
+}
+TEST(TimingFormulaLengthMapTest, 14){
+	std::cout << set_up_form_length_3("XF(a <-> Ga) W (!XFb U Xa)")	<< "\n";
+
+}
+TEST(TimingFormulaLengthMapTest, 20){
+	std::cout << set_up_form_length_3("(((b U (b & Fb)) R (1 U !((FXb R (b & !b)) R b))) | Ga) -> (a W b)")	<< "\n";
+
+}
+TEST(TimingFormulaLengthMapTest, Response){
+	std::cout << set_up_form_length_3("G(a->XFb)")	<< "\n";
+
+}
+TEST(TimingFormulaLengthMapTest, CauseFirst){
+	std::cout << set_up_form_length_3("(!bWa)&G(a->XFb)")	<< "\n";
+
+}
+TEST(TimingFormulaLengthMapTest, OneEffect){
+	std::cout << set_up_form_length_3("(G((a->XFb )& (b->X(!b W a)))")	<< "\n";
+
+}
+TEST(TimingFormulaLengthMapTest, OneCause){
+	std::cout << set_up_form_length_3("(G(a->X(!aUb)")	<< "\n";
+
+}
+TEST(TimingFormulaLengthMapTest, EffectFirst){
+	std::cout << set_up_form_length_3("G(a->((X(!aUb) & XGb->X(!b W a))))")	<< "\n";
+
+}
+TEST(TimingFormulaLengthMapTest, MultiCause){
+	std::cout << set_up_form_length_3("(!bWa)&(G(a->XFb)&(b->X(!bUa)))")	<< "\n";
+
+}
+TEST(TimingFormulaLengthMapTest, MultiEffect){
+	std::cout << set_up_form_length_3("(!bWa)&(G(a->X(!aUb)))")	<< "\n";
+
+}
+TEST(TimingFormulaLengthMapTest,Alternating){
+	std::cout << set_up_form_length_3("(!bWa)&(G((a->X(!aUb))&(b->X(!bUa))))")	<< "\n";
+
 }*/
 
 double set_up_variable_num(std::string input, int k){
@@ -249,6 +460,49 @@ double set_up_variable_num(std::string input, int k){
 		end = clock();
 		time_spent += (double)(end - begin) / CLOCKS_PER_SEC;
 		}
+
+	return time_spent / 20;
+
+}
+
+double set_up_variable_num2(std::string input, int k){
+	//set up the AFby formula:
+	spot::ltl::parse_error_list pel;
+	const spot::ltl::formula* f = spot::ltl::parse(input, pel);
+	std::cout << k << "\n";
+	//set up the traces
+	std::ifstream infile(texada_base1 + "/traces/vary-tracelen/etypes-10_events-2250_execs-20.txt");
+	texada::simple_parser parser = texada::simple_parser();
+	std::set<std::map<texada::string_event,std::vector<long>> > trace_set = parser.parse_to_map(infile);
+	std::set<std::string> event_set = parser.return_events();
+	//set up the array of instantiations
+	texada::array_instantiator  instantiator =  texada::array_instantiator(event_set,
+			*spot::ltl::atomic_prop_collect(f));
+	std::vector<texada::array_instantiator::inst_fxn> instantiations;
+
+	clock_t begin, end;
+	double time_spent;
+
+	for(std::set<std::map<texada::string_event,std::vector<long>> >::iterator it = trace_set.begin();
+					it !=trace_set.end(); it++){
+				std::map<texada::string_event,std::vector<long>> current_trace = *it;
+				instantiator.instantiate_array();
+				instantiations = instantiator.return_instantiations();
+				std::cout <<"Checking instantiations on a trace... \n";
+				begin = clock();
+				texada::map_trace_checker checker = texada::map_trace_checker(current_trace);
+				int size = instantiations.size();
+				for (int i=0; i<size; i++){
+						// if it's invalid, ignore
+						if (!(instantiations[i].validity)) continue;
+						std::map<std::string, std::string> current_map = instantiations[i].inst_map;
+						const spot::ltl::formula* instantiated_form =	texada::instantiate(f, current_map);
+						instantiations[i].validity = checker.check_on_trace(instantiated_form);
+					}
+				end = clock();
+				time_spent += (double)(end - begin) / CLOCKS_PER_SEC;
+				}
+
 
 	return time_spent / 20;
 
@@ -294,8 +548,50 @@ TEST(TimingFormulaVarTest,5b){
 }
 TEST(TimingFormulaVarTest,5c){
 	std::cout << set_up_variable_num("G(d|c)|G(a->(Fb & G!e))",5)	<< "\n";
+}*/
+/*
+TEST(TimingFormulaVarMapTest, 2){
+	std::cout << set_up_variable_num2("Fa -> (!b U a)",2)	<< "\n";
+
+}
+TEST(TimingFormulaVarMapTest, 3a){
+	std::cout << set_up_variable_num2("G((c & !a & Fa) -> (!b U a))",3)	<< "\n";
+
+}
+TEST(TimingFormulaVarMapTest, 3b){
+	std::cout << set_up_variable_num2("!c W (b & !a)",3)	<< "\n";
+
+}
+TEST(TimingFormulaVarMapTest, 3c){
+	std::cout << set_up_variable_num2("G((c&Fa)->((!b&!a)U(a|((b &!a)U(a|((!b&!a)U(a|((b&!a)U(a|(!bUa))))))))))",3)	<< "\n";
+
+}
+TEST(TimingFormulaVarMapTest, 3d){
+	std::cout << set_up_variable_num2("(!(b |c) W a)&G((a->X((!a U c)&(!c U b)))&(b->XFc)&(c->X((!(c|b)Wa))))",3)	<< "\n";
+
+}
+TEST(TimingFormulaVarMapTest, 4a){
+	std::cout << set_up_variable_num2("G(c & !a -> (!b W (d | a)))",4)	<< "\n";
+
+}
+TEST(TimingFormulaVarMapTest, 4b){
+	std::cout << set_up_variable_num2("(G!c) | (!c U (c & Fb -> (!b U (d & !b & X(!b U a))))",4)	<< "\n";
 
 }*/
+
+TEST(TimingFormulaVarMapTest,5a){
+	std::cout << set_up_variable_num2("G((c & Fa)->(!b U(a | (e& !b & X(!b U d)))))",5)	<< "\n";
+
+}
+
+TEST(TimingFormulaVarMapTest,5b){
+	std::cout << set_up_variable_num2("G(c -> (!(d & (!a) & X(!a U (e & !a))) U (a | b) | G(!(d & XFe))))",5)	<< "\n";
+
+}
+TEST(TimingFormulaVarMapTest,5c){
+	std::cout << set_up_variable_num2("G(d|c)|G(a->(Fb & G!e))",5)	<< "\n";
+
+}
 
 void set_up_total_mining_test(std::string form, std::string source){
 	clock_t begin, end;
