@@ -452,20 +452,35 @@ long map_trace_checker::find_first_occurrence(const spot::ltl::multop* node, int
 		}
 
 
-		// And case: Originally developed the algorithm for find all occurrences
-		// here, so now just get all occurrences and take the first one. Unlike
-		// the or case, we can't short-circuit by simply finding the first
-		// occurrences of each of the children: e.g. first occ of p&q&r?
-		// (p) (j) (k&l) (r) (k) (a) (q&r) (a) (p) (p&q&r)
-		// The first occurrence of the and has nothing to do with the first
-		// occurrence of all the children.
-		case spot::ltl::multop::And:{
-			std::vector<long> common_occs = find_all_occurrence(node, intvl);
-			std::cout << common_occs.size()<<"Are we finding the first occurrence? \n";
-			if (common_occs.size() == 0) return -1;
-			else return (*common_occs.begin());
 
+		// We find the first occurrence of each child; if one does not occur,
+		// the and never occurs.
+		// else we take the last of these positions and check if the and occurs
+		// there. If it does not, we go one past and check for the first on that
+		// interval.
+		case spot::ltl::multop::And:{
+			int numkids = node->size();
+			long total_first_occ = -1;
+			for (int i = 0; i<numkids;i++){
+				long first_occ = find_first_occurrence(node->nth(i),intvl);
+				if (first_occ == -1) return -1;
+				if (first_occ > total_first_occ){
+					total_first_occ = first_occ;
+				}
+			}
+			intvl.start=total_first_occ;
+			for (int i = 0; i<numkids;i++){
+				if (!check(node->nth(i),intvl)) {
+					if (intvl.start != intvl.end){
+						intvl.start++;
+						return find_last_occurrence(node,intvl);
+					}
+					else return -1;
+				}
+			}
+			return total_first_occ;
 		}
+
 		default:
 			std::cerr<< "Unsupported Multop. Returning -1. \n";
 			return -1;
@@ -815,11 +830,29 @@ long map_trace_checker::find_last_occurrence(const spot::ltl::multop* node, inte
 
 			// And case: Again, just using the last of all occs.
 			case spot::ltl::multop::And:{
-				std::vector<long> common_occs = find_all_occurrence(node, intvl);
-				if (common_occs.size() == 0) return -1;
-				else return (*(common_occs.end()--));
-
+				int numkids = node->size();
+				long total_last_occ = LONG_MAX;
+				for (int i = 0; i<numkids;i++){
+					long last_occ = find_last_occurrence(node->nth(i),intvl);
+					if (last_occ == -1) return -1;
+					if (last_occ < total_last_occ){
+						total_last_occ = last_occ;
+					}
+				}
+				interval temp;
+				temp.start = total_last_occ;
+				for (int i = 0; i<numkids;i++){
+					if (!check(node->nth(i),temp)) {
+						if (intvl.start != temp.start){
+							intvl.end = total_last_occ - 1;
+							return find_last_occurrence(node,intvl);
+						}
+						else return -1;
+					}
+				}
+			return total_last_occ;
 			}
+
 			default:
 				std::cerr<< "Unsupported Multop. Returning -1. \n";
 				return -1;
@@ -1045,323 +1078,4 @@ long map_trace_checker::find_last_occurrence(const spot::ltl::binop* node, inter
 	return -1;
 }
 
-//TODO: MAKE SURE ALL THESE ARE IN SORTED ORDER PLEASE
-/**
- * Finds all occurrences of a formula in a given interval. Switch
- * method to helper functions.
- * @param node formula to find
- * @param intvl interval to search in
- * @return all occurences of node in intvl, empty vector if none
- */
-std::vector<long> map_trace_checker::find_all_occurrence(const spot::ltl::formula* node, interval intvl){
-	switch (node->kind()){
-	case spot::ltl::formula::Constant:
-		return find_all_occurrence(static_cast<const spot::ltl::constant*>(node), intvl);
-	case spot::ltl::formula::AtomicProp:
-		return find_all_occurrence(static_cast<const spot::ltl::atomic_prop*>(node),intvl);
-	case spot::ltl::formula::UnOp:
-		return find_all_occurrence(static_cast<const spot::ltl::unop*>(node),intvl);
-	case spot::ltl::formula::BinOp:
-		return find_all_occurrence(static_cast<const spot::ltl::binop*>(node),intvl);
-	case spot::ltl::formula::MultOp:
-		return find_all_occurrence(static_cast<const spot::ltl::multop*>(node),intvl);
-	case spot::ltl::formula::BUnOp:
-		return find_all_occurrence(static_cast<const spot::ltl::bunop*>(node));
-	case spot::ltl::formula::AutomatOp:
-		return find_all_occurrence(static_cast<const spot::ltl::automatop*>(node));
-	default:
-		std::vector<long> blank_vec;
-		return blank_vec;
-	}
-
-}
-/**
- * Finds all occurrences of an atomic proposition in a given interval
- * @param node atomic prop to find
- * @param intvl interval to search in
- * @return all occurrences of node in intvl
- */
-std::vector<long> map_trace_checker::find_all_occurrence(const spot::ltl::atomic_prop* node, interval intvl){
-	//TODO:FINISH... make sure bounds are correct and stuff....
-	std::cout << "In find all occurrence \n";
-	std::vector<long> to_search = trace_map.at(string_event(node->name(),false));
-	long first_element = find_first_occurrence(node, intvl);
-	long last_element = find_last_occurrence(node,intvl);
-	std::vector<long> ret_vec;
-	int left = 0;
-	int right = to_search.size()-1;
-	int probe = (left+right)/2;
-	std::cout << "probe: " << probe << ".\n";
-	while (true){
-		std::cout << "In the loop \n";
-		probe = (left+right)/2;
-		std::cout << "probe: " << probe << ".\n";
-		if (to_search.at(probe)==first_element){
-			std::cout << "In the first if \n";
-			break;
-		}
-		if (to_search.at(probe)<first_element){
-			std::cout << "In the second if \n";
-			left = probe + 1;
-			continue;
-		}
-		if (to_search.at(probe)>first_element){
-			std::cout << "In the third if \n";
-			right = probe - 1;
-			continue;
-		}
-	}
-	for (int i=0; i < to_search.size(); i++){
-		std::cout << "probe: " << probe + i << ".\n";
-		if (to_search.at(probe + i)> last_element) break;
-		ret_vec.push_back(to_search.at(probe+i));
-	}
-
-	return ret_vec;
-}
-/**
- * Finds all of a multop formula (and or or) in a given interval
- * @param node formula to find occurrence of
- * @param intvl interval to check in
- * @return all occurrences of node in intvl
- */
-std::vector<long> map_trace_checker::find_all_occurrence(const spot::ltl::multop* node, interval intvl){
-	spot::ltl::multop::type opkind = node->op();
-	std::cout << "Do we get into multop find all \n";
-	std::vector<long> blank_vec;
-		switch(opkind){
-		// Or case: for each child, find all occurrences, and insert into a set
-		// of all occurrences, which will be returned.
-		case spot::ltl::multop::Or:{
-			int numkids = node->size();
-			std::vector<long> child_occs;
-			std::set<long> common_occs;
-			for (int i =0; i<numkids ; i++){
-				child_occs = find_all_occurrence(node->nth(i),intvl);
-				common_occs.insert(child_occs.begin(),child_occs.end());
-				}
-			return std::vector<long> (common_occs.begin(), common_occs.end());
-		}
-		// And case: Find all the occurrences of the first child and put this into
-		// common occurrences. For each subsequent child, find all its occurrences
-		// (ordered.) Then for each common occurrence, search for it in the new
-		// child's occurrences; if it does not occur, erase it. Continue until there
-		// are no common occurrences or until we have gone through all the children.
-		case spot::ltl::multop::And:{
-			int numkids = node->size();
-			std::vector<long> child_occs = find_all_occurrence(node->nth(0),intvl);
-			std::list<long> common_occs (child_occs.begin(), child_occs.end());
-			for (int i =1; i<numkids ; i++){
-				std::cout << "Do we enter the and loop \n";
-				child_occs = find_all_occurrence(node->nth(i),intvl);
-				if (child_occs.size() == 0) {
-					common_occs.empty();
-					std::vector<long> blank_vec;
-					return blank_vec;
-					//TODO: apply what I learned here to all other cases.
-				}
-				std::cout << "Size of child_occs: " << child_occs.size() << "\n";
-				for(std::list<long>::iterator it = common_occs.begin(); it != common_occs.end(); it++){
-					if (!(std::binary_search(child_occs.begin(),child_occs.end(),*it))){
-						common_occs.erase(it);
-					}
-				}
-				if (common_occs.size() == 0) break;
-			}
-			return std::vector<long>(common_occs.begin(),common_occs.end());
-
-		}
-		default:
-			std::cerr<< "Unsupported Multop. Returning empty vector. \n";
-			return blank_vec;
-		}
-
-
-}
-
-/**
- * Finds all occurrences of a unop formula in a given interval
- * @param node unop formula to find
- * @param intvl interval to search in
- * @return all occurrences of node in intvl
- */
-std::vector<long> map_trace_checker::find_all_occurrence(const spot::ltl::unop* node, interval intvl){
-	spot::ltl::unop::type optype = node->op();
-	std::vector<long> return_vec;
-
-		switch (optype){
-
-		// Again, as negatives are usually pushed in as negative normal form,
-		// this shouldn't be too awful...
-		// Not case: find all the nots, and not those.
-		// i begins at the start. We increment it by one and add it to return_vec
-		// until we reach an event in not_occs. At this point we set i to one
-		// beyond the event, and find the next event. Then we repeat the process.
-		// When we exit the loop, i will be one beyond the last event, but
-		// those occurrences of not i will not have been added, so we must
-		// do that after
-		case spot::ltl::unop::Not:{
-			std::vector<long> not_occs = find_all_occurrence(node->child(),intvl);
-			int i = intvl.start;
-			for(std::vector<long>::iterator it = not_occs.begin();
-					it != not_occs.end(); it++){
-				while (i<*it){
-					return_vec.push_back(i);
-					i++;
-				}
-				i = *it+1;
-			}
-			while (i<=intvl.end){
-				return_vec.push_back(i);
-				i++;
-			}
-			return return_vec;
-		}
-
-		// Find all occurrences of the child, one minus those. Unless it's the
-		// first event, in which case we skip it.
-		// return_vec will be ordered because find_all_occurrence should return
-		// an ordered vector.
-		case::spot::ltl::unop::X:{
-			std::vector<long> child_occs = find_all_occurrence(node->child(),intvl);
-			for (std::vector<long>::iterator it = child_occs.begin();
-					it != child_occs.end(); it++){
-				if (*it == intvl.start) continue;
-				return_vec.push_back(--*it);
-			}
-			return return_vec;
-		}
-
-		// Globally: By definition of G (P) as P holding on all suffix traces,
-		// all occurrences of globally will simply be from the first to the end.
-		// RETURN_VEC will be ordered because each subsequent i inserted
-		// is one larger than the one preceding it.
-		case spot::ltl::unop::G:{
-			std::cout<< "Finding all occurrence of the thing \n";
-			long first_occ = find_first_occurrence(node, intvl);
-			std::cout << "The first occurrence was..." << first_occ << "\n";
-			if (first_occ == -1) return return_vec;
-			else{
-				for (int i = first_occ; i<=intvl.end; i++){
-					std::cout << "Pushing back " << i <<"\n";
-					return_vec.push_back(i);
-				}
-				return return_vec;
-			}
-
-		}
-
-		// Eventually: Eventually holds until the last occurrence of its child,
-		// i.e. its last occurrence.
-		// RETURN_VEC will be ordered because each subsequent i inserted
-		// is one larger than the one preceding it.
-		case spot::ltl::unop::F:{
-			long last_occ = find_last_occurrence(node,intvl);
-			if (last_occ == -1) return return_vec;
-			else{
-				for (int i =intvl.start; i<=last_occ; i++){
-					return_vec.push_back(i);
-				}
-				return return_vec;
-			}
-		}
-
-		default:
-			std::cerr << "Unsupported unop. Returning empty vector. \n";
-			return return_vec;
-		}
-
-}
-
-/**
- * Finds all occurrences of a constant in a given interval
- * @param node constant to find occurrence of
- * @param intvl interval to check in
- * @return all occurrences of node in intvl
- */
-std::vector<long> map_trace_checker::find_all_occurrence(const spot::ltl::constant* node, interval intvl){
-	std::vector<long> blank_vec;
-	spot::ltl::constant::type value = node->val();
-
-	switch (value){
-	case spot::ltl::constant::True:{
-		for (int i = intvl.start; i<=intvl.end; i++){
-			blank_vec.push_back(i);
-		}
-		return blank_vec;
-	}
-	case spot::ltl::constant::False:
-		return blank_vec;
-	case spot::ltl::constant::EmptyWord:
-		std::cerr << "We came across the empty word. Returning empty vector \n" ;
-		return blank_vec;
-	default:
-		return blank_vec;
-	}
-
-}
-/**
- * Finds all occurrences of a binop in a given interval
- * @param node formula to find occurrence of
- * @param intvl interval to check in
- * @return all occurrences of node in intvl
- */
-std::vector<long> map_trace_checker::find_all_occurrence(const spot::ltl::binop* node, interval intvl){
-	std::cout <<"Entered unfinished method \n";
-	spot::ltl::binop::type opkind = node->op();
-	std::vector<long> return_vec;
-
-		switch(opkind){
-
-		//Complicated, finish later
-		case spot::ltl::binop::Xor:{/*
-			std::vector<long> first_vec = find_all_occurrence(node->first(),intvl);
-			std::vector<long> second_vec = find_all_occurrence(node->second(),intvl);
-
-			//making sure neither are empty
-			if (first_vec.empty()) return second_vec;
-			else if (second_vec.empty()) return first_vec;
-
-			std::deque<long> first_q = std::deque<long>(first_vec.begin(),first_vec.end());
-			std::deque<long> second_q = std::deque<long>(second_vec.begin(),second_vec.end());
-
-			// setting these both to -1 will get them to be set correctly
-			// on first run through the loop....
-			long next_first = -1;
-			long next_second = -1;
-
-
-			while (!first_q.empty() && !second_q.empty()){
-				if (next_first == next_second){
-					next_first = first_q.pop_front();
-					next_second = second_q.pop_front();
-				}
-				else if (next_first < next_second){
-					return_vec.push_back(next_first);
-					next_first = first_q.pop_front();
-				}
-				else {
-					return_vec.push_back(next_second);
-					next_second = second_q.pop_front();
-				}
-			}
-
-			if (first_q.empty()){
-				if (next_first == next_second){
-
-				}
-			}
-
-
-		*/}
-
-		case::spot::ltl::binop::Implies:{
-
-		}
-
-		return return_vec;
-		}
-
-
-	}
 } /* namespace texada */

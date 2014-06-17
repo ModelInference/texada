@@ -58,12 +58,6 @@ private:
 	long find_last_occurrence(const spot::ltl::constant*, interval);
 	long find_last_occurrence(const spot::ltl::binop*, interval);
 
-	std::vector<long> find_all_occurrence(const spot::ltl::formula*, interval);
-	std::vector<long> find_all_occurrence(const spot::ltl::atomic_prop*, interval);
-	std::vector<long> find_all_occurrence(const spot::ltl::multop*, interval);
-	std::vector<long> find_all_occurrence(const spot::ltl::unop*, interval);
-	std::vector<long> find_all_occurrence(const spot::ltl::constant*, interval);
-	std::vector<long> find_all_occurrence(const spot::ltl::binop*, interval);
 
     /**
      * automatop and bunop are not supported.
@@ -94,16 +88,6 @@ private:
     	    	return -1;
     }
 
-	std::vector<long> find_all_occurrence(const spot::ltl::automatop*){
-    	std::cerr << "Type automatop unsupported. \n";
-    	std::vector<long> blank_vec;
-    	return blank_vec;
-    }
-	std::vector<long> find_all_occurrence(const spot::ltl::bunop*){
-    	std::cerr << "Type bunop unsupported. \n";
-    	std::vector<long> blank_vec;
-    	return blank_vec;
-    }
 
 public:
 	long find_first_occurrence(const spot::ltl::atomic_prop*,interval);

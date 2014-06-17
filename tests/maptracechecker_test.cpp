@@ -97,3 +97,5 @@ TEST(MapCheckerTest,AFby){
 
 	std::cout << "so we have... " << checker.check_on_trace(f);
 }
+
+
