@@ -93,9 +93,15 @@ bool map_trace_checker::check(const spot::ltl::constant* node, interval intvl){
  * @return true if node holds over intvl, false otherwise
  */
 bool map_trace_checker::check(const spot::ltl::atomic_prop* node, interval intvl){
-	long first_occurrence = find_first_occurrence(node, intvl);
-	if (intvl.start == first_occurrence) return true;
+	try{
+	std::vector<long> to_search = trace_map.at(string_event(node->name(),false));
+	if (std::binary_search(to_search.begin(),to_search.end(),intvl.start)){
+		return true;
+	}
 	else return false;
+	}catch (std::out_of_range &e){
+		return false;
+	}
 
 }
 
@@ -327,6 +333,7 @@ long map_trace_checker::find_first_occurrence(const spot::ltl::formula* node,int
  */
 long map_trace_checker::find_first_occurrence(const spot::ltl::atomic_prop* node,interval intvl){
 	// REQUIRES: to_search is sorted. this should be assured earlier on.
+	try{
 	std::vector<long> to_search = trace_map.at(string_event(node->name(),false));
 	long left = 0;
 	long right = to_search.size();
@@ -416,7 +423,10 @@ long map_trace_checker::find_first_occurrence(const spot::ltl::atomic_prop* node
 			right = newpos - 1;
 		}
 	}
-
+	} catch (std::out_of_range &e){
+		// this means we didn't find the event in the trace map, so it never occurs;
+		return -1;
+	}
 }
 
 /**
@@ -654,6 +664,10 @@ long map_trace_checker::find_first_occurrence(const spot::ltl::binop* node, inte
 			intvl.start = ++search_interval.end;
 			return find_first_occurrence(node, intvl);
 		}
+		//the following broke some things and fixed others TODO address this.
+		else if (last_occ_neg_second == -1){
+			return intvl.start;
+		}
 		else return ++last_occ_neg_second;
 	}
 
@@ -753,6 +767,7 @@ long map_trace_checker::find_last_occurrence(const spot::ltl::formula* node, int
  */
 long map_trace_checker::find_last_occurrence(const spot::ltl::atomic_prop* node, interval intvl){
 	// REQUIRES: to_search is sorted. this should be assured earlier on.
+	try {
 		std::vector<long> to_search = trace_map.at(string_event(node->name(),false));
 
 		long left = 0;
@@ -794,6 +809,10 @@ long map_trace_checker::find_last_occurrence(const spot::ltl::atomic_prop* node,
 				left = newpos + 1;
 			}
 		}
+	}catch (std::out_of_range &e){
+		// this means we didn't find the event in the trace map, so it never occurs;
+		return -1;
+	}
 }
 /**
  * Finds the last occurrence of a multop formula (and or or) in a given interval

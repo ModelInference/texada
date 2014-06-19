@@ -37,6 +37,7 @@ TEST(PropertyTypeMinerTest, ResourceAllocation){
 			texada_base + "/traces/resource-allocation/abc.txt");
 	ASSERT_EQ(set.size(),1);
 }
+
 /*
 TEST(PropertyTypeMinerTest, STprecedesPafterQ){
 	std::set<const spot::ltl::formula*> set =texada::mine_property_type("(G!y) | (!y U (y & XFx -> (!x U (a & !x & X(!x U z))))",

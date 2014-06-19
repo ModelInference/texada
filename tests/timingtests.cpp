@@ -36,7 +36,7 @@ double set_up_afby(std::string source_file){
 
 
 	clock_t begin, end;
-	double time_spent;
+	double time_spent= 0;
 
 	for(std::set<std::vector<texada::string_event> >::iterator it = trace_set.begin();
 			it !=trace_set.end(); it++){
@@ -71,7 +71,7 @@ double set_up_afbymap(std::string source_file){
 
 
 	clock_t begin, end;
-	double time_spent;
+	double time_spent= 0;
 
 	for(std::set<std::map<texada::string_event,std::vector<long>> >::iterator it = trace_set.begin();
 			it !=trace_set.end(); it++){
@@ -229,7 +229,7 @@ double set_up_form_length_2(std::string input){
 
 
 	clock_t begin, end;
-	double time_spent;
+	double time_spent= 0;
 
 	for(std::set<std::vector<texada::string_event> >::iterator it = trace_set.begin();
 			it !=trace_set.end(); it++){
@@ -264,7 +264,7 @@ double set_up_form_length_3(std::string input){
 
 
 	clock_t begin, end;
-	double time_spent;
+	double time_spent= 0;
 
 	for(std::set<std::map<texada::string_event,std::vector<long>> >::iterator it = trace_set.begin();
 				it !=trace_set.end(); it++){
@@ -445,7 +445,7 @@ double set_up_variable_num(std::string input, int k){
 	std::vector<texada::array_instantiator::inst_fxn> instantiations;
 
 	clock_t begin, end;
-	double time_spent;
+	double time_spent = 0;
 
 	for(std::set<std::vector<texada::string_event> >::iterator it = trace_set.begin();
 			it !=trace_set.end(); it++){
@@ -481,7 +481,7 @@ double set_up_variable_num2(std::string input, int k){
 	std::vector<texada::array_instantiator::inst_fxn> instantiations;
 
 	clock_t begin, end;
-	double time_spent;
+	double time_spent= 0;
 
 	for(std::set<std::map<texada::string_event,std::vector<long>> >::iterator it = trace_set.begin();
 					it !=trace_set.end(); it++){
@@ -548,8 +548,8 @@ TEST(TimingFormulaVarTest,5b){
 }
 TEST(TimingFormulaVarTest,5c){
 	std::cout << set_up_variable_num("G(d|c)|G(a->(Fb & G!e))",5)	<< "\n";
-}*/
-/*
+}
+
 TEST(TimingFormulaVarMapTest, 2){
 	std::cout << set_up_variable_num2("Fa -> (!b U a)",2)	<< "\n";
 
@@ -577,7 +577,7 @@ TEST(TimingFormulaVarMapTest, 4a){
 TEST(TimingFormulaVarMapTest, 4b){
 	std::cout << set_up_variable_num2("(G!c) | (!c U (c & Fb -> (!b U (d & !b & X(!b U a))))",4)	<< "\n";
 
-}*/
+}
 
 TEST(TimingFormulaVarMapTest,5a){
 	std::cout << set_up_variable_num2("G((c & Fa)->(!b U(a | (e& !b & X(!b U d)))))",5)	<< "\n";
@@ -591,7 +591,7 @@ TEST(TimingFormulaVarMapTest,5b){
 TEST(TimingFormulaVarMapTest,5c){
 	std::cout << set_up_variable_num2("G(d|c)|G(a->(Fb & G!e))",5)	<< "\n";
 
-}
+}*/
 
 void set_up_total_mining_test(std::string form, std::string source){
 	clock_t begin, end;
@@ -795,8 +795,265 @@ TEST(TotalMiningNumInvsTest,34SpPaQuR){
 TEST(TotalMiningNumInvsTest,37SpPaQuR){
 	set_up_total_mining_test("G(c & !a -> (!b W (d | a)))",texada_base1 + "/traces/vary-invs-fixed2/log-25000_invs-36.txt");
 
+}*/
+
+
+// this is basically the code from the total miner
+void set_up_total_mining_test_map(std::string formula_string, std::string trace_source){
+	clock_t begin, end;
+	double time_spent = 0;
+	begin = clock();
+	//parse the ltl formula
+	spot::ltl::parse_error_list pel;
+	const spot::ltl::formula* formula = spot::ltl::parse(formula_string, pel);
+	//std::cout << "## Number of parser errors: "<<pel.size() << "\n";
+	//TODO: get some way for the user to check this.
+
+	// currently just using simple parser, assumedly could replace this by a
+	// more complex parser once we have one
+	std::ifstream infile(trace_source);
+	texada::simple_parser parser =  texada::simple_parser();
+	std::set<std::map<texada::string_event,std::vector<long>> >  trace_set = parser.parse_to_map(infile);
+	std::set<std::string>  event_set = parser.return_events();
+
+	spot::ltl::atomic_prop_set * variables = spot::ltl::atomic_prop_collect(formula);
+	//std::cout << "## Number of variables: " <<variables->size() << "\n";
+	//create the instantiation array
+	texada::array_instantiator instantiator = texada::array_instantiator(event_set, *variables);
+	instantiator.instantiate_array();
+	std::vector<texada::array_instantiator::inst_fxn> instantiations = instantiator.return_instantiations();
+
+
+	//size of instnatiations
+	int size = instantiations.size();
+
+
+
+	for(std::set<std::map<texada::string_event,std::vector<long>> >::iterator it = trace_set.begin();
+			it !=trace_set.end(); it++){
+		std::map<texada::string_event,std::vector<long>> current_trace = *it;
+		texada::map_trace_checker checker = texada::map_trace_checker(current_trace);
+		int size = instantiations.size();
+		for (int i=0; i<size; i++){
+				// if it's invalid, ignore
+				if (!(instantiations[i].validity)) continue;
+				std::map<std::string, std::string> current_map = instantiations[i].inst_map;
+				const spot::ltl::formula* instantiated_form =	texada::instantiate(formula, current_map);
+				instantiations[i].validity = checker.check_on_trace(instantiated_form);
+			}
+	}
+
+	std::set<const spot::ltl::formula*>  return_set;
+
+
+
+	for (int i = 0; i <size; i++){
+		if (instantiations[i].validity){
+			const spot::ltl::formula * valid_form =
+					texada::instantiate(formula, instantiations[i].inst_map);
+			return_set.insert(valid_form);
+		}
+	}
+
+	end = clock();
+	time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
+	std::cout << time_spent << "\n";
+
+
+}
+
+
+
+/*
+TEST(TotalMiningNumInvsMapTest,4F){
+	set_up_total_mining_test_map("Fx",texada_base1 + "/traces/vary-invs-fixed2/log-25000_invs-3.txt");
+}
+TEST(TotalMiningNumInvsMapTest,5F){
+	set_up_total_mining_test_map("Fx",texada_base1 + "/traces/vary-invs-fixed2/log-25000_invs-4.txt");
+}
+TEST(TotalMiningNumInvsMapTest,6F){
+	set_up_total_mining_test_map("Fx",texada_base1 + "/traces/vary-invs-fixed2/log-25000_invs-5.txt");
+}
+TEST(TotalMiningNumInvsMapTest,7F){
+	set_up_total_mining_test_map("Fx",texada_base1 + "/traces/vary-invs-fixed2/log-25000_invs-6.txt");
+}
+TEST(TotalMiningNumInvsMapTest,8F){
+	set_up_total_mining_test_map("Fx",texada_base1 + "/traces/vary-invs-fixed2/log-25000_invs-7.txt");
+}
+TEST(TotalMiningNumInvsMapTest,9F){
+	set_up_total_mining_test_map("Fx",texada_base1 + "/traces/vary-invs-fixed2/log-25000_invs-8.txt");
+
+}
+TEST(TotalMiningNumInvsMapTest,13F){
+	set_up_total_mining_test_map("Fx",texada_base1 + "/traces/vary-invs-fixed2/log-25000_invs-12.txt");
+}
+TEST(TotalMiningNumInvsMapTest,16F){
+	set_up_total_mining_test_map("Fx",texada_base1 + "/traces/vary-invs-fixed2/log-25000_invs-15.txt");
+}
+TEST(TotalMiningNumInvsMapTest,19F){
+	set_up_total_mining_test_map("Fx",texada_base1 + "/traces/vary-invs-fixed2/log-25000_invs-18.txt");
+}
+TEST(TotalMiningNumInvsMapTest,22F){
+	set_up_total_mining_test_map("Fx",texada_base1 + "/traces/vary-invs-fixed2/log-25000_invs-21.txt");
+}
+TEST(TotalMiningNumInvsMapTest,25F){
+	set_up_total_mining_test_map("Fx",texada_base1 + "/traces/vary-invs-fixed2/log-25000_invs-24.txt");
+}
+TEST(TotalMiningNumInvsMapTest,28F){
+	set_up_total_mining_test_map("Fx",texada_base1 + "/traces/vary-invs-fixed2/log-25000_invs-27.txt");
+
+}
+TEST(TotalMiningNumInvsMapTest,31F){
+	set_up_total_mining_test_map("Fx",texada_base1 + "/traces/vary-invs-fixed2/log-25000_invs-30.txt");
+}
+TEST(TotalMiningNumInvsMapTest,34F){
+	set_up_total_mining_test_map("Fx",texada_base1 + "/traces/vary-invs-fixed2/log-25000_invs-33.txt");
+}
+TEST(TotalMiningNumInvsMapTest,37F){
+	set_up_total_mining_test_map("Fx",texada_base1 + "/traces/vary-invs-fixed2/log-25000_invs-36.txt");
+
+}
+
+TEST(TotalMiningNumInvsMapTest,4AFby){
+	set_up_total_mining_test_map("G(x->XFy)",texada_base1 + "/traces/vary-invs-fixed2/log-25000_invs-3.txt");
+}
+TEST(TotalMiningNumInvsMapTest,5AFby){
+	set_up_total_mining_test_map("G(x->XFy)",texada_base1 + "/traces/vary-invs-fixed2/log-25000_invs-4.txt");
+}
+TEST(TotalMiningNumInvsMapTest,6AFby){
+	set_up_total_mining_test_map("G(x->XFy)",texada_base1 + "/traces/vary-invs-fixed2/log-25000_invs-5.txt");
+}
+TEST(TotalMiningNumInvsMapTest,7AFby){
+	set_up_total_mining_test_map("G(x->XFy)",texada_base1 + "/traces/vary-invs-fixed2/log-25000_invs-6.txt");
+}
+TEST(TotalMiningNumInvsMapTest,8AFby){
+	set_up_total_mining_test_map("G(x->XFy)",texada_base1 + "/traces/vary-invs-fixed2/log-25000_invs-7.txt");
+}
+TEST(TotalMiningNumInvsMapTest,9AFby){
+	set_up_total_mining_test_map("G(x->XFy)",texada_base1 + "/traces/vary-invs-fixed2/log-25000_invs-8.txt");
+
+}
+TEST(TotalMiningNumInvsMapTest,13AFby){
+	set_up_total_mining_test_map("G(x->XFy)",texada_base1 + "/traces/vary-invs-fixed2/log-25000_invs-12.txt");
+}
+TEST(TotalMiningNumInvsMapTest,16AFby){
+	set_up_total_mining_test_map("G(x->XFy)",texada_base1 + "/traces/vary-invs-fixed2/log-25000_invs-15.txt");
+}
+TEST(TotalMiningNumInvsMapTest,19AFby){
+	set_up_total_mining_test_map("G(x->XFy)",texada_base1 + "/traces/vary-invs-fixed2/log-25000_invs-18.txt");
+}
+TEST(TotalMiningNumInvsMapTest,22AFby){
+	set_up_total_mining_test_map("G(x->XFy)",texada_base1 + "/traces/vary-invs-fixed2/log-25000_invs-21.txt");
+}
+TEST(TotalMiningNumInvsMapTest,25AFby){
+	set_up_total_mining_test_map("G(x->XFy)",texada_base1 + "/traces/vary-invs-fixed2/log-25000_invs-24.txt");
+}
+TEST(TotalMiningNumInvsMapTest,28AFby){
+	set_up_total_mining_test_map("G(x->XFy)",texada_base1 + "/traces/vary-invs-fixed2/log-25000_invs-27.txt");
+}
+TEST(TotalMiningNumInvsMapTest,31AFby){
+	set_up_total_mining_test_map("G(x->XFy)",texada_base1 + "/traces/vary-invs-fixed2/log-25000_invs-30.txt");
+}
+TEST(TotalMiningNumInvsMapTest,34AFby){
+	set_up_total_mining_test_map("G(x->XFy)",texada_base1 + "/traces/vary-invs-fixed2/log-25000_invs-33.txt");
+}
+TEST(TotalMiningNumInvsMapTest,37AFby){
+	set_up_total_mining_test_map("G(x->XFy)",texada_base1 + "/traces/vary-invs-fixed2/log-25000_invs-36.txt");
+
+}
+
+TEST(TotalMiningNumInvsMapTest,4PbwQR){
+	set_up_total_mining_test_map("G((c & !a & Fa) -> (!b U a))",texada_base1 + "/traces/vary-invs-fixed2/log-25000_invs-3.txt");
+}
+TEST(TotalMiningNumInvsMapTest,5PbwQR){
+	set_up_total_mining_test_map("G((c & !a & Fa) -> (!b U a))",texada_base1 + "/traces/vary-invs-fixed2/log-25000_invs-4.txt");
+}
+TEST(TotalMiningNumInvsMapTest,6PbwQR){
+	set_up_total_mining_test_map("G((c & !a & Fa) -> (!b U a))",texada_base1 + "/traces/vary-invs-fixed2/log-25000_invs-5.txt");
+}
+TEST(TotalMiningNumInvsMapTest,7PbwQR){
+	set_up_total_mining_test_map("G((c & !a & Fa) -> (!b U a))",texada_base1 + "/traces/vary-invs-fixed2/log-25000_invs-6.txt");
+}
+TEST(TotalMiningNumInvsMapTest,8PbwQR){
+	set_up_total_mining_test_map("G((c & !a & Fa) -> (!b U a))",texada_base1 + "/traces/vary-invs-fixed2/log-25000_invs-7.txt");
+}
+TEST(TotalMiningNumInvsMapTest,9PbwQR){
+	set_up_total_mining_test_map("G((c & !a & Fa) -> (!b U a))",texada_base1 + "/traces/vary-invs-fixed2/log-25000_invs-8.txt");
+
+}
+TEST(TotalMiningNumInvsMapTest,13PbwQR){
+	set_up_total_mining_test_map("G((c & !a & Fa) -> (!b U a))",texada_base1 + "/traces/vary-invs-fixed2/log-25000_invs-12.txt");
+}
+TEST(TotalMiningNumInvsMapTest,16PbwQR){
+	set_up_total_mining_test_map("G((c & !a & Fa) -> (!b U a))",texada_base1 + "/traces/vary-invs-fixed2/log-25000_invs-15.txt");
+}
+TEST(TotalMiningNumInvsMapTest,19PbwQR){
+	set_up_total_mining_test_map("G((c & !a & Fa) -> (!b U a))",texada_base1 + "/traces/vary-invs-fixed2/log-25000_invs-18.txt");
+}
+TEST(TotalMiningNumInvsMapTest,22PbwQR){
+	set_up_total_mining_test_map("G((c & !a & Fa) -> (!b U a))",texada_base1 + "/traces/vary-invs-fixed2/log-25000_invs-21.txt");
+}
+TEST(TotalMiningNumInvsMapTest,25PbwQR){
+	set_up_total_mining_test_map("G((c & !a & Fa) -> (!b U a))",texada_base1 + "/traces/vary-invs-fixed2/log-25000_invs-24.txt");
+}
+TEST(TotalMiningNumInvsMapTest,28PbwQR){
+	set_up_total_mining_test_map("G((c & !a & Fa) -> (!b U a))",texada_base1 + "/traces/vary-invs-fixed2/log-25000_invs-27.txt");
+}
+TEST(TotalMiningNumInvsMapTest,31PbwQR){
+	set_up_total_mining_test_map("G((c & !a & Fa) -> (!b U a))",texada_base1 + "/traces/vary-invs-fixed2/log-25000_invs-30.txt");
+}
+TEST(TotalMiningNumInvsMapTest,34PbwQR){
+	set_up_total_mining_test_map("G((c & !a & Fa) -> (!b U a))",texada_base1 + "/traces/vary-invs-fixed2/log-25000_invs-33.txt");
+}
+TEST(TotalMiningNumInvsMapTest,37PbwQR){
+	set_up_total_mining_test_map("G((c & !a & Fa) -> (!b U a))",texada_base1 + "/traces/vary-invs-fixed2/log-25000_invs-36.txt");
+
+}
+
+TEST(TotalMiningNumInvsMapTest,4SpPaQuR){
+	set_up_total_mining_test_map("G(c & !a -> (!b W (d | a)))",texada_base1 + "/traces/vary-invs-fixed2/log-25000_invs-3.txt");
+}
+TEST(TotalMiningNumInvsMapTest,5SpPaQuR){
+	set_up_total_mining_test_map("G(c & !a -> (!b W (d | a)))",texada_base1 + "/traces/vary-invs-fixed2/log-25000_invs-4.txt");
+}
+TEST(TotalMiningNumInvsMapTest,6SpPaQuR){
+	set_up_total_mining_test_map("G(c & !a -> (!b W (d | a)))",texada_base1 + "/traces/vary-invs-fixed2/log-25000_invs-5.txt");
+}
+TEST(TotalMiningNumInvsMapTest,7SpPaQuR){
+	set_up_total_mining_test_map("G(c & !a -> (!b W (d | a)))",texada_base1 + "/traces/vary-invs-fixed2/log-25000_invs-6.txt");
+}
+TEST(TotalMiningNumInvsMapTest,8SpPaQuR){
+	set_up_total_mining_test_map("G(c & !a -> (!b W (d | a)))",texada_base1 + "/traces/vary-invs-fixed2/log-25000_invs-7.txt");
+}
+TEST(TotalMiningNumInvsMapTest,9SpPaQuR){
+	set_up_total_mining_test_map("G(c & !a -> (!b W (d | a)))",texada_base1 + "/traces/vary-invs-fixed2/log-25000_invs-8.txt");
+
+}
+TEST(TotalMiningNumInvsMapTest,13SpPaQuR){
+	set_up_total_mining_test_map("G(c & !a -> (!b W (d | a)))",texada_base1 + "/traces/vary-invs-fixed2/log-25000_invs-12.txt");
+}
+TEST(TotalMiningNumInvsMapTest,16SpPaQuR){
+	set_up_total_mining_test_map("G(c & !a -> (!b W (d | a)))",texada_base1 + "/traces/vary-invs-fixed2/log-25000_invs-15.txt");
+}
+TEST(TotalMiningNumInvsMapTest,19SpPaQuR){
+	set_up_total_mining_test_map("G(c & !a -> (!b W (d | a)))",texada_base1 + "/traces/vary-invs-fixed2/log-25000_invs-18.txt");
+}
+TEST(TotalMiningNumInvsMapTest,22SpPaQuR){
+	set_up_total_mining_test_map("G(c & !a -> (!b W (d | a)))",texada_base1 + "/traces/vary-invs-fixed2/log-25000_invs-21.txt");
+}
+TEST(TotalMiningNumInvsMapTest,25SpPaQuR){
+	set_up_total_mining_test_map("G(c & !a -> (!b W (d | a)))",texada_base1 + "/traces/vary-invs-fixed2/log-25000_invs-24.txt");
+}
+TEST(TotalMiningNumInvsMapTest,28SpPaQuR){
+	set_up_total_mining_test_map("G(c & !a -> (!b W (d | a)))",texada_base1 + "/traces/vary-invs-fixed2/log-25000_invs-27.txt");
+}
+TEST(TotalMiningNumInvsMapTest,31SpPaQuR){
+	set_up_total_mining_test_map("G(c & !a -> (!b W (d | a)))",texada_base1 + "/traces/vary-invs-fixed2/log-25000_invs-30.txt");
+}
+TEST(TotalMiningNumInvsMapTest,34SpPaQuR){
+	set_up_total_mining_test_map("G(c & !a -> (!b W (d | a)))",texada_base1 + "/traces/vary-invs-fixed2/log-25000_invs-33.txt");
+}
+TEST(TotalMiningNumInvsMapTest,37SpPaQuR){
+	set_up_total_mining_test_map("G(c & !a -> (!b W (d | a)))",texada_base1 + "/traces/vary-invs-fixed2/log-25000_invs-36.txt");
 }
 */
-
-
-
