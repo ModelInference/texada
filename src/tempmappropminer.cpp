@@ -72,7 +72,7 @@ std::set<const spot::ltl::formula*> mine_map_property_type(std::string formula_s
 		if (instantiations[i].validity){
 			const spot::ltl::formula * valid_form =
 					instantiate(formula, instantiations[i].inst_map);
-			std::cout << spot::ltl::to_string(valid_form) << "\n";
+			//std::cout << spot::ltl::to_string(valid_form) << "\n";
 			return_set.insert(valid_form);
 		}
 	}

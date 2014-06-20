@@ -12,7 +12,9 @@
 #include <ltlvisit/nenoform.hh>
 #include <ltlvisit/tostring.hh>
 #include <ltlenv/defaultenv.hh>
+#include <ltlparse/public.hh>
 #include <climits>
+#include <fstream>
 
 
 /**
@@ -197,6 +199,25 @@ TEST(MapCheckerTest,SmallTrace){
 	input = "F(F a)";
 	f = spot::ltl::parse(input,pel);
 	ASSERT_TRUE(checker.check_on_trace(f));
+}
+
+TEST(MapCheckerTest,ResourceAllocation){
+
+	//parse the ltl formula
+	spot::ltl::parse_error_list pel;
+	const spot::ltl::formula* formula = spot::ltl::parse("(!(b | c) W a) & G((b -> XFc) & (a -> X((!a U c) & (!c U b))) & (c -> X(!(b | c) W a)))", pel);
+	//std::cout << "## Number of parser errors: "<<pel.size() << "\n";
+	//TODO: get some way for the user to check this.
+
+	// currently just using simple parser, assumedly could replace this by a
+	// more complex parser once we have one
+	std::ifstream infile("/home/clemieux/workspace/texada/Texada/traces/resource-allocation/smallabc.txt");
+	texada::simple_parser parser =  texada::simple_parser();
+	std::set<std::map<texada::string_event,std::vector<long>> >  trace_set = parser.parse_to_map(infile);
+	std::set<std::string>  event_set = parser.return_events();
+
+	texada::map_trace_checker checker = texada::map_trace_checker(*trace_set.begin());
+	ASSERT_TRUE(checker.check_on_trace(formula));
 }
 
 
