@@ -52,6 +52,7 @@ std::set<const spot::ltl::formula*> mine_map_property_type(std::string formula_s
 
 	for(std::set<std::map<string_event,std::vector<long>> >::iterator it = trace_set.begin();
 			it !=trace_set.end(); it++){
+		std::cout << "######### \n";
 		std::map<string_event,std::vector<long>> current_trace = *it;
 		map_trace_checker checker = map_trace_checker(current_trace);
 		int size = instantiations.size();

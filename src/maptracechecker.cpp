@@ -337,6 +337,44 @@ long map_trace_checker::find_first_occurrence(const spot::ltl::formula* node,int
 		}
 }
 
+/**
+ * Adds info the first_occ_map and return first_occ.
+ * @param node formula we have first occ of
+ * @param intvl interval on which we found node
+ * @param first_occ the first occ of node on the interval intvl
+ * @return first_occ
+ */
+long map_trace_checker::return_and_add(const spot::ltl::formula* node,interval intvl,long first_occ){
+	if (first_occ !=intvl.start){
+		first_occ_storer storer;
+		storer.intvl.start = intvl.start;
+		storer.intvl.end = intvl.end;
+		//first-last
+		first_occ_map.emplace(storer,first_occ);
+		storer.intvl.start++;
+		//first+1-last
+		first_occ_map.emplace(storer,first_occ);
+		storer.intvl.end++;
+		//first+1-last+1;
+		first_occ_map.emplace(storer,first_occ);
+		storer.intvl.start--;
+		//first-last+1;
+		first_occ_map.emplace(storer,first_occ);
+	}
+	else{
+		first_occ_storer storer;
+		storer.intvl.start = intvl.start;
+		storer.intvl.end = intvl.end;
+		//first-last
+		first_occ_map.emplace(storer,first_occ);
+		storer.intvl.end++;
+		//first-last+1;
+		first_occ_map.emplace(storer,first_occ);
+
+	}
+
+	return first_occ;
+}
 
 /**
  * Finds the first occurrence of an atomic proposition in a given interval
@@ -345,7 +383,7 @@ long map_trace_checker::find_first_occurrence(const spot::ltl::formula* node,int
  * @return first occurrence position, -1 if not found.
  */
 long map_trace_checker::find_first_occurrence(const spot::ltl::atomic_prop* node,interval intvl){
-	//std::cout << "Finding first occurrence of " << spot::ltl::to_string(node) << " on trace from " << intvl.start << "-" << intvl.end<< "\n";
+	std::cout << "Finding first occurrence of " << spot::ltl::to_string(node) << " on trace from " << intvl.start << "-" << intvl.end<< "\n";
 	// REQUIRES: to_search is sorted. this should be assured earlier on.
 	try{
 	std::vector<long> to_search = trace_map.at(string_event(node->name(),false));
@@ -1122,8 +1160,10 @@ long map_trace_checker::find_last_occurrence(const spot::ltl::binop* node, inter
 			}
 		}
 
+		default:
+			return -1;
+
 		}
-	return -1;
 }
 
 } /* namespace texada */

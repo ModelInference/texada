@@ -268,6 +268,7 @@ double set_up_form_length_3(std::string input){
 
 	for(std::set<std::map<texada::string_event,std::vector<long>> >::iterator it = trace_set.begin();
 				it !=trace_set.end(); it++){
+			std::cout << "####### \n";
 			std::map<texada::string_event,std::vector<long>> current_trace = *it;
 			instantiator.instantiate_array();
 			instantiations = instantiator.return_instantiations();
@@ -578,12 +579,12 @@ TEST(TimingFormulaVarMapTest, 4b){
 	std::cout << set_up_variable_num2("(G!c) | (!c U (c & Fb -> (!b U (d & !b & X(!b U a))))",4)	<< "\n";
 
 }
-
+*/
 TEST(TimingFormulaVarMapTest,5a){
 	std::cout << set_up_variable_num2("G((c & Fa)->(!b U(a | (e& !b & X(!b U d)))))",5)	<< "\n";
 
 }
-
+/*
 TEST(TimingFormulaVarMapTest,5b){
 	std::cout << set_up_variable_num2("G(c -> (!(d & (!a) & X(!a U (e & !a))) U (a | b) | G(!(d & XFe))))",5)	<< "\n";
 
@@ -1055,5 +1056,4 @@ TEST(TotalMiningNumInvsMapTest,34SpPaQuR){
 }
 TEST(TotalMiningNumInvsMapTest,37SpPaQuR){
 	set_up_total_mining_test_map("G(c & !a -> (!b W (d | a)))",texada_base1 + "/traces/vary-invs-fixed2/log-25000_invs-36.txt");
-}
-*/
+}*/

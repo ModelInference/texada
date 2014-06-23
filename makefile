@@ -6,7 +6,7 @@
 
 RM := rm -rf
 
-LIBS := -lspot -lgtest -lpthread -lgtest_main
+LIBS := -lspot -lgtest -lpthread -lgtest_main 
 
 BINSRC = bin/src
 BINTESTS = bin/tests
@@ -64,7 +64,7 @@ Texada: $(OBJS) $(USER_OBJS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 	
-	
+
 # Each subdirectory must supply rules for building sources it contributes
 ./bin/src/%.o: ./src/%.cpp | $(BINSRC)
 	@echo 'Building file: $<'
