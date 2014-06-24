@@ -199,7 +199,7 @@ std::array<bool,8> set_up_perracotta_map_tests(std::string formula){
 	return output_array;
 }
 
-/*
+
 
 TEST(PropertyTypeMinerMapTest, Response){
 
@@ -309,4 +309,4 @@ TEST(PropertyTypeMinerMapTest, OneEffect){
 	ASSERT_FALSE(eval_array[5]);
 	ASSERT_FALSE(eval_array[6]);
 	ASSERT_TRUE(eval_array[7]);
-}*/
+}

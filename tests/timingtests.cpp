@@ -562,11 +562,11 @@ TEST(TimingFormulaVarMapTest, 3a){
 TEST(TimingFormulaVarMapTest, 3b){
 	std::cout << set_up_variable_num2("!c W (b & !a)",3)	<< "\n";
 
-}
+}*/
 TEST(TimingFormulaVarMapTest, 3c){
-	std::cout << set_up_variable_num2("G((c&Fa)->((!b&!a)U(a|((b &!a)U(a|((!b&!a)U(a|((b&!a)U(a|(!bUa))))))))))",3)	<< "\n";
+	std::cout << set_up_variable_num2("G((c&Fa)->((!b&!a)U(a|((b &!a)U(a|((!b&!a)U(a|((b&!a)U(a|(!b U a))))))))))",3)	<< "\n";
 
-}
+}/*
 TEST(TimingFormulaVarMapTest, 3d){
 	std::cout << set_up_variable_num2("(!(b |c) W a)&G((a->X((!a U c)&(!c U b)))&(b->XFc)&(c->X((!(c|b)Wa))))",3)	<< "\n";
 
@@ -579,12 +579,12 @@ TEST(TimingFormulaVarMapTest, 4b){
 	std::cout << set_up_variable_num2("(G!c) | (!c U (c & Fb -> (!b U (d & !b & X(!b U a))))",4)	<< "\n";
 
 }
-*/
+
 TEST(TimingFormulaVarMapTest,5a){
 	std::cout << set_up_variable_num2("G((c & Fa)->(!b U(a | (e& !b & X(!b U d)))))",5)	<< "\n";
 
 }
-/*
+
 TEST(TimingFormulaVarMapTest,5b){
 	std::cout << set_up_variable_num2("G(c -> (!(d & (!a) & X(!a U (e & !a))) U (a | b) | G(!(d & XFe))))",5)	<< "\n";
 
@@ -592,8 +592,8 @@ TEST(TimingFormulaVarMapTest,5b){
 TEST(TimingFormulaVarMapTest,5c){
 	std::cout << set_up_variable_num2("G(d|c)|G(a->(Fb & G!e))",5)	<< "\n";
 
-}*/
-
+}
+*/
 void set_up_total_mining_test(std::string form, std::string source){
 	clock_t begin, end;
 	double time_spent;

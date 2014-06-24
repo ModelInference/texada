@@ -21,7 +21,9 @@ map_trace_checker::map_trace_checker(std::map<string_event,std::vector<long>> tr
 }
 
 map_trace_checker::~map_trace_checker() {
-	// TODO Auto-generated destructor stub
+	first_occ_map.clear();
+	last_occ_map.clear();
+	trace_map.clear();
 }
 
 /**
@@ -347,6 +349,7 @@ long map_trace_checker::find_first_occurrence(const spot::ltl::formula* node,int
 long map_trace_checker::return_and_add(const spot::ltl::formula* node,interval intvl,long first_occ){
 	if (first_occ !=intvl.start){
 		first_occ_storer storer;
+		storer.formula = node;
 		storer.intvl.start = intvl.start;
 		storer.intvl.end = intvl.end;
 		//first-last
@@ -363,6 +366,7 @@ long map_trace_checker::return_and_add(const spot::ltl::formula* node,interval i
 	}
 	else{
 		first_occ_storer storer;
+		storer.formula = node;
 		storer.intvl.start = intvl.start;
 		storer.intvl.end = intvl.end;
 		//first-last
@@ -377,14 +381,56 @@ long map_trace_checker::return_and_add(const spot::ltl::formula* node,interval i
 }
 
 /**
+ * Adds info the first_occ_map and return first_occ.
+ * @param node formula we have first occ of
+ * @param intvl interval on which we found node
+ * @param first_occ the first occ of node on the interval intvl
+ * @return first_occ
+ */
+long map_trace_checker::return_and_add_end(const spot::ltl::formula* node,interval intvl,long first_occ){
+	if (first_occ !=intvl.end){
+		first_occ_storer storer;
+		storer.formula = node;
+		storer.intvl.start = intvl.start;
+		storer.intvl.end = intvl.end;
+		//first-last
+		first_occ_map.emplace(storer,first_occ);
+		storer.intvl.end--;
+		//first-last-1
+		first_occ_map.emplace(storer,first_occ);
+
+	}
+	else{
+		first_occ_storer storer;
+		storer.formula = node;
+		storer.intvl.start = intvl.start;
+		storer.intvl.end = intvl.end;
+		//first-last
+		first_occ_map.emplace(storer,first_occ);
+
+
+	}
+
+	return first_occ;
+}
+
+/**
  * Finds the first occurrence of an atomic proposition in a given interval
  * @param node atomic prop to find
  * @param intvl interval to search in
  * @return first occurrence position, -1 if not found.
  */
 long map_trace_checker::find_first_occurrence(const spot::ltl::atomic_prop* node,interval intvl){
-	std::cout << "Finding first occurrence of " << spot::ltl::to_string(node) << " on trace from " << intvl.start << "-" << intvl.end<< "\n";
+	//std::cout << "Finding first occurrence of " << spot::ltl::to_string(node) << " on trace from " << intvl.start << "-" << intvl.end<< "\n";
 	// REQUIRES: to_search is sorted. this should be assured earlier on.
+	first_occ_storer storer;
+	storer.intvl.start = intvl.start;
+	storer.intvl.end = intvl.end;
+	storer.formula = node;
+	std::unordered_map<first_occ_storer,long,first_occ_storer_hash>::iterator it = first_occ_map.find(storer);
+	if (it!=first_occ_map.end()){
+		return it->second;
+	}
 	try{
 	std::vector<long> to_search = trace_map.at(string_event(node->name(),false));
 	long left = 0;
@@ -404,7 +450,7 @@ long map_trace_checker::find_first_occurrence(const spot::ltl::atomic_prop* node
 			 */
 			if (newpos + 1 >= to_search.size()) {
 				//std::cout << "It's -1. \n";
-				return -1;
+				return return_and_add(node,intvl,-1);
 			}
 			if (to_search[newpos+1]>= intvl.start ){
 				/**
@@ -417,7 +463,7 @@ long map_trace_checker::find_first_occurrence(const spot::ltl::atomic_prop* node
 				 */
 				if (to_search[newpos+1]<= intvl.end) {
 					//std::cout << "It's " << to_search[newpos+1] << ".\n";
-					return to_search[newpos+1];}
+					return return_and_add(node,intvl,to_search[newpos+1]);}
 				/**
 				 * case where
 				 * to_search:
@@ -429,7 +475,7 @@ long map_trace_checker::find_first_occurrence(const spot::ltl::atomic_prop* node
 				 */
 				else {
 					//std::cout << "It's -1. \n";
-					return -1;}
+					return return_and_add(node,intvl,-1);}
 			}
 
 			/**
@@ -447,7 +493,7 @@ long map_trace_checker::find_first_occurrence(const spot::ltl::atomic_prop* node
 		 */
 		else if (to_search[newpos] == intvl.start){
 			//std::cout << "It's " << intvl.start << ".\n";
-			return intvl.start;
+			return return_and_add(node,intvl,intvl.start);
 		}
 		else{
 			if (newpos == 0) {
@@ -461,7 +507,7 @@ long map_trace_checker::find_first_occurrence(const spot::ltl::atomic_prop* node
 				 */
 				if (to_search[newpos]<= intvl.end) {
 					//std::cout << "It's " << to_search[newpos] << ".\n";
-					return to_search[newpos];}
+					return return_and_add(node,intvl,to_search[newpos]);}
 				/**
 				 * case where
 				 * to_search:
@@ -472,7 +518,7 @@ long map_trace_checker::find_first_occurrence(const spot::ltl::atomic_prop* node
 				 */
 				else {
 					//std::cout << "It's -1.\n";
-					return -1;}
+					return return_and_add(node,intvl,-1);}
 			}
 			/**
 			 * case where:
@@ -488,7 +534,7 @@ long map_trace_checker::find_first_occurrence(const spot::ltl::atomic_prop* node
 	} catch (std::out_of_range &e){
 		// this means we didn't find the event in the trace map, so it never occurs;
 		//std::cout << "It's -1.\n";
-		return -1;
+		return return_and_add(node,intvl,-1);
 	}
 }
 
@@ -841,6 +887,7 @@ long map_trace_checker::find_last_occurrence(const spot::ltl::formula* node, int
  * @return last occurrence position, -1 if not found.
  */
 long map_trace_checker::find_last_occurrence(const spot::ltl::atomic_prop* node, interval intvl){
+	//std::cout << "Finding last occurrence of " << spot::ltl::to_string(node) << " on trace from " << intvl.start << "-" << intvl.end<< "\n";
 	// REQUIRES: to_search is sorted. this should be assured earlier on.
 	try {
 		std::vector<long> to_search = trace_map.at(string_event(node->name(),false));
@@ -896,6 +943,7 @@ long map_trace_checker::find_last_occurrence(const spot::ltl::atomic_prop* node,
  * @return last occurrence of node in intvl
  */
 long map_trace_checker::find_last_occurrence(const spot::ltl::multop* node, interval intvl){
+	//std::cout << "Finding last occurrence of " << spot::ltl::to_string(node) << " on trace from " << intvl.start << "-" << intvl.end<< "\n";
 	spot::ltl::multop::type opkind = node->op();
 			switch(opkind){
 			// Or case: total_last_occ set to max. If any of the desired events
@@ -953,6 +1001,7 @@ long map_trace_checker::find_last_occurrence(const spot::ltl::multop* node, inte
  * @return last occurrence of node in intvl, -1 if not found.
  */
 long map_trace_checker::find_last_occurrence(const spot::ltl::unop* node, interval intvl){
+	//std::cout << "Finding last occurrence of " << spot::ltl::to_string(node) << " on trace from " << intvl.start << "-" << intvl.end<< "\n";
 	spot::ltl::unop::type optype = node->op();
 
 		switch (optype){
@@ -1036,6 +1085,7 @@ long map_trace_checker::find_last_occurrence(const spot::ltl::constant* node, in
  * @return last occurrence of node in intvl
  */
 long map_trace_checker::find_last_occurrence(const spot::ltl::binop* node, interval intvl){
+	//std::cout << "Finding last occurrence of " << spot::ltl::to_string(node) << " on trace from " << intvl.start << "-" << intvl.end<< "\n";
 	spot::ltl::binop::type opkind = node->op();
 
 		switch(opkind){

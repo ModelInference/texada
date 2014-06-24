@@ -75,6 +75,7 @@ private:
 	};
 
 	std::unordered_map<first_occ_storer,long,first_occ_storer_hash> first_occ_map;
+	std::unordered_map<first_occ_storer,long,first_occ_storer_hash> last_occ_map;
 	std::map<string_event,std::vector<long>> trace_map;
 	bool check(const spot::ltl::formula *, interval);
 	bool check(const spot::ltl::atomic_prop *, interval);
@@ -91,6 +92,7 @@ private:
 	long find_first_occurrence(const spot::ltl::atomic_prop*,interval);
 
 	long return_and_add(const spot::ltl::formula*,interval,long);
+	long return_and_add_end(const spot::ltl::formula*,interval,long);
 
 	long find_last_occurrence(const spot::ltl::formula*, interval);
 	long find_last_occurrence(const spot::ltl::atomic_prop*, interval);
