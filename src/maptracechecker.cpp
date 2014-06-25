@@ -381,37 +381,28 @@ long map_trace_checker::return_and_add(const spot::ltl::formula* node,interval i
 }
 
 /**
- * Adds info the first_occ_map and return first_occ.
+ * Adds info the last_occ_map and return last_occ.
  * @param node formula we have first occ of
  * @param intvl interval on which we found node
- * @param first_occ the first occ of node on the interval intvl
- * @return first_occ
+ * @param last_occ the last occ of node on the interval intvl
+ * @return last_occ
  */
-long map_trace_checker::return_and_add_end(const spot::ltl::formula* node,interval intvl,long first_occ){
-	if (first_occ !=intvl.end){
-		first_occ_storer storer;
-		storer.formula = node;
-		storer.intvl.start = intvl.start;
-		storer.intvl.end = intvl.end;
-		//first-last
-		first_occ_map.emplace(storer,first_occ);
+long map_trace_checker::return_and_add_end(const spot::ltl::formula* node,interval intvl,long last_occ){
+	first_occ_storer storer;
+	storer.formula = node;
+	storer.intvl.start = intvl.start;
+	storer.intvl.end = intvl.end;
+	//first-last
+	first_occ_map.emplace(storer,last_occ);
+	if (last_occ !=intvl.end){
 		storer.intvl.end--;
 		//first-last-1
-		first_occ_map.emplace(storer,first_occ);
-
-	}
-	else{
-		first_occ_storer storer;
-		storer.formula = node;
-		storer.intvl.start = intvl.start;
-		storer.intvl.end = intvl.end;
-		//first-last
-		first_occ_map.emplace(storer,first_occ);
-
+		first_occ_map.emplace(storer,last_occ);
 
 	}
 
-	return first_occ;
+
+	return last_occ;
 }
 
 /**

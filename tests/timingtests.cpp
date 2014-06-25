@@ -562,11 +562,11 @@ TEST(TimingFormulaVarMapTest, 3a){
 TEST(TimingFormulaVarMapTest, 3b){
 	std::cout << set_up_variable_num2("!c W (b & !a)",3)	<< "\n";
 
-}*/
+}
 TEST(TimingFormulaVarMapTest, 3c){
 	std::cout << set_up_variable_num2("G((c&Fa)->((!b&!a)U(a|((b &!a)U(a|((!b&!a)U(a|((b&!a)U(a|(!b U a))))))))))",3)	<< "\n";
 
-}/*
+}
 TEST(TimingFormulaVarMapTest, 3d){
 	std::cout << set_up_variable_num2("(!(b |c) W a)&G((a->X((!a U c)&(!c U b)))&(b->XFc)&(c->X((!(c|b)Wa))))",3)	<< "\n";
 
@@ -1016,13 +1016,13 @@ TEST(TotalMiningNumInvsMapTest,4SpPaQuR){
 }
 TEST(TotalMiningNumInvsMapTest,5SpPaQuR){
 	set_up_total_mining_test_map("G(c & !a -> (!b W (d | a)))",texada_base1 + "/traces/vary-invs-fixed2/log-25000_invs-4.txt");
-}
+}*/
 TEST(TotalMiningNumInvsMapTest,6SpPaQuR){
 	set_up_total_mining_test_map("G(c & !a -> (!b W (d | a)))",texada_base1 + "/traces/vary-invs-fixed2/log-25000_invs-5.txt");
 }
 TEST(TotalMiningNumInvsMapTest,7SpPaQuR){
 	set_up_total_mining_test_map("G(c & !a -> (!b W (d | a)))",texada_base1 + "/traces/vary-invs-fixed2/log-25000_invs-6.txt");
-}
+}/*
 TEST(TotalMiningNumInvsMapTest,8SpPaQuR){
 	set_up_total_mining_test_map("G(c & !a -> (!b W (d | a)))",texada_base1 + "/traces/vary-invs-fixed2/log-25000_invs-7.txt");
 }
