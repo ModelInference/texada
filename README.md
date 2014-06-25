@@ -1,4 +1,14 @@
-# Texada Readme
+# Introduction
+
+Texada is a research tool designed for extracting patterns from text data. Specifically, Texada is designed for mining specifications from program executions. To use Texada you need to provide it with at least the following two inputs:
+
+1. A user-defined linear temporal logic ([LTL](http://en.wikipedia.org/wiki/Linear_temporal_logic)) formula whose atomic propositions are variables. We call this a property type.
+
+2. A text file containing multiple program executions, each of which is composed of a totally ordered sequence of events. We call this a log.
+
+Texada's output is a set of LTL formulae that are instantiations of the input property type. That is, in an instantiation, the variable atomic propositions are replaced with events from the log. The output set of formulae all satisfy the input set of executions in the log. That is, each formula evaluates to true over each of the executions.
+
+Texada is developed in C++. The rest of this page describes the steps to get Texada working from a newly cloned repository.
 
 ### Directory Structure
 
@@ -9,26 +19,28 @@
          /src -- source code for main project
          /tests -- main project tests
 
-### Required Libraries
+### Required libraries
 
-Texada relies on two non-standard libraries, [SPOT](http://spot.lip6.fr/wiki/GetSpot) and [Google Test](https://code.google.com/p/googletest/). 
+Texada depends on two non-standard libraries, [Google Test](https://code.google.com/p/googletest/), and [SPOT](http://spot.lip6.fr/wiki/GetSpot).
+
+#### Google Test
 
 Google Test can be used in Eclipse if the C/C++ Unit Testing Support item, which can be installed along with the CDT. To install the CDT and Unit Testing Support, add the website http://download.eclipse.org/tools/cdt/releases/youreclipseversion to the Help->Install New Software... dialogue, with youreclipseversion replaced by your eclipse version (e.g. Kepler). The C/C++ Unit Testing Support can then be installed under CDT Optional Features.
 
-To install SPOT, navigate to the link above and download the tar.gz file. Extract the spot-version.tar.gz file where you'd like it to be. This can be done via the tar command:
+#### SPOT
 
-tar -zxvf spot-version.tar.gz
+To install SPOT, navigate to the link above and download the tar.gz file. Extract the file with:
 
-Note that SPOT requires the instllation of the [Boost](http://www.boost.org/) libraries. Its full functionality requires Python 2.0+ headers, but if these are not already installed, they can be omitted for the purposes of Texada. 
+    tar -zxvf spot-version.tar.gz
 
-Once SPOT is extracted, navigate to that folder and run the commands
+Note that SPOT requires the installation of the [Boost](http://www.boost.org/) libraries. Its full functionality requires Python 2.0+ headers, but if these are not already installed, they can be omitted for the purposes of Texada. 
 
-./configure (or ./configure --disable-python if Python is not installed)
-make
-make check
-make install
+Navigate to the extracted SPOT folder and run these commands to install SPOT:
 
-to install.
+    ./configure (or ./configure --disable-python if Python is not installed)
+    make
+    make check
+    make install
 
 TODO: add installation instruction for other OSs if possible
 
