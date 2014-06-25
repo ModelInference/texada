@@ -1,9 +1,3 @@
-################################################################################
-# Automatically-generated file. Do not edit!
-################################################################################
-
--include makefile.init
-
 RM := rm -rf
 
 LIBS := -lspot -lgtest -lpthread -lgtest_main 
@@ -73,8 +67,6 @@ Texada: $(OBJS) $(USER_OBJS)
 	@echo 'Finished building: $<'
 	@echo ' '
 
-
-
 # Each subdirectory must supply rules for building sources it contributes
 ./bin/tests/%.o: ./tests/%.cpp | $(BINTESTS)
 	@echo 'Building file: $<'
@@ -98,7 +90,5 @@ clean:
 
 .PHONY: all clean dependents
 .SECONDARY:
-
-
 
 -include makefile.targets
