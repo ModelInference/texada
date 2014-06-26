@@ -201,11 +201,11 @@ bool map_trace_checker::check(const spot::ltl::binop *node, interval intvl){
 	//Until case
 	case spot::ltl::binop::U:{
 		long first_occ_second = find_first_occurrence(node->second(),intvl);
-		long first_occ_neg_first = find_first_occurrence(spot::ltl::negative_normal_form(node->first(),true), intvl);
-		if (first_occ_neg_first < first_occ_second){
+		if (first_occ_second == -1){
 			return false;
 		}
-		else if (first_occ_second == -1){
+		long first_occ_neg_first = find_first_occurrence(spot::ltl::negative_normal_form(node->first(),true), intvl);
+		if (first_occ_neg_first < first_occ_second){
 			return false;
 		}
 		else return true;
@@ -215,12 +215,8 @@ bool map_trace_checker::check(const spot::ltl::binop *node, interval intvl){
 	case spot::ltl::binop::R:{
 		long first_occ_neg_second = find_first_occurrence(spot::ltl::negative_normal_form(node->second(),true), intvl);
 		long first_occ_first = find_first_occurrence(node->first(),intvl);
-		if (first_occ_neg_second == -1){
-			return true;
-		}
-		// if the first never occurs but a negation of the second does, this is incorrect?
-		else if (first_occ_first == -1){
-			return false;
+		if (first_occ_first == -1){
+			return (first_occ_neg_second == -1);
 		}
 		else if (first_occ_neg_second <= first_occ_first){
 			return false;
@@ -233,10 +229,10 @@ bool map_trace_checker::check(const spot::ltl::binop *node, interval intvl){
 	case spot::ltl::binop::W:{
 		long first_occ_second = find_first_occurrence(node->second(),intvl);
 		long first_occ_neg_first = find_first_occurrence(spot::ltl::negative_normal_form(node->first(),true), intvl);
-		if (first_occ_neg_first < first_occ_second){
-			return false;
+		if (first_occ_second == -1){
+			return (first_occ_neg_first == -1);
 		}
-		else if (first_occ_neg_first !=-1 && first_occ_second == -1){
+		else if (first_occ_neg_first < first_occ_second){
 			return false;
 		}
 		else return true;
@@ -248,9 +244,6 @@ bool map_trace_checker::check(const spot::ltl::binop *node, interval intvl){
 		long first_occ_first = find_first_occurrence(node->first(),intvl);
 		if (first_occ_first == -1){
 			return false;
-		}
-		else if (first_occ_neg_second == -1){
-			return true;
 		}
 		else if (first_occ_neg_second <= first_occ_first){
 			return false;
