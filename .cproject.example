@@ -4,10 +4,10 @@
 		<cconfiguration id="cdt.managedbuild.config.gnu.exe.debug.156883815">
 			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="cdt.managedbuild.config.gnu.exe.debug.156883815" moduleId="org.eclipse.cdt.core.settings" name="Debug">
 				<macros>
-					<stringMacro name="SPOT_LIB" type="VALUE_TEXT" value="/home/clemieux/spot-1.2.4/src/.libs/"/>
-					<stringMacro name="SPOT_INCL" type="VALUE_TEXT" value="/usr/local/include/spot"/>
-					<stringMacro name="GTEST_LIB" type="VALUE_TEXT" value="/usr/src/gtest-1.7.0/build"/>
-					<stringMacro name="GTEST_INCL" type="VALUE_TEXT" value="/usr/src/gtest-1.7.0/include"/>
+					<stringMacro name="SPOT_LIB" type="VALUE_TEXT" value="$SPOT_LIB"/>
+					<stringMacro name="SPOT_INCL" type="VALUE_TEXT" value="$SPOT_INCL"/>
+					<stringMacro name="GTEST_LIB" type="VALUE_TEXT" value="$GTEST_LIB"/>
+					<stringMacro name="GTEST_INCL" type="VALUE_TEXT" value="$GTEST_INCL"/>
 				</macros>
 				<externalSettings/>
 				<extensions>
@@ -50,8 +50,8 @@
 									<listOptionValue builtIn="false" value="gtest_main"/>
 								</option>
 								<option id="gnu.cpp.link.option.paths.654250472" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" valueType="libPaths">
-									<listOptionValue builtIn="false" value="/usr/src/gtest-1.7.0/build"/>
-									<listOptionValue builtIn="false" value="/home/clemieux/spot-1.2.4/src/.libs/"/>
+									<listOptionValue builtIn="false" value="$GTEST_LIB"/>
+									<listOptionValue builtIn="false" value="$SPOT_LIB"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.1790502806" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
