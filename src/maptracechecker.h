@@ -74,6 +74,7 @@ private:
 	  }
 	};
 
+	long terminal_point;
 	std::unordered_map<first_occ_storer,long,first_occ_storer_hash> first_occ_map;
 	std::unordered_map<first_occ_storer,long,first_occ_storer_hash> last_occ_map;
 	std::map<string_event,std::vector<long>> trace_map;
