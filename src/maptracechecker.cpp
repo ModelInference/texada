@@ -17,6 +17,8 @@ namespace texada {
 
 map_trace_checker::map_trace_checker(std::map<string_event,std::vector<long>> trace_map_):
 	trace_map(trace_map_){
+	std::vector<long> end_vector = trace_map.at(texada::string_event("EndOfTraceVar",true));
+	terminal_point = end_vector[0];
 
 }
 
@@ -34,8 +36,7 @@ map_trace_checker::~map_trace_checker() {
 bool map_trace_checker::check_on_trace(const spot::ltl::formula* node){
 	//std::cout << "###";
 	interval base_interval;
-	std::vector<long> end_vector = trace_map.at(texada::string_event("EndOfTraceVar",true));
-	base_interval.end = end_vector[0] -1;
+	base_interval.end = terminal_point -1;
 	return check(node, base_interval);
 
 }
@@ -640,13 +641,17 @@ long map_trace_checker::find_first_occurrence(const spot::ltl::unop* node, inter
 	// Globally: find the last occurrence of the negation; first globally will
 	// be after that.
 	case spot::ltl::unop::G:{
-		long last_neg_occ = find_last_occurrence(spot::ltl::negative_normal_form(node->child(),true),intvl);
+		interval temp;
+		temp.start =intvl.start;
+		temp.end = terminal_point -1;
+		long last_neg_occ = find_last_occurrence(spot::ltl::negative_normal_form(node->child(),true),temp);
 		if (last_neg_occ == -1) return intvl.start;
 		if (last_neg_occ == intvl.end) return -1;
 		else return ++last_neg_occ;
 	}
 
 	case spot::ltl::unop::F:{
+		intvl.end = terminal_point - 1;
 		long first_occ = find_first_occurrence(node->child(),intvl);
 		if (first_occ == -1) return -1;
 		else return intvl.start;
@@ -727,11 +732,17 @@ long map_trace_checker::find_first_occurrence(const spot::ltl::binop* node, inte
 	// until will be one after this last occurrence of the negation of the first.
 
 	case spot::ltl::binop::U:{
-		long first_occ_second = find_first_occurrence(node->second(),intvl);
+		interval temp;
+		temp.start = intvl.start;
+		temp.end = terminal_point -1;
+		long first_occ_second = find_first_occurrence(node->second(),temp);
 		if (first_occ_second == -1) return -1;
 		intvl.end = first_occ_second - 1;
 		long last_occ_neg_first = find_last_occurrence(spot::ltl::negative_normal_form(node->first(),true),intvl);
 		if (last_occ_neg_first == -1) return intvl.start;
+		if (last_occ_neg_first >= intvl.end){
+			return -1;
+		}
 		else return ++last_occ_neg_first;
 	}
 

@@ -1016,13 +1016,13 @@ TEST(TotalMiningNumInvsMapTest,4SpPaQuR){
 }
 TEST(TotalMiningNumInvsMapTest,5SpPaQuR){
 	set_up_total_mining_test_map("G(c & !a -> (!b W (d | a)))",texada_base1 + "/traces/vary-invs-fixed2/log-25000_invs-4.txt");
-}*/
+}
 TEST(TotalMiningNumInvsMapTest,6SpPaQuR){
 	set_up_total_mining_test_map("G(c & !a -> (!b W (d | a)))",texada_base1 + "/traces/vary-invs-fixed2/log-25000_invs-5.txt");
 }
 TEST(TotalMiningNumInvsMapTest,7SpPaQuR){
 	set_up_total_mining_test_map("G(c & !a -> (!b W (d | a)))",texada_base1 + "/traces/vary-invs-fixed2/log-25000_invs-6.txt");
-}/*
+}
 TEST(TotalMiningNumInvsMapTest,8SpPaQuR){
 	set_up_total_mining_test_map("G(c & !a -> (!b W (d | a)))",texada_base1 + "/traces/vary-invs-fixed2/log-25000_invs-7.txt");
 }
