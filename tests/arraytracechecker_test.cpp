@@ -98,3 +98,22 @@ TEST(ArrayTraceCheckerTest,Alternating){
 
 
 }
+TEST(ArrayTraceCheckerTest,Until){
+	texada::string_event* trace = new texada::string_event[2];
+	trace[0] = *(new texada::string_event("q",false));
+	trace[1] = *(new texada::string_event("EndOfTraceVar",true));
+
+	std::string input = "p U q";
+	spot::ltl::parse_error_list pel;
+	const spot::ltl::formula* f = spot::ltl::parse(input, pel);
+
+	texada::array_trace_checker* checker = new texada::array_trace_checker();
+
+	ASSERT_TRUE(checker->check(f,trace));
+
+	input = "!p U q";
+	f= spot::ltl::parse(input,pel);
+
+	ASSERT_TRUE(checker->check(f,trace));
+
+}
