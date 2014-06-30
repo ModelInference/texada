@@ -30,7 +30,7 @@ TEST(PropertyTypeMinerMapTest, SmallResourceAllocation){
 			texada_base2 + "/traces/resource-allocation/smallabc.txt");
 
 	ASSERT_EQ(set.size(),1);
-}
+}/*
 TEST(PropertyTypeMinerMapTest, STprecedesPafterQ){
 	std::set<const spot::ltl::formula*> set =texada::mine_map_property_type("(G!y) | (!y U (y & XFx -> (!x U (a & !x & X(!x U z))))",
 			texada_base2 + "/traces/resource-allocation/abb4cad.txt");
@@ -53,7 +53,7 @@ TEST(PropertyTypeMinerMapTest, STprecedesPafterQ){
 	std::cout << set.size() << "\n";
 	ASSERT_TRUE(contains_instated_form);
 }
-
+*/
 
 std::array<bool,8> set_up_perracotta_map_tests(std::string formula){
 	std::array<bool,8> output_array;
