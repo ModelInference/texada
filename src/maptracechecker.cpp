@@ -408,14 +408,14 @@ long map_trace_checker::return_and_add_end(const spot::ltl::formula* node,interv
 long map_trace_checker::find_first_occurrence(const spot::ltl::atomic_prop* node,interval intvl){
 	//std::cout << "Finding first occurrence of " << spot::ltl::to_string(node) << " on trace from " << intvl.start << "-" << intvl.end<< "\n";
 	// REQUIRES: to_search is sorted. this should be assured earlier on.
-	/*first_occ_storer storer;
+	first_occ_storer storer;
 	storer.intvl.start = intvl.start;
 	storer.intvl.end = intvl.end;
 	storer.formula = node;
 	std::unordered_map<first_occ_storer,long,first_occ_storer_hash>::iterator it = first_occ_map.find(storer);
 	if (it!=first_occ_map.end()){
 		return it->second;
-	}*/
+	}
 	try{
 	std::vector<long> to_search = trace_map.at(string_event(node->name(),false));
 	long left = 0;
@@ -639,17 +639,21 @@ long map_trace_checker::find_first_occurrence(const spot::ltl::unop* node, inter
 	}
 
 	// Globally: find the last occurrence of the negation; first globally will
-	// be after that.
+	// be after that. We have to take into account the possibility of a negation
+	// occurring after the end of the interval as well.
 	case spot::ltl::unop::G:{
 		interval temp;
 		temp.start =intvl.start;
 		temp.end = terminal_point -1;
 		long last_neg_occ = find_last_occurrence(spot::ltl::negative_normal_form(node->child(),true),temp);
 		if (last_neg_occ == -1) return intvl.start;
-		if (last_neg_occ == intvl.end) return -1;
+		if (last_neg_occ >= intvl.end) return -1;
 		else return ++last_neg_occ;
 	}
 
+	// Finally: given Fp, find the first occurrence of p from the start of the
+	// interval to the end of the trace. If it occurs at any time, then the first
+	// Fp is at the front of the interval.
 	case spot::ltl::unop::F:{
 		intvl.end = terminal_point - 1;
 		long first_occ = find_first_occurrence(node->child(),intvl);
