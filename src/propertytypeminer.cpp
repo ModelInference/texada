@@ -39,20 +39,18 @@ std::set<const spot::ltl::formula*> mine_property_type(std::string formula_strin
 	spot::ltl::atomic_prop_set * variables = spot::ltl::atomic_prop_collect(formula);
 	//std::cout << "## Number of variables: " <<variables->size() << "\n";
 	//create the instantiation array
+
 	array_instantiator instantiator = array_instantiator(event_set, *variables);
 	instantiator.instantiate_array();
 	std::vector<array_instantiator::inst_fxn> instantiations = instantiator.return_instantiations();
 
 
-	//number of events
-	int k = event_set.size();
-	//number of bindings
-	int n = variables->size();
+
 	//size of instnatiations
 	int size = instantiations.size();
 
 	//## debugging
-	int numvalid;
+	//int numvalid;
 
 	for(std::set<std::vector<string_event> >::iterator it = trace_set.begin();
 			it !=trace_set.end(); it++){
@@ -71,8 +69,6 @@ std::set<const spot::ltl::formula*> mine_property_type(std::string formula_strin
 	}
 
 	std::set<const spot::ltl::formula*>  return_set;
-
-
 
 	for (int i = 0; i <size; i++){
 		if (instantiations[i].validity){

@@ -382,19 +382,19 @@ long map_trace_checker::return_and_add(const spot::ltl::formula* node,interval i
  * @return last_occ
  */
 long map_trace_checker::return_and_add_end(const spot::ltl::formula* node,interval intvl,long last_occ){
-/*	first_occ_storer storer;
+	first_occ_storer storer;
 	storer.formula = node;
 	storer.intvl.start = intvl.start;
 	storer.intvl.end = intvl.end;
 	//first-last
-	first_occ_map.emplace(storer,last_occ);
+	last_occ_map.emplace(storer,last_occ);
 	if (last_occ !=intvl.end){
 		storer.intvl.end--;
 		//first-last-1
-		first_occ_map.emplace(storer,last_occ);
+		last_occ_map.emplace(storer,last_occ);
 
 	}
-*/
+
 
 	return last_occ;
 }
@@ -435,7 +435,7 @@ long map_trace_checker::find_first_occurrence(const spot::ltl::atomic_prop* node
 			 */
 			if (newpos + 1 >= to_search.size()) {
 				//std::cout << "It's -1. \n";
-				return -1;
+				return return_and_add(node,intvl,-1);
 			}
 			if (to_search[newpos+1]>= intvl.start ){
 				/**
@@ -448,7 +448,7 @@ long map_trace_checker::find_first_occurrence(const spot::ltl::atomic_prop* node
 				 */
 				if (to_search[newpos+1]<= intvl.end) {
 					//std::cout << "It's " << to_search[newpos+1] << ".\n";
-					return to_search[newpos+1];}
+					return return_and_add(node,intvl,to_search[newpos+1]);}
 				/**
 				 * case where
 				 * to_search:
@@ -460,7 +460,7 @@ long map_trace_checker::find_first_occurrence(const spot::ltl::atomic_prop* node
 				 */
 				else {
 					//std::cout << "It's -1. \n";
-					return -1;}
+					return return_and_add(node,intvl,-1);}
 			}
 
 			/**
@@ -478,7 +478,7 @@ long map_trace_checker::find_first_occurrence(const spot::ltl::atomic_prop* node
 		 */
 		else if (to_search[newpos] == intvl.start){
 			//std::cout << "It's " << intvl.start << ".\n";
-			return intvl.start;
+			return return_and_add(node,intvl,intvl.start);
 		}
 		else{
 			if (newpos == 0) {
@@ -492,7 +492,7 @@ long map_trace_checker::find_first_occurrence(const spot::ltl::atomic_prop* node
 				 */
 				if (to_search[newpos]<= intvl.end) {
 					//std::cout << "It's " << to_search[newpos] << ".\n";
-					return to_search[newpos];}
+					return return_and_add(node,intvl,to_search[newpos]);}
 				/**
 				 * case where
 				 * to_search:
@@ -503,7 +503,7 @@ long map_trace_checker::find_first_occurrence(const spot::ltl::atomic_prop* node
 				 */
 				else {
 					//std::cout << "It's -1.\n";
-					return -1;}
+					return return_and_add(node,intvl,-1);}
 			}
 			/**
 			 * case where:
@@ -519,7 +519,7 @@ long map_trace_checker::find_first_occurrence(const spot::ltl::atomic_prop* node
 	} catch (std::out_of_range &e){
 		// this means we didn't find the event in the trace map, so it never occurs;
 		//std::cout << "It's -1.\n";
-		return -1;
+		return return_and_add(node,intvl,-1);
 	}
 }
 
@@ -904,6 +904,14 @@ long map_trace_checker::find_last_occurrence(const spot::ltl::formula* node, int
 long map_trace_checker::find_last_occurrence(const spot::ltl::atomic_prop* node, interval intvl){
 	//std::cout << "Finding last occurrence of " << spot::ltl::to_string(node) << " on trace from " << intvl.start << "-" << intvl.end<< "\n";
 	// REQUIRES: to_search is sorted. this should be assured earlier on.
+	first_occ_storer storer;
+	storer.intvl.start = intvl.start;
+	storer.intvl.end = intvl.end;
+	storer.formula = node;
+	std::unordered_map<first_occ_storer,long,first_occ_storer_hash>::iterator it = last_occ_map.find(storer);
+	if (it!=last_occ_map.end()){
+		return it->second;
+	}
 	try {
 		std::vector<long> to_search = trace_map.at(string_event(node->name(),false));
 
@@ -916,13 +924,13 @@ long map_trace_checker::find_last_occurrence(const spot::ltl::atomic_prop* node,
 
 				// case where all is to the left
 				if (newpos == 0) {
-					return -1;
+					return return_and_add_end(node,intvl,-1);
 				}
 				//else if the previous is smaller than or equal to the end
 				if (to_search[newpos-1]<= intvl.end ){
 					// if it's not smaller than the start, return. Else we fail to find it
 					if (to_search[newpos-1]>= intvl.start) {return to_search[newpos-1];}
-					else {return -1;}
+					else {return return_and_add_end(node,intvl,-1);}
 				}
 				// if it's bigger than intvl.end and the one before was also too big,
 				// we need to look at the left side
@@ -930,7 +938,7 @@ long map_trace_checker::find_last_occurrence(const spot::ltl::atomic_prop* node,
 			}
 
 			else if (to_search[newpos] == intvl.end){
-				return intvl.end;
+				return return_and_add_end(node,intvl,intvl.end);
 			}
 			// else to_search[newpos]<intvl.end
 			else{
@@ -938,9 +946,9 @@ long map_trace_checker::find_last_occurrence(const spot::ltl::atomic_prop* node,
 				if (newpos >= to_search.size() -1) {
 					// and it's larger than the start, then it's the last event
 					if (to_search[newpos]>= intvl.start) {
-						return to_search[newpos];}
+						return return_and_add_end(node,intvl,to_search[newpos]);}
 					// else if it's smaller than the start, it's not in the interval
-					else {return -1;}
+					else {return return_and_add_end(node,intvl,-1);}
 				}
 				// else newpos is too small so we have to go to the right side
 				left = newpos + 1;
@@ -948,7 +956,7 @@ long map_trace_checker::find_last_occurrence(const spot::ltl::atomic_prop* node,
 		}
 	}catch (std::out_of_range &e){
 		// this means we didn't find the event in the trace map, so it never occurs;
-		return -1;
+		return return_and_add_end(node,intvl,-1);
 	}
 }
 /**
