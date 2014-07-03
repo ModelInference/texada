@@ -9,6 +9,7 @@
 #define PROPERTYTYPEMINER_H_
 
 #include <ltlast/predecl.hh>
+
 #include <set>
 #include <vector>
 #include "stringevent.h"

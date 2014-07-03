@@ -14,6 +14,7 @@
 #include <ltlast/allnodes.hh>
 #include <climits>
 #include <boost/functional/hash.hpp>
+#include <boost/unordered_map.hpp>
 
 
 namespace texada {
@@ -60,12 +61,12 @@ private:
 	      using boost::hash_value;
 	      using boost::hash_combine;
 
-	      // Start with a hash value of 0    .
-	      std::size_t seed = 0;
+	      // Start with a hash value of formula.
+	      std::size_t seed = k.formula->hash();
 
 	      // Modify 'seed' by XORing and bit-shifting in
 	      // one member of 'Key' after the other:
-	      hash_combine(seed,hash_value(k.formula));
+
 	      hash_combine(seed,hash_value(k.intvl.start));
 	      hash_combine(seed,hash_value(k.intvl.end));
 

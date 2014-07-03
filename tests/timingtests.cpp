@@ -755,10 +755,10 @@ TEST(TotalMiningNumInvsTest,4SpPaQuR){
 }
 TEST(TotalMiningNumInvsTest,5SpPaQuR){
 	set_up_total_mining_test("G(c & !a -> (!b W (d | a)))",texada_base1 + "/traces/vary-invs-fixed2/log-25000_invs-4.txt");
-}*/
+}
 TEST(TotalMiningNumInvsTest,6SpPaQuR){
 	set_up_total_mining_test("G(c & !a -> (!b W (d | a)))",texada_base1 + "/traces/vary-invs-fixed2/log-25000_invs-5.txt");
-}/*
+}
 TEST(TotalMiningNumInvsTest,7SpPaQuR){
 	set_up_total_mining_test("G(c & !a -> (!b W (d | a)))",texada_base1 + "/traces/vary-invs-fixed2/log-25000_invs-6.txt");
 }
@@ -913,8 +913,8 @@ TEST(TotalMiningNumInvsMapTest,34F){
 TEST(TotalMiningNumInvsMapTest,37F){
 	set_up_total_mining_test_map("Fx",texada_base1 + "/traces/vary-invs-fixed2/log-25000_invs-36.txt");
 
-}
-
+}*/
+/*
 TEST(TotalMiningNumInvsMapTest,4AFby){
 	set_up_total_mining_test_map("G(x->XFy)",texada_base1 + "/traces/vary-invs-fixed2/log-25000_invs-3.txt");
 }
