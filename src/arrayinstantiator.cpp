@@ -18,11 +18,12 @@ namespace texada {
 array_instantiator::array_instantiator(std::set<std::string>& events_,
 		spot::ltl::atomic_prop_set ltlevents) :
 			formula_vars(ltlevents), events(events_){
-	length = formula_vars.size();
-	//todo: comment on math, why
-	int k = events.size();
-	size = pow(k,length);
-	return_array = std::vector<inst_fxn>(size);
+	f_var_size = formula_vars.size();
+	// We are creating a vector with the exact size required to store
+	// all instantiations:
+	// Each event can appear at each formula variable, so the total
+	// size is: # of unique events ^ # of variable in formula
+	return_array = std::vector<inst_fxn>(pow(events.size(),f_var_size));
 
 }
 
@@ -61,7 +62,7 @@ void array_instantiator::instantiate_array(){
 			++formula_it){
 		//we really should never get to here, as formula_vars ends at length
 		//TODO: assert i<length
-		if (i >= length) break;
+		if (i >= f_var_size) break;
 		// since inst_fxn has a string->string map, we obtain the name
 		// of the atomic_prop the iterator is pointing to.
 		const spot::ltl::atomic_prop* event_var = *formula_it;

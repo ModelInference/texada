@@ -47,8 +47,7 @@ private:
 	spot::ltl::atomic_prop_set formula_vars;
 	// TODO: rename to unique_events, does it need to be maintained
 	std::set<std::string> events;
-	//TODO : rename to reflect it's f_v size, or delete
-	int length;
+	int f_var_size;
 
 };
 
