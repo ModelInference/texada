@@ -25,6 +25,7 @@ class simple_parser {
 public:
 	simple_parser();
 	virtual ~simple_parser();
+	//TODO: rename to parse_to_vector
 	std::set<std::vector<string_event> > parse(std::ifstream &infile);
 	std::set<std::map<string_event,std::vector<long>>> parse_to_map(std::ifstream &infile);
 	/**
@@ -41,6 +42,8 @@ public:
 		}
 	}
 private:
+	//rename to unique events
+	//TODO: vector and map sets should be here
 	std::set<std::string> events;
 	bool has_been_parsed = false;
 

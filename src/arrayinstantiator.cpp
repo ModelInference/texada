@@ -18,8 +18,8 @@ namespace texada {
 array_instantiator::array_instantiator(std::set<std::string>& events_,
 		spot::ltl::atomic_prop_set ltlevents) :
 			formula_vars(ltlevents), events(events_){
-	//setting up some things
 	length = formula_vars.size();
+	//todo: comment on math, why
 	int k = events.size();
 	size = pow(k,length);
 	return_array = std::vector<inst_fxn>(size);
@@ -34,10 +34,13 @@ array_instantiator::~array_instantiator() {
  * Places all instantiations into the array.
  */
 void array_instantiator::instantiate_array(){
+	// rename k again
 	int k = events.size();
+
+	//TODO: rename length variable to something else
+	//TODO: e
 	// We must produce all permutations with replacement of length length
-	// of the events. This can be done by recursion, but here it is done
-	// by iteration, going through the entire return array multiple times
+	// of the events. We go through the entire return array multiple times
 	// in order to construct all permutations. Each pass adds a "level"
 	// of mapping to each map. For the simple example with two bindings
 	// x and y and three events a, b, c, the process goes like this:
@@ -51,16 +54,19 @@ void array_instantiator::instantiate_array(){
 	// at this point, the iteration terminates.
 
 	// i is the "level" of the pass, i.e. how deep in formula_vars we are
+	// TODO: rename i to level
 	int i = 0;
 	for (std::set<const spot::ltl::atomic_prop*>::iterator
 			formula_it=formula_vars.begin(); formula_it!=formula_vars.end();
 			++formula_it){
 		//we really should never get to here, as formula_vars ends at length
+		//TODO: assert i<length
 		if (i >= length) break;
 		// since inst_fxn has a string->string map, we obtain the name
 		// of the atomic_prop the iterator is pointing to.
 		const spot::ltl::atomic_prop* event_var = *formula_it;
 		std::string name = event_var->name();
+		// now traverse the array to fill this level
 		traverse_and_fill(name, i, k);
 		i++;
 	}
@@ -79,11 +85,12 @@ void array_instantiator::traverse_and_fill(std::string formula_event, int i,
 	// find array size
 	//begin with the first event
 	std::set<std::string>::iterator event_iterator = events.begin();
-	for (int j = 0; j < size ; j++){
+	for (int j = 0; j < return_array.size() ; j++){
 		// if we are at switching point, iterate to next event
 		if (switch_var == 0){
 			++event_iterator;
-			// if we've finished passing through the events, go back to the start
+			// if we've finished passing through the events,
+			// go back to the start
 			if (event_iterator == events.end()) event_iterator = events.begin();
 			// and reset the switch to the top value
 			switch_var = pow(k,i);

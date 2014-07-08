@@ -10,7 +10,7 @@
 
 
 //TODO: perhaps guard against last element in non-temporal things as well.
-
+//TODO: rename to linear checker
 namespace texada {
 
 array_trace_checker::array_trace_checker() {
@@ -51,6 +51,7 @@ bool array_trace_checker::check(const spot::ltl::formula* node, const string_eve
 	}
 }
 
+//TODO: inline this
 /**
  * Checking a single event on a trace means we check it on the first element of the trace
  * @param node: the atomic proposition to check
@@ -86,7 +87,7 @@ bool array_trace_checker::check(const spot::ltl::constant *node, const string_ev
 
 /**
  * There are many binary operations. Each will be true for different reasons:
- * XOr: if first or second is true, but not both
+ * XOR: if first or second is true, but not both
  * Implies: if first is false, or both are true
  * Equiv: if both are false or both are true
  * Until: If second is true, return true. If it's not, check that first is:
@@ -103,7 +104,7 @@ bool array_trace_checker::check(const spot::ltl::binop *node, const string_event
 
 	switch(opkind){
 
-	//XOr case: if first is true, return true if second is false,
+	//XOR case: if first is true, return true if second is false,
 	//if first is false, return true if second is true.
 	case spot::ltl::binop::Xor:
 		return (check(node->first(),trace))?
@@ -122,7 +123,7 @@ bool array_trace_checker::check(const spot::ltl::binop *node, const string_event
 	case spot::ltl::binop::Equiv:
 		return check(node->first(),trace)?
 				check(node->second(),trace):
-				!(node->second(),trace);
+				!check(node->second(),trace);
 
 	//Until case
 	case spot::ltl::binop::U:
@@ -210,6 +211,8 @@ bool array_trace_checker::check(const spot::ltl::unop *node,  const string_event
 
 	spot::ltl::unop::type optype = node->op();
 
+	//TODO: refactor node->child into a variable
+
 	switch (optype){
 
 	// Globally case
@@ -233,7 +236,7 @@ bool array_trace_checker::check(const spot::ltl::unop *node,  const string_event
 		else{
 			//Return whether subformula is true on this trace, recursive check on
 			// all subsequent traces.
-				return check(node->child(), trace) || check(node, trace+1);
+			return check(node->child(), trace) || check(node, trace+1);
 		}
 
 	// Next case
