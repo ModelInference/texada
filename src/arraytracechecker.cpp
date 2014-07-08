@@ -153,8 +153,6 @@ bool array_trace_checker::check(const spot::ltl::binop *node, const string_event
 		}
 		// if the f & s is satisfied and we have gotten here,
 		// the second condition held all the way up here, so true
-		//TODO: we have some problems here in that if we have
-		// AP1 R AP2, AP1 & AP2 is never true. Do I need to redefine release??
 		else if (check(node->second(),trace) && check(node->first(),trace)){
 			return true;
 		}

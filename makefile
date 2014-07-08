@@ -65,6 +65,7 @@ OBJS += \
 ./bin/src/simpleparser.o \
 ./bin/src/propertytypeminer.o \
 ./bin/src/formulatracechecker.o \
+./bin/src/truncatingchecker.o 
 
 TEST_OBJS+= \
 ./bin/tests/arrayinstantiator_test.o \
