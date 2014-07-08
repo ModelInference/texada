@@ -22,14 +22,15 @@ namespace texada {
  * [it now actually returns a vector, but that's just a wrapper for an array...]
  */
 class array_instantiator {
-
-	//declared up here so that return_instantiations can be
-private:
-	int size;
 public:
 
+	// describes a single instantiation function,
+	// this maintains a vector of these
+	// TODO: rename remove fxn
 	struct inst_fxn{
+		// formula variables -> event variables
 		std::map<std::string, std::string> inst_map;
+		//TODO: rename valid
 		bool validity = true;
 	};
 
@@ -41,9 +42,12 @@ public:
 	std::vector<inst_fxn> return_instantiations() const;
 
 private:
+	// TODO: rename inst_pool?
 	std::vector<inst_fxn> return_array;
 	spot::ltl::atomic_prop_set formula_vars;
+	// TODO: rename to unique_events, does it need to be maintained
 	std::set<std::string> events;
+	//TODO : rename to reflect it's f_v size, or delete
 	int length;
 
 };

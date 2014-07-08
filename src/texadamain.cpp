@@ -115,18 +115,26 @@ int main(int ac, char* av[])
     try {
     	std::string formula;
     	std::string input_source;
+    	//TODO: change map name to use_map
     	bool map = false;
         boost::program_options::options_description desc("Allowed options");
         desc.add_options()
             ("help,h", "produce help message")
             ("formula,f",  boost::program_options::value<std::string>(), "LTL formula to mine")
+            //TODO: rename to log file
         	("input_trace,t", boost::program_options::value<std::string>(), "trace file to mine on")
+        	//TODO: rename to integration test
         	("run_time_test", "run the formula through traces with increasing number of invariants")
-        	("map_trace,m", "mine on a trace in the form of a map");
+        	//TODO: vector trace mention
+        	("map_trace,m", "mine on a trace in the form of a map (by default, Texada uses ");
 
+
+        //TODO: call this opts_map
         boost::program_options::variables_map vm;
         boost::program_options::store( boost::program_options::parse_command_line(ac, av, desc), vm);
         boost::program_options::notify(vm);
+
+        //TODO: comments, logging
 
         if (vm.count("map_trace")) map =true;
 
@@ -146,17 +154,23 @@ int main(int ac, char* av[])
         	mine_on_increasing_instants(formula,map);
         	return 0;
         }
+
         if (vm.count("input_trace")){
         	input_source = vm["input_trace"].as<std::string>();
         } else{
             std::cerr << "No inputted trace\n";
             return 1;
         }
+
+        // found instantiations, rename it to that
         std::set<const spot::ltl::formula*> found_types;
+
+        // if
         if (map){
-        	found_types =texada::mine_map_property_type(formula,input_source);
-        }else{
-         found_types = texada::mine_property_type(formula,input_source);}
+        	found_types = texada::mine_map_property_type(formula,input_source);
+        }else {
+         found_types = texada::mine_property_type(formula,input_source);
+        }
 
         for (std::set<const spot::ltl::formula*>::iterator it =found_types.begin();
         		it!= found_types.end(); it++){

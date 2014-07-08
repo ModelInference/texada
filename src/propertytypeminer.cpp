@@ -21,37 +21,44 @@
 
 namespace texada {
 
+//TODO: using std::things, maybe
+//TODO: refactor mine_map_property_type into this
+
 std::set<const spot::ltl::formula*> mine_property_type(std::string formula_string, std::string trace_source){
 
 	//parse the ltl formula
+	//TODO: call pel something else
 	spot::ltl::parse_error_list pel;
 	const spot::ltl::formula* formula = spot::ltl::parse(formula_string, pel);
 	//std::cout << "## Number of parser errors: "<<pel.size() << "\n";
 	//TODO: get some way for the user to check this.
 
-	// currently just using simple parser, assumedly could replace this by a
-	// more complex parser once we have one
+	// parse file
 	std::ifstream infile(trace_source);
 	simple_parser parser =  simple_parser();
 	std::set<std::vector<string_event> >  trace_set = parser.parse(infile);
 	std::set<std::string>  event_set = parser.return_events();
 
+	// create the set of formula's variables
 	spot::ltl::atomic_prop_set * variables = spot::ltl::atomic_prop_collect(formula);
 	//std::cout << "## Number of variables: " <<variables->size() << "\n";
 	//create the instantiation array
 
+	// create an array of formula instantiations
+	//TODO: rename array_inst to instances_pool or something
 	array_instantiator instantiator = array_instantiator(event_set, *variables);
 	instantiator.instantiate_array();
 	std::vector<array_instantiator::inst_fxn> instantiations = instantiator.return_instantiations();
 
 
 
-	//size of instnatiations
+	//size of instantiations, TODO rename
 	int size = instantiations.size();
 
 	//## debugging
 	//int numvalid;
 
+	// check all valid instantiations on each trace
 	for(std::set<std::vector<string_event> >::iterator it = trace_set.begin();
 			it !=trace_set.end(); it++){
 		std::vector<texada::string_event> current_vec = *it;
