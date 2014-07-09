@@ -40,7 +40,6 @@ CPP_SRCS += \
 ./src/maptracechecker.cpp \
 ./src/stringevent.cpp \
 ./src/arraytracechecker.cpp \
-./src/tempmappropminer.cpp \
 ./src/formulainstantiator.cpp \
 ./src/simpleparser.cpp \
 ./src/propertytypeminer.cpp \
@@ -60,7 +59,6 @@ OBJS += \
 ./bin/src/maptracechecker.o \
 ./bin/src/stringevent.o \
 ./bin/src/arraytracechecker.o \
-./bin/src/tempmappropminer.o \
 ./bin/src/formulainstantiator.o \
 ./bin/src/simpleparser.o \
 ./bin/src/propertytypeminer.o \

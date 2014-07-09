@@ -15,6 +15,9 @@ namespace texada {
 std::vector<array_instantiator::inst_fxn> check_instants_on_trace(std::vector<array_instantiator::inst_fxn>&,
 			const spot::ltl::formula*, const string_event*);
 
+std::vector<array_instantiator::inst_fxn> check_instants_on_trace(std::vector<array_instantiator::inst_fxn>&,
+			const spot::ltl::formula*, std::map<string_event,std::vector<long>>*);
+
 
 } /* namespace texada */
 #endif /* FORMULATRACECHECKER_H_ */

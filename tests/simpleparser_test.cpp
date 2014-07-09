@@ -6,15 +6,21 @@
 
 TEST(SimpleParserTest, SmallFile){
 	std::ifstream infile("/home/clemieux/workspace/texada/Texada/traces/vary-tracelen/smalltrace.txt");
-	texada::simple_parser  parser =  texada::simple_parser();
-	std::set<std::vector<texada::string_event> >  trace_set = parser.parse(infile);
+
+	texada::simple_parser * parser= new texada::simple_parser;
+	parser->parse_to_vector(infile);
+	std::set<std::vector<texada::string_event> >  trace_set = parser->return_vec_trace();
+	std::set<std::string>  events = parser->return_events();
+	delete parser;
+	parser = NULL;
+
 	std::vector<texada::string_event> trace_vec = *trace_set.begin();
     ASSERT_EQ("e1", trace_vec[0].get_name());
 	ASSERT_EQ("e2", trace_vec[1].get_name());
 	ASSERT_EQ("e3", trace_vec[2].get_name());
 	ASSERT_EQ("e2", trace_vec[3].get_name());
 	ASSERT_TRUE(trace_vec[4].is_terminal());
-	std::set<std::string>  events = parser.return_events();
+
 	ASSERT_EQ(events.size(),3);
 	ASSERT_TRUE(events.find("e1")!=events.end());
 	ASSERT_TRUE(events.find("e2")!=events.end());
@@ -23,8 +29,15 @@ TEST(SimpleParserTest, SmallFile){
 }
 TEST(SimpleParserTest, MultipleTracesOneFile){
 	std::ifstream infile("/home/clemieux/workspace/texada/Texada/traces/vary-tracelen/etypes-10_events-250_execs-20.txt");
-	texada::simple_parser parser = texada::simple_parser();
-	std::set<std::vector<texada::string_event> > trace_set = parser.parse(infile);
+	texada::simple_parser * parser= new texada::simple_parser;
+
+	parser->parse_to_vector(infile);
+	std::set<std::vector<texada::string_event> >  trace_set = parser->return_vec_trace();
+
+
+	delete parser;
+	parser = NULL;
+
 	ASSERT_EQ(trace_set.size(),20) << "Unexpected number of traces parsed";
 	for(std::set<std::vector<texada::string_event> >::iterator it =trace_set.begin();
 			it != trace_set.end(); it++){
@@ -34,8 +47,12 @@ TEST(SimpleParserTest, MultipleTracesOneFile){
 }
 TEST(SimpleParserTest, MapTraceSmallFile){
 	std::ifstream infile("/home/clemieux/workspace/texada/Texada/traces/vary-tracelen/smalltrace.txt");
-	texada::simple_parser  parser =  texada::simple_parser();
-	std::set<std::map<texada::string_event,std::vector<long>> >  trace_set = parser.parse_to_map(infile);
+	texada::simple_parser * parser= new texada::simple_parser;
+	parser->parse_to_map(infile);
+	std::set<std::map<texada::string_event,std::vector<long>> > trace_set = parser->return_map_trace();
+	delete parser;
+	parser = NULL;
+
 	ASSERT_EQ(trace_set.size(),1);
 	std::map<texada::string_event,std::vector<long>> trace = *trace_set.begin();
 	ASSERT_EQ(trace.size(),4);
@@ -46,8 +63,13 @@ TEST(SimpleParserTest, MapTraceSmallFile){
 }
 TEST(SimpleParserTest, MapTraceLargeFile){
 	std::ifstream infile("/home/clemieux/workspace/texada/Texada/traces/vary-tracelen/etypes-10_events-250_execs-20.txt");
-	texada::simple_parser parser = texada::simple_parser();
-	std::set<std::map<texada::string_event,std::vector<long>> >  trace_set = parser.parse_to_map(infile);
+
+	texada::simple_parser * parser= new texada::simple_parser;
+	parser->parse_to_map(infile);
+	std::set<std::map<texada::string_event,std::vector<long>> > trace_set = parser->return_map_trace();
+	delete parser;
+	parser = NULL;
+
 	ASSERT_EQ(trace_set.size(),20) << "Unexpected number of traces parsed";
 	for(std::set<std::map<texada::string_event,std::vector<long>> >::iterator it =trace_set.begin();
 			it != trace_set.end(); it++){

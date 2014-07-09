@@ -15,9 +15,9 @@
 
 namespace texada {
 
-map_trace_checker::map_trace_checker(std::map<string_event,std::vector<long>> trace_map_):
+map_trace_checker::map_trace_checker(const std::map<string_event,std::vector<long>>* trace_map_):
 	trace_map(trace_map_){
-	std::vector<long> end_vector = trace_map.at(texada::string_event("EndOfTraceVar",true));
+	std::vector<long> end_vector = trace_map->at(texada::string_event("EndOfTraceVar",true));
 	terminal_point = end_vector[0];
 
 }
@@ -25,7 +25,7 @@ map_trace_checker::map_trace_checker(std::map<string_event,std::vector<long>> tr
 map_trace_checker::~map_trace_checker() {
 	first_occ_map.clear();
 	last_occ_map.clear();
-	trace_map.clear();
+	trace_map = NULL;
 }
 
 /**
@@ -101,7 +101,7 @@ bool map_trace_checker::check(const spot::ltl::constant* node, interval intvl){
 bool map_trace_checker::check(const spot::ltl::atomic_prop* node, interval intvl){
 	//std::cout << "Checking " << spot::ltl::to_string(node) << " on trace from " << intvl.start << "-" << intvl.end<< "\n";
 	try{
-	std::vector<long> to_search = trace_map.at(string_event(node->name(),false));
+	std::vector<long> to_search = trace_map->at(string_event(node->name(),false));
 	if (std::binary_search(to_search.begin(),to_search.end(),intvl.start)){
 		return true;
 	}
@@ -143,7 +143,7 @@ bool map_trace_checker::check(const spot::ltl::unop* node, interval intvl){
 		case spot::ltl::unop::X:{
 			if (intvl.start == intvl.end){
 				//TODO: tests for this
-				std::vector<long> lastevent = trace_map.at(string_event("EndOfTraceVar",true));
+				std::vector<long> lastevent = trace_map->at(string_event("EndOfTraceVar",true));
 				intvl.start=lastevent[0];
 				intvl.end=lastevent[0];
 				return check(node->child(),intvl);
@@ -417,7 +417,7 @@ long map_trace_checker::find_first_occurrence(const spot::ltl::atomic_prop* node
 		return it->second;
 	}
 	try{
-	std::vector<long> to_search = trace_map.at(string_event(node->name(),false));
+	std::vector<long> to_search = trace_map->at(string_event(node->name(),false));
 	long left = 0;
 	long right = to_search.size();
 	long newpos;
@@ -913,7 +913,7 @@ long map_trace_checker::find_last_occurrence(const spot::ltl::atomic_prop* node,
 		return it->second;
 	}
 	try {
-		std::vector<long> to_search = trace_map.at(string_event(node->name(),false));
+		std::vector<long> to_search = trace_map->at(string_event(node->name(),false));
 
 		long left = 0;
 		long right = to_search.size() - 1;

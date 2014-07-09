@@ -78,10 +78,17 @@ TEST(FormulaTraceCheckerTest,AFby250){
 	const spot::ltl::formula* f = spot::ltl::parse(input, pel);
 	//set up the traces
 	std::ifstream infile("/home/clemieux/workspace/texada/Texada/traces/vary-tracelen/etypes-10_events-250_execs-20.txt");
-	texada::simple_parser parser;
-	std::set<std::vector<texada::string_event> >  trace_set = parser.parse(infile);
 
-	std::set<std::string> event_set = parser.return_events();
+	texada::simple_parser * parser= new texada::simple_parser;
+
+	parser->parse_to_vector(infile);
+	std::set<std::vector<texada::string_event> >  trace_set = parser->return_vec_trace();
+
+	std::set<std::string> event_set = parser->return_events();
+
+	delete parser;
+	parser = NULL;
+
 	//set up the array of instantiations
 	texada::array_instantiator instantiator = texada::array_instantiator(event_set,
 			*spot::ltl::atomic_prop_collect(f));
@@ -124,10 +131,15 @@ TEST(FormulaTraceCheckerTest,AFby2250){
 	const spot::ltl::formula* f = spot::ltl::parse(input, pel);
 	//set up the traces
 	std::ifstream infile("/home/clemieux/workspace/texada/Texada/traces/vary-tracelen/etypes-10_events-2250_execs-20.txt");
-	texada::simple_parser parser;
-	std::set<std::vector<texada::string_event> >  trace_set = parser.parse(infile);
+	texada::simple_parser * parser= new texada::simple_parser;
 
-	std::set<std::string> event_set = parser.return_events();
+	parser->parse_to_vector(infile);
+	std::set<std::vector<texada::string_event> >  trace_set = parser->return_vec_trace();
+
+	std::set<std::string> event_set = parser->return_events();
+
+	delete parser;
+	parser = NULL;
 	//set up the array of instantiations
 	texada::array_instantiator instantiator = texada::array_instantiator(event_set,
 			*spot::ltl::atomic_prop_collect(f));
