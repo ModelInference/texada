@@ -35,66 +35,24 @@ endif
 
 # Add inputs and outputs from these tool invocations to the build variables 
 
-CPP_SRCS += \
-./src/arrayinstantiator.cpp \
-./src/maptracechecker.cpp \
-./src/stringevent.cpp \
-./src/arraytracechecker.cpp \
-./src/formulainstantiator.cpp \
-./src/simpleparser.cpp \
-./src/propertytypeminer.cpp \
-./src/formulatracechecker.cpp \
-./tests/arrayinstantiator_test.cpp \
-./tests/arraytracechecker_test.cpp \
-./tests/formulainstantiator_test.cpp \
-./tests/formulatracechecker_test.cpp \
-./tests/maptracechecker_test.cpp \
-./tests/simpleparser_test.cpp \
-./tests/tempmappropminer_test.cpp \
-./tests/propertytypeminer_test.cpp \
-./tests/timingtests.cpp
-
 OBJS += \
 ./bin/src/arrayinstantiator.o \
 ./bin/src/maptracechecker.o \
 ./bin/src/stringevent.o \
-./bin/src/arraytracechecker.o \
-./bin/src/formulainstantiator.o \
+./bin/src/lineartracechecker.o \
+./bin/src/apsubbingcloner.o \
 ./bin/src/simpleparser.o \
-./bin/src/propertytypeminer.o \
-./bin/src/formulatracechecker.o \
-./bin/src/truncatingchecker.o 
+./bin/src/propertytypeminer.o 
+
 
 TEST_OBJS+= \
 ./bin/tests/arrayinstantiator_test.o \
-./bin/tests/arraytracechecker_test.o \
-./bin/tests/formulainstantiator_test.o \
-./bin/tests/formulatracechecker_test.o \
+./bin/tests/lineartracechecker_test.o \
+./bin/tests/apsubbingcloner_test.o \
 ./bin/tests/maptracechecker_test.o \
 ./bin/tests/simpleparser_test.o \
-./bin/tests/tempmappropminer_test.o \
 ./bin/tests/propertytypeminer_test.o \
 ./bin/tests/timingtests.o
-
-CPP_DEPS += \
-./bin/src/arrayinstantiator.d \
-./bin/src/maptracechecker.d \
-./bin/src/stringevent.d \
-./bin/src/arraytracechecker.d \
-./bin/src/tempmappropminer.d \
-./bin/src/formulainstantiator.d \
-./bin/src/simpleparser.d \
-./bin/src/propertytypeminer.d \
-./bin/src/formulatracechecker.d \
-./bin/tests/arrayinstantiator_test.d \
-./bin/tests/arraytracechecker_test.d \
-./bin/tests/formulainstantiator_test.d \
-./bin/tests/formulatracechecker_test.d \
-./bin/tests/maptracechecker_test.d \
-./bin/tests/simpleparser_test.d \
-./bin/tests/tempmappropminer_test.d \
-./bin/tests/propertytypeminer_test.d \
-./bin/tests/timingtests.d
 
 # All Target
 all: Texada texadacl

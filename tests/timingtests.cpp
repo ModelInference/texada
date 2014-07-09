@@ -4,9 +4,9 @@
 #include "../src/simpleparser.h"
 #include <ltlvisit/apcollect.hh>
 #include "../src/maptracechecker.h"
+#include "../src/lineartracechecker.h"
 #include "../src/arrayinstantiator.h"
-#include "../src/formulatracechecker.h"
-#include "../src/formulainstantiator.h"
+#include "../src/apsubbingcloner.h"
 #include "ltlvisit/tostring.hh"
 #include <gtest/gtest.h>
 #include <ltlvisit/length.hh>
@@ -46,8 +46,9 @@ double set_up_afby(std::string source_file) {
 		texada::string_event* current_trace = &current_vec[0];
 		instantiator.instantiate_array();
 		instantiations = instantiator.return_instantiations();
+		texada::linear_trace_checker checker;
 		begin = clock();
-		texada::check_instants_on_trace(instantiations, f, current_trace);
+		checker.check_instants_on_trace(instantiations, f, current_trace);
 		end = clock();
 		time_spent += (double) (end - begin) / CLOCKS_PER_SEC;
 	}
@@ -252,8 +253,9 @@ double set_up_form_length_2(std::string input) {
 		texada::string_event* current_trace = &current_vec[0];
 		instantiator.instantiate_array();
 		instantiations = instantiator.return_instantiations();
-		begin = clock();
-		texada::check_instants_on_trace(instantiations, f, current_trace);
+        texada::linear_trace_checker checker;
+        begin = clock();
+        checker.check_instants_on_trace(instantiations, f, current_trace);
 		end = clock();
 		time_spent += (double) (end - begin) / CLOCKS_PER_SEC;
 	}
@@ -487,8 +489,9 @@ double set_up_variable_num(std::string input, int k) {
 		instantiations = instantiator.return_instantiations();
 		if (k > 4)
 			std::cout << "Checking instantiations on a trace... \n";
-		begin = clock();
-		texada::check_instants_on_trace(instantiations, f, current_trace);
+        texada::linear_trace_checker checker;
+        begin = clock();
+        checker.check_instants_on_trace(instantiations, f, current_trace);
 		end = clock();
 		time_spent += (double) (end - begin) / CLOCKS_PER_SEC;
 	}

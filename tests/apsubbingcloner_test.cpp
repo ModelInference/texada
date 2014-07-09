@@ -1,11 +1,11 @@
 /*
- * formulainstantiator_test.cpp
+ * apsubbingcloner_test.cpp
  *
  *  Created on: May 20, 2014
  *      Author: clemieux
  */
 
-#include "../src/formulainstantiator.h"
+#include "../src/apsubbingcloner.h"
 
 #include <ltlparse/public.hh>
 #include <ltlvisit/tostring.hh>
@@ -13,7 +13,7 @@
 #include <string>
 #include <gtest/gtest.h>
 
-TEST(FormulaInstantiatorTest, SimpleTest){
+TEST(AtomicPropositionSubbingClonerTest, SimpleTest){
 
 	std::map<std::string, std::string> map = std::map<std::string, std::string>();
 

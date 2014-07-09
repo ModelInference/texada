@@ -1,30 +1,36 @@
 /*
- * arraytracechecker2.h
+ * lineartracechecker2.h
  *
  *  Created on: May 19, 2014
  *      Author: clemieux
  */
 
-#ifndef ARRAYTRACECHECKER_H_
-#define ARRAYTRACECHECKER_H_
+#ifndef LINEARTRACECHECKER_H_
+#define LINEARTRACECHECKER_H_
 
 #include <ltlast/allnodes.hh>
 #include "stringevent.h"
 #include <iostream>
 
+#include "arrayinstantiator.h"
+
 namespace texada {
 
 
 /**
- * Class to check whether an LTL formula is true on a trace.
+ * Class to check whether an LTL formula is true on a trace in the
+ * form of a vector.
  *
  */
-class array_trace_checker {
+class linear_trace_checker {
 public:
-	array_trace_checker();
-	virtual ~array_trace_checker();
+	linear_trace_checker();
+	virtual ~linear_trace_checker();
 
 	bool check(const spot::ltl::formula* node, const string_event *trace);
+
+	std::vector<array_instantiator::inst_fxn> check_instants_on_trace(std::vector<array_instantiator::inst_fxn>& instantiations,
+			const spot::ltl::formula* formula, const string_event* trace);
 private:
     bool check(const spot::ltl::atomic_prop* node, const string_event *trace);
     bool check(const spot::ltl::constant* node, const string_event *trace);
@@ -44,8 +50,10 @@ private:
     	return false;
     }
 
+
+
 };
 
 } /* namespace texada */
 
-#endif /* ARRAYTRACECHECKER2_H_ */
+#endif /* LINEARTRACECHECKER2_H_ */
