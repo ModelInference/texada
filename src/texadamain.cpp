@@ -40,8 +40,8 @@ void mine_on_increasing_instants(std::string form, bool map){
 	std::cout << form;
 	if (map){
 		std::cout << ", map trace: \n";
-		std::cout << "4 ";
-		set_up_total_mining_map_test(form,trace_base+ "-3.txt");
+		//std::cout << "4 ";
+		//set_up_total_mining_map_test(form,trace_base+ "-3.txt");
 		std::cout << "5 ";
 		set_up_total_mining_map_test(form,trace_base+ "-4.txt");
 		std::cout << "6 ";
@@ -70,12 +70,26 @@ void mine_on_increasing_instants(std::string form, bool map){
 		set_up_total_mining_map_test(form,trace_base+ "-33.txt");
 		std::cout << "37 ";
 		set_up_total_mining_map_test(form,trace_base+ "-36.txt");
+        std::cout << "40 ";
+        set_up_total_mining_map_test(form,trace_base+ "-39.txt");
+        std::cout << "43 ";
+        set_up_total_mining_map_test(form,trace_base+ "-42.txt");
+        std::cout << "46 ";
+        set_up_total_mining_map_test(form,trace_base+ "-45.txt");
+        std::cout << "50 ";
+        set_up_total_mining_map_test(form,trace_base+ "-49.txt");
+        std::cout << "60 ";
+        set_up_total_mining_map_test(form,trace_base+ "-59.txt");
+        std::cout << "70 ";
+        set_up_total_mining_map_test(form,trace_base+ "-69.txt");
+        std::cout << "80 ";
+        set_up_total_mining_map_test(form,trace_base+ "-79.txt");
 
 	}
 	else{
 		std::cout << ", vector trace: \n";
-		std::cout << "4 ";
-		set_up_total_mining_test(form,trace_base+ "-3.txt");
+		//std::cout << "4 ";
+		//set_up_total_mining_test(form,trace_base+ "-3.txt");
 		std::cout << "5 ";
 		set_up_total_mining_test(form,trace_base+ "-4.txt");
 		std::cout << "6 ";
@@ -104,6 +118,20 @@ void mine_on_increasing_instants(std::string form, bool map){
 		set_up_total_mining_test(form,trace_base+ "-33.txt");
 		std::cout << "37 ";
 		set_up_total_mining_test(form,trace_base+ "-36.txt");
+        std::cout << "40 ";
+        set_up_total_mining_test(form,trace_base+ "-39.txt");
+        std::cout << "43 ";
+        set_up_total_mining_test(form,trace_base+ "-42.txt");
+        std::cout << "46 ";
+        set_up_total_mining_test(form,trace_base+ "-45.txt");
+        std::cout << "50 ";
+        set_up_total_mining_test(form,trace_base+ "-49.txt");
+        std::cout << "60 ";
+        set_up_total_mining_test(form,trace_base+ "-59.txt");
+        std::cout << "70 ";
+        set_up_total_mining_test(form,trace_base+ "-69.txt");
+        std::cout << "80 ";
+        set_up_total_mining_test(form,trace_base+ "-79.txt");
 
 	}
 

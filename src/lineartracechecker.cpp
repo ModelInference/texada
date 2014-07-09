@@ -1,11 +1,13 @@
 /*
- * arraytracechecker2.cpp
+ * lineartracechecker2.cpp
  *
  *  Created on: May 19, 2014
  *      Author: clemieux
  */
 
-#include "arraytracechecker.h"
+#include "lineartracechecker.h"
+#include "arrayinstantiator.h"
+#include "apsubbingcloner.h"
 
 
 
@@ -13,11 +15,11 @@
 //TODO: rename to linear checker
 namespace texada {
 
-array_trace_checker::array_trace_checker() {
+linear_trace_checker::linear_trace_checker() {
 
 }
 
-array_trace_checker::~array_trace_checker() {
+linear_trace_checker::~linear_trace_checker() {
 
 }
 
@@ -30,7 +32,7 @@ array_trace_checker::~array_trace_checker() {
 	 * @return whether node holds on trace
 	 */
 
-bool array_trace_checker::check(const spot::ltl::formula* node, const string_event *trace){
+bool linear_trace_checker::check(const spot::ltl::formula* node, const string_event *trace){
 	switch (node->kind()){
 	case spot::ltl::formula::Constant:
 		return check(static_cast<const spot::ltl::constant*>(node), trace);
@@ -58,7 +60,7 @@ bool array_trace_checker::check(const spot::ltl::formula* node, const string_eve
  * @param trace: pointer to the start of the trace
  * @return whether node holds on trace
  */
-bool array_trace_checker::check(const spot::ltl::atomic_prop *node, const string_event *trace){
+bool linear_trace_checker::check(const spot::ltl::atomic_prop *node, const string_event *trace){
 	return (trace[0].get_name() == node->name())? true : false;
 }
 
@@ -70,7 +72,7 @@ bool array_trace_checker::check(const spot::ltl::atomic_prop *node, const string
  * @param trace: pointer to the start of the trace
  * @return whether node holds on trace
  */
-bool array_trace_checker::check(const spot::ltl::constant *node, const string_event *trace){
+bool linear_trace_checker::check(const spot::ltl::constant *node, const string_event *trace){
 	spot::ltl::constant::type value = node->val();
 	switch (value){
 	case spot::ltl::constant::True:
@@ -99,7 +101,7 @@ bool array_trace_checker::check(const spot::ltl::constant *node, const string_ev
  * @param trace: pointer to the start of the trace
  * @return whether node holds on trace
  */
-bool array_trace_checker::check(const spot::ltl::binop *node, const string_event *trace){
+bool linear_trace_checker::check(const spot::ltl::binop *node, const string_event *trace){
 	spot::ltl::binop::type opkind = node->op();
 
 	switch(opkind){
@@ -205,7 +207,7 @@ bool array_trace_checker::check(const spot::ltl::binop *node, const string_event
  * @param trace: pointer to the start of the trace
  * @return whether node holds on trace
  */
-bool array_trace_checker::check(const spot::ltl::unop *node,  const string_event *trace){
+bool linear_trace_checker::check(const spot::ltl::unop *node,  const string_event *trace){
 
 	spot::ltl::unop::type optype = node->op();
 
@@ -275,7 +277,7 @@ bool array_trace_checker::check(const spot::ltl::unop *node,  const string_event
  * @param trace: pointer to the start of the trace
  * @return whether node holds on the trace
  */
-bool array_trace_checker::check(const spot::ltl::multop* node,  const string_event *trace){
+bool linear_trace_checker::check(const spot::ltl::multop* node,  const string_event *trace){
 	spot::ltl::multop::type opkind = node->op();
 
 	switch(opkind){
@@ -311,6 +313,30 @@ bool array_trace_checker::check(const spot::ltl::multop* node,  const string_eve
 		return false;
 
 	}
+
+}
+
+
+/**
+ * Checks whether the given instantitations of a formula hold on the
+ * given trace -- if they do not, the validity of the function is set
+ * to false. The original instantiation array is the one returned.
+ * @param instantiations all instantiation function mappings
+ * @param formula the LTL formula to instantiate
+ * @param trace the trace to check on
+ * @return updated instantiations, with invalid ones set to false
+ */
+std::vector<array_instantiator::inst_fxn> linear_trace_checker::check_instants_on_trace(std::vector<array_instantiator::inst_fxn>& instantiations,
+		const spot::ltl::formula* formula, const string_event* trace){
+	int size = instantiations.size();
+	for (int i=0; i<size; i++){
+		// if it's invalid, ignore
+		if (!(instantiations[i].validity)) continue;
+		std::map<std::string, std::string> current_map = instantiations[i].inst_map;
+		const spot::ltl::formula* instantiated_form =	instantiate(formula, current_map);
+		instantiations[i].validity = check(instantiated_form,trace);
+	}
+    return instantiations;
 
 }
 
