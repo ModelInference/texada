@@ -25,30 +25,27 @@ class simple_parser {
 public:
 	simple_parser();
 	virtual ~simple_parser();
-	//TODO: rename to parse_to_vector
-	std::set<std::vector<string_event> > parse(std::ifstream &infile);
-	std::set<std::map<string_event,std::vector<long>>> parse_to_map(std::ifstream &infile);
-	/**
-	 * Returns set of events in a file if a file has been parsed,
-	 * else an empty set.
-	 * @return
-	 */
-	std::set<std::string> return_events(){
-		if (has_been_parsed){
-			return events;
-		} else {
-			std::cerr << "No files have been parsed, returning empty set. \n";
-			return events;
-		}
-	}
+	void parse_to_vector(std::ifstream &infile);
+	void parse_to_map(std::ifstream &infile);
+
+	std::set<std::string> return_events();
+
+	std::set<std::vector<string_event> > return_vec_trace();
+
+	std::set<std::map<string_event, std::vector<long>> > return_map_trace();
+
 private:
 	//rename to unique events
 	//TODO: vector and map sets should be here
-	std::set<std::string> events;
-	bool has_been_parsed = false;
+	std::set<std::vector<string_event> > vector_trace_set;
+	std::set<std::map<string_event, std::vector<long>>>map_trace_set;
+	std::set<std::string> unique_events;
+	bool has_been_parsed_vec = false;
+	bool has_been_parsed_map = false;
 
 };
 
-} /* namespace texada */
+}
+/* namespace texada */
 
 #endif /* SIMPLEPARSER_H_ */

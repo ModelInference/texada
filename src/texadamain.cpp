@@ -12,13 +12,12 @@
 #include <boost/program_options.hpp>
 #include <ltlvisit/tostring.hh>
 #include "propertytypeminer.h"
-#include "tempmappropminer.h"
 
 void set_up_total_mining_test(std::string form, std::string source){
 	clock_t begin, end;
 	double time_spent;
 	begin = clock();
-	texada::mine_property_type(form,source);
+	texada::mine_lin_property_type(form,source);
 	end = clock();
 	time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
 	std::cout << time_spent << "\n";
@@ -110,55 +109,60 @@ void mine_on_increasing_instants(std::string form, bool map){
 
 }
 
+/**
+ * Main method
+ */
 int main(int ac, char* av[])
 {
     try {
+    	// input formula
     	std::string formula;
+    	// log file source
     	std::string input_source;
     	//TODO: change map name to use_map
-    	bool map = false;
+    	bool use_map = false;
         boost::program_options::options_description desc("Allowed options");
         desc.add_options()
             ("help,h", "produce help message")
             ("formula,f",  boost::program_options::value<std::string>(), "LTL formula to mine")
             //TODO: rename to log file
-        	("input_trace,t", boost::program_options::value<std::string>(), "trace file to mine on")
+        	("log_file,l", boost::program_options::value<std::string>(), "trace file to mine on")
         	//TODO: rename to integration test
         	("run_time_test", "run the formula through traces with increasing number of invariants")
         	//TODO: vector trace mention
         	("map_trace,m", "mine on a trace in the form of a map (by default, Texada uses ");
 
 
-        //TODO: call this opts_map
-        boost::program_options::variables_map vm;
-        boost::program_options::store( boost::program_options::parse_command_line(ac, av, desc), vm);
-        boost::program_options::notify(vm);
+
+        boost::program_options::variables_map opts_map;
+        boost::program_options::store( boost::program_options::parse_command_line(ac, av, desc), opts_map);
+        boost::program_options::notify(opts_map);
 
         //TODO: comments, logging
 
-        if (vm.count("map_trace")) map =true;
+        if (opts_map.count("map_trace")) use_map =true;
 
-        if (vm.count("help")) {
+        if (opts_map.count("help")) {
         	std::cout << desc << "\n";
             return 0;
         }
 
-        if (vm.count("formula")){
-        	formula = vm["formula"].as<std::string>();
+        if (opts_map.count("formula")){
+        	formula = opts_map["formula"].as<std::string>();
         } else{
         	std::cerr << "No inputted formula\n";
         	return 1;
         }
 
-        if (vm.count("run_time_test")){
-        	mine_on_increasing_instants(formula,map);
+        if (opts_map.count("run_time_test")){
+        	mine_on_increasing_instants(formula,use_map);
         	return 0;
         }
 
-        if (vm.count("input_trace")){
-        	input_source = vm["input_trace"].as<std::string>();
+        if (opts_map.count("log_file")){
+        	input_source = opts_map["log_file"].as<std::string>();
         } else{
-            std::cerr << "No inputted trace\n";
+            std::cerr << "Did not provide log file\n";
             return 1;
         }
 
@@ -166,10 +170,10 @@ int main(int ac, char* av[])
         std::set<const spot::ltl::formula*> found_types;
 
         // if
-        if (map){
+        if (use_map){
         	found_types = texada::mine_map_property_type(formula,input_source);
         }else {
-         found_types = texada::mine_property_type(formula,input_source);
+         found_types = texada::mine_lin_property_type(formula,input_source);
         }
 
         for (std::set<const spot::ltl::formula*>::iterator it =found_types.begin();

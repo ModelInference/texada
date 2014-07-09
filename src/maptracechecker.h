@@ -26,7 +26,7 @@ namespace texada {
  */
 class map_trace_checker {
 public:
-	map_trace_checker(std::map<string_event,std::vector<long>>);
+	map_trace_checker(const std::map<string_event,std::vector<long>>*);
 	virtual ~map_trace_checker();
 	bool check_on_trace(const spot::ltl::formula *);
 
@@ -78,7 +78,8 @@ private:
 	long terminal_point;
 	std::unordered_map<first_occ_storer,long,first_occ_storer_hash> first_occ_map;
 	std::unordered_map<first_occ_storer,long,first_occ_storer_hash> last_occ_map;
-	std::map<string_event,std::vector<long>> trace_map;
+	const std::map<string_event,std::vector<long>> * trace_map;
+
 	bool check(const spot::ltl::formula *, interval);
 	bool check(const spot::ltl::atomic_prop *, interval);
 	bool check(const spot::ltl::constant *, interval);

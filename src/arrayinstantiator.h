@@ -43,10 +43,10 @@ public:
 
 private:
 	// TODO: rename inst_pool?
-	std::vector<inst_fxn> return_array;
+	std::vector<inst_fxn> inst_pool;
 	spot::ltl::atomic_prop_set formula_vars;
 	// TODO: rename to unique_events, does it need to be maintained
-	std::set<std::string> events;
+	std::set<std::string> * unique_events;
 	int f_var_size;
 
 };
