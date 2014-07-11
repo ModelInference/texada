@@ -45,7 +45,7 @@ void mine_on_increasing_events(std::string form, bool use_map) {
         std::cout << unique_event_nums[i] << " ";
         set_up_timed_mining(form,
                 trace_base + std::to_string(unique_event_nums[i] - 1) + ".txt",
-                true);
+                use_map);
 
     }
 }

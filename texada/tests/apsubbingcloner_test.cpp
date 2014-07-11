@@ -8,7 +8,7 @@
  *  substitute the original variables of the spot formula with those provided
  */
 
-#include "../src/apsubbingcloner.h"
+#include "../src/instantiation-tools/apsubbingcloner.h"
 
 #include <ltlparse/public.hh>
 #include <ltlvisit/tostring.hh>
@@ -23,7 +23,7 @@ TEST(AtomicPropositionSubbingClonerTest, SimpleTest){
 
     //creating instantiating map
 	std::map<std::string, std::string> map = std::map<std::string, std::string>();
-
+	// fill map with x->a and y->b
 	map.insert(std::pair<std::string,std::string>("x","a"));
     map.insert(std::pair<std::string,std::string>("y","b"));
 

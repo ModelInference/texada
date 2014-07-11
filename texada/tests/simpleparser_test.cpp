@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "../src/simpleparser.h"
+#include "../src/parsing/simpleparser.h"
 #include <fstream>
 #include <iostream>
 

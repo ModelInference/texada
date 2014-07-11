@@ -6,7 +6,7 @@
  */
 
 #include "lineartracechecker.h"
-#include "apsubbingcloner.h"
+#include "../instantiation-tools/apsubbingcloner.h"
 
 namespace texada {
 

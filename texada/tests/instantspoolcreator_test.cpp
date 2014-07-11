@@ -5,14 +5,19 @@
  *      Author: clemieux
  */
 
-#include "../src/instantspoolcreator.h"
+#include "../src/instantiation-tools/instantspoolcreator.h"
 #include <gtest/gtest.h>
 #include <ltlparse/public.hh>
 #include <ltlvisit/apcollect.hh>
 
+/**
+ * Tests the creation of the pool of instantiation functions
+ * by checking if the returned array contains all 2-event
+ * permutations with repetition of a,b,c.
+ */
 
 TEST(InstantiatorPoolCreatorTest,TwoBindingsThreeEvents){
-	//Set up to get the atomic proposition map from a formula
+	//Set up to get the atomic propositions from a property type
 	 std::string input = "G(x -> Fy)";
 	 spot::ltl::parse_error_list pel;
 	 const spot::ltl::formula* f = spot::ltl::parse(input, pel);

@@ -5,8 +5,8 @@
  *      Author: clemieux
  */
 
-#include "../src/maptracechecker.h"
-#include "../src/simpleparser.h"
+#include "../src/checkers/maptracechecker.h"
+#include "../src/parsing/simpleparser.h"
 #include <gtest/gtest.h>
 #include <ltlparse/public.hh>
 #include <ltlvisit/nenoform.hh>

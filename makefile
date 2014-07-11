@@ -2,8 +2,11 @@ RM := rm -rf
 
 LIBS := -lspot -lgtest -lpthread -lgtest_main -lboost_program_options
 
-BINSRC = bin/src
-BINTESTS = bin/tests
+CHECKERS := texada/bin/src/checkers
+INST_TOOLS := texada/bin/src/instantiation-tools
+MAIN := texada/bin/src/main
+PARSING := texada/bin/src/parsing
+TESTS := texada/bin/tests
 
 
 # Include local 
@@ -36,63 +39,92 @@ endif
 # Add inputs and outputs from these tool invocations to the build variables 
 
 OBJS += \
-./bin/src/instantspoolcreator.o \
-./bin/src/maptracechecker.o \
-./bin/src/stringevent.o \
-./bin/src/lineartracechecker.o \
-./bin/src/apsubbingcloner.o \
-./bin/src/simpleparser.o \
-./bin/src/propertytypeminer.o 
+./texada/bin/src/checkers/maptracechecker.o \
+./texada/bin/src/checkers/lineartracechecker.o \
+./texada/bin/src/instantiation-tools/instantspoolcreator.o \
+./texada/bin/src/instantiation-tools/apsubbingcloner.o \
+./texada/bin/src/main/propertytypeminer.o \
+./texada/bin/src/parsing/stringevent.o \
+./texada/bin/src/parsing/simpleparser.o 
 
 
 TEST_OBJS+= \
-./bin/tests/instantspoolcreator_test.o \
-./bin/tests/lineartracechecker_test.o \
-./bin/tests/apsubbingcloner_test.o \
-./bin/tests/maptracechecker_test.o \
-./bin/tests/simpleparser_test.o \
-./bin/tests/propertytypeminer_test.o 
+./texada/bin/tests/instantspoolcreator_test.o \
+./texada/bin/tests/lineartracechecker_test.o \
+./texada/bin/tests/apsubbingcloner_test.o \
+./texada/bin/tests/maptracechecker_test.o \
+./texada/bin/tests/simpleparser_test.o \
+./texada/bin/tests/propertytypeminer_test.o 
 
 # All Target
-all: Texada texadacl
+all: TexadaTest Texada
 
-# Tool invocations
-Texada: $(OBJS) $(TEST_OBJS) $(USER_OBJS)
+# Linking for Test
+TexadaTest: $(OBJS) $(TEST_OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: GCC C++ Linker'
-	g++ -L$(SPOT_LIB) -L$(GTEST_LIB) -o "Texada" $(OBJS) $(TEST_OBJS) $(USER_OBJS) $(LIBS) -pg
+	g++ -L$(SPOT_LIB) -L$(GTEST_LIB) -o "TexadaTest" $(OBJS) $(TEST_OBJS) $(USER_OBJS) $(LIBS) -pg
 	@echo 'Finished building target: $@'
+	@echo ' '
+
+# Linking for Main Texada	
+Texada: $(OBJS) ./texada/bin/src/main/texadamain.o
+	@echo 'Building target: $@'
+	@echo 'Invoking: GCC C++ Linker'
+	g++ -L$(SPOT_LIB) -L$(GTEST_LIB) -L$(PROGOP_LIB) -o "Texada" ./texada/bin/src/main/texadamain.o $(OBJS) $(USER_OBJS) $(LIBS) -pg
+	@echo 'Finished building target: $@'
+	@echo ' '
+
+# Compiling checkers subdir
+./texada/bin/src/checkers/%.o: ./texada/src/checkers/%.cpp | $(CHECKERS)
+	@echo 'Building file: $<'
+	@echo 'Invoking: GCC C++ Compiler'
+	g++ -std=c++11 -I$(SPOT_INCL) -I$(GTEST_INCL) -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o "$@" "$<" -pg
+	@echo 'Finished building: $<'
 	@echo ' '
 	
-texadacl: $(OBJS) ./bin/src/texadamain.o
-	@echo 'Building target: $@'
-	@echo 'Invoking: GCC C++ Linker'
-	g++ -L$(SPOT_LIB) -L$(GTEST_LIB) -L$(PROGOP_LIB) -o "texadacl" ./bin/src/texadamain.o $(OBJS) $(USER_OBJS) $(LIBS) -pg
-	@echo 'Finished building target: $@'
+# Compling instantiation-tools subdir
+./texada/bin/src/instantiation-tools/%.o: ./texada/src/instantiation-tools/%.cpp | $(INST_TOOLS)
+	@echo 'Building file: $<'
+	@echo 'Invoking: GCC C++ Compiler'
+	g++ -std=c++11 -I$(SPOT_INCL) -I$(GTEST_INCL) -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o "$@" "$<" -pg
+	@echo 'Finished building: $<'
 	@echo ' '
+	
+# Compiling main subdir
+./texada/bin/src/main/%.o: ./texada/src/main/%.cpp | $(MAIN)
+	@echo 'Building file: $<'
+	@echo 'Invoking: GCC C++ Compiler'
+	g++ -std=c++11 -I$(SPOT_INCL) -I$(GTEST_INCL) -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o "$@" "$<" -pg
+	@echo 'Finished building: $<'
+	@echo ' '
+	
+# Each subdirectory must supply rules for building sources it contributes
+./texada/bin/src/parsing/%.o: ./texada/src/parsing/%.cpp | $(PARSING)
+	@echo 'Building file: $<'
+	@echo 'Invoking: GCC C++ Compiler'
+	g++ -std=c++11 -I$(SPOT_INCL) -I$(GTEST_INCL) -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o "$@" "$<" -pg
+	@echo 'Finished building: $<'
+	@echo ' '			
 
 # Each subdirectory must supply rules for building sources it contributes
-./bin/src/%.o: ./src/%.cpp | $(BINSRC)
+./texada/bin/tests/%.o: ./texada/tests/%.cpp | $(TESTS)
 	@echo 'Building file: $<'
 	@echo 'Invoking: GCC C++ Compiler'
 	g++ -std=c++11 -I$(SPOT_INCL) -I$(GTEST_INCL) -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o "$@" "$<" -pg
 	@echo 'Finished building: $<'
 	@echo ' '
 
-# Each subdirectory must supply rules for building sources it contributes
-./bin/tests/%.o: ./tests/%.cpp | $(BINTESTS)
-	@echo 'Building file: $<'
-	@echo 'Invoking: GCC C++ Compiler'
-	g++ -std=c++11 -I$(SPOT_INCL) -I$(GTEST_INCL) -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o "$@" "$<" -pg
-	@echo 'Finished building: $<'
-	@echo ' '
-
-$(BINSRC):
-	mkdir -p bin
+$(CHECKERS):
 	mkdir -p $@
+$(INST_TOOLS):
+	mkdir -p $@
+$(MAIN):
+	mkdir -p $@
+$(PARSING):
+	mkdir -p $@	
     
-$(BINTESTS):
-	mkdir -p bin
+$(TESTS):
 	mkdir -p $@	
 
 # Other Targets

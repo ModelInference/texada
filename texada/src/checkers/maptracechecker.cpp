@@ -6,7 +6,7 @@
  */
 
 #include "maptracechecker.h"
-#include "apsubbingcloner.h"
+#include "../instantiation-tools/apsubbingcloner.h"
 #include <ltlvisit/nenoform.hh>
 #include <ltlvisit/tostring.hh>
 #include <algorithm>
