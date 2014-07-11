@@ -17,14 +17,18 @@ namespace texada {
  */
 class string_event {
 public:
-	string_event(std::string, bool);
+
 	string_event();
+	string_event(std::string);
 	virtual ~string_event();
 	bool operator<(const string_event&) const;
 	bool operator==(const string_event& other) const;
 	std::string get_name() const;
 	bool is_terminal() const;
+	void set_name(std::string);
+	void set_terminal(bool);
 private:
+
 	std::string name;
 	bool isTerminal;
 };

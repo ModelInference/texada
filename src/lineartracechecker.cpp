@@ -6,13 +6,8 @@
  */
 
 #include "lineartracechecker.h"
-#include "arrayinstantiator.h"
 #include "apsubbingcloner.h"
 
-
-
-//TODO: perhaps guard against last element in non-temporal things as well.
-//TODO: rename to linear checker
 namespace texada {
 
 linear_trace_checker::linear_trace_checker() {
@@ -53,14 +48,14 @@ bool linear_trace_checker::check(const spot::ltl::formula* node, const string_ev
 	}
 }
 
-//TODO: inline this
+
 /**
  * Checking a single event on a trace means we check it on the first element of the trace
  * @param node: the atomic proposition to check
  * @param trace: pointer to the start of the trace
  * @return whether node holds on trace
  */
-bool linear_trace_checker::check(const spot::ltl::atomic_prop *node, const string_event *trace){
+inline bool linear_trace_checker::check(const spot::ltl::atomic_prop *node, const string_event *trace){
 	return (trace[0].get_name() == node->name())? true : false;
 }
 
@@ -188,7 +183,6 @@ bool linear_trace_checker::check(const spot::ltl::binop *node, const string_even
 			return check(node,trace+1);
 		}
 
-	//TODO: do I need strong release, the dual of weak until?
 	default:
 		std::cerr << "Unsupported binary operator. Returning false. \n";
 		return false;
@@ -326,15 +320,15 @@ bool linear_trace_checker::check(const spot::ltl::multop* node,  const string_ev
  * @param trace the trace to check on
  * @return updated instantiations, with invalid ones set to false
  */
-std::vector<array_instantiator::inst_fxn> linear_trace_checker::check_instants_on_trace(std::vector<array_instantiator::inst_fxn>& instantiations,
+shared_ptr<vector<instants_pool_creator::inst_fxn>> linear_trace_checker::check_instants_on_trace(shared_ptr<vector<instants_pool_creator::inst_fxn>> instantiations,
 		const spot::ltl::formula* formula, const string_event* trace){
-	int size = instantiations.size();
+	int size = instantiations->size();
 	for (int i=0; i<size; i++){
 		// if it's invalid, ignore
-		if (!(instantiations[i].validity)) continue;
-		std::map<std::string, std::string> current_map = instantiations[i].inst_map;
+		if (!(instantiations->at(i).valid)) continue;
+		map<string, string> current_map = instantiations->at(i).inst_map;
 		const spot::ltl::formula* instantiated_form =	instantiate(formula, current_map);
-		instantiations[i].validity = check(instantiated_form,trace);
+		instantiations->at(i).valid = check(instantiated_form,trace);
 	}
     return instantiations;
 

@@ -17,8 +17,7 @@ namespace texada {
 map_trace_checker::map_trace_checker(
         const std::map<string_event, std::vector<long>>* trace_map_) :
         trace_map(trace_map_) {
-    std::vector<long> end_vector = trace_map->at(
-            texada::string_event("EndOfTraceVar", true));
+    std::vector<long> end_vector = trace_map->at(texada::string_event());
     terminal_point = end_vector[0];
 
 }
@@ -102,8 +101,7 @@ bool map_trace_checker::check(const spot::ltl::constant* node, interval intvl) {
 bool map_trace_checker::check(const spot::ltl::atomic_prop* node,
         interval intvl) {
     try {
-        std::vector<long> to_search = trace_map->at(
-                string_event(node->name(), false));
+        std::vector<long> to_search = trace_map->at(string_event(node->name()));
         if (std::binary_search(to_search.begin(), to_search.end(),
                 intvl.start)) {
             return true;
@@ -150,9 +148,7 @@ bool map_trace_checker::check(const spot::ltl::unop* node, interval intvl) {
         // Next case
     case spot::ltl::unop::X: {
         if (intvl.start == intvl.end) {
-            //TODO: tests for this
-            std::vector<long> lastevent = trace_map->at(
-                    string_event("EndOfTraceVar", true));
+            std::vector<long> lastevent = trace_map->at(string_event());
             intvl.start = lastevent[0];
             intvl.end = lastevent[0];
             return check(node->child(), intvl);
@@ -429,8 +425,7 @@ long map_trace_checker::find_first_occurrence(
         return it->second;
     }
     try {
-        std::vector<long> to_search = trace_map->at(
-                string_event(node->name(), false));
+        std::vector<long> to_search = trace_map->at(string_event(node->name()));
         long left = 0;
         long right = to_search.size();
         long newpos;
@@ -850,7 +845,7 @@ long map_trace_checker::find_first_occurrence(const spot::ltl::binop* node,
             intvl.start = ++search_interval.end;
             return find_first_occurrence(node, intvl);
         }
-        //the following broke some things and fixed others TODO address this.
+
         else if (last_occ_neg_second == -1) {
             return intvl.start;
         } else {
@@ -971,8 +966,7 @@ long map_trace_checker::find_last_occurrence(const spot::ltl::atomic_prop* node,
         return it->second;
     }
     try {
-        std::vector<long> to_search = trace_map->at(
-                string_event(node->name(), false));
+        std::vector<long> to_search = trace_map->at(string_event(node->name()));
 
         long left = 0;
         long right = to_search.size() - 1;
@@ -1445,19 +1439,18 @@ long map_trace_checker::find_last_occurrence(const spot::ltl::binop* node,
  * @param trace the trace to check on
  * @return updated instantiations, with invalid ones set to false
  */
-std::vector<array_instantiator::inst_fxn> map_trace_checker::check_instants_on_trace(
-        std::vector<array_instantiator::inst_fxn>& instantiations,
+shared_ptr<vector<instants_pool_creator::inst_fxn>> map_trace_checker::check_instants_on_trace(
+        shared_ptr<vector<instants_pool_creator::inst_fxn>> instantiations,
         const spot::ltl::formula* formula) {
-    int inst_size = instantiations.size();
+    int inst_size = instantiations->size();
     for (int i = 0; i < inst_size; i++) {
         // if it's invalid, ignore
-        if (!(instantiations[i].validity))
+        if (!(instantiations->at(i).valid))
             continue;
-        std::map<std::string, std::string> current_map =
-                instantiations[i].inst_map;
+        map<string, string> current_map = instantiations->at(i).inst_map;
         const spot::ltl::formula* instantiated_form = instantiate(formula,
                 current_map);
-        instantiations[i].validity = check_on_trace(instantiated_form);
+        instantiations->at(i).valid = check_on_trace(instantiated_form);
     }
     return instantiations;
 
