@@ -20,5 +20,5 @@ SPOT_INCL:=/path/to/spot/headers/
 #### Specify path to GTest headers
 GTEST_INCL:=/path/to/gtest/headers/
 
-#### Specify path to libboost_program_options.a
-PROGOP_LIB:=/home/clemieux/boost_1_55_0/bin.v2/libs/program_options/build/gcc-4.8/release/link-static/threading-multi/
+#### Specify path to BOOST headers
+BOOST_INCL:=/path/to/boost/headers

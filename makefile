@@ -9,6 +9,8 @@ PARSING := texada/bin/src/parsing
 TESTS := texada/bin/tests
 
 
+COMPILE_FLAGS = -std=c++11 -I$(SPOT_INCL) -I$(GTEST_INCL) -I$(BOOST_INCL) -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o "$@" "$<" -pg
+
 # Include local 
 -include uservars.mk
 
@@ -71,7 +73,7 @@ TexadaTest: $(OBJS) $(TEST_OBJS) $(USER_OBJS)
 Texada: $(OBJS) ./texada/bin/src/main/texadamain.o
 	@echo 'Building target: $@'
 	@echo 'Invoking: GCC C++ Linker'
-	g++ -L$(SPOT_LIB) -L$(GTEST_LIB) -L$(PROGOP_LIB) -o "Texada" ./texada/bin/src/main/texadamain.o $(OBJS) $(USER_OBJS) $(LIBS) -pg
+	g++ -L$(SPOT_LIB) -L$(GTEST_LIB) -o "Texada" ./texada/bin/src/main/texadamain.o $(OBJS) $(USER_OBJS) $(LIBS) -pg
 	@echo 'Finished building target: $@'
 	@echo ' '
 
@@ -79,7 +81,7 @@ Texada: $(OBJS) ./texada/bin/src/main/texadamain.o
 ./texada/bin/src/checkers/%.o: ./texada/src/checkers/%.cpp | $(CHECKERS)
 	@echo 'Building file: $<'
 	@echo 'Invoking: GCC C++ Compiler'
-	g++ -std=c++11 -I$(SPOT_INCL) -I$(GTEST_INCL) -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o "$@" "$<" -pg
+	g++ $(COMPILE_FLAGS)
 	@echo 'Finished building: $<'
 	@echo ' '
 	
@@ -87,7 +89,7 @@ Texada: $(OBJS) ./texada/bin/src/main/texadamain.o
 ./texada/bin/src/instantiation-tools/%.o: ./texada/src/instantiation-tools/%.cpp | $(INST_TOOLS)
 	@echo 'Building file: $<'
 	@echo 'Invoking: GCC C++ Compiler'
-	g++ -std=c++11 -I$(SPOT_INCL) -I$(GTEST_INCL) -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o "$@" "$<" -pg
+	g++ $(COMPILE_FLAGS)
 	@echo 'Finished building: $<'
 	@echo ' '
 	
@@ -95,23 +97,23 @@ Texada: $(OBJS) ./texada/bin/src/main/texadamain.o
 ./texada/bin/src/main/%.o: ./texada/src/main/%.cpp | $(MAIN)
 	@echo 'Building file: $<'
 	@echo 'Invoking: GCC C++ Compiler'
-	g++ -std=c++11 -I$(SPOT_INCL) -I$(GTEST_INCL) -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o "$@" "$<" -pg
+	g++ $(COMPILE_FLAGS)
 	@echo 'Finished building: $<'
 	@echo ' '
 	
-# Each subdirectory must supply rules for building sources it contributes
+# Compiling parsing subdir
 ./texada/bin/src/parsing/%.o: ./texada/src/parsing/%.cpp | $(PARSING)
 	@echo 'Building file: $<'
 	@echo 'Invoking: GCC C++ Compiler'
-	g++ -std=c++11 -I$(SPOT_INCL) -I$(GTEST_INCL) -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o "$@" "$<" -pg
+	g++ $(COMPILE_FLAGS)
 	@echo 'Finished building: $<'
 	@echo ' '			
 
-# Each subdirectory must supply rules for building sources it contributes
+# Compiling tests
 ./texada/bin/tests/%.o: ./texada/tests/%.cpp | $(TESTS)
 	@echo 'Building file: $<'
 	@echo 'Invoking: GCC C++ Compiler'
-	g++ -std=c++11 -I$(SPOT_INCL) -I$(GTEST_INCL) -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o "$@" "$<" -pg
+	g++ $(COMPILE_FLAGS)
 	@echo 'Finished building: $<'
 	@echo ' '
 
