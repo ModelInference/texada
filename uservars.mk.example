@@ -6,6 +6,7 @@
 # SPOT_INCL: the location of spot header files (e.g /usr/local/include/spot)         #
 # GTEST_LIB: the location of gtest and gtest_main libraries (where GTest was built)  #
 # GTEST_INCL: the location of gtest header files (e.g. pathtogtest/gtest/include)    #
+# BOOST_INCL: the location of the boost header files (e.g. /usr/include/boost)       #
 ######################################################################################
 
 #### Specify path to SPOT library

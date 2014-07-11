@@ -2,11 +2,11 @@ RM := rm -rf
 
 LIBS := -lspot -lgtest -lpthread -lgtest_main -lboost_program_options
 
-CHECKERS := texada/bin/src/checkers
-INST_TOOLS := texada/bin/src/instantiation-tools
-MAIN := texada/bin/src/main
-PARSING := texada/bin/src/parsing
-TESTS := texada/bin/tests
+CHECKERS := texada-src/bin/src/checkers
+INST_TOOLS := texada-src/bin/src/instantiation-tools
+MAIN := texada-src/bin/src/main
+PARSING := texada-src/bin/src/parsing
+TESTS := texada-src/bin/tests
 
 
 COMPILE_FLAGS = -std=c++11 -I$(SPOT_INCL) -I$(GTEST_INCL) -I$(BOOST_INCL) -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o "$@" "$<" -pg
@@ -41,44 +41,44 @@ endif
 # Add inputs and outputs from these tool invocations to the build variables 
 
 OBJS += \
-./texada/bin/src/checkers/maptracechecker.o \
-./texada/bin/src/checkers/lineartracechecker.o \
-./texada/bin/src/instantiation-tools/instantspoolcreator.o \
-./texada/bin/src/instantiation-tools/apsubbingcloner.o \
-./texada/bin/src/main/propertytypeminer.o \
-./texada/bin/src/parsing/stringevent.o \
-./texada/bin/src/parsing/simpleparser.o 
+./texada-src/bin/src/checkers/maptracechecker.o \
+./texada-src/bin/src/checkers/lineartracechecker.o \
+./texada-src/bin/src/instantiation-tools/instantspoolcreator.o \
+./texada-src/bin/src/instantiation-tools/apsubbingcloner.o \
+./texada-src/bin/src/main/propertytypeminer.o \
+./texada-src/bin/src/parsing/stringevent.o \
+./texada-src/bin/src/parsing/simpleparser.o 
 
 
 TEST_OBJS+= \
-./texada/bin/tests/instantspoolcreator_test.o \
-./texada/bin/tests/lineartracechecker_test.o \
-./texada/bin/tests/apsubbingcloner_test.o \
-./texada/bin/tests/maptracechecker_test.o \
-./texada/bin/tests/simpleparser_test.o \
-./texada/bin/tests/propertytypeminer_test.o 
+./texada-src/bin/tests/instantspoolcreator_test.o \
+./texada-src/bin/tests/lineartracechecker_test.o \
+./texada-src/bin/tests/apsubbingcloner_test.o \
+./texada-src/bin/tests/maptracechecker_test.o \
+./texada-src/bin/tests/simpleparser_test.o \
+./texada-src/bin/tests/propertytypeminer_test.o 
 
 # All Target
-all: TexadaTest Texada
+all: texadatest texada
 
 # Linking for Test
-TexadaTest: $(OBJS) $(TEST_OBJS) $(USER_OBJS)
+texadatest: $(OBJS) $(TEST_OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: GCC C++ Linker'
-	g++ -L$(SPOT_LIB) -L$(GTEST_LIB) -o "TexadaTest" $(OBJS) $(TEST_OBJS) $(USER_OBJS) $(LIBS) -pg
+	g++ -L$(SPOT_LIB) -L$(GTEST_LIB) -o "texadatest" $(OBJS) $(TEST_OBJS) $(USER_OBJS) $(LIBS) -pg
 	@echo 'Finished building target: $@'
 	@echo ' '
 
 # Linking for Main Texada	
-Texada: $(OBJS) ./texada/bin/src/main/texadamain.o
+texada: $(OBJS) ./texada-src/bin/src/main/texadamain.o
 	@echo 'Building target: $@'
 	@echo 'Invoking: GCC C++ Linker'
-	g++ -L$(SPOT_LIB) -L$(GTEST_LIB) -o "Texada" ./texada/bin/src/main/texadamain.o $(OBJS) $(USER_OBJS) $(LIBS) -pg
+	g++ -L$(SPOT_LIB) -L$(GTEST_LIB) -o "texada" ./texada-src/bin/src/main/texadamain.o $(OBJS) $(USER_OBJS) $(LIBS) -pg
 	@echo 'Finished building target: $@'
 	@echo ' '
 
 # Compiling checkers subdir
-./texada/bin/src/checkers/%.o: ./texada/src/checkers/%.cpp | $(CHECKERS)
+./texada-src/bin/src/checkers/%.o: ./texada-src/src/checkers/%.cpp | $(CHECKERS)
 	@echo 'Building file: $<'
 	@echo 'Invoking: GCC C++ Compiler'
 	g++ $(COMPILE_FLAGS)
@@ -86,7 +86,7 @@ Texada: $(OBJS) ./texada/bin/src/main/texadamain.o
 	@echo ' '
 	
 # Compling instantiation-tools subdir
-./texada/bin/src/instantiation-tools/%.o: ./texada/src/instantiation-tools/%.cpp | $(INST_TOOLS)
+./texada-src/bin/src/instantiation-tools/%.o: ./texada-src/src/instantiation-tools/%.cpp | $(INST_TOOLS)
 	@echo 'Building file: $<'
 	@echo 'Invoking: GCC C++ Compiler'
 	g++ $(COMPILE_FLAGS)
@@ -94,7 +94,7 @@ Texada: $(OBJS) ./texada/bin/src/main/texadamain.o
 	@echo ' '
 	
 # Compiling main subdir
-./texada/bin/src/main/%.o: ./texada/src/main/%.cpp | $(MAIN)
+./texada-src/bin/src/main/%.o: ./texada-src/src/main/%.cpp | $(MAIN)
 	@echo 'Building file: $<'
 	@echo 'Invoking: GCC C++ Compiler'
 	g++ $(COMPILE_FLAGS)
@@ -102,7 +102,7 @@ Texada: $(OBJS) ./texada/bin/src/main/texadamain.o
 	@echo ' '
 	
 # Compiling parsing subdir
-./texada/bin/src/parsing/%.o: ./texada/src/parsing/%.cpp | $(PARSING)
+./texada-src/bin/src/parsing/%.o: ./texada-src/src/parsing/%.cpp | $(PARSING)
 	@echo 'Building file: $<'
 	@echo 'Invoking: GCC C++ Compiler'
 	g++ $(COMPILE_FLAGS)
@@ -110,7 +110,7 @@ Texada: $(OBJS) ./texada/bin/src/main/texadamain.o
 	@echo ' '			
 
 # Compiling tests
-./texada/bin/tests/%.o: ./texada/tests/%.cpp | $(TESTS)
+./texada-src/bin/tests/%.o: ./texada-src/tests/%.cpp | $(TESTS)
 	@echo 'Building file: $<'
 	@echo 'Invoking: GCC C++ Compiler'
 	g++ $(COMPILE_FLAGS)
@@ -131,7 +131,7 @@ $(TESTS):
 
 # Other Targets
 clean:
-	-$(RM) $(OBJS)$(C++_DEPS)$(C_DEPS)$(CC_DEPS)$(CPP_DEPS)$(EXECUTABLES)$(CXX_DEPS)$(C_UPPER_DEPS) Texada
+	-$(RM) $(OBJS)$(C++_DEPS)$(C_DEPS)$(CC_DEPS)$(CPP_DEPS)$(EXECUTABLES)$(CXX_DEPS)$(C_UPPER_DEPS) texada texadatest
 	-@echo ' '
 
 .PHONY: all clean dependents

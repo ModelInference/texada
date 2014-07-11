@@ -18,6 +18,7 @@
 void set_up_timed_mining(std::string form, std::string source, bool use_map) {
     clock_t begin, end;
     double time_spent;
+    std::cout << "Hi";
     begin = clock();
     texada::mine_property_type(form, source, use_map);
     end = clock();
