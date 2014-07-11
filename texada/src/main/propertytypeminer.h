@@ -12,7 +12,7 @@
 
 #include <set>
 #include <vector>
-#include "stringevent.h"
+#include "../parsing/stringevent.h"
 
 namespace texada {
 

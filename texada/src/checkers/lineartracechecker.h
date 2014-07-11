@@ -9,10 +9,10 @@
 #define LINEARTRACECHECKER_H_
 
 #include <ltlast/allnodes.hh>
-#include "stringevent.h"
+#include "../parsing/stringevent.h"
 #include <iostream>
 
-#include "instantspoolcreator.h"
+#include "../instantiation-tools/instantspoolcreator.h"
 
 namespace texada {
 

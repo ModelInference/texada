@@ -7,7 +7,7 @@
 
 #ifndef MAPTRACECHECKER_H_
 #define MAPTRACECHECKER_H_
-#include "stringevent.h"
+#include "../parsing/stringevent.h"
 #include <map>
 #include <unordered_map>
 #include <vector>
@@ -15,7 +15,7 @@
 #include <climits>
 #include <boost/functional/hash.hpp>
 #include <boost/unordered_map.hpp>
-#include "instantspoolcreator.h"
+#include "../instantiation-tools/instantspoolcreator.h"
 
 namespace texada {
 

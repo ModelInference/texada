@@ -5,13 +5,13 @@
  *      Author: clemieux
  */
 
-#include "../src/propertytypeminer.h"
+#include "../src/main/propertytypeminer.h"
 #include <gtest/gtest.h>
 #include <ltlvisit/tostring.hh>
 #include <ltlparse/public.hh>
 #include <array>
 #include <fstream>
-#include "../src/formulainstantiator.h"
+#include "../src/instantiation-tools/apsubbingcloner.h"
 
 std::string response_string = "G(x->XFy)";
 std::string alternating_string = "((!y)W x)&G((x->X((!x)U y))&(y->X((!y)W x)))";

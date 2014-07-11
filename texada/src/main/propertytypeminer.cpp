@@ -14,11 +14,11 @@
 #include <ltlvisit/apcollect.hh>
 #include <ltlvisit/tostring.hh>
 
-#include "simpleparser.h"
-#include "instantspoolcreator.h"
-#include "maptracechecker.h"
-#include "lineartracechecker.h"
-#include "apsubbingcloner.h"
+#include "../parsing/simpleparser.h"
+#include "../instantiation-tools/instantspoolcreator.h"
+#include "../checkers/maptracechecker.h"
+#include "../checkers/lineartracechecker.h"
+#include "../instantiation-tools/apsubbingcloner.h"
 
 namespace texada {
 
