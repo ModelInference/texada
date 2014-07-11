@@ -16,11 +16,11 @@
 TEST(LinearTraceCheckerTest, AFby) {
 
     std::vector<texada::string_event> trace_vec;
-    trace_vec.push_back(texada::string_event("a", false));
-    trace_vec.push_back(texada::string_event("a", false));
-    trace_vec.push_back(texada::string_event("b", false));
-    trace_vec.push_back(texada::string_event("b", false));
-    trace_vec.push_back(texada::string_event("EndOfTraceVar", true));
+    trace_vec.push_back(texada::string_event("a"));
+    trace_vec.push_back(texada::string_event("a"));
+    trace_vec.push_back(texada::string_event("b"));
+    trace_vec.push_back(texada::string_event("b"));
+    trace_vec.push_back(texada::string_event());
     texada::string_event* trace = &trace_vec[0];
 
     std::string input = "G(a->Fb)";
@@ -48,11 +48,11 @@ TEST(LinearTraceCheckerTest, AFby) {
 
 TEST(LinearTraceCheckerTest, NextNext) {
     std::vector<texada::string_event> trace_vec;
-    trace_vec.push_back(texada::string_event("a", false));
-    trace_vec.push_back(texada::string_event("a", false));
-    trace_vec.push_back(texada::string_event("b", false));
-    trace_vec.push_back(texada::string_event("b", false));
-    trace_vec.push_back(texada::string_event("EndOfTraceVar", true));
+    trace_vec.push_back(texada::string_event("a"));
+    trace_vec.push_back(texada::string_event("a"));
+    trace_vec.push_back(texada::string_event("b"));
+    trace_vec.push_back(texada::string_event("b"));
+    trace_vec.push_back(texada::string_event());
     texada::string_event* trace = &trace_vec[0];
 
     //std::cout << "Does the next next make you unhappy... \n";
@@ -75,20 +75,20 @@ TEST(LinearTraceCheckerTest, NextNext) {
 
 TEST(LinearTraceCheckerTest,Alternating) {
     std::vector<texada::string_event> trace_vec;
-    trace_vec.push_back(texada::string_event("p", false));
-    trace_vec.push_back(texada::string_event("s", false));
-    trace_vec.push_back(texada::string_event("p", false));
-    trace_vec.push_back(texada::string_event("s", false));
-    trace_vec.push_back(texada::string_event("EndOfTraceVar", true));
+    trace_vec.push_back(texada::string_event("p"));
+    trace_vec.push_back(texada::string_event("s"));
+    trace_vec.push_back(texada::string_event("p"));
+    trace_vec.push_back(texada::string_event("s"));
+    trace_vec.push_back(texada::string_event());
     texada::string_event* psSucceed = &trace_vec[0];
 
     std::vector<texada::string_event> trace_vec2;
-    trace_vec2.push_back(texada::string_event("p", false));
-    trace_vec2.push_back(texada::string_event("s", false));
-    trace_vec2.push_back(texada::string_event("p", false));
-    trace_vec2.push_back(texada::string_event("s", false));
-    trace_vec2.push_back(texada::string_event("p", false));
-    trace_vec2.push_back(texada::string_event("EndOfTraceVar", true));
+    trace_vec2.push_back(texada::string_event("p"));
+    trace_vec2.push_back(texada::string_event("s"));
+    trace_vec2.push_back(texada::string_event("p"));
+    trace_vec2.push_back(texada::string_event("s"));
+    trace_vec2.push_back(texada::string_event("p"));
+    trace_vec2.push_back(texada::string_event());
     texada::string_event* psFail = &trace_vec2[0];
 
     std::string alti = "((!s)W p)&G((p->X((!p)U s))&(s->X((!s)W p)))";
@@ -107,8 +107,8 @@ TEST(LinearTraceCheckerTest,Alternating) {
 }
 TEST(LinearTraceCheckerTest,Until) {
     std::vector<texada::string_event> trace_vec;
-    trace_vec.push_back(texada::string_event("q", false));
-    trace_vec.push_back(texada::string_event("EndOfTraceVar", true));
+    trace_vec.push_back(texada::string_event("q"));
+    trace_vec.push_back(texada::string_event());
     texada::string_event* trace = &trace_vec[0];
 
     std::string input = "p U q";

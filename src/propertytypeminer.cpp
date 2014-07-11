@@ -15,17 +15,13 @@
 #include <ltlvisit/tostring.hh>
 
 #include "simpleparser.h"
-#include "arrayinstantiator.h"
+#include "instantspoolcreator.h"
 #include "maptracechecker.h"
 #include "lineartracechecker.h"
 #include "apsubbingcloner.h"
 
 namespace texada {
-using std::set;
-using std::vector;
-using std::string;
-using std::map;
-//TODO: using std::things, maybe
+
 
 set<const spot::ltl::formula*> mine_lin_property_type(
 		string formula_string, string trace_source) {
@@ -75,13 +71,13 @@ set<const spot::ltl::formula*> mine_property_type(
 			formula);
 
 	// create all possible instantiations of formula
-	array_instantiator instantiator = array_instantiator(event_set, *variables);
+	instants_pool_creator instantiator = instants_pool_creator(event_set, *variables);
 	instantiator.instantiate_array();
-	vector<array_instantiator::inst_fxn> all_instants =
+	shared_ptr<vector<instants_pool_creator::inst_fxn>> all_instants =
 			instantiator.return_instantiations();
 
 	// size of all_instant
-	int instantiations_size = all_instants.size();
+	int instantiations_size = all_instants->size();
 
 	// check all valid instantiations on each trace
 	if (!vector_trace_set.empty()) {
@@ -104,9 +100,9 @@ set<const spot::ltl::formula*> mine_property_type(
 	set<const spot::ltl::formula*> return_set;
 
 	for (int i = 0; i < instantiations_size; i++) {
-		if (all_instants[i].validity) {
+		if (all_instants->at(i).valid) {
 			const spot::ltl::formula * valid_form = instantiate(formula,
-					all_instants[i].inst_map);
+					all_instants->at(i).inst_map);
 			return_set.insert(valid_form);
 		}
 	}

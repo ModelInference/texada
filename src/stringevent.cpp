@@ -9,23 +9,20 @@
 
 namespace texada {
 
-/**
- * Construct a string event with name and whether it is terminal
- * @param name_ name
- * @param isTerminal_ is this a terminal event?
- */
-string_event::string_event(std::string name_, bool isTerminal_) :
-	name(name_), isTerminal(isTerminal_){
 
+/**
+ * Construct a non-terminal event string event with name name_.
+ * @param name_ name
+ */
+string_event::string_event(std::string name_) :
+        name(name_), isTerminal(false) {
 }
 
 /**
- * Basic constructor to allow for array creation.
- * TODO: possibly add setter methods?
+ * Basic constructor which creates a terminal event.
  */
 string_event::string_event() :
-	name(""), isTerminal(false){
-
+        name("EndOfTraceVar"), isTerminal(true) {
 }
 
 string_event::~string_event() {
@@ -36,8 +33,8 @@ string_event::~string_event() {
  * @param other
  * @return
  */
-bool string_event::operator<(const string_event& other) const{
-	return name < other.get_name();
+bool string_event::operator<(const string_event& other) const {
+    return name < other.get_name();
 }
 
 /**
@@ -45,24 +42,42 @@ bool string_event::operator<(const string_event& other) const{
  * @param other
  * @return
  */
-bool string_event::operator==(const string_event& other) const{
-	return (name == other.get_name() && isTerminal == other.is_terminal());
+bool string_event::operator==(const string_event& other) const {
+    return (name == other.get_name() && isTerminal == other.is_terminal());
 }
 
 /**
  * Returns the name of the event
  * @return name of event
  */
-std::string string_event::get_name() const{
-	return name;
+std::string string_event::get_name() const {
+    return name;
 }
 
 /**
  * Returns whether the event is terminal
  * @return true if event is terminal
  */
-bool string_event::is_terminal() const{
-	return isTerminal;
+bool string_event::is_terminal() const {
+    return isTerminal;
+}
+
+/**
+ * Sets event name to inputted name_.
+ * @param name_
+ * @return
+ */
+void string_event::set_name(std::string name_) {
+    name = name_;
+}
+
+/**
+ * Sets this to a terminal event if is_term is true,
+ * sets this to a non-terminal event if is_term is false.s
+ * @param is_term
+ */
+void string_event::set_terminal(bool is_term) {
+    isTerminal = is_term;
 }
 
 } /* namespace texada */

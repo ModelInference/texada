@@ -15,21 +15,23 @@
 #include <climits>
 #include <boost/functional/hash.hpp>
 #include <boost/unordered_map.hpp>
-#include "arrayinstantiator.h"
+#include "instantspoolcreator.h"
 
 namespace texada {
+
 
 /**
  * Class to check whether an LTL formula holds on a trace in the form of a map.
  * Note that this class uses LONG_MAX as infinity.
  */
 class map_trace_checker {
+
 public:
-    map_trace_checker(const std::map<string_event, std::vector<long>>*);
+    map_trace_checker(const map<string_event, vector<long>>*);
     virtual ~map_trace_checker();
     bool check_on_trace(const spot::ltl::formula *);
-    std::vector<array_instantiator::inst_fxn> check_instants_on_trace(
-            std::vector<array_instantiator::inst_fxn>& instantiations,
+    shared_ptr<vector<instants_pool_creator::inst_fxn>> check_instants_on_trace(
+            shared_ptr<vector<instants_pool_creator::inst_fxn>> instantiations,
             const spot::ltl::formula* formula);
 
     /**
@@ -77,7 +79,7 @@ private:
     long terminal_point;
     std::unordered_map<first_occ_storer, long, first_occ_storer_hash> first_occ_map;
     std::unordered_map<first_occ_storer, long, first_occ_storer_hash> last_occ_map;
-    const std::map<string_event, std::vector<long>> * trace_map;
+    const map<string_event, vector<long>> * trace_map;
 
     bool check(const spot::ltl::formula *, interval);
     bool check(const spot::ltl::atomic_prop *, interval);

@@ -27,20 +27,19 @@ simple_parser::~simple_parser() {
  */
 void simple_parser::parse_to_vector(std::ifstream &infile) {
 	unique_events.clear();
-	std::vector<string_event> return_vec;
-	std::string line;
+	vector<string_event> return_vec;
+	string line;
 	while (std::getline(infile, line)) {
 		// if we're at the end of the trace, add the end of trace variable
 		// and exit the loop
 		if (line == "--") {
-			//TODO: have terminal constructor for endoftracevar
-			return_vec.push_back(string_event("EndOfTraceVar", true));
+			return_vec.push_back(string_event());
 			vector_trace_set.insert(return_vec);
 			return_vec.clear();
 		} else {
 			// assumes one event per line, -- terminates
 			// constructor w/o terminal event false/true
-			return_vec.push_back(string_event(line, false));
+			return_vec.push_back(string_event(line));
 			// if the event is not in the set of events, we add it
 			if ((unique_events.find(line) == unique_events.end())) {
 				unique_events.insert(line);
@@ -60,8 +59,8 @@ void simple_parser::parse_to_vector(std::ifstream &infile) {
  */
 void simple_parser::parse_to_map(std::ifstream &infile) {
 	unique_events.clear();
-	std::map<string_event, std::vector<long>> return_map;
-	std::string line;
+	map<string_event, std::vector<long>> return_map;
+	string line;
 	long pos_count = 0;
 	while (std::getline(infile, line)) {
 		// if we're at the end of the trace, add the end of trace variable
@@ -69,19 +68,19 @@ void simple_parser::parse_to_map(std::ifstream &infile) {
 		if (line == "--") {
 			std::vector<long> pos_vec;
 			pos_vec.push_back(pos_count);
-			return_map.emplace(string_event("EndOfTraceVar", true), pos_vec);
+			return_map.emplace(string_event(), pos_vec);
 			map_trace_set.insert(return_map);
 			return_map.clear();
 			pos_count = 0;
 		} else {
-			if ((return_map.find(string_event(line, false)) == return_map.end())) {
+			if ((return_map.find(string_event(line)) == return_map.end())) {
 				unique_events.insert(line);
 				std::vector<long> pos_vec;
 				pos_vec.push_back(pos_count);
-				return_map.emplace(string_event(line, false), pos_vec);
+				return_map.emplace(string_event(line), pos_vec);
 				pos_count++;
 			} else {
-				return_map.at(string_event(line, false)).push_back(pos_count);
+				return_map.at(string_event(line)).push_back(pos_count);
 				pos_count++;
 			}
 		}

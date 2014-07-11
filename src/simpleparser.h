@@ -15,6 +15,10 @@
 #include <iostream>
 
 namespace texada {
+using std::set;
+using std::vector;
+using std::string;
+using std::map;
 
 /**
  * Creates a simple parser which can parse files in the format returned by
@@ -36,10 +40,9 @@ public:
 
 private:
 	//rename to unique events
-	//TODO: vector and map sets should be here
-	std::set<std::vector<string_event> > vector_trace_set;
-	std::set<std::map<string_event, std::vector<long>>>map_trace_set;
-	std::set<std::string> unique_events;
+	set<vector<string_event> > vector_trace_set;
+	set<map<string_event, vector<long>>>map_trace_set;
+	set<string> unique_events;
 	bool has_been_parsed_vec = false;
 	bool has_been_parsed_map = false;
 

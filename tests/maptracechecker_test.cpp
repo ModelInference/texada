@@ -81,15 +81,15 @@ TEST(SearchCheckerTest,AtomicProp){
 
 TEST(MapCheckerTest,SmallTrace){
 	std::map<texada::string_event, std::vector<long>> trace_map;
-	texada::string_event aevent = texada::string_event("a",false);
+	texada::string_event aevent = texada::string_event("a");
 	long aposns[] = {0,1};
 	std::vector<long> apos_vec (aposns, aposns + sizeof(aposns) / sizeof(long) );
 	trace_map.insert(std::pair<texada::string_event, std::vector<long>>(aevent,apos_vec));
-	texada::string_event bevent = texada::string_event("b",false);
+	texada::string_event bevent = texada::string_event("b");
 	long bposns[] = {2,3};
 	std::vector<long> bpos_vec (bposns, bposns + sizeof(bposns) / sizeof(long) );
 	trace_map.insert(std::pair<texada::string_event, std::vector<long>>(bevent,bpos_vec));
-	texada::string_event termvent = texada::string_event("EndOfTraceVar",true);
+	texada::string_event termvent = texada::string_event();
 	std::vector<long> tpos_vec;
 	tpos_vec.push_back(4);
 	trace_map.insert(std::pair<texada::string_event, std::vector<long>>(termvent,tpos_vec));
@@ -206,11 +206,7 @@ TEST(MapCheckerTest,ResourceAllocation){
 	//parse the ltl formula
 	spot::ltl::parse_error_list pel;
 	const spot::ltl::formula* formula = spot::ltl::parse("(!(b | c) W a) & G((b -> XFc) & (a -> X((!a U c) & (!c U b))) & (c -> X(!(b | c) W a)))", pel);
-	//std::cout << "## Number of parser errors: "<<pel.size() << "\n";
-	//TODO: get some way for the user to check this.
 
-	// currently just using simple parser, assumedly could replace this by a
-	// more complex parser once we have one
 	std::ifstream infile("/home/clemieux/workspace/texada/Texada/traces/resource-allocation/smallabc.txt");
 	texada::simple_parser * parser =  new texada::simple_parser();
 	parser->parse_to_map(infile);

@@ -36,7 +36,7 @@ endif
 # Add inputs and outputs from these tool invocations to the build variables 
 
 OBJS += \
-./bin/src/arrayinstantiator.o \
+./bin/src/instantspoolcreator.o \
 ./bin/src/maptracechecker.o \
 ./bin/src/stringevent.o \
 ./bin/src/lineartracechecker.o \
@@ -46,13 +46,12 @@ OBJS += \
 
 
 TEST_OBJS+= \
-./bin/tests/arrayinstantiator_test.o \
+./bin/tests/instantspoolcreator_test.o \
 ./bin/tests/lineartracechecker_test.o \
 ./bin/tests/apsubbingcloner_test.o \
 ./bin/tests/maptracechecker_test.o \
 ./bin/tests/simpleparser_test.o \
-./bin/tests/propertytypeminer_test.o \
-./bin/tests/timingtests.o
+./bin/tests/propertytypeminer_test.o 
 
 # All Target
 all: Texada texadacl

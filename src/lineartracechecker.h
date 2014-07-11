@@ -12,7 +12,7 @@
 #include "stringevent.h"
 #include <iostream>
 
-#include "arrayinstantiator.h"
+#include "instantspoolcreator.h"
 
 namespace texada {
 
@@ -29,7 +29,7 @@ public:
 
 	bool check(const spot::ltl::formula* node, const string_event *trace);
 
-	std::vector<array_instantiator::inst_fxn> check_instants_on_trace(std::vector<array_instantiator::inst_fxn>& instantiations,
+	shared_ptr<vector<instants_pool_creator::inst_fxn>> check_instants_on_trace(shared_ptr<vector<instants_pool_creator::inst_fxn>> instantiations,
 			const spot::ltl::formula* formula, const string_event* trace);
 private:
     bool check(const spot::ltl::atomic_prop* node, const string_event *trace);
