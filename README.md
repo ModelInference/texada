@@ -12,20 +12,35 @@ Texada is developed in C++. The rest of this page describes the steps to get Tex
 
 ### Directory Structure
 
-      Texada
-         /bin  -- created by makefile
-            /src -- contains src objects
-            /tests -- contains test objects
-         /src -- source code for main project
-         /tests -- main project tests
+      Texada -- top level directory in which repo is stored, contains makefile
+         /texada-src -- contains all source code and generated .o, .d files
+            /bin  -- created by makefile, contains .o, .d files
+               /src -- contains src objects
+                  /checkers
+                  /instantiation-tools
+                  /main 
+                  /parsing
+               /tests -- contains test objects
+            /src -- source code for main project
+               /checkers -- code for checkers, which traverse traces and formulae to check that those formulae (instantiated prop. types) hold on trace
+               /instantiation-tools -- tools to create all permutations of events for instantiations, to instantiate a SPOT formula
+               /main -- contains main and main mining functions
+               /parsing -- code for trace parsing 
+            /tests -- main project tests
 
 ### Required libraries
 
-Texada depends on two non-standard libraries, [Google Test](https://code.google.com/p/googletest/), and [SPOT](http://spot.lip6.fr/wiki/GetSpot).
+Texada depends on a few non standard libraries, [Google Test](https://code.google.com/p/googletest/), [SPOT](http://spot.lip6.fr/wiki/GetSpot), and [Boost](http://www.boost.org/). Note that SPOT itself also depends on Boost. 
 
 #### Google Test
 
+Google test can be downloaded [here](http://code.google.com/p/googletest/). To integrate with Texada, the location of Google Test headers and libraries will need to be inputted to uservars.mk (see "Building the project" below), so unpack and build Google Test in a logical place.
+
+#####If using Eclipse:
+
 Google Test can be used in Eclipse if the C/C++ Unit Testing Support item, which can be installed along with the CDT. To install the CDT and Unit Testing Support, add the website http://download.eclipse.org/tools/cdt/releases/youreclipseversion to the Help->Install New Software... dialogue, with youreclipseversion replaced by your eclipse version (e.g. Kepler). The C/C++ Unit Testing Support can then be installed under CDT Optional Features.
+
+To create a test, create a new Runner using 'Run As -> Run Configurations -> C/C++ Unit Test. Choose 'Google Tests Runner' for 'Tests Runner' in the 'C/C++ Testing' tab. In the 'Main' tab, enter texadatest as the C/C++ Application and click 'Use workspace settings' in the 'Build (if required) before launching' section.
 
 #### SPOT
 
@@ -43,6 +58,10 @@ Navigate to the extracted SPOT folder and run these commands to install SPOT:
     make install
 
 TODO: add installation instruction for other OSs if possible
+
+#### Boost
+
+The boost program_options library is used by Texada. You can install Boost [here](http://www.boost.org/doc/libs/1_55_0/more/getting_started/index.html). 
 
 ### Cloning project
 
@@ -74,7 +93,7 @@ For example, uservars.mk might look like
       # Specify path to SPOT headers
       SPOT_INCL:=/path/to/spot/headers/
       # Specify path to GTest headers
-      GTEST_INCL:=/path/to/gtest/headers/*
+      GTEST_INCL:=/path/to/gtest/headers/
 
 with all dummy paths replaced by real paths. SPOT\_LIB will probably point to pathtospot/spot/src/.libs/ if that is where libspot.a is. On a ubuntu machine, SPOT\_INCL will likely point to /usr/local/include/spot. The GTest libraries will be located wherever you build GTest and the GTest headers should be in pathtogtest/gtest/include (GTEST_INCL should point there). 
 
