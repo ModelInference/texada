@@ -82,6 +82,11 @@ int main(int ac, char* av[]) {
                 opts_map);
         boost::program_options::notify(opts_map);
 
+        if (opts_map.empty()){
+            std::cout << desc << "\n";
+            return 0;
+        }
+
         // if the user wanted to use map, we use map.
         if (opts_map.count("map_trace"))
             use_map = true;
