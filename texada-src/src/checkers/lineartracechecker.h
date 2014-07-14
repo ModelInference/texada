@@ -1,5 +1,5 @@
 /*
- * lineartracechecker2.h
+ * lineartracechecker.h
  *
  *  Created on: May 19, 2014
  *      Author: clemieux

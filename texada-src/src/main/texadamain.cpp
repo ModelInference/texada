@@ -18,7 +18,6 @@
 void set_up_timed_mining(std::string form, std::string source, bool use_map) {
     clock_t begin, end;
     double time_spent;
-    std::cout << "Hi";
     begin = clock();
     texada::mine_property_type(form, source, use_map);
     end = clock();
@@ -34,14 +33,20 @@ void set_up_timed_mining(std::string form, std::string source, bool use_map) {
  * @param use_map
  */
 void mine_on_increasing_events(std::string form, bool use_map) {
-    std::string trace_base =
-            "/home/clemieux/workspace/texada/Texada/traces/vary-invs-fixed2/log-25000_invs-";
+    std::string trace_base = std::string(getenv("TEXADA_HOME")) +
+            "/traces/vary-invs-fixed2/log-25000_invs-";
+
+    // we'll mine the property type represented by form on the traces with
+    // the number of unique events in the array below
     int unique_event_nums[] = { 5, 6, 7, 8, 9, 13, 16, 19, 22, 25, 28, 31, 34,
             37, 40, 43, 46, 50, 60, 70, 80 };
     std::cout << form;
+    // output map trace cout if use_map. Just a shortedned if/else.
     use_map ?
             std::cout << ", map trace: \n" : std::cout << ", linear trace: \n";
 
+    // go through the traces with unique event numbers given from the array
+    // and output time
     for (int i = 0; i < (sizeof(unique_event_nums) / sizeof(int)); i++) {
         std::cout << unique_event_nums[i] << " ";
         set_up_timed_mining(form,
