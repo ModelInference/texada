@@ -22,20 +22,37 @@
 
 namespace texada {
 
-
+/**
+ * Finds instantiations of the given property type using the linear
+ * trace checker
+ * @param formula_string the string form of the property type/
+ * ltl formula to be mined
+ * @param trace_source the input source of the trace
+ * @return valid instantiations of the property type on the trace
+ */
 set<const spot::ltl::formula*> mine_lin_property_type(
 		string formula_string, string trace_source) {
 	return mine_property_type(formula_string, trace_source, false);
 }
 
+/**
+ * Finds instantiations of the given property type using the map
+ * trace checker
+ * @param formula_string the string form of the property type/
+ * ltl formula to be mined
+ * @param trace_source the input source of the trace
+ * @return valid instantiations of the property type on the trace
+ */
 set<const spot::ltl::formula*> mine_map_property_type(
 		string formula_string, string trace_source) {
 	return mine_property_type(formula_string, trace_source, true);
 }
 
 /**
- *
- * @param formula_string the string form of the ltl formula to be mined
+ * Finds valid instantiations of the given property type on the given
+ * traces, using map or linear checker according to use_map.
+ * @param formula_string the string form of the property type/
+ * ltl formula to be mined
  * @param trace_source the input source of the trace
  * @param use_map use map miner if true, linear miner otherwise
  * @return valid instantiations of the inputted formula on inputted trace set

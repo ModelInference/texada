@@ -14,6 +14,11 @@
 
 namespace texada {
 
+/**
+ * Creates a map trace checker which can check any formula on the
+ * trace map it's constructed on.
+ * @param trace_map_
+ */
 map_trace_checker::map_trace_checker(
         const std::map<string_event, std::vector<long>>* trace_map_) :
         trace_map(trace_map_) {
@@ -22,6 +27,9 @@ map_trace_checker::map_trace_checker(
 
 }
 
+/**
+ * destructor
+ */
 map_trace_checker::~map_trace_checker() {
     first_occ_map.clear();
     last_occ_map.clear();

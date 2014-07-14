@@ -11,7 +11,8 @@
 #include <ltlast/allnodes.hh>
 
 /**
- * Used to instantiate a property type given an instantiation function.
+ * Used to instantiate a property type given an instantiation function;
+ * that is, a map from the property type's variables to other variables.
  * I.e. returns a clone of the formula representing the property type
  * and replaces each atomic prop with the one indicated in the inputted map
  */

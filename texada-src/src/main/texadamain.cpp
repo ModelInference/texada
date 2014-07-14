@@ -71,7 +71,7 @@ int main(int ac, char* av[]) {
                 "property type to mine")("log_file,l",
                 boost::program_options::value<std::string>(),
                 "trace file to mine on")("run_on_increasing_events",
-                "run the formula through traces with increasing number of unique events")(
+                "run the prop type through traces with increasing number of unique events")(
                 "map_trace,m",
                 "mine on a trace in the form of a map (by default, Texada uses the linear trace checker)");
 
@@ -83,7 +83,7 @@ int main(int ac, char* av[]) {
         boost::program_options::notify(opts_map);
 
         if (opts_map.empty()){
-            std::cerr << "Error: no arguments provided.";
+            std::cerr << "Error: no arguments provided. \n";
             std::cout << desc << "\n";
             return 1;
         }
@@ -103,7 +103,7 @@ int main(int ac, char* av[]) {
         if (opts_map.count("property_type")) {
             prop_type = opts_map["property_type"].as<std::string>();
         } else {
-            std::cerr << "Error: No inputted property type\n";
+            std::cerr << "Error: No inputted property type. \n";
             return 1;
         }
 
@@ -117,7 +117,7 @@ int main(int ac, char* av[]) {
         if (opts_map.count("log_file")) {
             input_source = opts_map["log_file"].as<std::string>();
         } else {
-            std::cerr << "Error: Did not provide log file\n";
+            std::cerr << "Error: Did not provide log file. \n";
             return 1;
         }
 
@@ -141,7 +141,7 @@ int main(int ac, char* av[]) {
 
         // exception catching
     } catch (std::exception& e) {
-        std::cerr << "error: " << e.what() << "\n";
+        std::cerr << "Error: " << e.what() << "\n";
         return 1;
     }
 
