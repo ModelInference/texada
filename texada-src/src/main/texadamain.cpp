@@ -83,8 +83,9 @@ int main(int ac, char* av[]) {
         boost::program_options::notify(opts_map);
 
         if (opts_map.empty()){
+            std::cerr << "Error: no arguments provided.";
             std::cout << desc << "\n";
-            return 0;
+            return 1;
         }
 
         // if the user wanted to use map, we use map.
@@ -102,7 +103,7 @@ int main(int ac, char* av[]) {
         if (opts_map.count("property_type")) {
             prop_type = opts_map["property_type"].as<std::string>();
         } else {
-            std::cerr << "No inputted property_type\n";
+            std::cerr << "Error: No inputted property type\n";
             return 1;
         }
 
@@ -116,7 +117,7 @@ int main(int ac, char* av[]) {
         if (opts_map.count("log_file")) {
             input_source = opts_map["log_file"].as<std::string>();
         } else {
-            std::cerr << "Did not provide log file\n";
+            std::cerr << "Error: Did not provide log file\n";
             return 1;
         }
 
