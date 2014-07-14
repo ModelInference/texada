@@ -48,7 +48,7 @@ To install SPOT, navigate to the link above and download the tar.gz file. Extrac
 
     tar -zxvf spot-version.tar.gz
 
-Note that SPOT requires the installation of the [Boost](http://www.boost.org/) libraries. Its full functionality requires Python 2.0+ headers, but if these are not already installed, they can be omitted for the purposes of Texada. 
+You will need to provide the location of SPOT headers to uservars.mk, so make sure to extract to a logical place. Note that SPOT requires the installation of the [Boost](http://www.boost.org/) libraries. Its full functionality requires Python 2.0+ headers, but if these are not already installed, they can be omitted for the purposes of Texada. 
 
 Navigate to the extracted SPOT folder and run these commands to install SPOT:
 
@@ -57,11 +57,15 @@ Navigate to the extracted SPOT folder and run these commands to install SPOT:
     make check
     make install
 
-TODO: add installation instruction for other OSs if possible
+make install should place library files in a logical place for your OS. 
 
 #### Boost
 
-The boost program_options library is used by Texada. You can install Boost [here](http://www.boost.org/doc/libs/1_55_0/more/getting_started/index.html). 
+The boost program_options library is used by Texada. You can install Boost [here](http://www.boost.org/doc/libs/1_55_0/more/getting_started/index.html). Texada will require the location of Boost header files to run.
+
+Texada depends on one non-header only library, ProgramOptions. This will need to be built seperately according the Boost's instructions. 
+
+Texada uses boost_program_options and not boost_program_options-mt. An older installation of Boost may only have the -mt version. 
 
 ### Cloning project
 
@@ -76,27 +80,24 @@ To clone from Eclipse run File->Import->Mercurial->Clone From Existing Mercurial
 
 ### Building the project
 
-In the top-level Texada directory, where the makefile exists, create a file called uservars.mk. In this file, provide the correct values for the following four variables:
+To run tests and the runtime comparision option from command line, you must define the environment variable TEXADA_HOME to the location of the top level directory in which the makefile, texada-src/ and traces/ is found. The location should begin with a forward slash and end without one, as in */path/to/texada/home*. 
 
-SPOT_LIB: the location of the spot library
-SPOT_INCL: the location of pot header files 
-GTEST\_LIB: the location of gtest and gtest_main libraries
-GTEST_INCL: the location of gtest header files
+In the top-level Texada directory, where the makefile exists, there is a file called uservars.mk.example. Rename it to uservars.mk.  In this file, provide the correct values for the following five variables:
 
-For example, uservars.mk might look like
+    SPOT_LIB: the location of the spot library
+    SPOT_INCL: the location of pot header files 
+    GTEST_LIB: the location of gtest and gtest_main libraries
+    GTEST_INCL: the location of google test header files
+    BOOST_INCL: the location of Boost header files
 
-      # User-Specific Variables
-      # Specify path to SPOT library
-      SPOT_LIB:=/path/to/libspot.a/
-      # Specify path to GTest Libraries
-      GTEST_LIB:=/path/to/libgtest.a/
-      # Specify path to SPOT headers
-      SPOT_INCL:=/path/to/spot/headers/
-      # Specify path to GTest headers
-      GTEST_INCL:=/path/to/gtest/headers/
-
-with all dummy paths replaced by real paths. SPOT\_LIB will probably point to pathtospot/spot/src/.libs/ if that is where libspot.a is. On a ubuntu machine, SPOT\_INCL will likely point to /usr/local/include/spot. The GTest libraries will be located wherever you build GTest and the GTest headers should be in pathtogtest/gtest/include (GTEST_INCL should point there). 
+SPOT\_LIB will probably point to /pathtospot/spot/src/.libs if that is where libspot.a is. On a ubuntu machine, SPOT\_INCL will likely point to /usr/local/include/spot. The GTest libraries will be located wherever you built GTest and the GTest headers should be in /pathtogtest/gtest/include (GTEST_INCL should point there). BOOST_INCL may point to /usr/include/boost on a Ubunutu Machine
 
 If building from shell, simply type the *make* command in the top-level directory.
 
-If building from Eclipse, right-click on the Project. Follow Properties->C/C++Build. In Builder Settings, disable "Generate Makefiles automatically" and change Build Location to the Texada project. This should be ${workspace_loc:/Texada}, but can be navigated to via clicking the Workspace... option and selecting the Texada project. To build, press ctrl/cmd-b or right-click on the project and click "Build Project"
+##### If using Eclipse:
+
+There is a file included in the repo called .cproject.example. Remove the .example; if this overrides a generated eclipse file, let it. You will need to fill in the location of SPOT_LIB, SPOT_INCL, GTEST_LIB and GTEST_INCL as above, either by directly editing the .cproject.example file and entering these locations in the fields currently marked by $SPOT_LIB, $SPOT_INCL, $GTEST_LIB and $GTEST_INCL, or by right-clicking the project, following 'Properties -> C/C++ Build' and entering the locations in the 'Build Variables' tab. For the second option, make sure you have already replaced the original .cproject with the one provided; the variables should already be in the Build Variables section.
+
+Check that in 'Properties -> C/C++Build -> Builder Settings', 'Generate Makefiles automatically' is disabled. and Build Location is the Texada project. This should be ${workspace_loc:/Texada}, but can be navigated to via clicking the Workspace... option and selecting the Texada project. 
+
+To build, press ctrl/cmd-b or right-click on the project and click "Build Project"
