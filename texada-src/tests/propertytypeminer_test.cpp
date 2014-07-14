@@ -26,7 +26,7 @@ std::string causefirst_string = "((!y)W x)&G(x->XFy)";
 std::string onecause_string = "G(x->X((!x)U y))";
 std::string oneeffect_string = "G((x->X(Fy))&(y->X((!y)W x)))";
 
-std::string texada_base = "/home/clemieux/workspace/texada/Texada";
+std::string texada_base = std::string(getenv("TEXADA_HOME"));
 
 // Checks that the linear checker finds all finally
 // occurrences it should find

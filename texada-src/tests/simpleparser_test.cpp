@@ -2,11 +2,13 @@
 #include "../src/parsing/simpleparser.h"
 #include <fstream>
 #include <iostream>
-
+#include <stdlib.h>
 // Tests that the simple parser correctly parses a small trace
 TEST(SimpleParserTest, SmallFile) {
+
     std::ifstream infile(
-            "/home/clemieux/workspace/texada/Texada/traces/vary-tracelen/smalltrace.txt");
+            std::string(getenv("TEXADA_HOME"))
+                    + "/traces/vary-tracelen/smalltrace.txt");
 
     texada::simple_parser * parser = new texada::simple_parser;
     parser->parse_to_vector(infile);
@@ -33,7 +35,8 @@ TEST(SimpleParserTest, SmallFile) {
 // Test that the parser separates multiple traces as it should
 TEST(SimpleParserTest, MultipleTracesOneFile) {
     std::ifstream infile(
-            "/home/clemieux/workspace/texada/Texada/traces/vary-tracelen/etypes-10_events-250_execs-20.txt");
+            std::string(getenv("TEXADA_HOME"))
+                    + "/traces/vary-tracelen/etypes-10_events-250_execs-20.txt");
     texada::simple_parser * parser = new texada::simple_parser;
 
     parser->parse_to_vector(infile);
@@ -54,7 +57,8 @@ TEST(SimpleParserTest, MultipleTracesOneFile) {
 // Checks that the parser parses a small file into a map properly
 TEST(SimpleParserTest, MapTraceSmallFile) {
     std::ifstream infile(
-            "/home/clemieux/workspace/texada/Texada/traces/vary-tracelen/smalltrace.txt");
+            std::string(getenv("TEXADA_HOME"))
+                    + "/traces/vary-tracelen/smalltrace.txt");
     texada::simple_parser * parser = new texada::simple_parser;
     parser->parse_to_map(infile);
     std::set<std::map<texada::string_event, std::vector<long>> > trace_set =
@@ -76,7 +80,8 @@ TEST(SimpleParserTest, MapTraceSmallFile) {
 // that they're the right length (by checking the position of the terminal event)
 TEST(SimpleParserTest, MapTraceLargeFile) {
     std::ifstream infile(
-            "/home/clemieux/workspace/texada/Texada/traces/vary-tracelen/etypes-10_events-250_execs-20.txt");
+            std::string(getenv("TEXADA_HOME"))
+                    + "/traces/vary-tracelen/etypes-10_events-250_execs-20.txt");
 
     texada::simple_parser * parser = new texada::simple_parser;
     parser->parse_to_map(infile);

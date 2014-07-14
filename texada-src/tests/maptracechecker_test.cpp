@@ -18,6 +18,7 @@
 
 #include <climits>
 #include <fstream>
+#include <stdlib.h>
 
 
 // Testing map_trace_checker on a small trace, and trying to get decent code coverage
@@ -181,12 +182,16 @@ TEST(MapCheckerTest,SmallTrace){
 // testing whether map trace mines a more complex formula correctly.
 TEST(MapCheckerTest,ResourceAllocation){
 
+    std::string texada_home = std::string(getenv("TEXADA_HOME"));
+
+    std::string file_source = texada_home + "/traces/resource-allocation/smallabc.txt";
+
 	// parse the ltl formula
 	spot::ltl::parse_error_list pel;
 	const spot::ltl::formula* formula = spot::ltl::parse("(!(b | c) W a) & G((b -> XFc) & (a -> X((!a U c) & (!c U b))) & (c -> X(!(b | c) W a)))", pel);
 
 	// parse log file
-	std::ifstream infile("/home/clemieux/workspace/texada/Texada/traces/resource-allocation/smallabc.txt");
+	std::ifstream infile(file_source);
 	texada::simple_parser * parser =  new texada::simple_parser();
 	parser->parse_to_map(infile);
 	std::set<std::map<texada::string_event,std::vector<long>> >  trace_set = parser->return_map_trace();
