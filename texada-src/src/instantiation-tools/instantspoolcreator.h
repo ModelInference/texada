@@ -22,6 +22,7 @@ using std::string;
 using std::map;
 using std::set;
 
+
 /**
  * class which creates a pool of instantiating functions (i.e. maps) given
  * the number of variables in an LTL formula and a set of events from traces.
@@ -32,11 +33,9 @@ public:
 
     // describes a single instantiation function,
     // this maintains a vector of these
-
     struct inst_fxn {
         // formula variables -> event variables
         map<string, string> inst_map;
-
         bool valid = true;
     };
 
@@ -47,6 +46,8 @@ public:
     shared_ptr<vector<inst_fxn>> return_instantiations() const;
 
 private:
+    // the full set of instantiations, to
+    // be returned
     shared_ptr<vector<inst_fxn>> inst_pool;
     spot::ltl::atomic_prop_set formula_vars;
     set<string> * unique_events;
