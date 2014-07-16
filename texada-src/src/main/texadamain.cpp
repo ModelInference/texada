@@ -42,9 +42,8 @@ void mine_on_increasing_events(std::string form, bool use_map) {
 
     // we'll mine the property type represented by form on the traces with
     // the number of unique events in the array below
-    int unique_event_nums[] = //{ 5, 6, 7, 8, 9, 13, 16, 19, 22, 25, 28, 31, 34,
-            //37, 40, 43, 46, 50, 60, 70, 80 };
-    {80};
+    int unique_event_nums[] = { 5, 6, 7, 8, 9, 13, 16, 19, 22, 25, 28, 31, 34,
+            37, 40, 43, 46, 50, 60, 70, 80 };
     std::cout << form;
     // output map trace cout if use_map. Just a shortedned if/else.
     use_map ?
@@ -81,7 +80,7 @@ int main(int ac, char* av[]) {
                 boost::program_options::value<std::string>(),
                 "property type to mine")("log_file,l",
                 boost::program_options::value<std::string>(),
-                "trace file to mine on")("run_on_increasing_events",
+                "log file to mine on")("run_on_increasing_events",
                 "run the prop type through traces with increasing number of unique events")(
                 "map_trace,m",
                 "mine on a trace in the form of a map (by default, Texada uses the linear trace checker)");
