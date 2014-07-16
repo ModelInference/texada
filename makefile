@@ -9,7 +9,7 @@ PARSING := texada-src/bin/src/parsing
 TESTS := texada-src/bin/tests
 
 
-COMPILE_FLAGS = -std=c++11 -I$(SPOT_INCL) -I$(GTEST_INCL) -I$(BOOST_INCL) -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o "$@" "$<" -pg
+COMPILE_FLAGS = -std=c++11 -I$(SPOT_INCL) -I$(GTEST_INCL) -I$(BOOST_INCL) -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o "$@" "$<" 
 
 # Include local 
 -include uservars.mk
@@ -43,6 +43,7 @@ endif
 OBJS += \
 ./texada-src/bin/src/checkers/maptracechecker.o \
 ./texada-src/bin/src/checkers/lineartracechecker.o \
+./texada-src/bin/src/checkers/truncatingchecker.o \
 ./texada-src/bin/src/instantiation-tools/instantspoolcreator.o \
 ./texada-src/bin/src/instantiation-tools/apsubbingcloner.o \
 ./texada-src/bin/src/main/propertytypeminer.o \
@@ -56,7 +57,8 @@ TEST_OBJS+= \
 ./texada-src/bin/tests/apsubbingcloner_test.o \
 ./texada-src/bin/tests/maptracechecker_test.o \
 ./texada-src/bin/tests/simpleparser_test.o \
-./texada-src/bin/tests/propertytypeminer_test.o 
+./texada-src/bin/tests/propertytypeminer_test.o \
+./texada-src/bin/tests/truncatingchecker_test.o
 
 # All Target
 all: texadatest texada
@@ -65,7 +67,7 @@ all: texadatest texada
 texadatest: $(OBJS) $(TEST_OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: GCC C++ Linker'
-	g++ -L$(SPOT_LIB) -L$(GTEST_LIB) -o "texadatest" $(OBJS) $(TEST_OBJS) $(USER_OBJS) $(LIBS) -pg
+	g++ -L$(SPOT_LIB) -L$(GTEST_LIB) -o "texadatest" $(OBJS) $(TEST_OBJS) $(USER_OBJS) $(LIBS) 
 	@echo 'Finished building target: $@'
 	@echo ' '
 
@@ -73,7 +75,7 @@ texadatest: $(OBJS) $(TEST_OBJS) $(USER_OBJS)
 texada: $(OBJS) ./texada-src/bin/src/main/texadamain.o
 	@echo 'Building target: $@'
 	@echo 'Invoking: GCC C++ Linker'
-	g++ -L$(SPOT_LIB) -L$(GTEST_LIB) -o "texada" ./texada-src/bin/src/main/texadamain.o $(OBJS) $(USER_OBJS) $(LIBS) -pg
+	g++ -L$(SPOT_LIB) -L$(GTEST_LIB) -o "texada" ./texada-src/bin/src/main/texadamain.o $(OBJS) $(USER_OBJS) $(LIBS) 
 	@echo 'Finished building target: $@'
 	@echo ' '
 
