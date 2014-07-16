@@ -322,6 +322,7 @@ shared_ptr<vector<instants_pool_creator::inst_fxn>> linear_trace_checker::check_
         shared_ptr<vector<instants_pool_creator::inst_fxn>> instantiations,
         const spot::ltl::formula* formula, const string_event* trace) {
     int size = instantiations->size();
+    //#pragma omp parallel for shared(instantiations)
     for (int i = 0; i < size; i++) {
         // if it's invalid, ignore
         if (!(instantiations->at(i).valid))
@@ -331,6 +332,7 @@ shared_ptr<vector<instants_pool_creator::inst_fxn>> linear_trace_checker::check_
                 current_map);
         instantiations->at(i).valid = check(instantiated_form, trace);
     }
+    //hi
     return instantiations;
 
 }
