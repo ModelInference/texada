@@ -49,7 +49,7 @@ public:
             std::string newname = replacement_map.at(toreplace->name());
             return spot::ltl::default_environment::instance().require(newname);
         } catch (std::exception &e) {
-            std::cerr << "Mapping not found for " << toreplace->name() << "."
+            std::cerr << "Mapping not found for " << toreplace->name() << ". "
                     << "Assuming no replacement desired. \n";
             return toreplace;
         }

@@ -2,10 +2,10 @@
 # Remove the .example from the file name and fill in paths to headers and libraries. #
 # This should leave you with a uservars.mk; DO NOT add to to mercurial tracking. 	 #
 # Variables to fill in and samples paths:											 #
-# SPOT_LIB: the location of the spot library (e.g. pathtospot/spot/src/.libs/)		 #
+# SPOT_LIB: the location of the spot library (e.g. /pathtospot/spot/src/.libs/)		 #
 # SPOT_INCL: the location of spot header files (e.g /usr/local/include/spot)         #
 # GTEST_LIB: the location of gtest and gtest_main libraries (where GTest was built)  #
-# GTEST_INCL: the location of gtest header files (e.g. pathtogtest/gtest/include)    #
+# GTEST_INCL: the location of gtest header files (e.g. /pathtogtest/gtest/include)   #
 # BOOST_INCL: the location of the boost header files (e.g. /usr/include/boost)       #
 ######################################################################################
 
