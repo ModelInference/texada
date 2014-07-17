@@ -85,8 +85,8 @@ int main(int ac, char* av[]) {
                 "run the prop type through traces with increasing number of unique events")(
                 "map_trace,m",
                 "mine on a trace in the form of a map (by default, Texada uses the linear trace checker)")(
-                "response_file,r", boost::program_options::value<std::string>(),
-                "specify file containing command line options");
+                "config_file,c", boost::program_options::value<std::string>(),
+                "specify file containing command line options. Any options entered directly to command line will override file options. ");
 
         //parsing the options passed to command line
         boost::program_options::variables_map opts_map;
@@ -109,11 +109,13 @@ int main(int ac, char* av[]) {
 
         // if options are specified in a response file, use it instead.
         // code mostly borrowed from boost example/response_file.cpp
-        if (opts_map.count("response_file")){
-            std::string input_string = opts_map["response_file"].as<std::string>();
+        if (opts_map.count("config_file")) {
+           // std::cout << opts_map["property_type"].as<std::string>() << "\n";
+            std::string input_string =
+                    opts_map["config_file"].as<std::string>();
             std::ifstream infile(input_string);
             if (!infile) {
-                std::cerr << "Error: Could not open the response file.\n";
+                std::cerr << "Error: could not open the response file.\n";
                 return 1;
             }
             // Read the whole file into a string
@@ -131,10 +133,9 @@ int main(int ac, char* av[]) {
             boost::program_options::store(
                     boost::program_options::command_line_parser(args).options(
                             desc).run(), opts_map);
+         //   std::cout << opts_map["property_type"].as<std::string>() << "\n";
 
         }
-
-
 
         // if the user wanted to use map, we use map.
         if (opts_map.count("map_trace"))
