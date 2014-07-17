@@ -48,7 +48,9 @@ OBJS += \
 ./texada-src/bin/src/instantiation-tools/apsubbingcloner.o \
 ./texada-src/bin/src/main/propertytypeminer.o \
 ./texada-src/bin/src/parsing/stringevent.o \
-./texada-src/bin/src/parsing/simpleparser.o 
+./texada-src/bin/src/parsing/simpleparser.o \
+./texada-src/bin/src/parsing/prefixtreenode.o \
+./texada-src/bin/src/parsing/prefixtree.o
 
 
 TEST_OBJS+= \
@@ -58,7 +60,8 @@ TEST_OBJS+= \
 ./texada-src/bin/tests/maptracechecker_test.o \
 ./texada-src/bin/tests/simpleparser_test.o \
 ./texada-src/bin/tests/propertytypeminer_test.o \
-./texada-src/bin/tests/truncatingchecker_test.o
+./texada-src/bin/tests/truncatingchecker_test.o \
+./texada-src/bin/tests/prefixtree_test.o
 
 # All Target
 all: texadatest texada
