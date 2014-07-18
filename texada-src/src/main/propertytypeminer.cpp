@@ -123,6 +123,9 @@ set<const spot::ltl::formula*> mine_property_type(
 			return_set.insert(valid_form);
 		}
 	}
+
+	delete variables;
+	formula->destroy();
 	return return_set;
 
 }

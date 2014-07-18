@@ -60,6 +60,7 @@ TEST(TruncatingCheckerTest,Simple) {
             checker.return_valid_instants(afby_form, trace_set);
 
     // should contain a afby b and a afby c
+    afby_form->destroy();
 
     ASSERT_EQ(2,valid_instants.size());
 }

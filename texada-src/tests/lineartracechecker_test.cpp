@@ -42,22 +42,26 @@ TEST(LinearTraceCheckerTest, AFby) {
 
     // G(a->Fb) should hold on the trace
     ASSERT_TRUE(checker->check(f,trace));
+    f->destroy();
 
     // G(a->Fa) also holds because F includes the present as well as the future
     input = "G(a->Fa)";
     f = spot::ltl::parse(input, pel);
     ASSERT_TRUE(checker->check(f,trace));
+    f->destroy();
 
     // Adding the next operator makes F talk exclusively about future events;
     // G(a->XFa) does not hold
     input = "G(a->XFa)";
     f = spot::ltl::parse(input, pel);
     ASSERT_FALSE(checker->check(f,trace));
+    f->destroy();
 
     // b is not always followed by a.
     input = "G(b->Fa)";
     f = spot::ltl::parse(input, pel);
     ASSERT_FALSE(checker->check(f,trace));
+    f->destroy();
 
     //clean up
     delete checker;
@@ -84,11 +88,13 @@ TEST(LinearTraceCheckerTest, NextNext) {
     std::string input = "G(b->XXa)";
     const spot::ltl::formula* f = spot::ltl::parse(input, pel);
     ASSERT_FALSE(checker->check(f, trace));
+    f->destroy();
 
     // G(b->XX!a) should return true because the terminal event is not a
     input = "G(b->XX!a)";
     f = spot::ltl::parse(input, pel);
     ASSERT_TRUE(checker->check(f, trace));
+    f->destroy();
 
     // clean up
     delete checker;
@@ -134,8 +140,10 @@ TEST(LinearTraceCheckerTest,Alternating) {
     // on the terminal event (it's false b/c s never occurs)
     ASSERT_FALSE(checker->check(altf, psFail));
 
+
     //clean up
     delete checker;
+    altf->destroy();
 
 }
 
@@ -156,12 +164,14 @@ TEST(LinearTraceCheckerTest,Until) {
 
     // check p U q is true
     ASSERT_TRUE(checker->check(f, trace));
+    f->destroy();
 
     input = "!p U q";
     f = spot::ltl::parse(input, pel);
 
     // !p U q should also be true
     ASSERT_TRUE(checker->check(f, trace));
+    f->destroy();
 
     //clean up
     delete checker;

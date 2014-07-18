@@ -331,6 +331,7 @@ shared_ptr<vector<instants_pool_creator::inst_fxn>> linear_trace_checker::check_
         const spot::ltl::formula* instantiated_form = instantiate(formula,
                 current_map);
         instantiations->at(i).valid = check(instantiated_form, trace);
+        instantiated_form->destroy();
     }
     //hi
     return instantiations;

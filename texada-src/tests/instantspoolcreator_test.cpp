@@ -50,6 +50,8 @@ TEST(InstantiatorPoolCreatorTest,TwoBindingsThreeEvents){
 	ASSERT_EQ(returned_array->at(7).inst_map.at("y"),"c");
 	ASSERT_EQ(returned_array->at(8).inst_map.at("x"),"c");
 	ASSERT_EQ(returned_array->at(8).inst_map.at("y"),"c");
+	delete formula_vars;
+	f->destroy();
 
 
 }
