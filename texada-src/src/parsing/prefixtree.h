@@ -22,6 +22,7 @@ public:
     virtual ~prefix_tree();
     void add_trace(set<int>, prefix_tree_node*);
     prefix_tree_node* get_trace_start(int);
+    int get_num_traces();
 private:
     // contains the start of each trace corresponding
     // to is trace_id

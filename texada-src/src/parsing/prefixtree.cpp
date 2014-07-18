@@ -15,7 +15,10 @@ prefix_tree::prefix_tree() {
 }
 
 prefix_tree::~prefix_tree() {
-    // TODO Auto-generated destructor stub
+    for (map<int,prefix_tree_node*>::iterator map_it = traces.begin();
+            map_it != traces.end(); map_it++){
+        delete (*map_it).second;
+    }
 }
 
 /**
@@ -41,6 +44,10 @@ void prefix_tree::add_trace(set<int> trace_ids, prefix_tree_node* first_event){
         traces.emplace(*trace_ids_it,first_event);
     }
 
+}
+
+int prefix_tree::get_num_traces(){
+    return traces.size();
 }
 
 } /* namespace texada */

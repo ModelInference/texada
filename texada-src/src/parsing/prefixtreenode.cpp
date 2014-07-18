@@ -39,6 +39,12 @@ prefix_tree_node::prefix_tree_node(string name, set<int> input_ids) {
  * Destructor.
  */
 prefix_tree_node::~prefix_tree_node() {
+    if (!children.empty()) {
+        for (map<int, prefix_tree_node*>::iterator map_it = children.begin();
+                map_it != children.end(); map_it++) {
+            delete (*map_it).second;
+        }
+    }
 
 }
 
@@ -47,15 +53,15 @@ prefix_tree_node::~prefix_tree_node() {
  * that the child's trace id is contained this's trace_ids.
  * @param child_to_add
  */
-void prefix_tree_node::add_child(prefix_tree_node* child_to_add){
+void prefix_tree_node::add_child(prefix_tree_node* child_to_add) {
     set<int>* child_trace_ids = child_to_add->get_trace_ids();
     // go through the child's trace ids and add to this's map
     for (set<int>::iterator trace_ids_it = child_trace_ids->begin();
-            trace_ids_it != child_trace_ids->end(); trace_ids_it++){
+            trace_ids_it != child_trace_ids->end(); trace_ids_it++) {
         //TODO: is this assertion necessary; i.e. could one trace
         //start in the middle of another one? probably.
         assert(trace_ids.count(*trace_ids_it));
-        children.emplace(*trace_ids_it,child_to_add);
+        children.emplace(*trace_ids_it, child_to_add);
     }
 
 }
@@ -64,7 +70,7 @@ void prefix_tree_node::add_child(prefix_tree_node* child_to_add){
  * Get the trace ids of this node
  * @return traces this node belongs to
  */
-set<int>* prefix_tree_node::get_trace_ids(){
+set<int>* prefix_tree_node::get_trace_ids() {
     return &trace_ids;
 }
 
@@ -72,7 +78,7 @@ set<int>* prefix_tree_node::get_trace_ids(){
  * Get the name of the event this node represents
  * @return name of node
  */
-string prefix_tree_node::get_name(){
+string prefix_tree_node::get_name() {
     return event.get_name();
 }
 
@@ -81,7 +87,7 @@ string prefix_tree_node::get_name(){
  * @param trace_id trace to traverse
  * @return next event in trace with given id
  */
-prefix_tree_node* prefix_tree_node::get_child(int trace_id){
+prefix_tree_node* prefix_tree_node::get_child(int trace_id) {
     return children.at(trace_id);
 
 }
@@ -90,7 +96,17 @@ prefix_tree_node* prefix_tree_node::get_child(int trace_id){
  * Return the number of children this node has.
  * @return
  */
-int prefix_tree_node::num_children(){
+int prefix_tree_node::num_children() {
     return children.size();
 }
+
+/**
+ * Return whether this is a terminal node
+ */
+
+bool prefix_tree_node::is_terminal() {
+    return event.is_terminal();
+}
+
 } /* namespace texada */
+
