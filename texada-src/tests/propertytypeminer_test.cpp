@@ -59,39 +59,44 @@ TEST(PropertyTypeMinerTest, ResourceAllocation) {
 // This test works but takes a long time to run:
 // checks that miner finds the planted instantiation of
 // S and T precede P after Q
-/*
- TEST(PropertyTypeMinerTest, STprecedesPafterQ){
 
- // find all valid instantiations of the property type
- std::set<const spot::ltl::formula*> set =texada::mine_lin_property_type("(G!y) | (!y U (y & XFx -> (!x U (a & !x & X(!x U z))))",
- texada_base + "/traces/resource-allocation/abb4cad.txt");
+TEST(PropertyTypeMinerTest, STprecedesPafterQ) {
 
- // create the correct instantiation map and the instantiated formyla corresponding to it
- std::map<std::string,std::string> inst_map;
- inst_map.insert(std::pair<std::string,std::string>("x", "c"));
- inst_map.insert(std::pair<std::string,std::string>("y", "d"));
- inst_map.insert(std::pair<std::string,std::string>("z", "b"));
- inst_map.insert(std::pair<std::string,std::string>("a", "a"));
- spot::ltl::parse_error_list pel;
- const spot::ltl::formula * instanted_form= texada::instantiate(spot::ltl::parse("(G!y) | (!y U (y & XFx -> (!x U (a & !x & X(!x U z))))",pel),inst_map);
+    // find all valid instantiations of the property type
+    std::set<const spot::ltl::formula*> set = texada::mine_lin_property_type(
+            "(G!y) | (!y U (y & XFx -> (!x U (a & !x & X(!x U z)))))",
+            texada_base + "/traces/resource-allocation/abb4cad.txt");
 
- // check that the valid instantiations contain the one created above
- bool contains_instated_form = false;
- for (std::set<const spot::ltl::formula*>::iterator i =set.begin() ; i !=set.end(); i++){
- if (*i == instanted_form) {
- contains_instated_form = true;
- break;
- }
- }
- std::cout << set.size() << "\n";
+    // create the correct instantiation map and the instantiated formula corresponding to it
+    std::map<std::string, std::string> inst_map;
+    inst_map.insert(std::pair<std::string, std::string>("x", "c"));
+    inst_map.insert(std::pair<std::string, std::string>("y", "d"));
+    inst_map.insert(std::pair<std::string, std::string>("z", "b"));
+    inst_map.insert(std::pair<std::string, std::string>("a", "a"));
+    spot::ltl::parse_error_list pel;
+    const spot::ltl::formula * instanted_form = texada::instantiate(
+            spot::ltl::parse(
+                    "(G!y) | (!y U (y & XFx -> (!x U (a & !x & X(!x U z)))))",
+                    pel), inst_map);
 
- instanted_form->destroy();
- ASSERT_TRUE(contains_instated_form);
- for(std::set<const spot::ltl::formula*>::iterator it = set.begin();
- it!=set.end();it++){
- (*it)->destroy();
- }
- }*/
+    // check that the valid instantiations contain the one created above
+    bool contains_instated_form = false;
+    for (std::set<const spot::ltl::formula*>::iterator i = set.begin();
+            i != set.end(); i++) {
+        if (*i == instanted_form) {
+            contains_instated_form = true;
+            break;
+        }
+    }
+    std::cout << set.size() << "\n";
+
+    instanted_form->destroy();
+    ASSERT_TRUE(contains_instated_form);
+    for (std::set<const spot::ltl::formula*>::iterator it = set.begin();
+            it != set.end(); it++) {
+        (*it)->destroy();
+    }
+}
 
 /**
  * Runs the inputted prop type(should be one of the perracotta ones) on a series
@@ -134,7 +139,8 @@ std::array<bool, 8> set_up_perracotta_tests(std::string formula, bool use_map) {
     xtoaytob.insert(std::pair<std::string, std::string>("y", "b"));
     spot::ltl::parse_error_list pel;
     const spot::ltl::formula * parsed_form = spot::ltl::parse(formula, pel);
-    const spot::ltl::formula * instanted_form = texada::instantiate(parsed_form, xtoaytob);
+    const spot::ltl::formula * instanted_form = texada::instantiate(parsed_form,
+            xtoaytob);
     parsed_form->destroy();
 
     // mine the property type in response source, and check
@@ -402,8 +408,8 @@ TEST(PropertyTypeMinerMapTest, EventuallyEvent) {
                     texada_base
                             + "/traces/vary-tracelen/etypes-10_events-250_execs-20.txt");
     ASSERT_EQ(set.size(), 10);
-    for(std::set<const spot::ltl::formula*>::iterator it = set.begin();
-            it!=set.end();it++){
+    for (std::set<const spot::ltl::formula*>::iterator it = set.begin();
+            it != set.end(); it++) {
         (*it)->destroy();
     }
     set.clear();
@@ -417,8 +423,8 @@ TEST(PropertyTypeMinerMapTest, ResourceAllocation) {
                     "(!(y | z) W x) & G((x -> X((!x U z)&(!z U y)))&(y->XFz)&(z->X(!(y | z) W x)))",
                     texada_base + "/traces/resource-allocation/abc.txt");
     ASSERT_EQ(set.size(), 1);
-    for(std::set<const spot::ltl::formula*>::iterator it = set.begin();
-            it!=set.end();it++){
+    for (std::set<const spot::ltl::formula*>::iterator it = set.begin();
+            it != set.end(); it++) {
         (*it)->destroy();
     }
     set.clear();
@@ -433,8 +439,8 @@ TEST(PropertyTypeMinerMapTest, SmallResourceAllocation) {
                     texada_base + "/traces/resource-allocation/smallabc.txt");
 
     ASSERT_EQ(set.size(), 1);
-    for(std::set<const spot::ltl::formula*>::iterator it = set.begin();
-            it!=set.end();it++){
+    for (std::set<const spot::ltl::formula*>::iterator it = set.begin();
+            it != set.end(); it++) {
         (*it)->destroy();
     }
     set.clear();
@@ -469,10 +475,10 @@ TEST(PropertyTypeMinerMapTest, SmallResourceAllocation) {
  std::cout << set.size() << "\n";
  ASSERT_TRUE(contains_instated_form);
  instanted_form->destroy();
-    for(std::set<const spot::ltl::formula*>::iterator it = set.begin();
-            it!=set.end();it++){
-        (*it)->destroy();
-    }
+ for(std::set<const spot::ltl::formula*>::iterator it = set.begin();
+ it!=set.end();it++){
+ (*it)->destroy();
+ }
  }
  */
 
