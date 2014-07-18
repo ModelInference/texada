@@ -36,6 +36,8 @@ TEST(AtomicPropositionSubbingClonerTest, SimpleTest){
     //checking ap subbing cloner
     const spot::ltl::formula* instantiatedf = texada::instantiate(f,map);
     ASSERT_EQ("G(a -> Fb)", to_string(instantiatedf));
+    f->destroy();
+    instantiatedf->destroy();
 
 
 }

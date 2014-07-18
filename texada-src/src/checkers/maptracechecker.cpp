@@ -135,10 +135,12 @@ bool map_trace_checker::check(const spot::ltl::unop* node, interval intvl) {
 
     // Globally case
     case spot::ltl::unop::G: {
-        long first_occ = find_first_occurrence(
-                spot::ltl::negative_normal_form(node->child(), true), intvl);
+        const spot::ltl::formula * neg_norm_child =
+                spot::ltl::negative_normal_form(node->child(), true);
+        long first_occ = find_first_occurrence(neg_norm_child, intvl);
         //std::cout << "First occ of " << spot::ltl::to_string(spot::ltl::negative_normal_form(node->child(),true)) << " over "<<
         //		intvl.start << "-" << intvl.end << " is " << first_occ << ". \n";
+        neg_norm_child->destroy();
         if (first_occ == -1)
             return true;
         else
@@ -213,8 +215,10 @@ bool map_trace_checker::check(const spot::ltl::binop *node, interval intvl) {
         if (first_occ_second == -1) {
             return false;
         }
-        long first_occ_neg_first = find_first_occurrence(
-                spot::ltl::negative_normal_form(node->first(), true), intvl);
+        const spot::ltl::formula * neg_norm_first =
+                spot::ltl::negative_normal_form(node->first(), true);
+        long first_occ_neg_first = find_first_occurrence(neg_norm_first, intvl);
+        neg_norm_first->destroy();
         if (first_occ_neg_first < first_occ_second) {
             return false;
         } else
@@ -223,8 +227,11 @@ bool map_trace_checker::check(const spot::ltl::binop *node, interval intvl) {
 
         //Release case
     case spot::ltl::binop::R: {
-        long first_occ_neg_second = find_first_occurrence(
-                spot::ltl::negative_normal_form(node->second(), true), intvl);
+        const spot::ltl::formula * neg_norm_second =
+                spot::ltl::negative_normal_form(node->second(), true);
+        long first_occ_neg_second = find_first_occurrence(neg_norm_second,
+                intvl);
+        neg_norm_second->destroy();
         long first_occ_first = find_first_occurrence(node->first(), intvl);
         if (first_occ_first == -1) {
             return (first_occ_neg_second == -1);
@@ -237,8 +244,10 @@ bool map_trace_checker::check(const spot::ltl::binop *node, interval intvl) {
         //Weak until case: identical to until except base case
     case spot::ltl::binop::W: {
         long first_occ_second = find_first_occurrence(node->second(), intvl);
-        long first_occ_neg_first = find_first_occurrence(
-                spot::ltl::negative_normal_form(node->first(), true), intvl);
+        const spot::ltl::formula * neg_norm_first =
+                spot::ltl::negative_normal_form(node->first(), true);
+        long first_occ_neg_first = find_first_occurrence(neg_norm_first, intvl);
+        neg_norm_first->destroy();
         if (first_occ_second == -1) {
             return (first_occ_neg_first == -1);
         } else if (first_occ_neg_first < first_occ_second) {
@@ -249,8 +258,11 @@ bool map_trace_checker::check(const spot::ltl::binop *node, interval intvl) {
 
         //Strong Release case: dual of weak until, identical to weak release except base
     case spot::ltl::binop::M: {
-        long first_occ_neg_second = find_first_occurrence(
-                spot::ltl::negative_normal_form(node->second(), true), intvl);
+        const spot::ltl::formula * neg_norm_second =
+                spot::ltl::negative_normal_form(node->second(), true);
+        long first_occ_neg_second = find_first_occurrence(neg_norm_second,
+                intvl);
+        neg_norm_second->destroy();
         long first_occ_first = find_first_occurrence(node->first(), intvl);
         if (first_occ_first == -1) {
             return false;
@@ -667,8 +679,10 @@ long map_trace_checker::find_first_occurrence(const spot::ltl::unop* node,
         interval temp;
         temp.start = intvl.start;
         temp.end = terminal_point - 1;
-        long last_neg_occ = find_last_occurrence(
-                spot::ltl::negative_normal_form(node->child(), true), temp);
+        const spot::ltl::formula * neg_norm_child =
+                spot::ltl::negative_normal_form(node->child(), true);
+        long last_neg_occ = find_last_occurrence(neg_norm_child, temp);
+        neg_norm_child->destroy();
         if (last_neg_occ == -1)
             return intvl.start;
         if (last_neg_occ >= intvl.end)
@@ -736,8 +750,10 @@ long map_trace_checker::find_first_occurrence(const spot::ltl::binop* node,
         // Find first of negation of first, and find first of validity of last.
         // return whichever is earlier.
     case spot::ltl::binop::Implies: {
-        long first_occ_neg_first = find_first_occurrence(
-                spot::ltl::negative_normal_form(node->first(), true), intvl);
+        const spot::ltl::formula * neg_norm_first =
+                spot::ltl::negative_normal_form(node->first(), true);
+        long first_occ_neg_first = find_first_occurrence(neg_norm_first, intvl);
+        neg_norm_first->destroy();
         long first_occ_second = find_first_occurrence(node->second(), intvl);
         if (first_occ_neg_first == -1)
             return first_occ_second;
@@ -779,8 +795,10 @@ long map_trace_checker::find_first_occurrence(const spot::ltl::binop* node,
         if (first_occ_second == -1)
             return -1;
         intvl.end = first_occ_second - 1;
-        long last_occ_neg_first = find_last_occurrence(
-                spot::ltl::negative_normal_form(node->first(), true), intvl);
+        const spot::ltl::formula * neg_norm_first =
+                spot::ltl::negative_normal_form(node->first(), true);
+        long last_occ_neg_first = find_last_occurrence(neg_norm_first, intvl);
+        neg_norm_first->destroy();
         if (last_occ_neg_first == -1)
             return intvl.start;
         if (last_occ_neg_first >= intvl.end) {
@@ -797,8 +815,10 @@ long map_trace_checker::find_first_occurrence(const spot::ltl::binop* node,
         long first_occ_second = find_first_occurrence(node->second(), temp);
         long last_occ_neg_first;
         if (first_occ_second == -1) {
-            last_occ_neg_first = find_last_occurrence(
-                    spot::ltl::negative_normal_form(node->first(), true), temp);
+            const spot::ltl::formula * neg_norm_first =
+                    spot::ltl::negative_normal_form(node->first(), true);
+            last_occ_neg_first = find_last_occurrence(neg_norm_first, temp);
+            neg_norm_first->destroy();
             if (last_occ_neg_first == -1) {
                 return intvl.start;
             } else if (last_occ_neg_first >= intvl.end)
@@ -807,8 +827,10 @@ long map_trace_checker::find_first_occurrence(const spot::ltl::binop* node,
                 return ++last_occ_neg_first;
         }
         intvl.end = first_occ_second - 1;
-        last_occ_neg_first = find_last_occurrence(
-                spot::ltl::negative_normal_form(node->first(), true), intvl);
+        const spot::ltl::formula * neg_norm_first =
+                spot::ltl::negative_normal_form(node->first(), true);
+        last_occ_neg_first = find_last_occurrence(neg_norm_first, intvl);
+        neg_norm_first->destroy();
         if (last_occ_neg_first == -1)
             return intvl.start;
         else if (last_occ_neg_first >= intvl.end) {
@@ -831,9 +853,10 @@ long map_trace_checker::find_first_occurrence(const spot::ltl::binop* node,
         //std::cout << "First occurrence of the first was " << first_occ_first << "\n";
         long last_occ_neg_second;
         if (first_occ_first == -1) {
-            last_occ_neg_second = find_last_occurrence(
-                    spot::ltl::negative_normal_form(node->second(), true),
-                    temp);
+            const spot::ltl::formula * neg_norm_second =
+                    spot::ltl::negative_normal_form(node->second(), true);
+            last_occ_neg_second = find_last_occurrence(neg_norm_second, temp);
+            neg_norm_second->destroy();
             if (last_occ_neg_second == -1)
                 return intvl.start;
             else if (last_occ_neg_second >= intvl.end)
@@ -843,9 +866,11 @@ long map_trace_checker::find_first_occurrence(const spot::ltl::binop* node,
         }
         search_interval.start = intvl.start;
         search_interval.end = first_occ_first;
-        last_occ_neg_second = find_last_occurrence(
-                spot::ltl::negative_normal_form(node->second(), true),
+        const spot::ltl::formula * neg_norm_second =
+                spot::ltl::negative_normal_form(node->second(), true);
+        last_occ_neg_second = find_last_occurrence(neg_norm_second,
                 search_interval);
+        neg_norm_second->destroy();
         //std::cout << "Last occurrence of neg second was " << last_occ_neg_second << ": " << intvl.start << "-"<<search_interval.end << "\n";
         if (last_occ_neg_second == search_interval.end) {
             if (intvl.end <= search_interval.end)
@@ -874,9 +899,11 @@ long map_trace_checker::find_first_occurrence(const spot::ltl::binop* node,
             return -1;
         search_interval.start = intvl.start;
         search_interval.end = first_occ_first;
-        last_occ_neg_second = find_last_occurrence(
-                spot::ltl::negative_normal_form(node->second(), true),
+        const spot::ltl::formula * neg_norm_second =
+                spot::ltl::negative_normal_form(node->second(), true);
+        last_occ_neg_second = find_last_occurrence(neg_norm_second,
                 search_interval);
+        neg_norm_second->destroy();
         //std::cout << "Last occurrence of neg second was " << last_occ_neg_second << ": " << intvl.start << "-"<<search_interval.end << "\n";
         //std::cout << "Are we entering the if? " << (last_occ_neg_second == search_interval.end) << ".\n";
         if (last_occ_neg_second == search_interval.end) {
@@ -1141,8 +1168,10 @@ long map_trace_checker::find_last_occurrence(const spot::ltl::unop* node,
         interval temp;
         temp.start = intvl.start;
         temp.end = terminal_point - 1;
-        long last_neg_child = find_last_occurrence(
-                spot::ltl::negative_normal_form(node->child(), true), temp);
+        const spot::ltl::formula * neg_norm_child =
+                spot::ltl::negative_normal_form(node->child(), true);
+        long last_neg_child = find_last_occurrence(neg_norm_child, temp);
+        neg_norm_child->destroy();
         if (last_neg_child >= intvl.end)
             return -1;
         else
@@ -1233,8 +1262,10 @@ long map_trace_checker::find_last_occurrence(const spot::ltl::binop* node,
         // If they are both equal to -1, then the last else will be entered
         // and -1 will be returned.
     case spot::ltl::binop::Implies: {
-        long last_neg_first = find_last_occurrence(
-                spot::ltl::negative_normal_form(node->first(), true), intvl);
+        const spot::ltl::formula * neg_norm_first =
+                spot::ltl::negative_normal_form(node->first(), true);
+        long last_neg_first = find_last_occurrence(neg_norm_first, intvl);
+        neg_norm_first->destroy();
         long last_second = find_last_occurrence(node->second(), intvl);
         if (last_neg_first > last_second)
             return last_neg_first;
@@ -1290,8 +1321,10 @@ long map_trace_checker::find_last_occurrence(const spot::ltl::binop* node,
             if (next_first_second == temp.start)
                 return temp.start;
             temp.end = next_first_second - 1;
-            long last_first = find_last_occurrence(
-                    spot::ltl::negative_normal_form(node->first(), true), temp);
+            const spot::ltl::formula* neg_norm_first =
+                    spot::ltl::negative_normal_form(node->first(), true);
+            long last_first = find_last_occurrence(neg_norm_first, temp);
+            neg_norm_first->destroy();
             if (last_first == -1)
                 return temp.start;
         }
@@ -1302,34 +1335,36 @@ long map_trace_checker::find_last_occurrence(const spot::ltl::binop* node,
         // Similar to until, but when q does not occur we have to check if the Gfirst
         // holds.
     case ::spot::ltl::binop::W: {
+        const spot::ltl::formula* neg_norm_first =
+                spot::ltl::negative_normal_form(node->first(), true);
         if (intvl.end < terminal_point - 1) {
             interval temp;
             temp.start = intvl.end;
             temp.end = terminal_point - 1;
+
             long next_first_second = find_first_occurrence(node->second(),
                     temp);
             if (next_first_second == -1) {
-                if (find_last_occurrence(
-                        spot::ltl::negative_normal_form(node->first(), true),
-                        temp) == -1)
+                if (find_last_occurrence(neg_norm_first, temp) == -1) {
+                    neg_norm_first->destroy();
                     return intvl.end;
-                else
+                } else
                     break;
             }
             if (next_first_second == temp.start)
                 return temp.start;
             temp.end = next_first_second - 1;
-            long last_first = find_last_occurrence(
-                    spot::ltl::negative_normal_form(node->first(), true), temp);
-            if (last_first == -1)
+            long last_first = find_last_occurrence(neg_norm_first, temp);
+            if (last_first == -1) {
+                neg_norm_first->destroy();
                 return temp.start;
+            }
         }
 
         long last_second = find_last_occurrence(node->second(), intvl);
         if (last_second == -1) {
-            long last_neg_first = find_last_occurrence(
-                    spot::ltl::negative_normal_form(node->first(), true),
-                    intvl);
+            long last_neg_first = find_last_occurrence(neg_norm_first, intvl);
+            neg_norm_first->destroy();
             if (last_neg_first != intvl.end)
                 return intvl.end;
             else
@@ -1342,6 +1377,8 @@ long map_trace_checker::find_last_occurrence(const spot::ltl::binop* node,
         // Similar to weak until, but due to pickiness around having q & p at
         // the release case, recurses.
     case ::spot::ltl::binop::R: {
+        const spot::ltl::formula* neg_norm_second =
+                spot::ltl::negative_normal_form(node->second(), true);
 
         interval temp;
         temp.start = intvl.end;
@@ -1353,17 +1390,17 @@ long map_trace_checker::find_last_occurrence(const spot::ltl::binop* node,
         // if there is no q
         if (next_first_first == -1) {
             // if never !p on that interval we're okay
-            if (find_last_occurrence(
-                    spot::ltl::negative_normal_form(node->second(), true), temp)
-                    == -1)
+            if (find_last_occurrence(neg_norm_second, temp) == -1) {
+                neg_norm_second->destroy();
                 return intvl.end;
-            else
+            } else
                 break;
         }
         //set temp to check for !p before and including first occ q
         temp.end = next_first_first;
-        long last_neg_second = find_last_occurrence(
-                spot::ltl::negative_normal_form(node->second(), true), temp);
+        long last_neg_second = find_last_occurrence(neg_norm_second, temp);
+        neg_norm_second->destroy();
+
         // if !p never occurs we put down end of the interval
         if (last_neg_second == -1)
             return intvl.end;
@@ -1392,7 +1429,8 @@ long map_trace_checker::find_last_occurrence(const spot::ltl::binop* node,
         // Same as weak release, but we don't consider whether the last
         // element is p, as that is not valid for strong release.
     case ::spot::ltl::binop::M: {
-
+        const spot::ltl::formula* neg_norm_second =
+                spot::ltl::negative_normal_form(node->second(), true);
         interval temp;
         temp.start = intvl.end;
         //usually we put temp at one before terminal, but if wer're already there
@@ -1406,8 +1444,8 @@ long map_trace_checker::find_last_occurrence(const spot::ltl::binop* node,
         }
         //set temp to check for !p before and including first occ q
         temp.end = next_first_first;
-        long last_neg_second = find_last_occurrence(
-                spot::ltl::negative_normal_form(node->second(), true), temp);
+        long last_neg_second = find_last_occurrence(neg_norm_second, temp);
+        neg_norm_second->destroy();
         // if !p never occurs we put down end of the interval
         if (last_neg_second == -1)
             return intvl.end;
@@ -1459,6 +1497,7 @@ shared_ptr<vector<instants_pool_creator::inst_fxn>> map_trace_checker::check_ins
         const spot::ltl::formula* instantiated_form = instantiate(formula,
                 current_map);
         instantiations->at(i).valid = check_on_trace(instantiated_form);
+        instantiated_form->destroy();
     }
     return instantiations;
 

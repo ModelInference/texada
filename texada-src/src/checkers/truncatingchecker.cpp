@@ -60,6 +60,7 @@ void truncating_checker::set_up_iteration_tracker(
         iteration_tracker.push_back(insert);
         form_vars_it++;
     }
+    delete form_vars;
 
 }
 
@@ -113,6 +114,7 @@ vector<map<string, string>> truncating_checker::return_valid_instants(
         if (is_valid){
             return_vec.push_back(inst_map_at_pos);
         }
+        instantiated_form->destroy();
         //############end of stub
 
         //std::cout << "---- \n";
