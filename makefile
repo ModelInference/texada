@@ -44,6 +44,7 @@ OBJS += \
 ./texada-src/bin/src/checkers/maptracechecker.o \
 ./texada-src/bin/src/checkers/lineartracechecker.o \
 ./texada-src/bin/src/checkers/truncatingchecker.o \
+./texada-src/bin/src/checkers/prefixtreechecker.o \
 ./texada-src/bin/src/instantiation-tools/instantspoolcreator.o \
 ./texada-src/bin/src/instantiation-tools/apsubbingcloner.o \
 ./texada-src/bin/src/main/propertytypeminer.o \

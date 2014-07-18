@@ -39,6 +39,7 @@ public:
     string get_name();
     prefix_tree_node* get_child(int);
     int num_children();
+    bool is_terminal();
 private:
     // event this node represents
     string_event event;
