@@ -32,6 +32,25 @@ void set_up_timed_mining(std::string form, std::string source, bool use_map) {
 
 }
 
+void set_up_timed_mining_temp_truncator(std::string form, std::string source) {
+    clock_t begin, end;
+    double time_spent;
+    begin = clock();
+    spot::ltl::parse_error_list pel;
+    const spot::ltl::formula* prop_type = spot::ltl::parse(form, pel);
+    texada::simple_parser * parser = new texada::simple_parser();
+    std::ifstream infile(source);
+    parser->parse_to_vector(infile);
+    texada::truncating_checker checker = texada::truncating_checker(prop_type, parser->return_events());
+    checker.return_valid_instants(prop_type, parser->return_vec_trace());
+    delete parser;
+    prop_type->destroy();
+    end = clock();
+    time_spent = (double) (end - begin) / CLOCKS_PER_SEC;
+    std::cout << time_spent << "\n";
+
+}
+
 /**
  * Mines form on on traces with an increasing number of increasing
  * events, outputting the time it takes for each.
@@ -84,7 +103,8 @@ int main(int ac, char* av[]) {
                 "log file to mine on")("run_on_increasing_events",
                 "run the prop type through traces with increasing number of unique events")(
                 "map_trace,m",
-                "mine on a trace in the form of a map (by default, Texada uses the linear trace checker)")(
+                "mine on a trace in the form of a map (by default, Texada uses the linear trace checker)")
+                ("truncating_checker,t", "mine w/ trunc checker")(
                 "config_file,c", boost::program_options::value<std::string>(),
                 "specify file containing command line options. Any options entered directly to command line will override file options. ");
 
@@ -164,6 +184,11 @@ int main(int ac, char* av[]) {
             return 1;
         }
 
+        if (opts_map.count("truncating_checker")){
+            set_up_timed_mining_temp_truncator(prop_type,input_source);
+            std::cout << "hello \n";
+            return 0;
+        }
         // the set of valid instantiations
         std::set<const spot::ltl::formula*> found_instants;
 
