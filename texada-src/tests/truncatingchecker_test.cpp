@@ -12,6 +12,7 @@
 #include <ltlparse/public.hh>
 
 #include <fstream>
+#include <array>
 
 TEST(TruncatingCheckerTest,Simple) {
 
