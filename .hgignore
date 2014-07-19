@@ -1,0 +1,7 @@
+# Use the glob syntax:
+syntax: glob
+
+uservars.mk
+texada-src/bin/*
+texada
+texadatest
