@@ -41,7 +41,8 @@ void set_up_timed_mining_temp_truncator(std::string form, std::string source) {
     texada::simple_parser * parser = new texada::simple_parser();
     std::ifstream infile(source);
     parser->parse_to_vector(infile);
-    texada::truncating_checker checker = texada::truncating_checker(prop_type, parser->return_events());
+    texada::truncating_checker checker = texada::truncating_checker(prop_type,
+            parser->return_events());
     checker.return_valid_instants(prop_type, parser->return_vec_trace());
     delete parser;
     prop_type->destroy();
@@ -103,8 +104,8 @@ int main(int ac, char* av[]) {
                 "log file to mine on")("run_on_increasing_events",
                 "run the prop type through traces with increasing number of unique events")(
                 "map_trace,m",
-                "mine on a trace in the form of a map (by default, Texada uses the linear trace checker)")
-                ("truncating_checker,t", "mine w/ trunc checker")(
+                "mine on a trace in the form of a map (by default, Texada uses the linear trace checker)")(
+                "truncating_checker,t", "mine w/ trunc checker")(
                 "config_file,c", boost::program_options::value<std::string>(),
                 "specify file containing command line options. Any options entered directly to command line will override file options. ");
 
@@ -130,9 +131,9 @@ int main(int ac, char* av[]) {
         // if options are specified in a response file, use it instead.
         // code mostly borrowed from boost example/response_file.cpp
         if (opts_map.count("config_file")) {
-           // std::cout << opts_map["property_type"].as<std::string>() << "\n";
+            // std::cout << opts_map["property_type"].as<std::string>() << "\n";
             std::string input_string =
-                    opts_map["config_file"].as<std::string>();
+            opts_map["config_file"].as<std::string>();
             std::ifstream infile(input_string);
             if (!infile) {
                 std::cerr << "Error: could not open the response file.\n";
@@ -146,27 +147,87 @@ int main(int ac, char* av[]) {
             std::string file_string = file_string_stream.str();
             boost::tokenizer<boost::char_separator<char> > tok(file_string,
                     seperator);
+            std::vector<std::string> quote_parsed_input;
+            //check for any quotes
+            bool inside_quotes = false;
+            bool ended_quote = true;
+            int quote_start_pos;
+            for (boost::tokenizer<boost::char_separator<char> >::iterator it =
+                    tok.begin(); it != tok.end(); it++) {
+                if (inside_quotes == true) {
+                    if ((*it).find_first_of("\'\"") != std::string::npos) {
+                        ended_quote = true;
+                        inside_quotes = false;
+                        std::string element = std::string(*it);
+                        quote_parsed_input[quote_start_pos] =
+                        quote_parsed_input[quote_start_pos] + " "
+                        + element.substr(0,
+                                (*it).find_first_of("\'\""));
+                    } else {
+                        quote_parsed_input[quote_start_pos] =
+                        quote_parsed_input[quote_start_pos] + " "
+                        + (*it);
+                    }
+
+                } else if ((*it).find_first_of("\'\"") == 0) {
+                    if ((*it).find_last_of("\'\"") == (*it).length()-1) {
+                        std::string first_element = std::string(*it);
+                        quote_parsed_input.push_back(first_element.substr(1,(*it).length()-2));
+
+                    } else {
+                        inside_quotes = true;
+                        ended_quote = false;
+                        quote_start_pos = quote_parsed_input.size();
+                        std::string first_element = std::string(*it);
+                        quote_parsed_input.push_back(first_element.substr(1));
+                    }
+                } else {
+                    quote_parsed_input.push_back(*it);
+                }
+            }
+            if (!ended_quote) {
+                std::cerr << "Error: missing \' or \". \n";
+            }
+
             std::vector<std::string> args;
             // copy the options into args
-            std::copy(tok.begin(), tok.end(), back_inserter(args));
+            std::copy(quote_parsed_input.begin(), quote_parsed_input.end(), back_inserter(args));
             // Parse the file and store the options
             boost::program_options::store(
                     boost::program_options::command_line_parser(args).options(
                             desc).run(), opts_map);
-         //   std::cout << opts_map["property_type"].as<std::string>() << "\n";
+            //   std::cout << opts_map["property_type"].as<std::string>() << "\n";
 
         }
 
         // if the user wanted to use map, we use map.
         if (opts_map.count("map_trace"))
-            use_map = true;
+        use_map = true;
 
         // places the inputed property type into the prop_type;
         // returns with error if there is none
         if (opts_map.count("property_type")) {
             prop_type = opts_map["property_type"].as<std::string>();
+            /* if (prop_type.find_first_of("\'\"") != std::string::npos) {
+             int first_pos = prop_type.find_first_of("\'\"");
+             int last_pos = prop_type.find_last_of("\'\"");
+             if (first_pos == last_pos) {
+             std::cerr
+             << "Error: missing \' or \" in property type specification. \n";
+             return 1;
+             }
+             if (prop_type[first_pos] != prop_type[last_pos]) {
+             std::cerr
+             << "Error: mismatched quotes in property type specification. \n";
+             return 1;
+             }
+             std::cout << first_pos << ", " << last_pos << "\n";
+             prop_type = prop_type.substr(first_pos + 1,
+             last_pos - first_pos - 1);
+             std::cout << prop_type << "\n";
+             }*/
         } else {
-            std::cerr << "Error: No inputted property type. \n";
+            std::cerr << "Error: no inputted property type. \n";
             return 1;
         }
 
@@ -180,12 +241,12 @@ int main(int ac, char* av[]) {
         if (opts_map.count("log_file")) {
             input_source = opts_map["log_file"].as<std::string>();
         } else {
-            std::cerr << "Error: Did not provide log file. \n";
+            std::cerr << "Error: did not provide log file. \n";
             return 1;
         }
 
-        if (opts_map.count("truncating_checker")){
-            set_up_timed_mining_temp_truncator(prop_type,input_source);
+        if (opts_map.count("truncating_checker")) {
+            set_up_timed_mining_temp_truncator(prop_type, input_source);
             std::cout << "hello \n";
             return 0;
         }
@@ -209,7 +270,8 @@ int main(int ac, char* av[]) {
         }
 
         // exception catching
-    } catch (std::exception& e) {
+    }
+    catch (std::exception& e) {
         std::cerr << "Error: " << e.what() << "\n";
         return 1;
     }
