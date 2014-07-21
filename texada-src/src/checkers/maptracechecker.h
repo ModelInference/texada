@@ -30,8 +30,8 @@ public:
     map_trace_checker(const map<string_event, vector<long>>*);
     virtual ~map_trace_checker();
     bool check_on_trace(const spot::ltl::formula *);
-    shared_ptr<vector<instants_pool_creator::inst_fxn>> check_instants_on_trace(
-            shared_ptr<vector<instants_pool_creator::inst_fxn>> instantiations,
+    shared_ptr<vector<pregen_instants_pool::inst_fxn>> check_instants_on_trace(
+            shared_ptr<vector<pregen_instants_pool::inst_fxn>> instantiations,
             const spot::ltl::formula* formula);
 
     /**

@@ -28,9 +28,9 @@ TEST(InstantiatorPoolCreatorTest,TwoBindingsThreeEvents){
 	 events.insert("b");
 	 events.insert("c");
 	 // now create the event instantiator
-	texada::instants_pool_creator instantiator = texada::instants_pool_creator(events,*formula_vars);
+	texada::pregen_instants_pool instantiator = texada::pregen_instants_pool(events,*formula_vars);
 	instantiator.instantiate_array();
-	std::shared_ptr<std::vector<texada::instants_pool_creator::inst_fxn>> returned_array = instantiator.return_instantiations();
+	std::shared_ptr<std::vector<texada::pregen_instants_pool::inst_fxn>> returned_array = instantiator.return_instantiations();
 	//check that all expected mappings occur
 	ASSERT_EQ(returned_array->at(0).inst_map.at("x"),"a");
 	ASSERT_EQ(returned_array->at(0).inst_map.at("y"),"a");

@@ -88,9 +88,9 @@ set<const spot::ltl::formula*> mine_property_type(
 			formula);
 
 	// create all possible instantiations of formula
-	instants_pool_creator instantiator = instants_pool_creator(event_set, *variables);
+	pregen_instants_pool instantiator = pregen_instants_pool(event_set, *variables);
 	instantiator.instantiate_array();
-	shared_ptr<vector<instants_pool_creator::inst_fxn>> all_instants =
+	shared_ptr<vector<pregen_instants_pool::inst_fxn>> all_instants =
 			instantiator.return_instantiations();
 
 	// size of all_instant

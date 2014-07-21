@@ -28,7 +28,7 @@ using std::set;
  * the number of variables in an LTL formula and a set of events from traces.
  * Stores the pool as a vector.
  */
-class instants_pool_creator {
+class pregen_instants_pool {
 public:
 
     // describes a single instantiation function,
@@ -39,8 +39,8 @@ public:
         bool valid = true;
     };
 
-    instants_pool_creator(set<string>& events, spot::ltl::atomic_prop_set);
-    virtual ~instants_pool_creator();
+    pregen_instants_pool(set<string>& events, spot::ltl::atomic_prop_set);
+    virtual ~pregen_instants_pool();
     void instantiate_array();
     void traverse_and_fill(string event, int i, int k);
     shared_ptr<vector<inst_fxn>> return_instantiations() const;

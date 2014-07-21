@@ -1485,8 +1485,8 @@ long map_trace_checker::find_last_occurrence(const spot::ltl::binop* node,
  * @param trace the trace to check on
  * @return updated instantiations, with invalid ones set to false
  */
-shared_ptr<vector<instants_pool_creator::inst_fxn>> map_trace_checker::check_instants_on_trace(
-        shared_ptr<vector<instants_pool_creator::inst_fxn>> instantiations,
+shared_ptr<vector<pregen_instants_pool::inst_fxn>> map_trace_checker::check_instants_on_trace(
+        shared_ptr<vector<pregen_instants_pool::inst_fxn>> instantiations,
         const spot::ltl::formula* formula) {
     int inst_size = instantiations->size();
     for (int i = 0; i < inst_size; i++) {

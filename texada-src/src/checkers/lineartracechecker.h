@@ -29,7 +29,7 @@ public:
 
 	bool check(const spot::ltl::formula* node, const string_event *trace);
 
-	shared_ptr<vector<instants_pool_creator::inst_fxn>> check_instants_on_trace(shared_ptr<vector<instants_pool_creator::inst_fxn>> instantiations,
+	shared_ptr<vector<pregen_instants_pool::inst_fxn>> check_instants_on_trace(shared_ptr<vector<pregen_instants_pool::inst_fxn>> instantiations,
 			const spot::ltl::formula* formula, const string_event* trace);
 private:
     bool check(const spot::ltl::atomic_prop* node, const string_event *trace);
