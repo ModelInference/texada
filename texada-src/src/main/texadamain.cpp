@@ -106,7 +106,8 @@ int main(int ac, char* av[]) {
                 "map_trace,m", "mine on a trace in the form of a map")(
                 "linear_trace,l", "mine on a linear trace")("pregen_instants,p",
                 "pregenerate property type instantiations. By default, Texada instantiates them on-the-fly. ")(
-                "truncating_checker,t", "mine w/ trunc checker")(
+                "truncating_checker,t", "mine w/ trunc checker")
+                ("allow_same_bindings", "allow different formula variables to be bound to the same events. By default, Texada does not check instantiations of this type.")(
                 "config_file,c", boost::program_options::value<std::string>(),
                 "specify file containing command line options. Any options entered directly to command line will override file options.");
 
@@ -140,7 +141,7 @@ int main(int ac, char* av[]) {
                     opts_map["config_file"].as<std::string>();
             std::ifstream infile(input_string);
             if (!infile) {
-                std::cerr << "Error: could not open the response file.\n";
+                std::cerr << "Error: could not open the config file.\n";
                 return 1;
             }
             // Read the whole file into a string
@@ -192,6 +193,7 @@ int main(int ac, char* av[]) {
             }
             if (!ended_quote) {
                 std::cerr << "Error: missing \' or \". \n";
+                return 1;
             }
 
             std::vector<std::string> args;
@@ -206,32 +208,23 @@ int main(int ac, char* av[]) {
 
         }
 
+        if (!opts_map.count("map_trace")&& !opts_map.count("linear_trace")){
+            std::cerr << "Error: did not specify map or linear trace. \n";
+            return 1;
+        }
+
         // if the user wanted to use map, we use map.
         if (opts_map.count("map_trace"))
             use_map = true;
+
+        if (opts_map.count("linear_trace"))
+            use_map = false;
+
 
         // places the inputed property type into the prop_type;
         // returns with error if there is none
         if (opts_map.count("property_type")) {
             prop_type = opts_map["property_type"].as<std::string>();
-            /* if (prop_type.find_first_of("\'\"") != std::string::npos) {
-             int first_pos = prop_type.find_first_of("\'\"");
-             int last_pos = prop_type.find_last_of("\'\"");
-             if (first_pos == last_pos) {
-             std::cerr
-             << "Error: missing \' or \" in property type specification. \n";
-             return 1;
-             }
-             if (prop_type[first_pos] != prop_type[last_pos]) {
-             std::cerr
-             << "Error: mismatched quotes in property type specification. \n";
-             return 1;
-             }
-             std::cout << first_pos << ", " << last_pos << "\n";
-             prop_type = prop_type.substr(first_pos + 1,
-             last_pos - first_pos - 1);
-             std::cout << prop_type << "\n";
-             }*/
         } else {
             std::cerr << "Error: no inputted property type. \n";
             return 1;
@@ -251,6 +244,7 @@ int main(int ac, char* av[]) {
             return 1;
         }
 
+        //TODO: fix
         if (opts_map.count("truncating_checker")) {
             set_up_timed_mining_temp_truncator(prop_type, input_source);
             std::cout << "hello \n";
