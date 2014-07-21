@@ -15,7 +15,7 @@ namespace texada {
  * @param events events in all traces inputted
  * @param ltlevents set of atomic propositions to be replaced
  */
-instants_pool_creator::instants_pool_creator(set<string>& events_,
+pregen_instants_pool::pregen_instants_pool(set<string>& events_,
         spot::ltl::atomic_prop_set ltlevents) :
         formula_vars(ltlevents), unique_events(&events_) {
     f_var_size = formula_vars.size();
@@ -28,12 +28,12 @@ instants_pool_creator::instants_pool_creator(set<string>& events_,
 
 }
 
-instants_pool_creator::~instants_pool_creator() {
+pregen_instants_pool::~pregen_instants_pool() {
 }
 /**
  * Places all instantiations into the array.
  */
-void instants_pool_creator::instantiate_array() {
+void pregen_instants_pool::instantiate_array() {
     // rename k again
     int num_unique_events = unique_events->size();
 
@@ -73,7 +73,7 @@ void instants_pool_creator::instantiate_array() {
  * @param i depth of iteration through formula variables.
  * @param k number of events
  */
-void instants_pool_creator::traverse_and_fill(string formula_event, int lvl,
+void pregen_instants_pool::traverse_and_fill(string formula_event, int lvl,
         int num_unique_events) {
     //indicates when to continue iteration through events
     int switch_var = pow(num_unique_events, lvl);
@@ -99,7 +99,7 @@ void instants_pool_creator::traverse_and_fill(string formula_event, int lvl,
     }
 }
 
-shared_ptr<vector<instants_pool_creator::inst_fxn>> instants_pool_creator::return_instantiations() const {
+shared_ptr<vector<pregen_instants_pool::inst_fxn>> pregen_instants_pool::return_instantiations() const {
     return inst_pool;
 }
 

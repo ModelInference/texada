@@ -318,8 +318,8 @@ bool linear_trace_checker::check(const spot::ltl::multop* node,
  * @param trace the trace to check on
  * @return updated instantiations, with invalid ones set to false
  */
-shared_ptr<vector<instants_pool_creator::inst_fxn>> linear_trace_checker::check_instants_on_trace(
-        shared_ptr<vector<instants_pool_creator::inst_fxn>> instantiations,
+shared_ptr<vector<pregen_instants_pool::inst_fxn>> linear_trace_checker::check_instants_on_trace(
+        shared_ptr<vector<pregen_instants_pool::inst_fxn>> instantiations,
         const spot::ltl::formula* formula, const string_event* trace) {
     int size = instantiations->size();
     //#pragma omp parallel for shared(instantiations)
