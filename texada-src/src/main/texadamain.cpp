@@ -99,21 +99,25 @@ int main(int ac, char* av[]) {
         boost::program_options::options_description desc("Allowed options");
         desc.add_options()("help,h", "produce help message")("property_type,f",
                 boost::program_options::value<std::string>(),
-                "property type to mine")("log_file,l",
+                "property type to mine")("log_file",
                 boost::program_options::value<std::string>(),
                 "log file to mine on")("run_on_increasing_events",
                 "run the prop type through traces with increasing number of unique events")(
-                "map_trace,m",
-                "mine on a trace in the form of a map (by default, Texada uses the linear trace checker)")(
+                "map_trace,m", "mine on a trace in the form of a map")(
+                "linear_trace,l", "mine on a linear trace")("pregen_instants,p",
+                "pregenerate property type instantiations. By default, Texada instantiates them on-the-fly. ")(
                 "truncating_checker,t", "mine w/ trunc checker")(
                 "config_file,c", boost::program_options::value<std::string>(),
-                "specify file containing command line options. Any options entered directly to command line will override file options. ");
+                "specify file containing command line options. Any options entered directly to command line will override file options.");
+
+        boost::program_options::positional_options_description pos_desc;
+        pos_desc.add("log_file", 1);
 
         //parsing the options passed to command line
         boost::program_options::variables_map opts_map;
         boost::program_options::store(
-                boost::program_options::parse_command_line(ac, av, desc),
-                opts_map);
+                boost::program_options::command_line_parser(ac, av).options(
+                        desc).positional(pos_desc).run(), opts_map);
         boost::program_options::notify(opts_map);
 
         if (opts_map.empty()) {
@@ -133,7 +137,7 @@ int main(int ac, char* av[]) {
         if (opts_map.count("config_file")) {
             // std::cout << opts_map["property_type"].as<std::string>() << "\n";
             std::string input_string =
-            opts_map["config_file"].as<std::string>();
+                    opts_map["config_file"].as<std::string>();
             std::ifstream infile(input_string);
             if (!infile) {
                 std::cerr << "Error: could not open the response file.\n";
@@ -160,19 +164,20 @@ int main(int ac, char* av[]) {
                         inside_quotes = false;
                         std::string element = std::string(*it);
                         quote_parsed_input[quote_start_pos] =
-                        quote_parsed_input[quote_start_pos] + " "
-                        + element.substr(0,
-                                (*it).find_first_of("\'\""));
+                                quote_parsed_input[quote_start_pos] + " "
+                                        + element.substr(0,
+                                                (*it).find_first_of("\'\""));
                     } else {
                         quote_parsed_input[quote_start_pos] =
-                        quote_parsed_input[quote_start_pos] + " "
-                        + (*it);
+                                quote_parsed_input[quote_start_pos] + " "
+                                        + (*it);
                     }
 
                 } else if ((*it).find_first_of("\'\"") == 0) {
-                    if ((*it).find_last_of("\'\"") == (*it).length()-1) {
+                    if ((*it).find_last_of("\'\"") == (*it).length() - 1) {
                         std::string first_element = std::string(*it);
-                        quote_parsed_input.push_back(first_element.substr(1,(*it).length()-2));
+                        quote_parsed_input.push_back(
+                                first_element.substr(1, (*it).length() - 2));
 
                     } else {
                         inside_quotes = true;
@@ -191,18 +196,19 @@ int main(int ac, char* av[]) {
 
             std::vector<std::string> args;
             // copy the options into args
-            std::copy(quote_parsed_input.begin(), quote_parsed_input.end(), back_inserter(args));
+            std::copy(quote_parsed_input.begin(), quote_parsed_input.end(),
+                    back_inserter(args));
             // Parse the file and store the options
             boost::program_options::store(
                     boost::program_options::command_line_parser(args).options(
-                            desc).run(), opts_map);
+                            desc).positional(pos_desc).run(), opts_map);
             //   std::cout << opts_map["property_type"].as<std::string>() << "\n";
 
         }
 
         // if the user wanted to use map, we use map.
         if (opts_map.count("map_trace"))
-        use_map = true;
+            use_map = true;
 
         // places the inputed property type into the prop_type;
         // returns with error if there is none
@@ -270,8 +276,7 @@ int main(int ac, char* av[]) {
         }
 
         // exception catching
-    }
-    catch (std::exception& e) {
+    } catch (std::exception& e) {
         std::cerr << "Error: " << e.what() << "\n";
         return 1;
     }
