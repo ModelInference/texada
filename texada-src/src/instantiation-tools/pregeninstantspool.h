@@ -54,7 +54,7 @@ private:
     void traverse_and_fill(string event, int i, int k);
     shared_ptr<vector<inst_fxn>> inst_pool;
     // to return the instantiations in correct order.
-    int traversal_var;
+
 
 };
 

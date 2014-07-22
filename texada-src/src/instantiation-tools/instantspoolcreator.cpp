@@ -20,6 +20,6 @@ instants_pool_creator::~instants_pool_creator() {
 }
 
 void instants_pool_creator::reset_instantiations(){
-
+    traversal_var = 0;
 }
 } /* namespace texada */

@@ -1,27 +1,29 @@
 /*
- * truncatingchecker.h
+ * otfinstantspool.h
  *
  *  Created on: Jul 7, 2014
  *      Author: clemieux
  */
 
-#ifndef TRUNCATINGCHECKER_H_
-#define TRUNCATINGCHECKER_H_
+#ifndef OTFINSTANTSPOOL_H_
+#define OTFINSTANTSPOOL_H_
 
 #include <ltlast/allnodes.hh>
-#include "lineartracechecker.h"
+#include "instantspoolcreator.h"
+#include "../parsing/stringevent.h"
 #include <string>
 #include <set>
 #include <map>
 
 namespace texada {
+using std::vector;
 
 /**
  * Checker combining instantiation creation and checking so
  * as to truncate the instantiation space
  */
 
-class truncating_checker {
+class otf_instants_pool : public instants_pool_creator {
 
 private:
 
@@ -45,18 +47,19 @@ private:
 	// the instantiation map
 	vector<iter_store> iteration_tracker;
 
-	void set_up_iteration_tracker(const spot::ltl::formula* node);
+	void set_up_iteration_tracker();
 
-	bool meets_trunc_criteria(unsigned long pos);
 
 public:
-	truncating_checker(const spot::ltl::formula* node, shared_ptr<set<string>>);
-	virtual ~truncating_checker();
-	// For now, using traces in linear form
+	otf_instants_pool(shared_ptr<set<string>>  events,
+            spot::ltl::atomic_prop_set * ltlevents, bool allow_reps);
+	virtual ~otf_instants_pool();
 	vector<map<string, string>> return_valid_instants(const spot::ltl::formula * node,
 	        set<vector<string_event>>);
+	shared_ptr<map<string,string>>  get_next_instantiation();
+
 };
 
 } /* namespace texada */
 
-#endif /* TRUNCATINGCHECKER_H_ */
+#endif /* OTFINSTANTSPOOL_H_ */
