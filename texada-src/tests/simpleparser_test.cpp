@@ -14,7 +14,7 @@ TEST(SimpleParserTest, SmallFile) {
     parser->parse_to_vector(infile);
     std::set<std::vector<texada::string_event> > trace_set =
             parser->return_vec_trace();
-    std::set<std::string> events = parser->return_events();
+    std::shared_ptr<std::set<std::string>> events = parser->return_events();
     delete parser;
     parser = NULL;
 
@@ -25,10 +25,10 @@ TEST(SimpleParserTest, SmallFile) {
     ASSERT_EQ("e2", trace_vec[3].get_name());
     ASSERT_TRUE(trace_vec[4].is_terminal());
 
-    ASSERT_EQ(events.size(), 3);
-    ASSERT_TRUE(events.find("e1") != events.end());
-    ASSERT_TRUE(events.find("e2") != events.end());
-    ASSERT_TRUE(events.find("e3") != events.end());
+    ASSERT_EQ(events->size(), 3);
+    ASSERT_TRUE(events->find("e1") != events->end());
+    ASSERT_TRUE(events->find("e2") != events->end());
+    ASSERT_TRUE(events->find("e3") != events->end());
 
 }
 

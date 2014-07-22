@@ -39,7 +39,7 @@ private:
 	};
 
 	// all unique events in the traces
-	set<string> events;
+	shared_ptr<set<string>> events;
 
 	// keeps track of each "level" we're adding to
 	// the instantiation map
@@ -50,7 +50,7 @@ private:
 	bool meets_trunc_criteria(unsigned long pos);
 
 public:
-	truncating_checker(const spot::ltl::formula* node, set<string>);
+	truncating_checker(const spot::ltl::formula* node, shared_ptr<set<string>>);
 	virtual ~truncating_checker();
 	// For now, using traces in linear form
 	vector<map<string, string>> return_valid_instants(const spot::ltl::formula * node,

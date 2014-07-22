@@ -12,7 +12,7 @@
 #include "../parsing/stringevent.h"
 #include <iostream>
 
-#include "../instantiation-tools/instantspoolcreator.h"
+#include "../instantiation-tools/pregeninstantspool.h"
 
 namespace texada {
 

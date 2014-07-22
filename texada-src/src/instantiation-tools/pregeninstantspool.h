@@ -1,12 +1,12 @@
 /*
- * instantspoolcreator.h
+ * pregeninstantspool.h
  *
  *  Created on: May 21, 2014
  *      Author: clemieux
  */
 
-#ifndef INSTANTSPOOLCREATOR_H_
-#define INSTANTSPOOLCREATOR_H_
+#ifndef PREGENINSTANTSPOOL_H_
+#define PREGENINSTANTSPOOL_H_
 
 #include <set>
 #include <string>
@@ -14,6 +14,8 @@
 #include <ltlast/allnodes.hh>
 #include <ltlvisit/apcollect.hh>
 #include <memory>
+
+#include "instantspoolcreator.h"
 
 namespace texada {
 using std::shared_ptr;
@@ -28,7 +30,7 @@ using std::set;
  * the number of variables in an LTL formula and a set of events from traces.
  * Stores the pool as a vector.
  */
-class pregen_instants_pool {
+class pregen_instants_pool : public instants_pool_creator{
 public:
 
     // describes a single instantiation function,
@@ -39,22 +41,22 @@ public:
         bool valid = true;
     };
 
-    pregen_instants_pool(set<string>& events, spot::ltl::atomic_prop_set);
+    pregen_instants_pool(shared_ptr<set<string>> events, spot::ltl::atomic_prop_set *, bool allow_reps);
     virtual ~pregen_instants_pool();
-    void instantiate_array();
-    void traverse_and_fill(string event, int i, int k);
-    shared_ptr<vector<inst_fxn>> return_instantiations() const;
+    map<string,string> get_next_instantiation();
+    shared_ptr<vector<inst_fxn>> return_instantiations();
 
 private:
     // the full set of instantiations, to
     // be returned
+    void instantiate_array();
+    void traverse_and_fill(string event, int i, int k);
     shared_ptr<vector<inst_fxn>> inst_pool;
-    spot::ltl::atomic_prop_set formula_vars;
-    set<string> * unique_events;
-    int f_var_size;
+    // to return the instantiations in correct order.
+    int traversal_var;
 
 };
 
 } /* namespace texada */
 
-#endif /* INSTANTSPOOLCREATOR_H_ */
+#endif /* PREGENINSTANTSPOOL_H_ */

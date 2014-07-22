@@ -33,7 +33,7 @@ void set_up_timed_mining(std::string form, std::string source, bool use_map) {
 }
 
 void set_up_timed_mining_temp_truncator(std::string form, std::string source) {
-    clock_t begin, end;
+   /* clock_t begin, end;
     double time_spent;
     begin = clock();
     spot::ltl::parse_error_list pel;
@@ -48,7 +48,7 @@ void set_up_timed_mining_temp_truncator(std::string form, std::string source) {
     prop_type->destroy();
     end = clock();
     time_spent = (double) (end - begin) / CLOCKS_PER_SEC;
-    std::cout << time_spent << "\n";
+    std::cout << time_spent << "\n";*/
 
 }
 
@@ -106,8 +106,9 @@ int main(int ac, char* av[]) {
                 "map_trace,m", "mine on a trace in the form of a map")(
                 "linear_trace,l", "mine on a linear trace")("pregen_instants,p",
                 "pregenerate property type instantiations. By default, Texada instantiates them on-the-fly. ")(
-                "truncating_checker,t", "mine w/ trunc checker")
-                ("allow_same_bindings", "allow different formula variables to be bound to the same events. By default, Texada does not check instantiations of this type.")(
+                "truncating_checker,t", "mine w/ trunc checker")(
+                "allow_same_bindings",
+                "allow different formula variables to be bound to the same events. By default, Texada does not check instantiations of this type.")(
                 "config_file,c", boost::program_options::value<std::string>(),
                 "specify file containing command line options. Any options entered directly to command line will override file options.");
 
@@ -208,7 +209,7 @@ int main(int ac, char* av[]) {
 
         }
 
-        if (!opts_map.count("map_trace")&& !opts_map.count("linear_trace")){
+        if (!opts_map.count("map_trace") && !opts_map.count("linear_trace")) {
             std::cerr << "Error: did not specify map or linear trace. \n";
             return 1;
         }
@@ -219,7 +220,6 @@ int main(int ac, char* av[]) {
 
         if (opts_map.count("linear_trace"))
             use_map = false;
-
 
         // places the inputed property type into the prop_type;
         // returns with error if there is none
