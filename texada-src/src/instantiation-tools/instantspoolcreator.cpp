@@ -19,8 +19,7 @@ instants_pool_creator::~instants_pool_creator() {
     // TODO Auto-generated destructor stub
 }
 
-map<string,string> instants_pool_creator::get_next_instantiation(){
-    return map<string,string>();
-}
+void instants_pool_creator::reset_instantiations(){
 
+}
 } /* namespace texada */

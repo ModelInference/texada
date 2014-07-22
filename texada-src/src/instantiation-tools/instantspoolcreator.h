@@ -27,7 +27,9 @@ public:
     instants_pool_creator(shared_ptr<set<string>>  events,
             spot::ltl::atomic_prop_set * ltlevents, bool allow_reps);
     virtual ~instants_pool_creator();
-    virtual map<string,string> get_next_instantiation();
+    //return to the start of the instantiations.
+    virtual shared_ptr<map<string,string>>  get_next_instantiation() = 0;
+    virtual void reset_instantiations() = 0;
 protected:
     shared_ptr<set<string>>  unique_events;
     spot::ltl::atomic_prop_set * formula_vars;

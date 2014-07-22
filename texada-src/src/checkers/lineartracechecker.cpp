@@ -337,5 +337,45 @@ shared_ptr<vector<pregen_instants_pool::inst_fxn>> linear_trace_checker::check_i
     return instantiations;
 
 }
+/**
+ * Check all instantiations of the property type given on the traces
+ * and return the valid ones
+ * @param prop_type property type to check.
+ * @param instantiator instantiator to produce next instantiation
+ * @param traces all the traces to check on
+ * @return
+ */
+vector<map<string, string>> valid_instants_on_traces(
+        const spot::ltl::formula * prop_type,
+        instants_pool_creator * instantiator,
+        shared_ptr<set<const string_event*>> traces){
+    instantiator->reset_instantiations();
+    // vector to return
+    vector<map<string, string>> return_vec;
+    linear_trace_checker checker;
+    while (true) {
+        shared_ptr<map<string,string>> current_instantiation = instantiator->get_next_instantiation();
+        if (current_instantiation == NULL) {
+            break;
+        }
+        const spot::ltl::formula * instantiated_prop_type = instantiate(prop_type,*current_instantiation);
+        // is the instantiation valid?
+        bool valid = true;
+        for (set<const string_event*>::iterator traces_it = traces->begin();
+                traces_it != traces->end(); traces_it++) {
+            bool valid_on_trace = checker.check(instantiated_prop_type,*traces_it);
+            if (!valid_on_trace) {
+                valid = false;
+                break;
+            }
+        }
+        instantiated_prop_type->destroy();
+        if (valid) {
+            return_vec.push_back(*current_instantiation);
+        }
+    }
+    return return_vec;
+
+}
 
 } /* namespace texada */
