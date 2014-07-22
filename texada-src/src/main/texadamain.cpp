@@ -13,7 +13,6 @@
 #include <ltlparse/public.hh>
 #include "propertytypeminer.h"
 #include "../parsing/simpleparser.h"
-#include "../checkers/truncatingchecker.h"
 
 /**
  * Runs Texada, timing and outputting to std::cout the mining.
@@ -32,25 +31,6 @@ void set_up_timed_mining(std::string form, std::string source, bool use_map) {
 
 }
 
-void set_up_timed_mining_temp_truncator(std::string form, std::string source) {
-   /* clock_t begin, end;
-    double time_spent;
-    begin = clock();
-    spot::ltl::parse_error_list pel;
-    const spot::ltl::formula* prop_type = spot::ltl::parse(form, pel);
-    texada::simple_parser * parser = new texada::simple_parser();
-    std::ifstream infile(source);
-    parser->parse_to_vector(infile);
-    texada::truncating_checker checker = texada::truncating_checker(prop_type,
-            parser->return_events());
-    checker.return_valid_instants(prop_type, parser->return_vec_trace());
-    delete parser;
-    prop_type->destroy();
-    end = clock();
-    time_spent = (double) (end - begin) / CLOCKS_PER_SEC;
-    std::cout << time_spent << "\n";*/
-
-}
 
 /**
  * Mines form on on traces with an increasing number of increasing
@@ -91,8 +71,13 @@ int main(int ac, char* av[]) {
         std::string prop_type;
         // log file source
         std::string input_source;
-        //
-        bool use_map = false;
+        // if true, use the map property type
+        bool use_map;
+        // if true, allow different formula variable to bind to same events
+        bool allow_reps = false;
+        // if true, use the pregen instant pool creator instead of the on-the-fly
+        // creator
+        bool pregen_instants = false;
 
         // setting up the program options
         // desc is the options description, i.e. all the allowed options
@@ -106,7 +91,6 @@ int main(int ac, char* av[]) {
                 "map_trace,m", "mine on a trace in the form of a map")(
                 "linear_trace,l", "mine on a linear trace")("pregen_instants,p",
                 "pregenerate property type instantiations. By default, Texada instantiates them on-the-fly. ")(
-                "truncating_checker,t", "mine w/ trunc checker")(
                 "allow_same_bindings",
                 "allow different formula variables to be bound to the same events. By default, Texada does not check instantiations of this type.")(
                 "config_file,c", boost::program_options::value<std::string>(),
@@ -221,6 +205,14 @@ int main(int ac, char* av[]) {
         if (opts_map.count("linear_trace"))
             use_map = false;
 
+        // if the user allows same bindings, set allow_reps to true
+        if (opts_map.count("allow_same_bindings"))
+            allow_reps = true;
+
+        // set true if user wants to pregenerate instantiations
+        if (opts_map.count ("pregen_instants"))
+            pregen_instants = true;
+
         // places the inputed property type into the prop_type;
         // returns with error if there is none
         if (opts_map.count("property_type")) {
@@ -244,12 +236,6 @@ int main(int ac, char* av[]) {
             return 1;
         }
 
-        //TODO: fix
-        if (opts_map.count("truncating_checker")) {
-            set_up_timed_mining_temp_truncator(prop_type, input_source);
-            std::cout << "hello \n";
-            return 0;
-        }
         // the set of valid instantiations
         std::set<const spot::ltl::formula*> found_instants;
 
