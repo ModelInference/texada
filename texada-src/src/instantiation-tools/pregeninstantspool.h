@@ -33,26 +33,18 @@ using std::set;
 class pregen_instants_pool : public instants_pool_creator{
 public:
 
-    // describes a single instantiation function,
-    // this maintains a vector of these
-    struct inst_fxn {
-        // formula variables -> event variables
-        map<string, string> inst_map;
-        bool valid = true;
-    };
-
     pregen_instants_pool(shared_ptr<set<string>> events, spot::ltl::atomic_prop_set *, bool allow_reps);
     virtual ~pregen_instants_pool();
     void reset_insantiations();
     shared_ptr<map<string,string>> get_next_instantiation();
-    shared_ptr<vector<inst_fxn>> return_instantiations();
+    shared_ptr<vector<map<string, string>>> return_instantiations();
 
 private:
     // the full set of instantiations, to
     // be returned
     void instantiate_array();
     void traverse_and_fill(string event, int i, int k);
-    shared_ptr<vector<inst_fxn>> inst_pool;
+    shared_ptr<vector<map<string, string>>> inst_pool;
     // to return the instantiations in correct order.
 
 

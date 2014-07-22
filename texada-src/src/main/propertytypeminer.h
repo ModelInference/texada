@@ -31,7 +31,7 @@ std::set<const spot::ltl::formula*> mine_lin_property_type(
 // mine property type with map checker if use_map is true,
 // linear checker otherwise
 std::set<const spot::ltl::formula*> mine_property_type(
-		std::string formula_string, std::string trace_source, bool use_map);
+		std::string formula_string, std::string trace_source, bool use_map, bool allow_reps, bool pregen_instants);
 
 } /* namespace texada */
 

@@ -29,10 +29,6 @@ public:
     map_trace_checker(const map<string_event, vector<long>>*);
     virtual ~map_trace_checker();
     bool check_on_trace(const spot::ltl::formula *);
-    shared_ptr<vector<pregen_instants_pool::inst_fxn>> check_instants_on_trace(
-            shared_ptr<vector<pregen_instants_pool::inst_fxn>> instantiations,
-            const spot::ltl::formula* formula);
-
     /**
      * This class uses relative positions to check to occurrence of events. As
      * such, it has three extra groups of functions: find first, last and all

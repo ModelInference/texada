@@ -310,34 +310,6 @@ bool linear_trace_checker::check(const spot::ltl::multop* node,
 }
 
 /**
- * Checks whether the given instantitations of a formula hold on the
- * given trace -- if they do not, the validity of the function is set
- * to false. The original instantiation array is the one returned.
- * @param instantiations all instantiation function mappings
- * @param formula the LTL formula to instantiate
- * @param trace the trace to check on
- * @return updated instantiations, with invalid ones set to false
- */
-shared_ptr<vector<pregen_instants_pool::inst_fxn>> linear_trace_checker::check_instants_on_trace(
-        shared_ptr<vector<pregen_instants_pool::inst_fxn>> instantiations,
-        const spot::ltl::formula* formula, const string_event* trace) {
-    int size = instantiations->size();
-    //#pragma omp parallel for shared(instantiations)
-    for (int i = 0; i < size; i++) {
-        // if it's invalid, ignore
-        if (!(instantiations->at(i).valid))
-            continue;
-        map<string, string> current_map = instantiations->at(i).inst_map;
-        const spot::ltl::formula* instantiated_form = instantiate(formula,
-                current_map);
-        instantiations->at(i).valid = check(instantiated_form, trace);
-        instantiated_form->destroy();
-    }
-    //hi
-    return instantiations;
-
-}
-/**
  * Check all instantiations of the property type given on the traces
  * and return the valid ones
  * @param prop_type property type to check.
@@ -348,7 +320,7 @@ shared_ptr<vector<pregen_instants_pool::inst_fxn>> linear_trace_checker::check_i
 vector<map<string, string>> valid_instants_on_traces(
         const spot::ltl::formula * prop_type,
         instants_pool_creator * instantiator,
-        shared_ptr<set<const string_event*>> traces){
+        shared_ptr<set<vector<string_event>>> traces){
     instantiator->reset_instantiations();
     // vector to return
     vector<map<string, string>> return_vec;
@@ -361,9 +333,9 @@ vector<map<string, string>> valid_instants_on_traces(
         const spot::ltl::formula * instantiated_prop_type = instantiate(prop_type,*current_instantiation);
         // is the instantiation valid?
         bool valid = true;
-        for (set<const string_event*>::iterator traces_it = traces->begin();
+        for (set<vector<string_event>>::iterator traces_it = traces->begin();
                 traces_it != traces->end(); traces_it++) {
-            bool valid_on_trace = checker.check(instantiated_prop_type,*traces_it);
+            bool valid_on_trace = checker.check(instantiated_prop_type,&(traces_it->at(0)));
             if (!valid_on_trace) {
                 valid = false;
                 break;

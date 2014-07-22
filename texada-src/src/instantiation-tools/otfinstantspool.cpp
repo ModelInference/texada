@@ -29,11 +29,16 @@ otf_instants_pool::~otf_instants_pool() {
  * @param node
  */
 void otf_instants_pool::set_up_iteration_tracker() {
+
     int form_vars_size = formula_vars->size();
+
     // setting to the iterator position just before the event will simplify the
     // switching of event iterator at position 0
-    set<string>::iterator events_it = events->end();
-    events_it--;
+
+    set<string>::iterator events_it = unique_events->end();
+
+    --events_it;
+
 
     // for each of the formula variables, we add an entry to the to the
     // iterator helper containing the formula variable, how often to switch
@@ -53,11 +58,12 @@ void otf_instants_pool::set_up_iteration_tracker() {
         insert.mapto = events_it;
         const spot::ltl::atomic_prop * var = *form_vars_it;
         insert.mapfrom = var->name();
-        insert.switchvar = pow(events->size(), form_vars_size - 1 - i);
+        insert.switchvar = pow(unique_events->size(), form_vars_size - 1 - i);
         iteration_tracker.push_back(insert);
         form_vars_it++;
     }
     delete formula_vars;
+
 
 }
 
@@ -71,7 +77,7 @@ shared_ptr<map<string, string>> otf_instants_pool::get_next_instantiation() {
     shared_ptr<map<string, string>> inst_map_at_pos = std::make_shared<
             map<string, string>>();
 
-    if (traversal_var >= pow(events->size(), iteration_tracker.size())) {
+    if (traversal_var >= pow(unique_events->size(), iteration_tracker.size())) {
         return NULL;
     }
 
@@ -82,8 +88,8 @@ shared_ptr<map<string, string>> otf_instants_pool::get_next_instantiation() {
             it != iteration_tracker.end(); it++) {
         if (traversal_var % it->switchvar == 0) {
             it->mapto++;
-            if (it->mapto == events->end())
-                it->mapto = events->begin();
+            if (it->mapto == unique_events->end())
+                it->mapto = unique_events->begin();
         }
         inst_map_at_pos->emplace(it->mapfrom, *(it->mapto));
     }

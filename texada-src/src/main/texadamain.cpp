@@ -20,17 +20,18 @@
  * @param source input file to mine
  * @param use_map use map miner if true
  */
-void set_up_timed_mining(std::string form, std::string source, bool use_map) {
+void set_up_timed_mining(std::string form, std::string source, bool use_map,
+        bool allow_reps, bool pregen_instants) {
     clock_t begin, end;
     double time_spent;
     begin = clock();
-    texada::mine_property_type(form, source, use_map);
+    texada::mine_property_type(form, source, use_map, allow_reps,
+            pregen_instants);
     end = clock();
     time_spent = (double) (end - begin) / CLOCKS_PER_SEC;
     std::cout << time_spent << "\n";
 
 }
-
 
 /**
  * Mines form on on traces with an increasing number of increasing
@@ -38,7 +39,8 @@ void set_up_timed_mining(std::string form, std::string source, bool use_map) {
  * @param form property type to mine
  * @param use_map
  */
-void mine_on_increasing_events(std::string form, bool use_map) {
+void mine_on_increasing_events(std::string form, bool use_map, bool allow_reps,
+        bool pregen_instants) {
     std::string trace_base = std::string(getenv("TEXADA_HOME"))
             + "/traces/vary-invs-fixed2/log-25000_invs-";
 
@@ -57,7 +59,7 @@ void mine_on_increasing_events(std::string form, bool use_map) {
         std::cout << unique_event_nums[i] << " ";
         set_up_timed_mining(form,
                 trace_base + std::to_string(unique_event_nums[i] - 1) + ".txt",
-                use_map);
+                use_map, allow_reps, pregen_instants);
 
     }
 }
@@ -210,7 +212,7 @@ int main(int ac, char* av[]) {
             allow_reps = true;
 
         // set true if user wants to pregenerate instantiations
-        if (opts_map.count ("pregen_instants"))
+        if (opts_map.count("pregen_instants"))
             pregen_instants = true;
 
         // places the inputed property type into the prop_type;
@@ -224,7 +226,7 @@ int main(int ac, char* av[]) {
 
         // runs the timing on increasing unique events if specified
         if (opts_map.count("run_on_increasing_events")) {
-            mine_on_increasing_events(prop_type, use_map);
+            mine_on_increasing_events(prop_type, use_map, allow_reps,pregen_instants);
             return 0;
         }
 
@@ -240,14 +242,9 @@ int main(int ac, char* av[]) {
         std::set<const spot::ltl::formula*> found_instants;
 
         // put valid instantiations in the correct variable
-        if (use_map) {
-            found_instants = texada::mine_map_property_type(prop_type,
-                    input_source);
-        } else {
 
-            found_instants = texada::mine_lin_property_type(prop_type,
-                    input_source);
-        }
+        found_instants = texada::mine_property_type(prop_type,
+                    input_source, use_map, allow_reps, pregen_instants);
 
         // print out all the valid instantiations as return
         for (std::set<const spot::ltl::formula*>::iterator it =

@@ -29,10 +29,6 @@ public:
 
 	bool check(const spot::ltl::formula* node, const string_event *trace);
 
-	shared_ptr<vector<pregen_instants_pool::inst_fxn>> check_instants_on_trace(shared_ptr<vector<pregen_instants_pool::inst_fxn>> instantiations,
-			const spot::ltl::formula* formula, const string_event* trace);
-
-
 private:
     bool check(const spot::ltl::atomic_prop* node, const string_event *trace);
     bool check(const spot::ltl::constant* node, const string_event *trace);
@@ -59,7 +55,7 @@ private:
 vector<map<string, string>> valid_instants_on_traces(
         const spot::ltl::formula * prop_type,
         instants_pool_creator * instantiator,
-        shared_ptr<set<const string_event*>> traces);
+        shared_ptr<set<vector<string_event>>> traces);
 
 } /* namespace texada */
 

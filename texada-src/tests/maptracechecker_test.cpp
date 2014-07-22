@@ -220,12 +220,12 @@ TEST(MapCheckerTest,ResourceAllocation){
 	std::ifstream infile(file_source);
 	texada::simple_parser * parser =  new texada::simple_parser();
 	parser->parse_to_map(infile);
-	std::set<std::map<texada::string_event,std::vector<long>> >  trace_set = parser->return_map_trace();
-	std::set<std::string>  event_set = parser->return_events();
+	std::shared_ptr<std::set<std::map<texada::string_event,std::vector<long>> >>  trace_set = parser->return_map_trace();
+	std::shared_ptr<std::set<std::string>>  event_set = parser->return_events();
 	delete parser;
 
 	// check
-	texada::map_trace_checker checker = texada::map_trace_checker(&(*trace_set.begin()));
+	texada::map_trace_checker checker = texada::map_trace_checker(&(*trace_set->begin()));
 	ASSERT_TRUE(checker.check_on_trace(formula));
 	formula->destroy();
 }

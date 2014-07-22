@@ -40,9 +40,6 @@ private:
 		set<string>::iterator mapto;
 	};
 
-	// all unique events in the traces
-	shared_ptr<set<string>> events;
-
 	// keeps track of each "level" we're adding to
 	// the instantiation map
 	vector<iter_store> iteration_tracker;
