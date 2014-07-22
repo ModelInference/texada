@@ -15,6 +15,14 @@
 namespace texada {
 
 /**
+ * Blank constructor.
+ */
+map_trace_checker::map_trace_checker(){
+    trace_map = NULL;
+    terminal_point = LONG_MAX;
+}
+
+/**
  * Creates a map trace checker which can check any formula on the
  * trace map it's constructed on.
  * @param trace_map_
@@ -34,6 +42,14 @@ map_trace_checker::~map_trace_checker() {
     first_occ_map.clear();
     last_occ_map.clear();
     trace_map = NULL;
+}
+
+/**
+ * Set the map trace checker to check new trace.
+ * @param new_trace
+ */
+void map_trace_checker::set_trace(const map<string_event, vector<long>>* new_trace){
+
 }
 
 /**
@@ -1500,6 +1516,11 @@ shared_ptr<vector<pregen_instants_pool::inst_fxn>> map_trace_checker::check_inst
         instantiated_form->destroy();
     }
     return instantiations;
+
+}
+
+
+bool check_instant_on_traces(const spot::ltl::formula *,const map<string_event, vector<long>>*){
 
 }
 

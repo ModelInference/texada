@@ -7,7 +7,7 @@
 
 #include "lineartracechecker.h"
 #include "../instantiation-tools/apsubbingcloner.h"
-
+#include "../instantiation-tools/pregeninstantspool.h"
 namespace texada {
 
 linear_trace_checker::linear_trace_checker() {

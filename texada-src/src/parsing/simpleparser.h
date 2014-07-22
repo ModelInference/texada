@@ -13,12 +13,14 @@
 #include <map>
 #include <vector>
 #include <iostream>
+#include <memory>
 
 namespace texada {
 using std::set;
 using std::vector;
 using std::string;
 using std::map;
+using std::shared_ptr;
 
 /**
  * Creates a simple parser which can parse files in the format returned by
@@ -32,7 +34,7 @@ public:
 	void parse_to_vector(std::ifstream &infile);
 	void parse_to_map(std::ifstream &infile);
 
-	std::set<std::string> return_events();
+	shared_ptr<set<string>> return_events();
 
 	std::set<std::vector<string_event> > return_vec_trace();
 
@@ -42,7 +44,7 @@ private:
 	//rename to unique events
 	set<vector<string_event> > vector_trace_set;
 	set<map<string_event, vector<long>>>map_trace_set;
-	set<string> unique_events;
+	shared_ptr<set<string>>  unique_events;
 	bool has_been_parsed_vec = false;
 	bool has_been_parsed_map = false;
 

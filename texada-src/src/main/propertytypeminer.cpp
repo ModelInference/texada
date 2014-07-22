@@ -15,7 +15,7 @@
 #include <ltlvisit/tostring.hh>
 
 #include "../parsing/simpleparser.h"
-#include "../instantiation-tools/instantspoolcreator.h"
+#include "../instantiation-tools/pregeninstantspool.h"
 #include "../checkers/maptracechecker.h"
 #include "../checkers/lineartracechecker.h"
 #include "../instantiation-tools/apsubbingcloner.h"
@@ -78,7 +78,7 @@ set<const spot::ltl::formula*> mine_property_type(
 		parser->parse_to_vector(infile);
 		vector_trace_set = parser->return_vec_trace();
 	}
-	set<string> event_set = parser->return_events();
+	shared_ptr<set<string>> event_set = parser->return_events();
 	//done parsing file, clean up parser
 	delete parser;
 	parser = NULL;
@@ -88,8 +88,8 @@ set<const spot::ltl::formula*> mine_property_type(
 			formula);
 
 	// create all possible instantiations of formula
-	pregen_instants_pool instantiator = pregen_instants_pool(event_set, *variables);
-	instantiator.instantiate_array();
+	//TODO: generate as you want (i.e. not default false)
+	pregen_instants_pool instantiator = pregen_instants_pool(event_set, variables, true);
 	shared_ptr<vector<pregen_instants_pool::inst_fxn>> all_instants =
 			instantiator.return_instantiations();
 

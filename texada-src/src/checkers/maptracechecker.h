@@ -15,7 +15,7 @@
 #include <climits>
 #include <boost/functional/hash.hpp>
 #include <boost/unordered_map.hpp>
-#include "../instantiation-tools/instantspoolcreator.h"
+#include "../instantiation-tools/pregeninstantspool.h"
 
 namespace texada {
 
@@ -27,8 +27,10 @@ namespace texada {
 class map_trace_checker {
 
 public:
+    map_trace_checker();
     map_trace_checker(const map<string_event, vector<long>>*);
     virtual ~map_trace_checker();
+    void set_trace(const map<string_event, vector<long>>*);
     bool check_on_trace(const spot::ltl::formula *);
     shared_ptr<vector<pregen_instants_pool::inst_fxn>> check_instants_on_trace(
             shared_ptr<vector<pregen_instants_pool::inst_fxn>> instantiations,
@@ -136,6 +138,7 @@ private:
 
 };
 
+bool check_instant_on_traces(const spot::ltl::formula *,const map<string_event, vector<long>>*);
 } /* namespace texada */
 
 #endif /* MAPTRACECHECKER_H_ */

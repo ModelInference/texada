@@ -13,7 +13,7 @@
 namespace texada {
 
 truncating_checker::truncating_checker(const spot::ltl::formula* node,
-        std::set<std::string> events_) :
+        shared_ptr<set<string>> events_) :
         events(events_) {
     set_up_iteration_tracker(node);
 
@@ -35,7 +35,7 @@ void truncating_checker::set_up_iteration_tracker(
     int form_vars_size = form_vars->size();
     // setting to the iterator position just before the event will simplify the
     // switching of event iterator at position 0
-    set<string>::iterator events_it = events.end();
+    set<string>::iterator events_it = events->end();
     events_it--;
 
     // for each of the formula variables, we add an entry to the to the
@@ -56,7 +56,7 @@ void truncating_checker::set_up_iteration_tracker(
         insert.mapto = events_it;
         const spot::ltl::atomic_prop * var = *form_vars_it;
         insert.mapfrom = var->name();
-        insert.switchvar = pow(events.size(), form_vars_size - 1 - i);
+        insert.switchvar = pow(events->size(), form_vars_size - 1 - i);
         iteration_tracker.push_back(insert);
         form_vars_it++;
     }
@@ -73,7 +73,7 @@ vector<map<string, string>> truncating_checker::return_valid_instants(
         const spot::ltl::formula* node, set<vector<string_event>> traces) {
     vector<map<string, string>> return_vec;
     map<string,string> inst_map_at_pos;
-    unsigned long total_size = pow(events.size(), iteration_tracker.size());
+    unsigned long total_size = pow(events->size(), iteration_tracker.size());
     for (unsigned long pos = 0; pos < total_size; pos++) {
         // erase the map from last time
         inst_map_at_pos.clear();
@@ -84,8 +84,8 @@ vector<map<string, string>> truncating_checker::return_valid_instants(
                 it != iteration_tracker.end(); it++) {
             if (pos % it->switchvar == 0) {
                 it->mapto++;
-                if (it->mapto == events.end())
-                    it->mapto = events.begin();
+                if (it->mapto == events->end())
+                    it->mapto = events->begin();
             }
             inst_map_at_pos.emplace(it->mapfrom,*(it->mapto));
             //std::cout << "Emplaced " << it->mapfrom << "->" << *(it->mapto) << "\n";

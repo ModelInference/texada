@@ -51,10 +51,10 @@ TEST(TruncatingCheckerTest,Simple) {
     const spot::ltl::formula* afby_form = spot::ltl::parse(input, pel);
 
     //create event set
-    std::set<std::string> unique_events;
-    unique_events.insert("a");
-    unique_events.insert("b");
-    unique_events.insert("c");
+    std::shared_ptr<std::set<std::string>> unique_events = std::make_shared<std::set<std::string>>();
+    unique_events->insert("a");
+    unique_events->insert("b");
+    unique_events->insert("c");
 
     //really the checker is more of a miner because it does instantiation by itself...
 
@@ -70,6 +70,7 @@ TEST(TruncatingCheckerTest,Simple) {
     ASSERT_EQ(2, valid_instants.size());
 }
 
+
 TEST(TruncatingCheckerTest,ResourceAllocation) {
     // set up, parse formula and trace
     spot::ltl::parse_error_list pel;
@@ -84,6 +85,7 @@ TEST(TruncatingCheckerTest,ResourceAllocation) {
     parser->parse_to_vector(infile);
 
     //check stuff
+
     texada::truncating_checker checker = texada::truncating_checker(prop_type,
             parser->return_events());
     std::vector<std::map<std::string, std::string>> valid_instants =
