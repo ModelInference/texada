@@ -15,14 +15,6 @@
 namespace texada {
 
 /**
- * Blank constructor.
- */
-map_trace_checker::map_trace_checker(){
-    trace_map = NULL;
-    terminal_point = LONG_MAX;
-}
-
-/**
  * Creates a map trace checker which can check any formula on the
  * trace map it's constructed on.
  * @param trace_map_
@@ -42,14 +34,6 @@ map_trace_checker::~map_trace_checker() {
     first_occ_map.clear();
     last_occ_map.clear();
     trace_map = NULL;
-}
-
-/**
- * Set the map trace checker to check new trace.
- * @param new_trace
- */
-void map_trace_checker::set_trace(const map<string_event, vector<long>>* new_trace){
-
 }
 
 /**
@@ -1519,9 +1503,51 @@ shared_ptr<vector<pregen_instants_pool::inst_fxn>> map_trace_checker::check_inst
 
 }
 
+/**
+ * Check all instantiations of the formula on the traces given
+ * @param prop_type the property type to check instantiations of
+ * @param instantiator to generate all instatiation functions
+ * @param traces all the traces
+ * @return all valid instantiations
+ */
+vector<map<string, string>> valid_instants_on_traces(
+        const spot::ltl::formula * prop_type,
+        instants_pool_creator * instantiator,
+        shared_ptr<set<map<string_event, vector<long>>> > traces) {
+            instantiator->reset_instantiations();
+            // vector to return
+            vector<map<string, string>> return_vec;
+            // create a vector of checkers to retain memoization across instantiation
+            // checking.
+            vector<map_trace_checker> all_checkers;
+            for (set<map<string_event,vector<long>>>::iterator traces_it = traces->begin();
+            traces_it != traces->end(); traces_it++) {
+                all_checkers.push_back(map_trace_checker(&(*traces_it)));
+            }
+            int num_traces = all_checkers.size();
+            while (true) {
+                shared_ptr<map<string,string>> current_instantiation = instantiator->get_next_instantiation();
+                if (current_instantiation == NULL) {
+                    break;
+                }
+                const spot::ltl::formula * instantiated_prop_type = instantiate(prop_type,*current_instantiation);
+                // is the instantiation valid?
+                bool valid = true;
+                for (int i = 0; i < num_traces; i++) {
+                    bool valid_on_trace = all_checkers[i].check_on_trace(instantiated_prop_type);
+                    if (!valid_on_trace) {
+                        valid = false;
+                        break;
+                    }
+                }
+                instantiated_prop_type->destroy();
+                if (valid) {
+                    return_vec.push_back(*current_instantiation);
+                }
+            }
+            return return_vec;
 
-bool check_instant_on_traces(const spot::ltl::formula *,const map<string_event, vector<long>>*){
+        }
 
-}
-
-} /* namespace texada */
+    }
+    /* namespace texada */

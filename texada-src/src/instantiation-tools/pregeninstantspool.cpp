@@ -25,6 +25,7 @@ pregen_instants_pool::pregen_instants_pool(shared_ptr<set<string>> events_,
 
     inst_pool = std::make_shared<vector<inst_fxn>>(
             vector<inst_fxn>(pow(unique_events->size(), formula_vars->size())));
+    instantiate_array();
 
 }
 
@@ -105,20 +106,24 @@ void pregen_instants_pool::traverse_and_fill(string formula_event, int lvl,
  * @return
  */
 shared_ptr<vector<pregen_instants_pool::inst_fxn>> pregen_instants_pool::return_instantiations() {
-    instantiate_array();
+
     return inst_pool;
 }
 
-map<string, string> pregen_instants_pool::get_next_instantiation() {
-    map<string, string> to_return = inst_pool->at(traversal_var).inst_map;
-    traversal_var++;
+/**
+ * Return the next instantiation.
+ * @return
+ */
+shared_ptr<map<string, string>> pregen_instants_pool::get_next_instantiation() {
     if (traversal_var >= inst_pool->size()) {
-        traversal_var = 0;
+        return NULL;
     }
+    shared_ptr<map<string, string>> to_return = std::make_shared<map<string, string>>(inst_pool->at(traversal_var).inst_map);
+    traversal_var++;
     if (allow_repetition == false) {
         set<string> check_vars;
-        for (map<string, string>::iterator map_it = to_return.begin();
-                map_it != to_return.end(); map_it++) {
+        for (map<string, string>::iterator map_it = to_return->begin();
+                map_it != to_return->end(); map_it++) {
             if (check_vars.find(map_it->second) == check_vars.end()) {
                 check_vars.insert(map_it->second);
             } else {
@@ -130,6 +135,14 @@ map<string, string> pregen_instants_pool::get_next_instantiation() {
         return to_return;
 
     }
+}
+
+/**
+ * Reset the instantiations so that the next call of
+ * get_next_instantiation return the first instantiation.
+ */
+void pregen_instants_pool::reset_insantiations(){
+    traversal_var = 0;
 }
 
 } /* namespace texada */

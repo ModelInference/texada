@@ -19,7 +19,6 @@
 
 namespace texada {
 
-
 /**
  * Class to check whether an LTL formula holds on a trace in the form of a map.
  * Note that this class uses LONG_MAX as infinity.
@@ -27,10 +26,8 @@ namespace texada {
 class map_trace_checker {
 
 public:
-    map_trace_checker();
     map_trace_checker(const map<string_event, vector<long>>*);
     virtual ~map_trace_checker();
-    void set_trace(const map<string_event, vector<long>>*);
     bool check_on_trace(const spot::ltl::formula *);
     shared_ptr<vector<pregen_instants_pool::inst_fxn>> check_instants_on_trace(
             shared_ptr<vector<pregen_instants_pool::inst_fxn>> instantiations,
@@ -138,7 +135,10 @@ private:
 
 };
 
-bool check_instant_on_traces(const spot::ltl::formula *,const map<string_event, vector<long>>*);
+vector<map<string, string>> valid_instants_on_traces(
+        const spot::ltl::formula * prop_type,
+        instants_pool_creator * instantiator,
+        shared_ptr<set<map<string_event, vector<long>>>>);
 } /* namespace texada */
 
 #endif /* MAPTRACECHECKER_H_ */
