@@ -1476,32 +1476,6 @@ long map_trace_checker::find_last_occurrence(const spot::ltl::binop* node,
 
 }
 
-/**
- * Checks whether the given instantitations of a formula hold on the
- * given trace -- if they do not, the validity of the function is set
- * to false. The original instantiation array is the one returned.
- * @param instantiations all instantiation function mappings
- * @param formula the LTL formula to instantiate
- * @param trace the trace to check on
- * @return updated instantiations, with invalid ones set to false
- */
-shared_ptr<vector<pregen_instants_pool::inst_fxn>> map_trace_checker::check_instants_on_trace(
-        shared_ptr<vector<pregen_instants_pool::inst_fxn>> instantiations,
-        const spot::ltl::formula* formula) {
-    int inst_size = instantiations->size();
-    for (int i = 0; i < inst_size; i++) {
-        // if it's invalid, ignore
-        if (!(instantiations->at(i).valid))
-            continue;
-        map<string, string> current_map = instantiations->at(i).inst_map;
-        const spot::ltl::formula* instantiated_form = instantiate(formula,
-                current_map);
-        instantiations->at(i).valid = check_on_trace(instantiated_form);
-        instantiated_form->destroy();
-    }
-    return instantiations;
-
-}
 
 /**
  * Check all instantiations of the formula on the traces given

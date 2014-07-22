@@ -17,15 +17,16 @@ namespace texada {
  */
 pregen_instants_pool::pregen_instants_pool(shared_ptr<set<string>> events_,
         spot::ltl::atomic_prop_set * ltlevents, bool allow_reps) :
-        instants_pool_creator(events_, ltlevents, allow_reps), traversal_var(0) {
+        instants_pool_creator(events_, ltlevents, allow_reps) {
     // We are creating a vector with the exact size required to store
     // all instantiations:
     // Each event can appear at each formula variable, so the total
     // size is: # of unique events ^ # of variable in formula
 
-    inst_pool = std::make_shared<vector<inst_fxn>>(
-            vector<inst_fxn>(pow(unique_events->size(), formula_vars->size())));
+    inst_pool = std::make_shared<vector<map<string, string>>>(
+    vector<map<string, string>>(pow(unique_events->size(), formula_vars->size())));
     instantiate_array();
+
 
 }
 
@@ -82,8 +83,9 @@ void pregen_instants_pool::traverse_and_fill(string formula_event, int lvl,
     // find array size
     //begin with the first event
     set<string>::iterator event_iterator = unique_events->begin();
-    for (vector<inst_fxn>::iterator inst_pool_it = inst_pool->begin();
-            inst_pool_it != inst_pool->end(); inst_pool_it++) {
+    for (vector<map<string, string>>::iterator inst_pool_it =
+            inst_pool->begin(); inst_pool_it != inst_pool->end();
+            inst_pool_it++) {
         // if we are at switching point, iterate to next event
         if (switch_var == 0) {
             ++event_iterator;
@@ -94,7 +96,7 @@ void pregen_instants_pool::traverse_and_fill(string formula_event, int lvl,
             // and reset the switch to the top value
             switch_var = pow(num_unique_events, lvl);
         }
-        inst_pool_it->inst_map.insert(
+        inst_pool_it->insert(
                 std::pair<string, string>(formula_event, *event_iterator));
         switch_var--;
 
@@ -105,8 +107,7 @@ void pregen_instants_pool::traverse_and_fill(string formula_event, int lvl,
  * Return all pre-generated instantiations at a time.
  * @return
  */
-shared_ptr<vector<pregen_instants_pool::inst_fxn>> pregen_instants_pool::return_instantiations() {
-
+shared_ptr<vector<map<string, string>>> pregen_instants_pool::return_instantiations() {
     return inst_pool;
 }
 
@@ -118,7 +119,8 @@ shared_ptr<map<string, string>> pregen_instants_pool::get_next_instantiation() {
     if (traversal_var >= inst_pool->size()) {
         return NULL;
     }
-    shared_ptr<map<string, string>> to_return = std::make_shared<map<string, string>>(inst_pool->at(traversal_var).inst_map);
+    shared_ptr<map<string, string>> to_return = std::make_shared<
+            map<string, string>>(inst_pool->at(traversal_var));
     traversal_var++;
     if (allow_repetition == false) {
         set<string> check_vars;
@@ -141,7 +143,7 @@ shared_ptr<map<string, string>> pregen_instants_pool::get_next_instantiation() {
  * Reset the instantiations so that the next call of
  * get_next_instantiation return the first instantiation.
  */
-void pregen_instants_pool::reset_insantiations(){
+void pregen_instants_pool::reset_insantiations() {
     traversal_var = 0;
 }
 

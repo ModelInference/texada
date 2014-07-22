@@ -15,81 +15,84 @@
  * permutations with repetition of a,b,c.
  */
 
-TEST(InstantiatorPoolCreatorTest,TwoBindingsThreeEvents){
-	//Set up to get the atomic propositions from a property type
-	 std::string input = "G(x -> Fy)";
-	 spot::ltl::parse_error_list pel;
-	 const spot::ltl::formula* f = spot::ltl::parse(input, pel);
-	 spot::ltl::atomic_prop_set* formula_vars = spot::ltl::atomic_prop_collect(f);
-	 // create a set of events
-	 std::shared_ptr<std::set<std::string>> events =  std::make_shared<std::set<std::string>>();
-	 events->insert("a");
-	 events->insert("b");
-	 events->insert("c");
-	 // now create the event instantiator
+TEST(InstantiatorPoolCreatorTest,TwoBindingsThreeEvents) {
 
-	 std::cout << formula_vars->size();
-	texada::pregen_instants_pool instantiator = texada::pregen_instants_pool(events,formula_vars,true);
-
-	std::shared_ptr<std::vector<texada::pregen_instants_pool::inst_fxn>> returned_array = instantiator.return_instantiations();
-	//check that all expected mappings occur
-
-	ASSERT_EQ(returned_array->at(0).inst_map.at("x"),"a");
-	ASSERT_EQ(returned_array->at(0).inst_map.at("y"),"a");
-	ASSERT_EQ(returned_array->at(1).inst_map.at("x"),"b");
-	ASSERT_EQ(returned_array->at(1).inst_map.at("y"),"a");
-	ASSERT_EQ(returned_array->at(2).inst_map.at("x"),"c");
-	ASSERT_EQ(returned_array->at(2).inst_map.at("y"),"a");
-	ASSERT_EQ(returned_array->at(3).inst_map.at("x"),"a");
-	ASSERT_EQ(returned_array->at(3).inst_map.at("y"),"b");
-	ASSERT_EQ(returned_array->at(4).inst_map.at("x"),"b");
-	ASSERT_EQ(returned_array->at(4).inst_map.at("y"),"b");
-	ASSERT_EQ(returned_array->at(5).inst_map.at("x"),"c");
-	ASSERT_EQ(returned_array->at(5).inst_map.at("y"),"b");
-	ASSERT_EQ(returned_array->at(6).inst_map.at("x"),"a");
-	ASSERT_EQ(returned_array->at(6).inst_map.at("y"),"c");
-	ASSERT_EQ(returned_array->at(7).inst_map.at("x"),"b");
-	ASSERT_EQ(returned_array->at(7).inst_map.at("y"),"c");
-	ASSERT_EQ(returned_array->at(8).inst_map.at("x"),"c");
-	ASSERT_EQ(returned_array->at(8).inst_map.at("y"),"c");
-
-	ASSERT_EQ(returned_array->at(0).inst_map, instantiator.get_next_instantiation());
-	delete formula_vars;
-	f->destroy();
-
-
-}
-
-TEST(InstantiatorPoolCreatorTest,CheckNoRepetition){
     //Set up to get the atomic propositions from a property type
-     std::string input = "G(x -> Fy)";
-     spot::ltl::parse_error_list pel;
-     const spot::ltl::formula* f = spot::ltl::parse(input, pel);
-     spot::ltl::atomic_prop_set* formula_vars = spot::ltl::atomic_prop_collect(f);
-     // create a set of events
-     std::shared_ptr<std::set<std::string>> events =  std::make_shared<std::set<std::string>>();
-     events->insert("a");
-     events->insert("b");
-     events->insert("c");
-     // now create the event instantiator
+    std::string input = "G(x -> Fy)";
+    spot::ltl::parse_error_list pel;
+    const spot::ltl::formula* f = spot::ltl::parse(input, pel);
+    spot::ltl::atomic_prop_set* formula_vars = spot::ltl::atomic_prop_collect(
+            f);
+    // create a set of events
+    std::shared_ptr<std::set<std::string>> events = std::make_shared<
+            std::set<std::string>>();
+    events->insert("a");
+    events->insert("b");
+    events->insert("c");
+    // now create the event instantiator
 
-     std::cout << formula_vars->size();
-    texada::pregen_instants_pool instantiator = texada::pregen_instants_pool(events,formula_vars,false);
+    texada::pregen_instants_pool instantiator = texada::pregen_instants_pool(
+            events, formula_vars, true);
 
-    std::shared_ptr<std::vector<texada::pregen_instants_pool::inst_fxn>> returned_array = instantiator.return_instantiations();
+    std::shared_ptr<std::vector<std::map<std::string, std::string>>>returned_array = instantiator.return_instantiations();
     //check that all expected mappings occur
 
-    ASSERT_EQ(returned_array->at(1).inst_map, instantiator.get_next_instantiation());
-    ASSERT_EQ(returned_array->at(2).inst_map, instantiator.get_next_instantiation());
-    ASSERT_EQ(returned_array->at(3).inst_map, instantiator.get_next_instantiation());
-    ASSERT_EQ(returned_array->at(5).inst_map, instantiator.get_next_instantiation());
-    ASSERT_EQ(returned_array->at(6).inst_map, instantiator.get_next_instantiation());
-    ASSERT_EQ(returned_array->at(7).inst_map, instantiator.get_next_instantiation());
-    ASSERT_EQ(returned_array->at(1).inst_map, instantiator.get_next_instantiation());
+    ASSERT_EQ(returned_array->at(0).at("x"), "a");
+    ASSERT_EQ(returned_array->at(0).at("y"), "a");
+    ASSERT_EQ(returned_array->at(1).at("x"), "b");
+    ASSERT_EQ(returned_array->at(1).at("y"), "a");
+    ASSERT_EQ(returned_array->at(2).at("x"), "c");
+    ASSERT_EQ(returned_array->at(2).at("y"), "a");
+    ASSERT_EQ(returned_array->at(3).at("x"), "a");
+    ASSERT_EQ(returned_array->at(3).at("y"), "b");
+    ASSERT_EQ(returned_array->at(4).at("x"), "b");
+    ASSERT_EQ(returned_array->at(4).at("y"), "b");
+    ASSERT_EQ(returned_array->at(5).at("x"), "c");
+    ASSERT_EQ(returned_array->at(5).at("y"), "b");
+    ASSERT_EQ(returned_array->at(6).at("x"), "a");
+    ASSERT_EQ(returned_array->at(6).at("y"), "c");
+    ASSERT_EQ(returned_array->at(7).at("x"), "b");
+    ASSERT_EQ(returned_array->at(7).at("y"), "c");
+    ASSERT_EQ(returned_array->at(8).at("x"), "c");
+    ASSERT_EQ(returned_array->at(8).at("y"), "c");
 
+    ASSERT_EQ(returned_array->at(0), *instantiator.get_next_instantiation());
     delete formula_vars;
     f->destroy();
 
+}
+
+TEST(InstantiatorPoolCreatorTest,CheckNoRepetition) {
+    //Set up to get the atomic propositions from a property type
+    std::string input = "G(x -> Fy)";
+    spot::ltl::parse_error_list pel;
+    const spot::ltl::formula* f = spot::ltl::parse(input, pel);
+    spot::ltl::atomic_prop_set* formula_vars = spot::ltl::atomic_prop_collect(
+            f);
+    // create a set of events
+    std::shared_ptr<std::set<std::string>> events = std::make_shared<
+            std::set<std::string>>();
+    events->insert("a");
+    events->insert("b");
+    events->insert("c");
+    // now create the event instantiator
+
+    texada::pregen_instants_pool instantiator = texada::pregen_instants_pool(
+            events, formula_vars, false);
+
+    std::shared_ptr<std::vector<std::map<std::string, std::string>>>returned_array = instantiator.return_instantiations();
+    //check that all expected mappings occur
+
+    ASSERT_EQ(returned_array->at(1), *instantiator.get_next_instantiation());
+    ASSERT_EQ(returned_array->at(2), *instantiator.get_next_instantiation());
+    ASSERT_EQ(returned_array->at(3), *instantiator.get_next_instantiation());
+    ASSERT_EQ(returned_array->at(5), *instantiator.get_next_instantiation());
+    ASSERT_EQ(returned_array->at(6), *instantiator.get_next_instantiation());
+    ASSERT_EQ(returned_array->at(7), *instantiator.get_next_instantiation());
+    ASSERT_TRUE(instantiator.get_next_instantiation() == NULL);
+
+    delete formula_vars;
+    f->destroy();
 
 }
 

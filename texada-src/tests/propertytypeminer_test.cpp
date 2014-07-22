@@ -146,7 +146,7 @@ std::array<bool, 8> set_up_perracotta_tests(std::string formula, bool use_map) {
     // mine the property type in response source, and check
     // that the valid instantiation (instanted_form) is found
     std::set<const spot::ltl::formula*> response_set =
-            texada::mine_property_type(formula, response_source, use_map);
+            texada::mine_property_type(formula, response_source, use_map, true, true);
     bool containsab = false;
     for (std::set<const spot::ltl::formula*>::iterator it =
             response_set.begin(); it != response_set.end(); it++) {
@@ -161,7 +161,7 @@ std::array<bool, 8> set_up_perracotta_tests(std::string formula, bool use_map) {
     // mine the property type in alternating source, and check
     // that the valid instantiation (instanted_form) is found
     std::set<const spot::ltl::formula*> alternating_set =
-            texada::mine_property_type(formula, alternating_source, use_map);
+            texada::mine_property_type(formula, alternating_source, use_map, true, true);
     containsab = false;
     for (std::set<const spot::ltl::formula*>::iterator it =
             alternating_set.begin(); it != alternating_set.end(); it++) {
@@ -175,7 +175,7 @@ std::array<bool, 8> set_up_perracotta_tests(std::string formula, bool use_map) {
     // mine the property type in multieffect source, and check
     // that the valid instantiation (instanted_form) is found
     std::set<const spot::ltl::formula*> multieffect_set =
-            texada::mine_property_type(formula, multieffect_source, use_map);
+            texada::mine_property_type(formula, multieffect_source, use_map, true, true);
     containsab = false;
     for (std::set<const spot::ltl::formula*>::iterator it =
             multieffect_set.begin(); it != multieffect_set.end(); it++) {
@@ -190,7 +190,7 @@ std::array<bool, 8> set_up_perracotta_tests(std::string formula, bool use_map) {
     // mine the property type in multicause source, and check
     // that the valid instantiation (instanted_form) is found
     std::set<const spot::ltl::formula*> multicause_set =
-            texada::mine_property_type(formula, multicause_source, use_map);
+            texada::mine_property_type(formula, multicause_source, use_map, true, true);
     containsab = false;
     for (std::set<const spot::ltl::formula*>::iterator it =
             multicause_set.begin(); it != multicause_set.end(); it++) {
@@ -205,7 +205,7 @@ std::array<bool, 8> set_up_perracotta_tests(std::string formula, bool use_map) {
     // mine the property type in effectfirst source, and check
     // that the valid instantiation (instanted_form) is found
     std::set<const spot::ltl::formula*> effectfirst_set =
-            texada::mine_property_type(formula, effectfirst_source, use_map);
+            texada::mine_property_type(formula, effectfirst_source, use_map, true, true);
     containsab = false;
     for (std::set<const spot::ltl::formula*>::iterator it =
             effectfirst_set.begin(); it != effectfirst_set.end(); it++) {
@@ -220,7 +220,7 @@ std::array<bool, 8> set_up_perracotta_tests(std::string formula, bool use_map) {
     // mine the property type in cause source, and check
     // that the valid instantiation (instanted_form) is found
     std::set<const spot::ltl::formula*> causefirst_set =
-            texada::mine_property_type(formula, causefirst_source, use_map);
+            texada::mine_property_type(formula, causefirst_source, use_map, true, true);
     containsab = false;
     for (std::set<const spot::ltl::formula*>::iterator it =
             causefirst_set.begin(); it != causefirst_set.end(); it++) {
@@ -235,7 +235,7 @@ std::array<bool, 8> set_up_perracotta_tests(std::string formula, bool use_map) {
     // mine the property type in response source, and check
     // that the valid instantiation (instanted_form) is found
     std::set<const spot::ltl::formula*> onecause_set =
-            texada::mine_property_type(formula, onecause_source, use_map);
+            texada::mine_property_type(formula, onecause_source, use_map, true, true);
     containsab = false;
     for (std::set<const spot::ltl::formula*>::iterator it =
             onecause_set.begin(); it != onecause_set.end(); it++) {
@@ -250,7 +250,7 @@ std::array<bool, 8> set_up_perracotta_tests(std::string formula, bool use_map) {
     // mine the property type in oneffect source, and check
     // that the valid instantiation (instanted_form) is found
     std::set<const spot::ltl::formula*> oneeffect_set =
-            texada::mine_property_type(formula, oneeffect_source, use_map);
+            texada::mine_property_type(formula, oneeffect_source, use_map, true, true);
     containsab = false;
     for (std::set<const spot::ltl::formula*>::iterator it =
             oneeffect_set.begin(); it != oneeffect_set.end(); it++) {

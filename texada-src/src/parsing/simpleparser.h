@@ -36,14 +36,14 @@ public:
 
 	shared_ptr<set<string>> return_events();
 
-	std::set<std::vector<string_event> > return_vec_trace();
+	shared_ptr<std::set<std::vector<string_event> >> return_vec_trace();
 
-	std::set<std::map<string_event, std::vector<long>> > return_map_trace();
+	shared_ptr<std::set<std::map<string_event, std::vector<long>> >> return_map_trace();
 
 private:
 	//rename to unique events
-	set<vector<string_event> > vector_trace_set;
-	set<map<string_event, vector<long>>>map_trace_set;
+	shared_ptr<set<vector<string_event> >> vector_trace_set;
+	shared_ptr<set<map<string_event, vector<long>>>> map_trace_set;
 	shared_ptr<set<string>>  unique_events;
 	bool has_been_parsed_vec = false;
 	bool has_been_parsed_map = false;

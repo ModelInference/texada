@@ -14,7 +14,8 @@ namespace texada {
 
 simple_parser::simple_parser() {
 	unique_events = std::make_shared<set<string>>();
-
+	vector_trace_set = std::make_shared<set<vector<string_event>>>();
+	map_trace_set = std::make_shared<set<map<string_event, vector<long>>>>();
 }
 
 simple_parser::~simple_parser() {
@@ -34,7 +35,7 @@ void simple_parser::parse_to_vector(std::ifstream &infile) {
 		// and exit the loop
 		if (line == "--") {
 			return_vec.push_back(string_event());
-			vector_trace_set.insert(return_vec);
+			vector_trace_set->insert(return_vec);
 			return_vec.clear();
 		} else {
 			// assumes one event per line, -- terminates
@@ -69,7 +70,7 @@ void simple_parser::parse_to_map(std::ifstream &infile) {
 			std::vector<long> pos_vec;
 			pos_vec.push_back(pos_count);
 			return_map.emplace(string_event(), pos_vec);
-			map_trace_set.insert(return_map);
+			map_trace_set->insert(return_map);
 			return_map.clear();
 			pos_count = 0;
 		} else {
@@ -105,7 +106,7 @@ shared_ptr<set<string>> simple_parser::return_events() {
  * Returns the set of parsed vector traces
  * @return
  */
-std::set<std::vector<string_event> > simple_parser::return_vec_trace() {
+shared_ptr<set<vector<string_event> >> simple_parser::return_vec_trace() {
 	if (has_been_parsed_vec) {
 		return vector_trace_set;
 	} else {
@@ -119,7 +120,7 @@ std::set<std::vector<string_event> > simple_parser::return_vec_trace() {
  * Returns the set of parsed map traces
  * @return
  */
-std::set<std::map<string_event, std::vector<long>> > simple_parser::return_map_trace() {
+shared_ptr<set<map<string_event, vector<long>>>> simple_parser::return_map_trace() {
 	if (has_been_parsed_map) {
 		return map_trace_set;
 	} else {
