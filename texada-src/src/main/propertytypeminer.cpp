@@ -79,10 +79,12 @@ set<const spot::ltl::formula*> mine_property_type(string formula_string,
     if (use_map) {
         parser->parse_to_map(infile);
         map_trace_set = parser->return_map_trace();
+
     } else {
         parser->parse_to_vector(infile);
         vector_trace_set = parser->return_vec_trace();
     }
+
     shared_ptr<set<string>> event_set = parser->return_events();
     //done parsing file, clean up parser
     delete parser;
@@ -104,7 +106,7 @@ set<const spot::ltl::formula*> mine_property_type(string formula_string,
 
     vector<map<string, string>> valid_instants;
     // check all valid instantiations on each trace
-    if (!vector_trace_set->empty()) {
+    if (!use_map) {
         valid_instants = valid_instants_on_traces(formula, instantiator,
                 vector_trace_set);
     } else {
@@ -122,11 +124,11 @@ set<const spot::ltl::formula*> mine_property_type(string formula_string,
                 valid_instants.at(i));
         return_set.insert(valid_form);
     }
-    std::cout << "I lvoe me some segfaults \n";
+
     delete instantiator;
-    std::cout << "I lvoe me some segfaults \n";
-    delete variables;
-    std::cout << "I lvoe me some segfaults \n";
+   // std::cout << "I lvoe me some segfaults \n";
+   // delete variables;
+   // std::cout << "I lvoe me some segfaults \n";
     formula->destroy();
     return return_set;
 
