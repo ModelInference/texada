@@ -13,11 +13,13 @@
 #include <set>
 #include <map>
 #include <string>
+#include <memory>
 
 namespace texada {
 using std::set;
 using std::map;
 using std::string;
+using std::shared_ptr;
 
 /**
  * Class representing an event node in a prefix tree.
@@ -32,12 +34,12 @@ public:
     // destructor
     virtual ~prefix_tree_node();
     // adds a child
-    void add_child(prefix_tree_node*);
+    void add_child(shared_ptr<prefix_tree_node>);
     // getter for trace_ids
-    set<int>* get_trace_ids();
+    set<int> get_trace_ids();
     // getter for name
     string get_name();
-    prefix_tree_node* get_child(int);
+    shared_ptr<prefix_tree_node> get_child(int);
     int num_children();
     bool is_terminal();
 private:
@@ -50,7 +52,7 @@ private:
     // belongs to many different traces, there is a
     // seperate entry containing that child for each
     // trace.
-    map<int,prefix_tree_node*> children;
+    map<set<int>,shared_ptr<prefix_tree_node>> children;
 
 };
 
