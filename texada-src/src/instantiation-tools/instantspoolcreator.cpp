@@ -16,7 +16,6 @@ instants_pool_creator::instants_pool_creator(shared_ptr<set<string>> events_,
 }
 
 instants_pool_creator::~instants_pool_creator() {
-    // TODO Auto-generated destructor stub
 }
 
 void instants_pool_creator::reset_instantiations(){

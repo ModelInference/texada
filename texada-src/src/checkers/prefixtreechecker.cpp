@@ -26,7 +26,7 @@ prefix_tree_checker::~prefix_tree_checker() {
  * @param trace: pointer to the start of the trace
  * @return whether node holds on trace
  */
-bool prefix_tree_checker::check(const spot::ltl::formula* form_node, prefix_tree_node * trace_node, int id) {
+bool prefix_tree_checker::check(const spot::ltl::formula* form_node, shared_ptr<prefix_tree_node> trace_node, int id) {
     switch (form_node->kind()) {
     case spot::ltl::formula::Constant:
         return check(static_cast<const spot::ltl::constant*>(form_node), trace_node, id);
@@ -53,7 +53,7 @@ bool prefix_tree_checker::check(const spot::ltl::formula* form_node, prefix_tree
  * @param trace: pointer to the start of the trace
  * @return whether node holds on trace
  */
-inline bool prefix_tree_checker::check(const spot::ltl::atomic_prop *form_node, prefix_tree_node * trace_node, int id) {
+inline bool prefix_tree_checker::check(const spot::ltl::atomic_prop *form_node, shared_ptr<prefix_tree_node> trace_node, int id) {
     return (trace_node->get_name() == form_node->name()) ? true : false;
 }
 
@@ -65,7 +65,7 @@ inline bool prefix_tree_checker::check(const spot::ltl::atomic_prop *form_node, 
  * @param trace: pointer to the start of the trace
  * @return whether node holds on trace
  */
-bool prefix_tree_checker::check(const spot::ltl::constant *form_node, prefix_tree_node * trace_node, int id ){
+bool prefix_tree_checker::check(const spot::ltl::constant *form_node, shared_ptr<prefix_tree_node> trace_node, int id ){
     spot::ltl::constant::type value = form_node->val();
     switch (value) {
     case spot::ltl::constant::True:
@@ -95,7 +95,7 @@ bool prefix_tree_checker::check(const spot::ltl::constant *form_node, prefix_tre
  * @param trace: pointer to the start of the trace
  * @return whether node holds on trace
  */
-bool prefix_tree_checker::check(const spot::ltl::binop *form_node, prefix_tree_node * trace_node, int id) {
+bool prefix_tree_checker::check(const spot::ltl::binop *form_node, shared_ptr<prefix_tree_node> trace_node, int id) {
     spot::ltl::binop::type opkind = form_node->op();
 
     switch (opkind) {
@@ -196,7 +196,7 @@ bool prefix_tree_checker::check(const spot::ltl::binop *form_node, prefix_tree_n
  * @param trace: pointer to the start of the trace
  * @return whether node holds on trace
  */
-bool prefix_tree_checker::check(const spot::ltl::unop *form_node, prefix_tree_node * trace_node, int id) {
+bool prefix_tree_checker::check(const spot::ltl::unop *form_node, shared_ptr<prefix_tree_node> trace_node, int id) {
 
     spot::ltl::unop::type optype = form_node->op();
 
@@ -264,7 +264,7 @@ bool prefix_tree_checker::check(const spot::ltl::unop *form_node, prefix_tree_no
  * @param trace: pointer to the start of the trace
  * @return whether node holds on the trace
  */
-bool prefix_tree_checker::check(const spot::ltl::multop* form_node, prefix_tree_node * trace_node, int id) {
+bool prefix_tree_checker::check(const spot::ltl::multop* form_node, shared_ptr<prefix_tree_node> trace_node, int id) {
     spot::ltl::multop::type opkind = form_node->op();
 
     switch (opkind) {

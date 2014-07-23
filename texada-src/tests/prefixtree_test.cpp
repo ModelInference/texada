@@ -172,12 +172,12 @@ TEST(PrefixTreeCheckerTets, TestSimpleTree){
     const spot::ltl::formula * afby_form = spot::ltl::parse("G(a->XFb)",pe_list);
 
     texada::prefix_tree_checker checker;
-/*
+
     ASSERT_TRUE(checker.check(afby_form, all_traces->get_trace_start(0), 0));
     ASSERT_TRUE(checker.check(afby_form, all_traces->get_trace_start(1), 1));
     ASSERT_FALSE(checker.check(afby_form, all_traces->get_trace_start(2), 2));
     ASSERT_FALSE(checker.check(afby_form, all_traces->get_trace_start(3), 3));
-*/
+
     afby_form->destroy();
 
     delete all_traces;
