@@ -21,8 +21,8 @@ TEST(InstantiatorPoolCreatorTest,TwoBindingsThreeEvents) {
     std::string input = "G(x -> Fy)";
     spot::ltl::parse_error_list pel;
     const spot::ltl::formula* f = spot::ltl::parse(input, pel);
-    spot::ltl::atomic_prop_set* formula_vars = spot::ltl::atomic_prop_collect(
-            f);
+    std::shared_ptr<spot::ltl::atomic_prop_set> formula_vars(spot::ltl::atomic_prop_collect(
+            f));
     // create a set of events
     std::shared_ptr<std::set<std::string>> events = std::make_shared<
             std::set<std::string>>();
@@ -57,7 +57,6 @@ TEST(InstantiatorPoolCreatorTest,TwoBindingsThreeEvents) {
     ASSERT_EQ(returned_array->at(8).at("y"), "c");
 
     ASSERT_EQ(returned_array->at(0), *instantiator.get_next_instantiation());
-    delete formula_vars;
     f->destroy();
 
 }
@@ -67,8 +66,8 @@ TEST(InstantiatorPoolCreatorTest,CheckNoRepetition) {
     std::string input = "G(x -> Fy)";
     spot::ltl::parse_error_list pel;
     const spot::ltl::formula* f = spot::ltl::parse(input, pel);
-    spot::ltl::atomic_prop_set* formula_vars = spot::ltl::atomic_prop_collect(
-            f);
+    std::shared_ptr<spot::ltl::atomic_prop_set> formula_vars (spot::ltl::atomic_prop_collect(
+            f));
     // create a set of events
     std::shared_ptr<std::set<std::string>> events = std::make_shared<
             std::set<std::string>>();
@@ -91,7 +90,6 @@ TEST(InstantiatorPoolCreatorTest,CheckNoRepetition) {
     ASSERT_EQ(returned_array->at(7), *instantiator.get_next_instantiation());
     ASSERT_TRUE(instantiator.get_next_instantiation() == NULL);
 
-    delete formula_vars;
     f->destroy();
 
 }

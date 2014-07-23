@@ -91,8 +91,8 @@ set<const spot::ltl::formula*> mine_property_type(string formula_string,
     parser = NULL;
 
     // create the set of formula's variables
-    spot::ltl::atomic_prop_set * variables = spot::ltl::atomic_prop_collect(
-            formula);
+    shared_ptr<spot::ltl::atomic_prop_set> variables(spot::ltl::atomic_prop_collect(
+            formula));
     // create the instantiator
     instants_pool_creator * instantiator;
 

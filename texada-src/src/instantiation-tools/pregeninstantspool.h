@@ -33,7 +33,7 @@ using std::set;
 class pregen_instants_pool : public instants_pool_creator{
 public:
 
-    pregen_instants_pool(shared_ptr<set<string>> events, spot::ltl::atomic_prop_set *, bool allow_reps);
+    pregen_instants_pool(shared_ptr<set<string>> events, shared_ptr<spot::ltl::atomic_prop_set>, bool allow_reps);
     virtual ~pregen_instants_pool();
     void reset_insantiations();
     shared_ptr<map<string,string>> get_next_instantiation();
