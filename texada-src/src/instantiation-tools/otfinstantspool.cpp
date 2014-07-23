@@ -13,7 +13,7 @@
 namespace texada {
 
 otf_instants_pool::otf_instants_pool(shared_ptr<set<string>> events,
-        spot::ltl::atomic_prop_set * ltlevents, bool allow_reps) :
+        shared_ptr<spot::ltl::atomic_prop_set> ltlevents, bool allow_reps) :
         instants_pool_creator(events, ltlevents, allow_reps) {
     set_up_iteration_tracker();
 
@@ -62,7 +62,6 @@ void otf_instants_pool::set_up_iteration_tracker() {
         iteration_tracker.push_back(insert);
         form_vars_it++;
     }
-    delete formula_vars;
 
 
 }

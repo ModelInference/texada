@@ -74,10 +74,11 @@ TEST(PropertyTypeMinerTest, STprecedesPafterQ) {
     inst_map.insert(std::pair<std::string, std::string>("z", "b"));
     inst_map.insert(std::pair<std::string, std::string>("a", "a"));
     spot::ltl::parse_error_list pel;
+    const spot::ltl::formula * orig_form = spot::ltl::parse(
+            "(G!y) | (!y U (y & XFx -> (!x U (a & !x & X(!x U z)))))",
+            pel);
     const spot::ltl::formula * instanted_form = texada::instantiate(
-            spot::ltl::parse(
-                    "(G!y) | (!y U (y & XFx -> (!x U (a & !x & X(!x U z)))))",
-                    pel), inst_map);
+            orig_form, inst_map);
 
     // check that the valid instantiations contain the one created above
     bool contains_instated_form = false;
@@ -90,6 +91,8 @@ TEST(PropertyTypeMinerTest, STprecedesPafterQ) {
     }
     std::cout << set.size() << "\n";
 
+    //clean up
+    orig_form->destroy();
     instanted_form->destroy();
     ASSERT_TRUE(contains_instated_form);
     for (std::set<const spot::ltl::formula*>::iterator it = set.begin();
@@ -445,42 +448,6 @@ TEST(PropertyTypeMinerMapTest, SmallResourceAllocation) {
     }
     set.clear();
 }
-
-// This test works but takes a long time to run:
-// checks that miner finds the planted instantiation of
-// S and T precede P after Q
-/*
- TEST(PropertyTypeMinerMapTest, STprecedesPafterQ){
- // find all valid instantiations of the property type
- std::set<const spot::ltl::formula*> set =texada::mine_map_property_type("(G!y) | (!y U (y & XFx -> (!x U (a & !x & X(!x U z))))",
- texada_base + "/traces/resource-allocation/abb4cad.txt");
-
- // create the correct instantiation map and the instantiated formyla corresponding to it
- std::map<std::string,std::string> inst_map;
- inst_map.insert(std::pair<std::string,std::string>("x", "c"));
- inst_map.insert(std::pair<std::string,std::string>("y", "d"));
- inst_map.insert(std::pair<std::string,std::string>("z", "b"));
- inst_map.insert(std::pair<std::string,std::string>("a", "a"));
- spot::ltl::parse_error_list pel;
- const spot::ltl::formula * instanted_form= texada::instantiate(spot::ltl::parse("(G!y) | (!y U (y & XFx -> (!x U (a & !x & X(!x U z))))",pel),inst_map);
-
- // check that the valid instantiations contain the one created above
- bool contains_instated_form = false;
- for (std::set<const spot::ltl::formula*>::iterator i =set.begin() ; i !=set.end(); i++){
- if (*i == instanted_form) {
- contains_instated_form = true;
- break;
- }
- }
- std::cout << set.size() << "\n";
- ASSERT_TRUE(contains_instated_form);
- instanted_form->destroy();
- for(std::set<const spot::ltl::formula*>::iterator it = set.begin();
- it!=set.end();it++){
- (*it)->destroy();
- }
- }
- */
 
 // All of the traces should exhibit the response pattern
 TEST(PropertyTypeMinerMapTest, Response) {
