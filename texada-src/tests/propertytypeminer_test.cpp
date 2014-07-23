@@ -64,7 +64,7 @@ TEST(PropertyTypeMinerTest, STprecedesPafterQ) {
 
     // find all valid instantiations of the property type
     std::set<const spot::ltl::formula*> set = texada::mine_lin_property_type(
-            "(G!y) | (!y U (y & XFx -> (!x U (a & !x & X(!x U z)))))",
+            "(G!y) | (!y U (y & Fx -> (!x U (a & !x & X(!x U z)))))",
             texada_base + "/traces/resource-allocation/abb4cad.txt");
 
     // create the correct instantiation map and the instantiated formula corresponding to it
@@ -75,7 +75,7 @@ TEST(PropertyTypeMinerTest, STprecedesPafterQ) {
     inst_map.insert(std::pair<std::string, std::string>("a", "a"));
     spot::ltl::parse_error_list pel;
     const spot::ltl::formula * orig_form = spot::ltl::parse(
-            "(G!y) | (!y U (y & XFx -> (!x U (a & !x & X(!x U z)))))",
+            "(G!y) | (!y U (y & Fx -> (!x U (a & !x & X(!x U z)))))",
             pel);
     const spot::ltl::formula * instanted_form = texada::instantiate(
             orig_form, inst_map);
