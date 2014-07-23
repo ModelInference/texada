@@ -144,10 +144,15 @@ int main(int ac, char* av[]) {
             bool inside_quotes = false;
             bool ended_quote = true;
             int quote_start_pos;
+            char quote_start_char;
             for (boost::tokenizer<boost::char_separator<char> >::iterator it =
                     tok.begin(); it != tok.end(); it++) {
                 if (inside_quotes == true) {
                     if ((*it).find_first_of("\'\"") != std::string::npos) {
+                        if (it->at((*it).find_first_of("\'\""))!=quote_start_char){
+                            std::cerr << "Error: mismatched quotes. \n";
+                            return 1;
+                        }
                         ended_quote = true;
                         inside_quotes = false;
                         std::string element = std::string(*it);
@@ -170,6 +175,7 @@ int main(int ac, char* av[]) {
                     } else {
                         inside_quotes = true;
                         ended_quote = false;
+                        quote_start_char = it->at((*it).find_first_of("\'\""));
                         quote_start_pos = quote_parsed_input.size();
                         std::string first_element = std::string(*it);
                         quote_parsed_input.push_back(first_element.substr(1));
