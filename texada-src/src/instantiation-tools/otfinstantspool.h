@@ -19,8 +19,7 @@ namespace texada {
 using std::vector;
 
 /**
- * Checker combining instantiation creation and checking so
- * as to truncate the instantiation space
+ * Instantiation pool creator which generates each next instantiation on the fly
  */
 
 class otf_instants_pool : public instants_pool_creator {
