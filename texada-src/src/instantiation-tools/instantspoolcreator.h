@@ -21,6 +21,9 @@ using std::shared_ptr;
 using std::map;
 using std::string;
 using std::set;
+/**
+ * Parent class for instantiation pool creators
+ */
 class instants_pool_creator {
 
 public:
