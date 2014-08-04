@@ -1,0 +1,6 @@
+-f '(!y W x) & G((x -> X(!x U y))&(y -> X(!y W x)))' -l  /YOUR/TEXADA/LOCATION/traces/perracotta-type-traces/alternating/trace.txt
+
+--
+
+-l can be replaced with another trace type and the results should be the same. 
+
