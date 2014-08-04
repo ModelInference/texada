@@ -1,0 +1,5 @@
+With or without --allow_same_bindings, the instantiations returned from running 
+texada with arguments from args.txt are:
+G((a -> XFb) & (b -> X(!b W a)))
+
+

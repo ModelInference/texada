@@ -114,27 +114,27 @@ std::array<bool, 8> set_up_perracotta_tests(std::string formula, bool use_map) {
     std::array<bool, 8> output_array;
     //order of sources
     // Response
-    std::string response_source = texada_base + "/traces/testing1/response.txt";
+    std::string response_source = texada_base + "/traces/perracotta-type-traces/response/trace.txt";
     // Alternating
     std::string alternating_source = texada_base
-            + "/traces/testing1/alternating.txt";
+            + "/traces/perracotta-type-traces/alternating/trace.txt";
     // MultiEffect
     std::string multieffect_source = texada_base
-            + "/traces/testing1/multieffect.txt";
+            + "/traces/perracotta-type-traces/multieffect/trace.txt";
     // MultiCause
     std::string multicause_source = texada_base
-            + "/traces/testing1/multicause.txt";
+            + "/traces/perracotta-type-traces/multicause/trace.txt";
     // EffectFirst
     std::string effectfirst_source = texada_base
-            + "/traces/testing1/effectfirst.txt";
+            + "/traces/perracotta-type-traces/effectfirst/trace.txt";
     // CauseFirst
     std::string causefirst_source = texada_base
-            + "/traces/testing1/causefirst.txt";
+            + "/traces/perracotta-type-traces/causefirst/trace.txt";
     // OneCause
-    std::string onecause_source = texada_base + "/traces/testing1/onecause.txt";
+    std::string onecause_source = texada_base + "/traces/perracotta-type-traces/onecause/trace.txt";
     // OneEffect
     std::string oneeffect_source = texada_base
-            + "/traces/testing1/oneffect.txt";
+            + "/traces/perracotta-type-traces/oneeffect/trace.txt";
 
     //creating the instantiations that should exist
     std::map<std::string, std::string> xtoaytob;
