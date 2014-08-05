@@ -56,7 +56,7 @@ bool linear_trace_checker::check(const spot::ltl::formula* node,
  */
 inline bool linear_trace_checker::check(const spot::ltl::atomic_prop *node,
         const string_event *trace) {
-    return (trace[0].get_name() == node->name()) ? true : false;
+    return (trace->get_name() == node->name()) ? true : false;
 }
 
 /**
@@ -101,86 +101,94 @@ bool linear_trace_checker::check(const spot::ltl::constant *node,
 bool linear_trace_checker::check(const spot::ltl::binop *node,
         const string_event *trace) {
     spot::ltl::binop::type opkind = node->op();
+    const spot::ltl::formula * p = node->first();
+    const spot::ltl::formula * q = node->second();
 
     switch (opkind) {
 
-    //XOR case: if first is true, return true if second is false,
-    //if first is false, return true if second is true.
-    case spot::ltl::binop::Xor:
-        return (check(node->first(), trace)) ?
-                !(check(node->second(), trace)) : check(node->second(), trace);
-
-        //Implies case: if first is true, return true if second is true,
-        //if first is false, return true.
-    case spot::ltl::binop::Implies:
-        return check(node->first(), trace) ? check(node->second(), trace) : true;
-
-        //Equiv case: if first is true, return true if second is true,
-        //if first is false, return true if second is false.
-    case spot::ltl::binop::Equiv:
-        return check(node->first(), trace) ?
-                check(node->second(), trace) : !check(node->second(), trace);
-
-        //Until case
-    case spot::ltl::binop::U:
-        //if we get here, we did not see second: thus, false
-        if (trace[0].is_terminal()) {
+    //XOR case: p xor q. if p is true, return true if q is false,
+    //if p is false, return true if q is true.
+    case spot::ltl::binop::Xor: {
+        bool qholds = check(q, trace);
+        return (check(p, trace)) ? !qholds : qholds;
+    }
+        //Implies case:  p -> q if p is true, return true if q is true,
+        //if p is false, return true.
+    case spot::ltl::binop::Implies: {
+        return check(p, trace) ? check(q, trace) : true;
+    }
+        //Equiv case:  p <-> q if p is true, return true if q is true,
+        //if p is false, return true if q is false.
+    case spot::ltl::binop::Equiv:{
+        bool qholds = check(q, trace);
+        return check(p, trace) ?
+               qholds : !qholds;
+    }
+        //Until case: p U q
+    case spot::ltl::binop::U:{
+        //if we get here, we did not see q: thus, false
+        if (trace->is_terminal()) {
             return false;
         }
-        // if the second condition is satisfied and we have gotten here,
-        // the first condition held all the way up here, so true
-        else if (check(node->second(), trace)) {
+        // if the q holds here, we have not yet seen q or !p, (these
+        //  cause return) so true
+        else if (check(q, trace)) {
             return true;
         }
-        // if the first condition does not hold before the second, false
-        else if (!check(node->first(), trace)) {
+        // we know q does not hold from above, so if p does not hold,
+        // we have !p and !q, which violates p U q.
+        else if (!check(p, trace)) {
             return false;
         }
-        // if the first condition holds, check on the next suffix trace
+        // if !q and p holds, check on the next suffix trace
         else {
             return check(node, trace + 1);
         }
-
-        //Release case
-    case spot::ltl::binop::R:
-        //if we get here, second always held: true
-        if (trace[0].is_terminal()) {
+    }
+        //Release case: p R q
+    case spot::ltl::binop::R:{
+        //if we get here, q always held: true
+        if (trace->is_terminal()) {
             return true;
         }
-        // if the f & s is satisfied and we have gotten here,
-        // the second condition held all the way up here, so true
-        else if (check(node->second(), trace) && check(node->first(), trace)) {
-            return true;
-        }
-
-        // if the second condition does not hold before f & s, false
-        else if (!check(node->second(), trace)) {
+        // if !q occurs before p & q, false
+        else if (!check(q, trace)) {
             return false;
         }
-        // if the second condition holds, check on the next suffix trace
+
+        // we know from the previous if that q holds and held up to here,
+        // so if p also holds, return true
+        else if (check(p, trace)) {
+            return true;
+        }
+
+        // if the q holds, check on the next suffix trace
         else {
             return check(node, trace + 1);
         }
+    }
 
         //Weak until case: identical to until except base case
-    case spot::ltl::binop::W:
-        //if we get here, we did not see second and first was true throughout
-        if (trace[0].is_terminal()) {
+    case spot::ltl::binop::W:{
+        //if we get here, we did not see q or !p, so true.
+        if (trace->is_terminal()) {
             return true;
         }
-        // if the second condition is satisfied and we have gotten here,
-        // the first condition held all the way up here, so true
-        else if (check(node->second(), trace)) {
+        // if the q holds here, we have not yet seen q or !p, (these
+        //  cause return) so true
+        else if (check(q, trace)) {
             return true;
         }
-        // if the first condition does not hold before the second, false
-        else if (!check(node->first(), trace)) {
+        // we know q does not hold from above, so if p does not hold,
+        // we have !p and !q, which violates p U q.
+        else if (!check(p, trace)) {
             return false;
         }
-        // if the first condition holds, check on the next suffix trace
+        // if !q and p holds, check on the next suffix trace
         else {
             return check(node, trace + 1);
         }
+    }
 
     default:
         std::cerr << "Unsupported binary operator. Returning false. \n";
@@ -204,53 +212,46 @@ bool linear_trace_checker::check(const spot::ltl::unop *node,
         const string_event *trace) {
 
     spot::ltl::unop::type optype = node->op();
+    const spot::ltl::formula * p = node->child();
 
     //TODO: refactor node->child into a variable
 
     switch (optype) {
 
-    // Globally case
+    // Globally case: Gp
     case spot::ltl::unop::G:
         // base case: if we're at END_VAR, return true to not effect &&
-        if (trace[0].is_terminal()) {
+        if (trace->is_terminal()) {
             return true;
         } else {
             //Return whether subformula is true on this trace, recursive check on
             // all subsequent traces.
-            return check(node->child(), trace) && check(node, trace + 1);
+            return check(p, trace) && check(node, trace + 1);
         }
 
-        // Finally case
+        // Finally case: Fp
     case spot::ltl::unop::F:
         // base case: if we're at END_VAR, return false to not effect ||
-        if (trace[0].is_terminal()) {
+        if (trace->is_terminal()) {
             return false;
         } else {
             //Return whether subformula is true on this trace, recursive check on
             // all subsequent traces.
-            return check(node->child(), trace) || check(node, trace + 1);
+            return check(p, trace) || check(node, trace + 1);
         }
 
-        // Next case
+        // Next case: Xp
     case spot::ltl::unop::X:
-        // Here we are effectively extending the end of the trace into an infinite
-        // sequence of terminal variables.
-        // We will never go past the end of the array:
-        // if node->child() or any subsequent child is a propositional logic
-        // operation, constant or atomic proposition, we don't advance to trace+1.
-        // if node->child() or any subsequent child is F, G, U, R or W then
-        // the first base case (if (trace[0].is_terminal())) is evaluated
-        // and a boolean is returned
-        // if node->child() or any subsequent child is X, we enter the base case
-        // below, remaining in the array.
-        if (trace[0].is_terminal()) {
-            return check(node->child(), trace);
+        // if we are at the terminal event, the next event is also a terminal
+        // event. Since we are traversing a finite tree, this will terminate.
+        if (trace->is_terminal()) {
+            return check(p, trace);
         }
-        return check(node->child(), trace + 1);
+        return check(p, trace + 1);
 
-        // Not case
+        // Not case: !p
     case spot::ltl::unop::Not:
-        return !check(node->child(), trace);
+        return !check(p, trace);
 
         // Other operators are not LTL, don't support them
     default:
@@ -320,34 +321,35 @@ bool linear_trace_checker::check(const spot::ltl::multop* node,
 vector<map<string, string>> valid_instants_on_traces(
         const spot::ltl::formula * prop_type,
         instants_pool_creator * instantiator,
-        shared_ptr<set<vector<string_event>>> traces){
-    instantiator->reset_instantiations();
-    // vector to return
-    vector<map<string, string>> return_vec;
-    linear_trace_checker checker;
-    while (true) {
-        shared_ptr<map<string,string>> current_instantiation = instantiator->get_next_instantiation();
-        if (current_instantiation == NULL) {
-            break;
-        }
-        const spot::ltl::formula * instantiated_prop_type = instantiate(prop_type,*current_instantiation);
-        // is the instantiation valid?
-        bool valid = true;
-        for (set<vector<string_event>>::iterator traces_it = traces->begin();
+        shared_ptr<set<vector<string_event>>> traces) {
+            instantiator->reset_instantiations();
+            // vector to return
+            vector<map<string, string>> return_vec;
+            linear_trace_checker checker;
+            while (true) {
+                shared_ptr<map<string,string>> current_instantiation = instantiator->get_next_instantiation();
+                if (current_instantiation == NULL) {
+                    break;
+                }
+                const spot::ltl::formula * instantiated_prop_type = instantiate(prop_type,*current_instantiation);
+                // is the instantiation valid?
+                bool valid = true;
+                for (set<vector<string_event>>::iterator traces_it = traces->begin();
                 traces_it != traces->end(); traces_it++) {
-            bool valid_on_trace = checker.check(instantiated_prop_type,&(traces_it->at(0)));
-            if (!valid_on_trace) {
-                valid = false;
-                break;
+                    bool valid_on_trace = checker.check(instantiated_prop_type,&(traces_it->at(0)));
+                    if (!valid_on_trace) {
+                        valid = false;
+                        break;
+                    }
+                }
+                instantiated_prop_type->destroy();
+                if (valid) {
+                    return_vec.push_back(*current_instantiation);
+                }
             }
+            return return_vec;
+
         }
-        instantiated_prop_type->destroy();
-        if (valid) {
-            return_vec.push_back(*current_instantiation);
-        }
+
     }
-    return return_vec;
-
-}
-
-} /* namespace texada */
+    /* namespace texada */

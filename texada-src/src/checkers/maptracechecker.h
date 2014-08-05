@@ -44,16 +44,16 @@ private:
         }
     };
 
-    struct first_occ_storer {
+    struct formula_interval {
         const spot::ltl::formula* formula;
         interval intvl;
-        bool operator==(const first_occ_storer other) const {
+        bool operator==(const formula_interval other) const {
             return (formula == other.formula && intvl == other.intvl);
         }
     };
 
-    struct first_occ_storer_hash {
-        std::size_t operator()(const first_occ_storer& k) const {
+    struct formula_interval_hash {
+        std::size_t operator()(const formula_interval& k) const {
             using boost::hash_value;
             using boost::hash_combine;
 
@@ -70,10 +70,13 @@ private:
             return seed;
         }
     };
-
-    long terminal_point;
-    std::unordered_map<first_occ_storer, long, first_occ_storer_hash> first_occ_map;
-    std::unordered_map<first_occ_storer, long, first_occ_storer_hash> last_occ_map;
+    // position of the terminal event
+    long terminal_pos;
+    // map from formula interval to the first/last occurrence of the formula in that
+    // interval. used in memoisation storage.
+    std::unordered_map<formula_interval, long, formula_interval_hash> first_occ_map;
+    std::unordered_map<formula_interval, long, formula_interval_hash> last_occ_map;
+    // the trace this map trace checker checks on
     const map<string_event, vector<long>> * trace_map;
 
     bool check(const spot::ltl::formula *, interval);
