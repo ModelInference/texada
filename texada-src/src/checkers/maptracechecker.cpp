@@ -23,7 +23,7 @@ map_trace_checker::map_trace_checker(
         const std::map<string_event, std::vector<long>>* trace_map_) :
         trace_map(trace_map_) {
     std::vector<long> end_vector = trace_map->at(texada::string_event());
-    terminal_point = end_vector[0];
+    terminal_pos = end_vector[0];
 
 }
 
@@ -44,7 +44,7 @@ map_trace_checker::~map_trace_checker() {
 bool map_trace_checker::check_on_trace(const spot::ltl::formula* node) {
     //std::cout << "###";
     interval base_interval;
-    base_interval.end = terminal_point - 1;
+    base_interval.end = terminal_pos - 1;
     return check(node, base_interval);
 
 }
@@ -138,7 +138,7 @@ bool map_trace_checker::check(const spot::ltl::unop* node, interval intvl) {
     case spot::ltl::unop::G: {
         // Globally operator holds on all future events, so
         // extend interval until terminal point
-        intvl.end = terminal_point - 1;
+        intvl.end = terminal_pos - 1;
         const spot::ltl::formula * neg_norm_child =
                 spot::ltl::negative_normal_form(node->child(), true);
         long first_occ = find_first_occurrence(neg_norm_child, intvl);
@@ -154,7 +154,7 @@ bool map_trace_checker::check(const spot::ltl::unop* node, interval intvl) {
     case spot::ltl::unop::F: {
         // Finally operator holds on all future events, so
         // extend interval until terminal point.
-        intvl.end = terminal_point - 1;
+        intvl.end = terminal_pos - 1;
         long first_occ = find_first_occurrence(node->child(), intvl);
         if (first_occ == -1)
             return false;
@@ -168,8 +168,8 @@ bool map_trace_checker::check(const spot::ltl::unop* node, interval intvl) {
         // next event.
     case spot::ltl::unop::X: {
         if (intvl.start == intvl.end) {
-            intvl.start = terminal_point - 1;
-            intvl.end = terminal_point - 1;
+            intvl.start = terminal_pos - 1;
+            intvl.end = terminal_pos - 1;
             return check(node->child(), intvl);
         }
         intvl.start++;
@@ -221,7 +221,7 @@ bool map_trace_checker::check(const spot::ltl::binop *node, interval intvl) {
         // Until case: given p U q, need q to occur and !p not to occur before q.
     case spot::ltl::binop::U: {
         // U deals with all the future, so extend interval
-        intvl.end = terminal_point - 1;
+        intvl.end = terminal_pos - 1;
         // find q
         long first_occ_second = find_first_occurrence(node->second(), intvl);
         // if q never occurs
@@ -248,7 +248,7 @@ bool map_trace_checker::check(const spot::ltl::binop *node, interval intvl) {
         // propositions as first and second as two events can't both hold
     case spot::ltl::binop::R: {
         // need to make sure there's no violation of R after end of intvl
-        intvl.end = terminal_point - 1;
+        intvl.end = terminal_pos - 1;
 
         // construct and find the first occurrence of !p
         const spot::ltl::formula * neg_norm_second =
@@ -276,7 +276,7 @@ bool map_trace_checker::check(const spot::ltl::binop *node, interval intvl) {
         // given p W q, !p cannot occur before q
     case spot::ltl::binop::W: {
         // need to make sure there's no violation of W after intvl.end
-        intvl.end = terminal_point - 1;
+        intvl.end = terminal_pos - 1;
         // Find first q
         long first_occ_second = find_first_occurrence(node->second(), intvl);
 
@@ -301,7 +301,7 @@ bool map_trace_checker::check(const spot::ltl::binop *node, interval intvl) {
         // given q M p, q must occur and !p can only occur strictly after q
     case spot::ltl::binop::M: {
         // extend to make sure to violation occurs after the end of the interval
-        intvl.end = terminal_point - 1;
+        intvl.end = terminal_pos - 1;
         // construct and find first !p
         const spot::ltl::formula * neg_norm_second =
                 spot::ltl::negative_normal_form(node->second(), true);
@@ -425,7 +425,7 @@ long map_trace_checker::return_and_add(const spot::ltl::formula* node,
     // we can add intervals with one-off start of interval if
     // the first occurrence is not the first of the interval
     if (first_occ != intvl.start) {
-        first_occ_storer storer;
+        formula_interval storer;
         storer.formula = node;
         storer.intvl.start = intvl.start;
         storer.intvl.end = intvl.end;
@@ -441,7 +441,7 @@ long map_trace_checker::return_and_add(const spot::ltl::formula* node,
         //first-last+1;
         first_occ_map.emplace(storer, first_occ);
     } else {
-        first_occ_storer storer;
+        formula_interval storer;
         storer.formula = node;
         storer.intvl.start = intvl.start;
         storer.intvl.end = intvl.end;
@@ -465,7 +465,7 @@ long map_trace_checker::return_and_add(const spot::ltl::formula* node,
  */
 long map_trace_checker::return_and_add_end(const spot::ltl::formula* node,
         interval intvl, long last_occ) {
-    first_occ_storer storer;
+    formula_interval storer;
     storer.formula = node;
     storer.intvl.start = intvl.start;
     storer.intvl.end = intvl.end;
@@ -490,11 +490,11 @@ long map_trace_checker::return_and_add_end(const spot::ltl::formula* node,
 long map_trace_checker::find_first_occurrence(
         const spot::ltl::atomic_prop* node, interval intvl) {
     // REQUIRES: to_search is sorted. this should be assured earlier on.
-    first_occ_storer storer;
+    formula_interval storer;
     storer.intvl.start = intvl.start;
     storer.intvl.end = intvl.end;
     storer.formula = node;
-    std::unordered_map<first_occ_storer, long, first_occ_storer_hash>::iterator it =
+    std::unordered_map<formula_interval, long, formula_interval_hash>::iterator it =
             first_occ_map.find(storer);
     if (it != first_occ_map.end()) {
         return it->second;
@@ -736,7 +736,7 @@ long map_trace_checker::find_first_occurrence(const spot::ltl::unop* node,
         // !p may occur after intvl.end and violate Gp
         interval temp;
         temp.start = intvl.start;
-        temp.end = terminal_point - 1;
+        temp.end = terminal_pos - 1;
 
         // create and find last occurrence of !p
         const spot::ltl::formula * neg_norm_child =
@@ -760,7 +760,7 @@ long map_trace_checker::find_first_occurrence(const spot::ltl::unop* node,
         // interval to the end of the trace. If it occurs at any time, then the first
         // Fp is at the front of the interval.
     case spot::ltl::unop::F: {
-        intvl.end = terminal_point - 1;
+        intvl.end = terminal_pos - 1;
         long first_occ = find_first_occurrence(node->child(), intvl);
         if (first_occ == -1)
             return -1;
@@ -877,7 +877,7 @@ long map_trace_checker::find_first_occurrence(const spot::ltl::binop* node,
         // but also need to preserve intvl.end
         interval temp;
         temp.start = intvl.start;
-        temp.end = terminal_point - 1;
+        temp.end = terminal_pos - 1;
 
         // find first q in extended interval
         long first_occ_second = find_first_occurrence(node->second(), temp);
@@ -912,7 +912,7 @@ long map_trace_checker::find_first_occurrence(const spot::ltl::binop* node,
         // but also need to preserve intvl.end
         interval temp;
         temp.start = intvl.start;
-        temp.end = terminal_point - 1;
+        temp.end = terminal_pos - 1;
 
         // find first q
         long first_occ_second = find_first_occurrence(node->second(), temp);
@@ -966,7 +966,7 @@ long map_trace_checker::find_first_occurrence(const spot::ltl::binop* node,
         // of intvl, so create extended interval
         interval temp;
         temp.start = intvl.start;
-        temp.end = terminal_point - 1;
+        temp.end = terminal_pos - 1;
 
         // find first q on extended interval
         long first_occ_first = find_first_occurrence(node->first(), temp);
@@ -1023,7 +1023,7 @@ long map_trace_checker::find_first_occurrence(const spot::ltl::binop* node,
         // of intvl, so create extended interval
         interval temp;
         temp.start = intvl.start;
-        temp.end = terminal_point - 1;
+        temp.end = terminal_pos - 1;
         // find first q
         long first_occ_first = find_first_occurrence(node->first(), temp);
         // if q never occurs, neither does q M p.
@@ -1129,11 +1129,11 @@ long map_trace_checker::find_last_occurrence(const spot::ltl::formula* node,
 long map_trace_checker::find_last_occurrence(const spot::ltl::atomic_prop* node,
         interval intvl) {
     // REQUIRES: to_search is sorted. this should be assured earlier on.
-    first_occ_storer storer;
+    formula_interval storer;
     storer.intvl.start = intvl.start;
     storer.intvl.end = intvl.end;
     storer.formula = node;
-    std::unordered_map<first_occ_storer, long, first_occ_storer_hash>::iterator it =
+    std::unordered_map<formula_interval, long, formula_interval_hash>::iterator it =
             last_occ_map.find(storer);
     if (it != last_occ_map.end()) {
         return it->second;
@@ -1321,7 +1321,7 @@ long map_trace_checker::find_last_occurrence(const spot::ltl::unop* node,
         // extend interval to check for last !p in the end
         interval temp;
         temp.start = intvl.start;
-        temp.end = terminal_point - 1;
+        temp.end = terminal_pos - 1;
         // create and find last !p
         const spot::ltl::formula * neg_norm_child =
                 spot::ltl::negative_normal_form(node->child(), true);
@@ -1341,7 +1341,7 @@ long map_trace_checker::find_last_occurrence(const spot::ltl::unop* node,
         //
         interval temp;
         temp.start = intvl.start;
-        temp.end = terminal_point - 1;
+        temp.end = terminal_pos - 1;
         // find last p
         long last_occ_child = find_last_occurrence(node->child(), intvl);
         // is the last occurrence is out of range, the last Fp
@@ -1473,11 +1473,11 @@ long map_trace_checker::find_last_occurrence(const spot::ltl::binop* node,
         // else the last q in the interval is the last p U q.
     case ::spot::ltl::binop::U: {
 
-        if (intvl.end < terminal_point - 1) {
+        if (intvl.end < terminal_pos - 1) {
             // create interval after interval
             interval temp;
             temp.start = intvl.end;
-            temp.end = terminal_point - 1;
+            temp.end = terminal_pos - 1;
             // find first q after the end of intvl
             long next_first_second = find_first_occurrence(node->second(),
                     temp);
@@ -1511,12 +1511,12 @@ long map_trace_checker::find_last_occurrence(const spot::ltl::binop* node,
         const spot::ltl::formula* neg_norm_first =
                 spot::ltl::negative_normal_form(node->first(), true);
 
-        if (intvl.end < terminal_point - 1) {
+        if (intvl.end < terminal_pos - 1) {
             // create interval after the original interval
             // to check for q there
             interval temp;
             temp.start = intvl.end;
-            temp.end = terminal_point - 1;
+            temp.end = terminal_pos - 1;
 
             // find the first q in the "after" interval
             long next_first_second = find_first_occurrence(node->second(),
@@ -1577,8 +1577,8 @@ long map_trace_checker::find_last_occurrence(const spot::ltl::binop* node,
         temp.start = intvl.end;
         //usually we put temp end at terminal - 1 , but make sure not to make
         // temp.start > temp.end
-        (intvl.end == terminal_point) ?
-                temp.end = terminal_point : temp.end = terminal_point - 1;
+        (intvl.end == terminal_pos) ?
+                temp.end = terminal_pos : temp.end = terminal_pos - 1;
         //finding the first q
         long next_first_first = find_first_occurrence(node->first(), temp);
         // if there is no q in the "after" interval
@@ -1637,8 +1637,8 @@ long map_trace_checker::find_last_occurrence(const spot::ltl::binop* node,
         temp.start = intvl.end;
         //usually we put temp at one before terminal, but if we're at terminal,
         // don't push the end back
-        (intvl.end == terminal_point) ?
-                temp.end = terminal_point : temp.end = terminal_point - 1;
+        (intvl.end == terminal_pos) ?
+                temp.end = terminal_pos : temp.end = terminal_pos - 1;
 
         // finding the first q in the extended interval
         long next_first_first = find_first_occurrence(node->first(), temp);
