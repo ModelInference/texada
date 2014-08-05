@@ -75,8 +75,8 @@ string prefix_tree_node::get_name() {
  */
 shared_ptr<prefix_tree_node> prefix_tree_node::get_child(int trace_id) {
     for (map<set<int>,shared_ptr<prefix_tree_node>>::iterator kids_it= children.begin();
-            kids_it != children.end(); kids_it++){
-        if (kids_it->first.find(trace_id) != kids_it->first.end()){
+            kids_it != children.end(); kids_it++) {
+        if (kids_it->first.find(trace_id) != kids_it->first.end()) {
             return kids_it->second;
         }
     }

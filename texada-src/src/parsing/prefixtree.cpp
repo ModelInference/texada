@@ -26,11 +26,10 @@ prefix_tree::~prefix_tree() {
  */
 shared_ptr<prefix_tree_node> prefix_tree::get_trace_start(int trace_id) {
     for (map<set<int>, shared_ptr<prefix_tree_node>>::iterator traces_it = traces.begin();
-            traces_it != traces.end(); traces_it++){
-        if (traces_it->first.find(trace_id)!= traces_it->first.end()){
+            traces_it != traces.end(); traces_it++) {
+        if (traces_it->first.find(trace_id) != traces_it->first.end()) {
             return traces_it->second;
         }
-
     }
     return NULL;
 }
@@ -48,10 +47,9 @@ void prefix_tree::add_trace(set<int> trace_ids, shared_ptr<prefix_tree_node> fir
 int prefix_tree::get_num_traces() {
     int total_num_traces = 0;
     for (map<set<int>, shared_ptr<prefix_tree_node>>::iterator traces_it = traces.begin();
-                traces_it != traces.end(); traces_it++){
+                traces_it != traces.end(); traces_it++) {
             total_num_traces += traces_it->first.size();
-
-        }
+    }
     return total_num_traces;
 }
 
