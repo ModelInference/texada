@@ -18,6 +18,33 @@ prefix_tree_checker::~prefix_tree_checker() {
     // TODO Auto-generated destructor stub
 }
 
+bool prefix_tree_checker::check_on_tree(const spot::ltl::formula* form_node, shared_ptr<prefix_tree_node> trace_node){
+    // stub in the 1 there
+    // commence traversal of tree through one trace
+    bool is_formula_valid = check(form_node,trace_node,1);
+    // if it was false on a trace, it's false overall
+    if (!is_formula_valid){
+        return is_formula_valid;
+    }
+    // Perform DFS is the formula was true on the first trace
+    while (!bps_to_visit.empty()){
+        // get the pointer to the last branch point we saw
+        shared_ptr<prefix_tree_node> bp_to_visit = bps_to_visit.back().node;
+        // which num child to visit; we want to visit the
+        // next branch, so increment by 1.
+        int child_to_visit = ++bps_to_visit.back().branches_visited;
+        // if we're visiting the last branch, we can remove this point from
+        // the branch points to visit
+        if (child_to_visit >= bp_to_visit->num_children()){
+            bps_to_visit.pop_back();
+        }
+        // visit the (child_to_visit)th child. visiting with check on tree to get
+        is_formula_valid = check_on_tree(form_node,bp_to_visit->get_nth_child(child_to_visit));
+    }
+    //stub
+    return false;
+}
+
 /**
  * Since SPOT's visitor only takes in one parameter (the formula), the accept functionality
  * cannot be used. Thus we need a function that takes in a general formula and correctly

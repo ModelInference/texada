@@ -85,6 +85,27 @@ shared_ptr<prefix_tree_node> prefix_tree_node::get_child(int trace_id) {
 }
 
 /**
+ * Gets the nth child of this node, starting at 1.
+ * @param n child to get
+ * @return
+ */
+shared_ptr<prefix_tree_node> prefix_tree_node::get_nth_child(int n){
+    // ordered map assures we won't return same child for different ns
+    //counter
+    int i = 1;
+    for (map<set<int>, shared_ptr<prefix_tree_node>>::iterator child_it = children.begin();
+            child_it != children.end(); child_it++){
+        if (i == n){
+            return child_it->second;
+        }
+        i++;
+    }
+    // if we don't have an nth child, return null
+    return NULL;
+
+}
+
+/**
  * Return the number of children this node has.
  * @return
  */
