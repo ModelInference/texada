@@ -14,6 +14,8 @@
 #include <ltlvisit/apcollect.hh>
 #include <ltlvisit/tostring.hh>
 
+#include <boost/program_options.hpp>
+
 #include "../parsing/simpleparser.h"
 #include "../instantiation-tools/pregeninstantspool.h"
 #include "../instantiation-tools/otfinstantspool.h"
@@ -23,6 +25,31 @@
 #include "../instantiation-tools/apsubbingcloner.h"
 
 namespace texada {
+
+boost::program_options::variables_map set_options_from_string(string input_string){
+    boost::program_options::options_description desc("Allowed options");
+    desc.add_options()("property_type,f",
+            boost::program_options::value<std::string>(),
+            "property type to mine")("log_file",
+            boost::program_options::value<std::string>(),
+            "log file to mine on")(
+            "map_trace,m", "mine on a trace in the form of a map")(
+            "linear_trace,l", "mine on a linear trace")("pregen_instants,p",
+            "pregenerate property type instantiations. ")(
+            "allow_same_bindings",
+            "allow different formula variables to be bound to the same events.");
+
+    boost::program_options::positional_options_description pos_desc;
+    pos_desc.add("log_file", 1);
+    boost::program_options::variables_map opts;
+    std::vector<std::string> args =texada::string_to_args(input_string);
+
+    boost::program_options::store(
+            boost::program_options::command_line_parser(args).options(
+                    desc).positional(pos_desc).run(), opts);
+
+    return opts;
+}
 
 /**
  * Finds instantiations of the given property type using the linear
@@ -34,8 +61,7 @@ namespace texada {
  */
 set<const spot::ltl::formula*> mine_lin_property_type(string formula_string,
         string trace_source) {
-
-    return mine_property_type(formula_string, trace_source, false, false, false);
+    return mine_property_type(set_options_from_string("-f " + formula_string + " -l " + trace_source));
 }
 
 /**
@@ -48,7 +74,7 @@ set<const spot::ltl::formula*> mine_lin_property_type(string formula_string,
  */
 set<const spot::ltl::formula*> mine_map_property_type(string formula_string,
         string trace_source) {
-    return mine_property_type(formula_string, trace_source, true, false, false);
+    return mine_property_type(set_options_from_string("-f " + formula_string + " -m " + trace_source));
 }
 
 /**
@@ -60,14 +86,16 @@ set<const spot::ltl::formula*> mine_map_property_type(string formula_string,
  * @param use_map use map miner if true, linear miner otherwise
  * @return valid instantiations of the inputted formula on inputted trace set
  */
-set<const spot::ltl::formula*> mine_property_type(string formula_string,
-        string trace_source, bool use_map, bool allow_reps,
-        bool pregen_instants) {
-
+set<const spot::ltl::formula*> mine_property_type(boost::program_options::variables_map opts) {
+    bool use_map = opts.count("map_trace");
+    bool allow_reps = opts.count("allow_same_bindings");
+    bool pregen_instants = opts.count("pregen_instants");
+    string prop_type = opts["property_type"].as<std::string>();
+    string trace_source = opts["log_file"].as<std::string>();
 
     //parse the ltl formula
     spot::ltl::parse_error_list parse_errs;
-    const spot::ltl::formula* formula = spot::ltl::parse(formula_string,
+    const spot::ltl::formula* formula = spot::ltl::parse(prop_type,
             parse_errs);
     assert(parse_errs.size() == 0);
 
@@ -126,9 +154,6 @@ set<const spot::ltl::formula*> mine_property_type(string formula_string,
     }
 
     delete instantiator;
-   // std::cout << "I lvoe me some segfaults \n";
-   // delete variables;
-   // std::cout << "I lvoe me some segfaults \n";
     formula->destroy();
     return return_set;
 
