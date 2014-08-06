@@ -7,8 +7,6 @@
 #include <fstream>
 #include <string>
 #include <boost/program_options.hpp>
-#include <boost/tokenizer.hpp>
-#include <boost/token_functions.hpp>
 #include <ltlvisit/tostring.hh>
 #include <ltlparse/public.hh>
 #include "propertytypeminer.h"
@@ -20,13 +18,11 @@
  * @param source input file to mine
  * @param use_map use map miner if true
  */
-void set_up_timed_mining(std::string form, std::string source, bool use_map,
-        bool allow_reps, bool pregen_instants) {
+void set_up_timed_mining(boost::program_options::variables_map opts_map) {
     clock_t begin, end;
     double time_spent;
     begin = clock();
-    texada::mine_property_type(form, source, use_map, allow_reps,
-            pregen_instants);
+    texada::mine_property_type(opts_map);
     end = clock();
     time_spent = (double) (end - begin) / CLOCKS_PER_SEC;
     std::cout << time_spent << "\n";
@@ -39,8 +35,7 @@ void set_up_timed_mining(std::string form, std::string source, bool use_map,
  * @param form property type to mine
  * @param use_map
  */
-void mine_on_increasing_events(std::string form, bool use_map, bool allow_reps,
-        bool pregen_instants) {
+void mine_on_increasing_events(boost::program_options::variables_map opts_map) {
     std::string trace_base = std::string(getenv("TEXADA_HOME"))
             + "/traces/vary-invs-fixed2/log-25000_invs-";
 
@@ -48,38 +43,27 @@ void mine_on_increasing_events(std::string form, bool use_map, bool allow_reps,
     // the number of unique events in the array below
     int unique_event_nums[] = { 5, 6, 7, 8, 9, 13, 16, 19, 22, 25, 28, 31, 34,
             37, 40, 43, 46, 50, 60, 70, 80 };
-    std::cout << form;
+    std::cout << opts_map["property_type"].as<std::string>();
     // output map trace cout if use_map. Just a shortedned if/else.
-    use_map ?
+    opts_map.count("map_trace") ?
             std::cout << ", map trace: \n" : std::cout << ", linear trace: \n";
 
     // go through the traces with unique event numbers given from the array
     // and output time
     for (int i = 0; i < (sizeof(unique_event_nums) / sizeof(int)); i++) {
         std::cout << unique_event_nums[i] << " ";
-        set_up_timed_mining(form,
-                trace_base + std::to_string(unique_event_nums[i] - 1) + ".txt",
-                use_map, allow_reps, pregen_instants);
+        //opts_map.emplace("log_file",trace_base + std::to_string(unique_event_nums[i] - 1) + ".txt");
+        set_up_timed_mining(opts_map);
 
     }
 }
+
 
 /**
  * Main method, runs Texada mining or timing tests depending on options.
  */
 int main(int ac, char* av[]) {
     try {
-        // input property type
-        std::string prop_type;
-        // log file source
-        std::string input_source;
-        // if true, use the map property type
-        bool use_map;
-        // if true, allow different formula variable to bind to same events
-        bool allow_reps = false;
-        // if true, use the pregen instant pool creator instead of the on-the-fly
-        // creator
-        bool pregen_instants = false;
 
         // setting up the program options
         // desc is the options description, i.e. all the allowed options
@@ -134,123 +118,42 @@ int main(int ac, char* av[]) {
             // Read the whole file into a string
             std::stringstream file_string_stream;
             file_string_stream << infile.rdbuf();
-            // Split the file content
-            boost::char_separator<char> seperator(" \n\r");
             std::string file_string = file_string_stream.str();
-            boost::tokenizer<boost::char_separator<char> > tok(file_string,
-                    seperator);
-            std::vector<std::string> quote_parsed_input;
-            //check for any quotes
-            bool inside_quotes = false;
-            bool ended_quote = true;
-            int quote_start_pos;
-            char quote_start_char;
-            for (boost::tokenizer<boost::char_separator<char> >::iterator it =
-                    tok.begin(); it != tok.end(); it++) {
-                if (inside_quotes == true) {
-                    if ((*it).find_first_of("\'\"") != std::string::npos) {
-                        if (it->at((*it).find_first_of("\'\""))!=quote_start_char){
-                            std::cerr << "Error: mismatched quotes. \n";
-                            return 1;
-                        }
-                        ended_quote = true;
-                        inside_quotes = false;
-                        std::string element = std::string(*it);
-                        quote_parsed_input[quote_start_pos] =
-                                quote_parsed_input[quote_start_pos] + " "
-                                        + element.substr(0,
-                                                (*it).find_first_of("\'\""));
-                    } else {
-                        quote_parsed_input[quote_start_pos] =
-                                quote_parsed_input[quote_start_pos] + " "
-                                        + (*it);
-                    }
-
-                } else if ((*it).find_first_of("\'\"") == 0) {
-                    if ((*it).find_last_of("\'\"") == (*it).length() - 1) {
-                        std::string first_element = std::string(*it);
-                        quote_parsed_input.push_back(
-                                first_element.substr(1, (*it).length() - 2));
-
-                    } else {
-                        inside_quotes = true;
-                        ended_quote = false;
-                        quote_start_char = it->at((*it).find_first_of("\'\""));
-                        quote_start_pos = quote_parsed_input.size();
-                        std::string first_element = std::string(*it);
-                        quote_parsed_input.push_back(first_element.substr(1));
-                    }
-                } else {
-                    quote_parsed_input.push_back(*it);
-                }
-            }
-            if (!ended_quote) {
-                std::cerr << "Error: missing \' or \". \n";
-                return 1;
-            }
-
-            std::vector<std::string> args;
-            // copy the options into args
-            std::copy(quote_parsed_input.begin(), quote_parsed_input.end(),
-                    back_inserter(args));
+            std::vector<std::string> args =texada::string_to_args(file_string);
             // Parse the file and store the options
             boost::program_options::store(
                     boost::program_options::command_line_parser(args).options(
                             desc).positional(pos_desc).run(), opts_map);
-            //   std::cout << opts_map["property_type"].as<std::string>() << "\n";
 
         }
 
-        if (!opts_map.count("map_trace") && !opts_map.count("linear_trace")) {
-            std::cerr << "Error: did not specify map or linear trace. \n";
+        // error if specified more than one or no trace type
+        if (!(opts_map.count("map_trace") xor opts_map.count("linear_trace"))) {
+            std::cerr << "Error: specify one trace type. \n";
             return 1;
         }
 
-        // if the user wanted to use map, we use map.
-        if (opts_map.count("map_trace"))
-            use_map = true;
-
-        if (opts_map.count("linear_trace"))
-            use_map = false;
-
-        // if the user allows same bindings, set allow_reps to true
-        if (opts_map.count("allow_same_bindings"))
-            allow_reps = true;
-
-        // set true if user wants to pregenerate instantiations
-        if (opts_map.count("pregen_instants"))
-            pregen_instants = true;
-
-        // places the inputed property type into the prop_type;
-        // returns with error if there is none
-        if (opts_map.count("property_type")) {
-            prop_type = opts_map["property_type"].as<std::string>();
-        } else {
+        // error if no property type
+        if (!opts_map.count("property_type")) {
             std::cerr << "Error: no inputted property type. \n";
             return 1;
         }
 
         // runs the timing on increasing unique events if specified
         if (opts_map.count("run_on_increasing_events")) {
-            mine_on_increasing_events(prop_type, use_map, allow_reps,pregen_instants);
+            mine_on_increasing_events(opts_map);
             return 0;
         }
 
-        // sets the log file source to input
-        if (opts_map.count("log_file")) {
-            input_source = opts_map["log_file"].as<std::string>();
-        } else {
+        // error if no log file
+        if (!opts_map.count("log_file")) {
             std::cerr << "Error: did not provide log file. \n";
             return 1;
         }
 
         // the set of valid instantiations
-        std::set<const spot::ltl::formula*> found_instants;
-
-        // put valid instantiations in the correct variable
-
-        found_instants = texada::mine_property_type(prop_type,
-                    input_source, use_map, allow_reps, pregen_instants);
+        std::set<const spot::ltl::formula*> found_instants =
+                texada::mine_property_type(opts_map);
 
         // print out all the valid instantiations as return
         for (std::set<const spot::ltl::formula*>::iterator it =

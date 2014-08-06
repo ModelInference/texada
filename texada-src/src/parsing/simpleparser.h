@@ -49,8 +49,10 @@ private:
 	bool has_been_parsed_map = false;
 
 };
-
+std::vector<std::string> string_to_args(std::string commands);
 }
+
+
 /* namespace texada */
 
 #endif /* SIMPLEPARSER_H_ */
