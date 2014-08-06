@@ -40,6 +40,7 @@ public:
     // getter for name
     string get_name();
     shared_ptr<prefix_tree_node> get_child(int);
+    shared_ptr<prefix_tree_node> get_nth_child(int);
     int num_children();
     bool is_terminal();
 private:
