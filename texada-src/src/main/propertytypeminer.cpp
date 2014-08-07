@@ -61,7 +61,7 @@ boost::program_options::variables_map set_options_from_string(string input_strin
  */
 set<const spot::ltl::formula*> mine_lin_property_type(string formula_string,
         string trace_source) {
-    return mine_property_type(set_options_from_string("-f " + formula_string + " -l " + trace_source));
+    return mine_property_type(set_options_from_string("-f '" + formula_string + "' -l " + trace_source));
 }
 
 /**
@@ -74,7 +74,7 @@ set<const spot::ltl::formula*> mine_lin_property_type(string formula_string,
  */
 set<const spot::ltl::formula*> mine_map_property_type(string formula_string,
         string trace_source) {
-    return mine_property_type(set_options_from_string("-f " + formula_string + " -m " + trace_source));
+    return mine_property_type(set_options_from_string("-f '" + formula_string + "' -m " + trace_source));
 }
 
 /**
