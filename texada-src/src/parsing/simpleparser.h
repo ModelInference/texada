@@ -9,6 +9,7 @@
 #define SIMPLEPARSER_H_
 
 #include "stringevent.h"
+#include "prefixtree.h"
 #include <set>
 #include <map>
 #include <vector>
@@ -33,6 +34,7 @@ public:
 	virtual ~simple_parser();
 	void parse_to_vector(std::ifstream &infile);
 	void parse_to_map(std::ifstream &infile);
+	void parse_to_pretrees(std::ifstream &infile);
 
 	shared_ptr<set<string>> return_events();
 
@@ -40,10 +42,13 @@ public:
 
 	shared_ptr<std::set<std::map<string_event, std::vector<long>> >> return_map_trace();
 
+	shared_ptr<prefix_tree> return_prefix_trees();
+
 private:
 	//rename to unique events
 	shared_ptr<set<vector<string_event> >> vector_trace_set;
 	shared_ptr<set<map<string_event, vector<long>>>> map_trace_set;
+	shared_ptr<prefix_tree> pre_tree_traces;
 	shared_ptr<set<string>>  unique_events;
 	bool has_been_parsed_vec = false;
 	bool has_been_parsed_map = false;
