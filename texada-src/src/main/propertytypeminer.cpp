@@ -34,7 +34,6 @@ namespace texada {
  */
 set<const spot::ltl::formula*> mine_lin_property_type(string formula_string,
         string trace_source) {
-
     return mine_property_type(formula_string, trace_source, false, false, false);
 }
 

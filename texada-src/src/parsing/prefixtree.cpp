@@ -35,6 +35,24 @@ shared_ptr<prefix_tree_node> prefix_tree::get_trace_start(int trace_id) {
 }
 
 /**
+ * Returns the first event of the trace with given start event
+ * @param first_event name of desired start event
+ * @return first event of the trace, NULL if no such trace
+ */
+shared_ptr<prefix_tree_node> prefix_tree::get_trace_start(string first_event) {
+    if (traces.empty()){
+        return NULL;
+    }
+    for (map<set<int>, shared_ptr<prefix_tree_node>>::iterator traces_it = traces.begin();
+            traces_it != traces.end(); traces_it++) {
+        if (traces_it->second->get_name() == first_event) {
+            return traces_it->second;
+        }
+    }
+    return NULL;
+}
+
+/**
  * Adds the trace(s) which start(s) with first_event
  * to this prefix tree
  * @param trace_ids trace_ids of traces beginning with first_event
@@ -42,6 +60,20 @@ shared_ptr<prefix_tree_node> prefix_tree::get_trace_start(int trace_id) {
  */
 void prefix_tree::add_trace(set<int> trace_ids, shared_ptr<prefix_tree_node> first_event) {
     traces.emplace(trace_ids, first_event);
+}
+
+void prefix_tree::add_id_to_trace(int trace_id, shared_ptr<prefix_tree_node> event){
+    for (map<set<int>, shared_ptr<prefix_tree_node>>::iterator traces_it = traces.begin();
+            traces_it != traces.end(); traces_it++) {
+        if (traces_it->second == event) {
+            event->add_id(trace_id);
+            set<int> newset(traces_it->first);
+            traces.erase(traces_it->first);
+            newset.insert(trace_id);
+            traces.emplace(newset,event);
+        }
+    }
+
 }
 
 int prefix_tree::get_num_traces() {
