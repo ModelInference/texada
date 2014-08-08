@@ -78,7 +78,7 @@ TEST(PropertyTypeMinerTest, STprecedesPafterQ) {
             "(G!y) | (!y U (y & Fx -> (!x U (a & !x & X(!x U z)))))",
             pel);
     const spot::ltl::formula * instanted_form = texada::instantiate(
-            orig_form, inst_map);
+            orig_form, inst_map, std::vector<std::string>());
 
     // check that the valid instantiations contain the one created above
     bool contains_instated_form = false;
@@ -143,7 +143,7 @@ std::array<bool, 8> set_up_perracotta_tests(std::string formula, bool use_map) {
     spot::ltl::parse_error_list pel;
     const spot::ltl::formula * parsed_form = spot::ltl::parse(formula, pel);
     const spot::ltl::formula * instanted_form = texada::instantiate(parsed_form,
-            xtoaytob);
+            xtoaytob, std::vector<std::string>());
     parsed_form->destroy();
 
     // mine the property type in response source, and check

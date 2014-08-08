@@ -58,7 +58,6 @@ void mine_on_increasing_events(boost::program_options::variables_map opts_map) {
     }
 }
 
-
 /**
  * Main method, runs Texada mining or timing tests depending on options.
  */
@@ -80,7 +79,10 @@ int main(int ac, char* av[]) {
                 "allow_same_bindings",
                 "allow different formula variables to be bound to the same events. By default, Texada does not check instantiations of this type.")(
                 "config_file,c", boost::program_options::value<std::string>(),
-                "specify file containing command line options. Any options entered directly to command line will override file options.");
+                "specify file containing command line options. Any options entered directly to command line will override file options.")(
+                "event,e",
+                boost::program_options::value<std::vector<std::string> >(),
+                "specify a variable in the formula to be interpreted as a constant event.");
 
         boost::program_options::positional_options_description pos_desc;
         pos_desc.add("log_file", 1);
@@ -119,7 +121,7 @@ int main(int ac, char* av[]) {
             std::stringstream file_string_stream;
             file_string_stream << infile.rdbuf();
             std::string file_string = file_string_stream.str();
-            std::vector<std::string> args =texada::string_to_args(file_string);
+            std::vector<std::string> args = texada::string_to_args(file_string);
             // Parse the file and store the options
             boost::program_options::store(
                     boost::program_options::command_line_parser(args).options(
