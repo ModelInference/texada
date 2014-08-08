@@ -156,7 +156,7 @@ int main(int ac, char* av[]) {
         // the set of valid instantiations
         std::set<const spot::ltl::formula*> found_instants =
                 texada::mine_property_type(opts_map);
-
+        std::cout << "ehy babebebssdbsfjk s\n";
         // print out all the valid instantiations as return
         for (std::set<const spot::ltl::formula*>::iterator it =
                 found_instants.begin(); it != found_instants.end(); it++) {

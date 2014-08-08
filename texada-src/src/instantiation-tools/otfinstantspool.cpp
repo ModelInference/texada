@@ -54,6 +54,7 @@ void otf_instants_pool::set_up_iteration_tracker() {
     // as the order in which the mappings are created.
     spot::ltl::atomic_prop_set::iterator form_vars_it = formula_vars->begin();
     for (int i = 0; i < form_vars_size; i++) {
+        std::cout << "Added to the storerthing.\n";
         iter_store insert;
         insert.mapto = events_it;
         const spot::ltl::atomic_prop * var = *form_vars_it;
@@ -71,7 +72,7 @@ void otf_instants_pool::set_up_iteration_tracker() {
  * @return
  */
 shared_ptr<map<string, string>> otf_instants_pool::get_next_instantiation() {
-
+    std::cout << traversal_var << " is something than " << pow(unique_events->size(), iteration_tracker.size()) << "\n";
     shared_ptr<map<string, string>> inst_map_at_pos = std::make_shared<
             map<string, string>>();
 
