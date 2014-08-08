@@ -48,7 +48,7 @@ private:
 
 public:
 	otf_instants_pool(shared_ptr<set<string>>  events,
-	        shared_ptr<spot::ltl::atomic_prop_set> ltlevents, bool allow_reps);
+	        shared_ptr<spot::ltl::atomic_prop_set> ltlevents, bool allow_reps, vector<string> exclude_events);
 	virtual ~otf_instants_pool();
 	vector<map<string, string>> return_valid_instants(const spot::ltl::formula * node,
 	        set<vector<string_event>>);

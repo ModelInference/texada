@@ -13,6 +13,8 @@
 #include <iostream>
 #include <exception>
 
+#include <ltlvisit/tostring.hh>
+
 namespace texada {
 
 /**
@@ -24,12 +26,13 @@ class ap_subbing_cloner: public spot::ltl::clone_visitor {
 private:
     // Maps each atomic proposition in the formula.
     std::map<std::string, std::string> replacement_map;
+    std::vector<std::string> dont_replace;
 
 public:
 
     //instantiates the replacement map with the one given
-    ap_subbing_cloner(std::map<std::string, std::string>& replacement_map_) :
-            replacement_map(replacement_map_) {
+    ap_subbing_cloner(std::map<std::string, std::string>& replacement_map_, std::vector<std::string>& not_replaced) :
+            replacement_map(replacement_map_), dont_replace(not_replaced) {
     }
     ;
     ~ap_subbing_cloner() {
@@ -46,12 +49,22 @@ public:
      */
     const spot::ltl::formula* rename(const spot::ltl::atomic_prop* toreplace) {
         try {
+            //std::cout<<  "entered rename for "<< toreplace->name()<< ".\n";
+            // if we've arrived at an atomic proposition which represents
+            // an event we don't want to replace, we don't replace it.
+            for (int i = 0; i < dont_replace.size(); i++){
+                if (toreplace->name() == dont_replace[i]){
+                    return toreplace->clone();
+                }
+            }
             std::string newname = replacement_map.at(toreplace->name());
-            return spot::ltl::default_environment::instance().require(newname);
+            //std::cout << "Replace " << toreplace->name() << " with " << newname << ".\n";
+            const spot::ltl::formula * form = spot::ltl::default_environment::instance().require(newname);
+            return form;
         } catch (std::exception &e) {
             std::cerr << "Mapping not found for " << toreplace->name() << ". "
                     << "Assuming no replacement desired. \n";
-            return toreplace;
+            return toreplace->clone();
         }
     }
 
@@ -63,6 +76,7 @@ public:
      * @param ap atomic proposition being visited
      */
     void visit(const spot::ltl::atomic_prop* ap) {
+        //std::cout << "Visiting atomic prop \n";
         result_ = rename(ap);
     }
 
@@ -76,10 +90,11 @@ public:
  * @return node with oldvars replaced with the corresponding newvars
  */
 const spot::ltl::formula* instantiate(const spot::ltl::formula *node,
-        std::map<std::string, std::string>& map) {
-    ap_subbing_cloner instantiator = ap_subbing_cloner(map);
-    const spot::ltl::formula* return_formula = instantiator.recurse(node);
-    return return_formula;
+        std::map<std::string, std::string>& map, std::vector<std::string> not_replaced) {
+    //std::cout << "Visiting instantiate.\n";
+    ap_subbing_cloner instantiator = ap_subbing_cloner(map,not_replaced);
+    //std::cout << "Insfjdlka \n";
+    return instantiator.recurse(node);
 }
 
 } /* namespace texada */

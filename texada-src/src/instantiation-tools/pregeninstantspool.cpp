@@ -16,8 +16,9 @@ namespace texada {
  * @param ltlevents set of atomic propositions to be replaced
  */
 pregen_instants_pool::pregen_instants_pool(shared_ptr<set<string>> events_,
-        shared_ptr<spot::ltl::atomic_prop_set> ltlevents, bool allow_reps) :
-        instants_pool_creator(events_, ltlevents, allow_reps) {
+        shared_ptr<spot::ltl::atomic_prop_set> ltlevents, bool allow_reps,
+        vector<string> exclude_events) :
+        instants_pool_creator(events_, ltlevents, allow_reps, exclude_events) {
     // We are creating a vector with the exact size required to store
     // all instantiations:
     // Each event can appear at each formula variable, so the total
@@ -26,7 +27,6 @@ pregen_instants_pool::pregen_instants_pool(shared_ptr<set<string>> events_,
     inst_pool = std::make_shared<vector<map<string, string>>>(
     vector<map<string, string>>(pow(unique_events->size(), formula_vars->size())));
     instantiate_array();
-
 
 }
 
