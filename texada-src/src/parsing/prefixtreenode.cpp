@@ -62,14 +62,15 @@ void prefix_tree_node::add_id(int trace_id){
 
 void prefix_tree_node::add_id_to_child(int trace_id, shared_ptr<prefix_tree_node> child){
     for (map<set<int>,shared_ptr<prefix_tree_node>>::iterator child_it = children.begin();
-            child_it != children.end(); child_it++){
+            child_it != children.end(); ){
         if (child_it->second == child){
             child->add_id(trace_id);
             set<int> new_set(child_it->first);
             new_set.insert(trace_id);
-            children.erase(child_it->first);
+            children.erase(child_it++);
             children.emplace(new_set,child);
         }
+        else child_it++;
     }
 
 }

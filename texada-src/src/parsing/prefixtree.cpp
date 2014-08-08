@@ -64,14 +64,14 @@ void prefix_tree::add_trace(set<int> trace_ids, shared_ptr<prefix_tree_node> fir
 
 void prefix_tree::add_id_to_trace(int trace_id, shared_ptr<prefix_tree_node> event){
     for (map<set<int>, shared_ptr<prefix_tree_node>>::iterator traces_it = traces.begin();
-            traces_it != traces.end(); traces_it++) {
+            traces_it != traces.end(); ) {
         if (traces_it->second == event) {
             event->add_id(trace_id);
             set<int> newset(traces_it->first);
-            traces.erase(traces_it->first);
+            traces.erase(traces_it++);
             newset.insert(trace_id);
             traces.emplace(newset,event);
-        }
+        } else traces_it++;
     }
 
 }
