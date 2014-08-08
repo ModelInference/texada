@@ -333,7 +333,6 @@ vector<map<string, string>> valid_instants_on_traces(
                 }
                 const spot::ltl::formula * instantiated_prop_type = instantiate(prop_type,*current_instantiation,
                         instantiator->get_events_to_exclude());
-                std::cout << "hello \n";
                 // is the instantiation valid?
                 bool valid = true;
                 for (set<vector<string_event>>::iterator traces_it = traces->begin();
@@ -344,7 +343,7 @@ vector<map<string, string>> valid_instants_on_traces(
                         break;
                     }
                 }
-                //instantiated_prop_type->destroy();
+                instantiated_prop_type->destroy();
                 if (valid) {
                     return_vec.push_back(*current_instantiation);
                 }
