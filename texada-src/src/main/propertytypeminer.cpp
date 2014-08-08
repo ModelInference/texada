@@ -26,27 +26,26 @@
 
 namespace texada {
 
-boost::program_options::variables_map set_options_from_string(string input_string){
+boost::program_options::variables_map set_options_from_string(
+        string input_string) {
     boost::program_options::options_description desc("Allowed options");
     desc.add_options()("property_type,f",
             boost::program_options::value<std::string>(),
             "property type to mine")("log_file",
-            boost::program_options::value<std::string>(),
-            "log file to mine on")(
+            boost::program_options::value<std::string>(), "log file to mine on")(
             "map_trace,m", "mine on a trace in the form of a map")(
             "linear_trace,l", "mine on a linear trace")("pregen_instants,p",
-            "pregenerate property type instantiations. ")(
-            "allow_same_bindings",
+            "pregenerate property type instantiations. ")("allow_same_bindings",
             "allow different formula variables to be bound to the same events.");
 
     boost::program_options::positional_options_description pos_desc;
     pos_desc.add("log_file", 1);
     boost::program_options::variables_map opts;
-    std::vector<std::string> args =texada::string_to_args(input_string);
+    std::vector<std::string> args = texada::string_to_args(input_string);
 
     boost::program_options::store(
-            boost::program_options::command_line_parser(args).options(
-                    desc).positional(pos_desc).run(), opts);
+            boost::program_options::command_line_parser(args).options(desc).positional(
+                    pos_desc).run(), opts);
 
     return opts;
 }
@@ -61,7 +60,9 @@ boost::program_options::variables_map set_options_from_string(string input_strin
  */
 set<const spot::ltl::formula*> mine_lin_property_type(string formula_string,
         string trace_source) {
-    return mine_property_type(set_options_from_string("-f '" + formula_string + "' -l " + trace_source));
+    return mine_property_type(
+            set_options_from_string(
+                    "-f '" + formula_string + "' -l " + trace_source));
 }
 
 /**
@@ -74,7 +75,9 @@ set<const spot::ltl::formula*> mine_lin_property_type(string formula_string,
  */
 set<const spot::ltl::formula*> mine_map_property_type(string formula_string,
         string trace_source) {
-    return mine_property_type(set_options_from_string("-f '" + formula_string + "' -m " + trace_source));
+    return mine_property_type(
+            set_options_from_string(
+                    "-f '" + formula_string + "' -m " + trace_source));
 }
 
 /**
@@ -86,51 +89,68 @@ set<const spot::ltl::formula*> mine_map_property_type(string formula_string,
  * @param use_map use map miner if true, linear miner otherwise
  * @return valid instantiations of the inputted formula on inputted trace set
  */
-set<const spot::ltl::formula*> mine_property_type(boost::program_options::variables_map opts) {
+set<const spot::ltl::formula*> mine_property_type(
+        boost::program_options::variables_map opts) {
+    // collect all relevant information from options
+    // what trace type to use. TODO: update for pre_tree when added
     bool use_map = opts.count("map_trace");
+    // whether to allow repetition in instantiations
     bool allow_reps = opts.count("allow_same_bindings");
+    // whether to pregenerate instantiations
     bool pregen_instants = opts.count("pregen_instants");
+    // the property type
     string prop_type = opts["property_type"].as<std::string>();
+    // trace source
     string trace_source = opts["log_file"].as<std::string>();
+
+    // if any constant events are specified in command line,
+    // take these into count
+    vector<string> specified_formula_events;
+    if (opts.count("event")) {
+        specified_formula_events = opts["event"].as<vector<string>>();
+    }
 
     //parse the ltl formula
     spot::ltl::parse_error_list parse_errs;
-    const spot::ltl::formula* formula = spot::ltl::parse(prop_type,
-            parse_errs);
+    const spot::ltl::formula* formula = spot::ltl::parse(prop_type, parse_errs);
     assert(parse_errs.size() == 0);
 
     // parse file
     std::ifstream infile(trace_source);
-    simple_parser * parser = new simple_parser();
+    simple_parser parser = simple_parser();
     shared_ptr<set<vector<string_event> >> vector_trace_set;
     shared_ptr<set<map<string_event, vector<long>>> > map_trace_set;
     if (use_map) {
-        parser->parse_to_map(infile);
-        map_trace_set = parser->return_map_trace();
+        parser.parse_to_map(infile);
+        map_trace_set = parser.return_map_trace();
 
     } else {
-        parser->parse_to_vector(infile);
-        vector_trace_set = parser->return_vec_trace();
+        parser.parse_to_vector(infile);
+        vector_trace_set = parser.return_vec_trace();
     }
 
-    shared_ptr<set<string>> event_set = parser->return_events();
-    //done parsing file, clean up parser
-    delete parser;
-    parser = NULL;
+    shared_ptr<set<string>> event_set = parser.return_events();
+    // if we don't want repetition and there are already events
+    // in the formula, we can just exclude them from the event set
+    // to start with
+    if (!allow_reps && (specified_formula_events.size() > 0)) {
+        for (int i = 0; i < specified_formula_events.size(); i++) {
+            event_set->erase(specified_formula_events.at(i));
+        }
+    }
 
     // create the set of formula's variables
-    shared_ptr<spot::ltl::atomic_prop_set> variables(spot::ltl::atomic_prop_collect(
-            formula));
+    shared_ptr<spot::ltl::atomic_prop_set> variables(
+            spot::ltl::atomic_prop_collect(formula));
     // create the instantiator
     instants_pool_creator * instantiator;
 
     if (pregen_instants) {
         instantiator = new pregen_instants_pool(event_set, variables,
-                allow_reps);
+                allow_reps, specified_formula_events);
     } else {
-        instantiator = new otf_instants_pool(event_set, variables, allow_reps);
+        instantiator = new otf_instants_pool(event_set, variables, allow_reps, specified_formula_events);
     }
-
 
     vector<map<string, string>> valid_instants;
     // check all valid instantiations on each trace
@@ -141,8 +161,6 @@ set<const spot::ltl::formula*> mine_property_type(boost::program_options::variab
         valid_instants = valid_instants_on_traces(formula, instantiator,
                 map_trace_set);
     }
-
-
 
     set<const spot::ltl::formula*> return_set;
 

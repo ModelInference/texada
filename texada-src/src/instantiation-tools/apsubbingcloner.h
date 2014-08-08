@@ -19,7 +19,7 @@
 
 namespace texada {
 
-const spot::ltl::formula* instantiate(const spot::ltl::formula*, std::map<std::string, std::string>&);
+const spot::ltl::formula* instantiate(const spot::ltl::formula*, std::map<std::string, std::string>&, std::vector<std::string> not_replaced = std::vector<std::string>());
 
 } /* namespace texada */
 

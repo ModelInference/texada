@@ -32,7 +32,7 @@ TEST(InstantiatorPoolCreatorTest,TwoBindingsThreeEvents) {
     // now create the event instantiator
 
     texada::pregen_instants_pool instantiator = texada::pregen_instants_pool(
-            events, formula_vars, true);
+            events, formula_vars, true,std::vector<std::string>());
 
     std::shared_ptr<std::vector<std::map<std::string, std::string>>>returned_array = instantiator.return_instantiations();
     //check that all expected mappings occur
@@ -77,7 +77,7 @@ TEST(InstantiatorPoolCreatorTest,CheckNoRepetition) {
     // now create the event instantiator
 
     texada::pregen_instants_pool instantiator = texada::pregen_instants_pool(
-            events, formula_vars, false);
+            events, formula_vars, false, std::vector<std::string>());
 
     std::shared_ptr<std::vector<std::map<std::string, std::string>>>returned_array = instantiator.return_instantiations();
     //check that all expected mappings occur
