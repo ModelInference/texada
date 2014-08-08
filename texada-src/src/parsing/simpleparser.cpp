@@ -27,7 +27,6 @@ simple_parser::~simple_parser() {
 /**
  * Parses the given file into a vector, fills the event set
  * @param filename
- * @return set of vector traces
  */
 void simple_parser::parse_to_vector(std::ifstream &infile) {
     unique_events->clear();
@@ -59,7 +58,6 @@ void simple_parser::parse_to_vector(std::ifstream &infile) {
 /**
  * Parses the given file into maps, fills the event set
  * @param filename
- * @return set of map traces
  */
 void simple_parser::parse_to_map(std::ifstream &infile) {
     unique_events->clear();
@@ -93,9 +91,8 @@ void simple_parser::parse_to_map(std::ifstream &infile) {
 }
 
 /**
- * Parses the given file into a vector, fills the event set
+ * Parses the given file into prefix trees, fills the event set
  * @param filename
- * @return set of vector traces
  */
 void simple_parser::parse_to_pretrees(std::ifstream &infile) {
     unique_events->clear();
@@ -210,6 +207,15 @@ shared_ptr<set<map<string_event, vector<long>>> > simple_parser::return_map_trac
         std::cerr << "Trace not parsed into map, returning empty set. \n";
         return map_trace_set;
     }
+}
+
+/**
+ * Returns the parsed prefix trees:
+ * TODO: guard
+ * @return
+ */
+shared_ptr<prefix_tree> simple_parser::return_prefix_trees(){
+    return pre_tree_traces;
 }
 
 
