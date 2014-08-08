@@ -53,6 +53,28 @@ void prefix_tree_node::add_child(shared_ptr<prefix_tree_node> child_to_add) {
 }
 
 /**
+ * Adds a given trace_id to this node.
+ * @param trace_id
+ */
+void prefix_tree_node::add_id(int trace_id){
+    trace_ids.insert(trace_id);
+}
+
+void prefix_tree_node::add_id_to_child(int trace_id, shared_ptr<prefix_tree_node> child){
+    for (map<set<int>,shared_ptr<prefix_tree_node>>::iterator child_it = children.begin();
+            child_it != children.end(); child_it++){
+        if (child_it->second == child){
+            child->add_id(trace_id);
+            set<int> new_set(child_it->first);
+            new_set.insert(trace_id);
+            children.erase(child_it->first);
+            children.emplace(new_set,child);
+        }
+    }
+
+}
+
+/**
  * Get the trace ids of this node
  * @return traces this node belongs to
  */
@@ -76,7 +98,25 @@ string prefix_tree_node::get_name() {
 shared_ptr<prefix_tree_node> prefix_tree_node::get_child(int trace_id) {
     for (map<set<int>,shared_ptr<prefix_tree_node>>::iterator kids_it= children.begin();
             kids_it != children.end(); kids_it++) {
+
         if (kids_it->first.find(trace_id) != kids_it->first.end()) {
+            return kids_it->second;
+        }
+    }
+    std::cout << "Did not find child. \n";
+    return NULL;
+
+}
+
+/**
+ * Get the event after this one with a certain name
+ * @param name name of event to find
+ * @return event with name name, NULL if no such event exists
+ */
+shared_ptr<prefix_tree_node> prefix_tree_node::get_child(string name) {
+    for (map<set<int>,shared_ptr<prefix_tree_node>>::iterator kids_it= children.begin();
+            kids_it != children.end(); kids_it++) {
+        if (kids_it->second->get_name() == name) {
             return kids_it->second;
         }
     }

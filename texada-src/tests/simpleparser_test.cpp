@@ -12,8 +12,8 @@ TEST(SimpleParserTest, SmallFile) {
 
     texada::simple_parser * parser = new texada::simple_parser;
     parser->parse_to_vector(infile);
-    std::shared_ptr<std::set<std::vector<texada::string_event> >> trace_set =
-            parser->return_vec_trace();
+    std::shared_ptr<std::set<std::vector<texada::string_event>>>trace_set =
+    parser->return_vec_trace();
     std::shared_ptr<std::set<std::string>> events = parser->return_events();
     delete parser;
     parser = NULL;
@@ -40,8 +40,8 @@ TEST(SimpleParserTest, MultipleTracesOneFile) {
     texada::simple_parser * parser = new texada::simple_parser;
 
     parser->parse_to_vector(infile);
-    std::shared_ptr<std::set<std::vector<texada::string_event> >> trace_set =
-            parser->return_vec_trace();
+    std::shared_ptr<std::set<std::vector<texada::string_event>>>trace_set =
+    parser->return_vec_trace();
 
     delete parser;
     parser = NULL;
@@ -61,8 +61,9 @@ TEST(SimpleParserTest, MapTraceSmallFile) {
                     + "/traces/vary-tracelen/smalltrace.txt");
     texada::simple_parser * parser = new texada::simple_parser;
     parser->parse_to_map(infile);
-    std::shared_ptr<std::set<std::map<texada::string_event, std::vector<long>> >> trace_set =
-            parser->return_map_trace();
+    std::shared_ptr<
+            std::set<std::map<texada::string_event, std::vector<long>>> >trace_set =
+    parser->return_map_trace();
     delete parser;
     parser = NULL;
 
@@ -85,8 +86,9 @@ TEST(SimpleParserTest, MapTraceLargeFile) {
 
     texada::simple_parser * parser = new texada::simple_parser;
     parser->parse_to_map(infile);
-    std::shared_ptr<std::set<std::map<texada::string_event, std::vector<long>> >> trace_set =
-            parser->return_map_trace();
+    std::shared_ptr<
+            std::set<std::map<texada::string_event, std::vector<long>>> >trace_set =
+    parser->return_map_trace();
     delete parser;
     parser = NULL;
 
@@ -96,5 +98,65 @@ TEST(SimpleParserTest, MapTraceLargeFile) {
         std::vector<long> end_vector = it->at(texada::string_event());
         ASSERT_EQ(end_vector[0], 250);
     }
+
+}
+
+TEST(SimpleParserTest, PreTreeTrace) {
+    std::ifstream infile(
+            std::string(getenv("TEXADA_HOME"))
+                    + "/traces/parsing-tests/simple-pre-tree.txt");
+
+    texada::simple_parser parser;
+    parser.parse_to_pretrees(infile);
+    std::shared_ptr<texada::prefix_tree> trace_set =
+            parser.return_prefix_trees();
+
+    ASSERT_TRUE(trace_set->get_trace_start("a") != NULL);
+    ASSERT_TRUE(trace_set->get_trace_start("a")->get_child("b") != NULL);
+
+    //trace1
+    ASSERT_EQ("a", trace_set->get_trace_start(1)->get_name());
+
+    ASSERT_EQ("b", trace_set->get_trace_start(1)->get_child(1)->get_name());
+    ASSERT_EQ("c",
+            trace_set->get_trace_start(1)->get_child(1)->get_child(1)->get_name());
+    ASSERT_EQ("d",
+            trace_set->get_trace_start(1)->get_child(1)->get_child(1)->get_child(
+                    1)->get_name());
+
+    //trace 2
+    ASSERT_EQ("a", trace_set->get_trace_start(2)->get_name());
+    ASSERT_EQ("b", trace_set->get_trace_start(2)->get_child(2)->get_name());
+
+    ASSERT_EQ("d",
+            trace_set->get_trace_start(2)->get_child(2)->get_child(2)->get_name());
+    ASSERT_EQ("e",
+            trace_set->get_trace_start(2)->get_child(2)->get_child(2)->get_child(
+                    2)->get_name());
+    //trace 3
+
+    ASSERT_EQ("a", trace_set->get_trace_start(3)->get_name());
+    ASSERT_EQ("c", trace_set->get_trace_start(3)->get_child(3)->get_name());
+    ASSERT_EQ("e",
+            trace_set->get_trace_start(3)->get_child(3)->get_child(3)->get_name());
+    ASSERT_EQ("e",
+            trace_set->get_trace_start(3)->get_child(3)->get_child(3)->get_child(
+                    3)->get_name());
+    ASSERT_EQ("f",
+            trace_set->get_trace_start(3)->get_child(3)->get_child(3)->get_child(
+                    3)->get_child(3)->get_name());
+
+    //trace 4
+    ASSERT_EQ("a", trace_set->get_trace_start(4)->get_name());
+    ASSERT_EQ("c", trace_set->get_trace_start(4)->get_child(4)->get_name());
+    ASSERT_EQ("e",
+            trace_set->get_trace_start(4)->get_child(4)->get_child(4)->get_name());
+    ASSERT_EQ("d",
+            trace_set->get_trace_start(4)->get_child(4)->get_child(4)->get_child(
+                    4)->get_name());
+    ASSERT_EQ("EndOfTraceVar",
+            trace_set->get_trace_start(4)->get_child(4)->get_child(4)->get_child(
+                    4)->get_child(4)->get_name());
+
 
 }

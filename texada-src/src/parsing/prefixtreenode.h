@@ -35,11 +35,16 @@ public:
     virtual ~prefix_tree_node();
     // adds a child
     void add_child(shared_ptr<prefix_tree_node>);
+    // adds a trace id to this node
+    void add_id(int);
+    // adds id to a child
+    void add_id_to_child(int, shared_ptr<prefix_tree_node>);
     // getter for trace_ids
     set<int> get_trace_ids();
     // getter for name
     string get_name();
     shared_ptr<prefix_tree_node> get_child(int);
+    shared_ptr<prefix_tree_node> get_child(string);
     shared_ptr<prefix_tree_node> get_nth_child(int);
     int num_children();
     bool is_terminal();
