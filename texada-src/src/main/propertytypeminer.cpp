@@ -142,7 +142,6 @@ set<const spot::ltl::formula*> mine_property_type(
     // create the set of formula's variables
     shared_ptr<spot::ltl::atomic_prop_set> variables(
             spot::ltl::atomic_prop_collect(formula));
-    std::cout << "Variables size: " << variables->size() << ".\n";
     // remove evnets from variables
     if (specified_formula_events.size() > 0) {
         for (spot::ltl::atomic_prop_set::iterator it = variables->begin();
@@ -154,7 +153,6 @@ set<const spot::ltl::formula*> mine_property_type(
             }
         }
     }
-    std::cout << "Variables size: " << variables->size() << ".\n";
     // create the instantiator
     instants_pool_creator * instantiator;
 
@@ -162,7 +160,6 @@ set<const spot::ltl::formula*> mine_property_type(
         instantiator = new pregen_instants_pool(event_set, variables,
                 allow_reps, specified_formula_events);
     } else {
-        std::cout << "Otf? \n";
         instantiator = new otf_instants_pool(event_set, variables, allow_reps,
                 specified_formula_events);
     }
@@ -178,13 +175,10 @@ set<const spot::ltl::formula*> mine_property_type(
     }
 
     set<const spot::ltl::formula*> return_set;
-    std::cout << "Here?\n";
     int valid_instants_size = valid_instants.size();
     for (int i = 0; i < valid_instants_size; i++) {
-        std::cout << "wut \n";
         for (map<string,string>::iterator it = valid_instants.at(valid_instants_size -1 -i).begin();
                 it != valid_instants.at(valid_instants_size -1 -i).end();it++){
-            std::cout << it->first << "->" << it->second << "\n";
         }
         const spot::ltl::formula * valid_form = instantiate(formula,
                 valid_instants.at(valid_instants_size -1 -i),specified_formula_events);

@@ -49,23 +49,22 @@ public:
      */
     const spot::ltl::formula* rename(const spot::ltl::atomic_prop* toreplace) {
         try {
-            std::cout<<  "entered rename for "<< toreplace->name()<< ".\n";
+            //std::cout<<  "entered rename for "<< toreplace->name()<< ".\n";
             // if we've arrived at an atomic proposition which represents
             // an event we don't want to replace, we don't replace it.
             for (int i = 0; i < dont_replace.size(); i++){
                 if (toreplace->name() == dont_replace[i]){
-                    std::cout << "Not replacing " << dont_replace[i] << "\n";
-                    return toreplace;
+                    return toreplace->clone();
                 }
             }
             std::string newname = replacement_map.at(toreplace->name());
-            std::cout << "Replace " << toreplace->name() << " with " << newname << ".\n";
+            //std::cout << "Replace " << toreplace->name() << " with " << newname << ".\n";
             const spot::ltl::formula * form = spot::ltl::default_environment::instance().require(newname);
             return form;
         } catch (std::exception &e) {
             std::cerr << "Mapping not found for " << toreplace->name() << ". "
                     << "Assuming no replacement desired. \n";
-            return toreplace;
+            return toreplace->clone();
         }
     }
 
@@ -77,7 +76,7 @@ public:
      * @param ap atomic proposition being visited
      */
     void visit(const spot::ltl::atomic_prop* ap) {
-        std::cout << "Visiting atomic prop \n";
+        //std::cout << "Visiting atomic prop \n";
         result_ = rename(ap);
     }
 
@@ -92,9 +91,9 @@ public:
  */
 const spot::ltl::formula* instantiate(const spot::ltl::formula *node,
         std::map<std::string, std::string>& map, std::vector<std::string> not_replaced) {
-    std::cout << "Visiting instantiate.\n";
+    //std::cout << "Visiting instantiate.\n";
     ap_subbing_cloner instantiator = ap_subbing_cloner(map,not_replaced);
-    std::cout << "Insfjdlka \n";
+    //std::cout << "Insfjdlka \n";
     return instantiator.recurse(node);
 }
 

@@ -47,7 +47,7 @@ TEST(AtomicPropositionSubbingClonerTest, SimpleTest){
  * specified as an event, not a variable
  */
 TEST(AtomicPropositionSubbingClonerTest, SimpleConstantEventTest){
-
+    std::cout << "hey";
     //creating instantiating map
     std::map<std::string, std::string> map = std::map<std::string, std::string>();
     map.insert(std::pair<std::string,std::string>("y","b"));
@@ -65,9 +65,12 @@ TEST(AtomicPropositionSubbingClonerTest, SimpleConstantEventTest){
     //checking ap subbing cloner
     const spot::ltl::formula* instantiatedf = texada::instantiate(f,map,dont_replace);
     ASSERT_EQ("G(x -> Fb)", to_string(instantiatedf));
+    std::cout << "hey";
     f->destroy();
     //TODO: why is this causing a segfault?
+
     instantiatedf->destroy();
 
 
 }
+
