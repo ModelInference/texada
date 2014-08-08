@@ -34,10 +34,43 @@ TEST(AtomicPropositionSubbingClonerTest, SimpleTest){
     ASSERT_EQ(input,spot::ltl::to_string(f));
 
     //checking ap subbing cloner
-    const spot::ltl::formula* instantiatedf = texada::instantiate(f,map);
+    const spot::ltl::formula* instantiatedf = texada::instantiate(f,map,std::vector<std::string>());
     ASSERT_EQ("G(a -> Fb)", to_string(instantiatedf));
     f->destroy();
     instantiatedf->destroy();
 
 
 }
+
+/**
+ * Test whether G(x -> Fy) is instantitated to G(x -> Fb) when x is
+ * specified as an event, not a variable
+ */
+TEST(AtomicPropositionSubbingClonerTest, SimpleConstantEventTest){
+    std::cout << "hey";
+    //creating instantiating map
+    std::map<std::string, std::string> map = std::map<std::string, std::string>();
+    map.insert(std::pair<std::string,std::string>("y","b"));
+
+    //parsing original formula...
+    std::string input = "G(x -> Fy)";
+    spot::ltl::parse_error_list pel;
+    const spot::ltl::formula* f = spot::ltl::parse(input, pel);
+    ASSERT_EQ(input,spot::ltl::to_string(f));
+
+    // add x to replace vector
+    std::vector<std::string> dont_replace;
+    dont_replace.push_back("x");
+
+    //checking ap subbing cloner
+    const spot::ltl::formula* instantiatedf = texada::instantiate(f,map,dont_replace);
+    ASSERT_EQ("G(x -> Fb)", to_string(instantiatedf));
+    std::cout << "hey";
+    f->destroy();
+    //TODO: why is this causing a segfault?
+
+    instantiatedf->destroy();
+
+
+}
+

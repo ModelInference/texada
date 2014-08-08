@@ -331,7 +331,8 @@ vector<map<string, string>> valid_instants_on_traces(
                 if (current_instantiation == NULL) {
                     break;
                 }
-                const spot::ltl::formula * instantiated_prop_type = instantiate(prop_type,*current_instantiation);
+                const spot::ltl::formula * instantiated_prop_type = instantiate(prop_type,*current_instantiation,
+                        instantiator->get_events_to_exclude());
                 // is the instantiation valid?
                 bool valid = true;
                 for (set<vector<string_event>>::iterator traces_it = traces->begin();

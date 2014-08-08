@@ -13,8 +13,9 @@
 namespace texada {
 
 otf_instants_pool::otf_instants_pool(shared_ptr<set<string>> events,
-        shared_ptr<spot::ltl::atomic_prop_set> ltlevents, bool allow_reps) :
-        instants_pool_creator(events, ltlevents, allow_reps) {
+        shared_ptr<spot::ltl::atomic_prop_set> ltlevents, bool allow_reps,
+        vector<string> exclude_events) :
+        instants_pool_creator(events, ltlevents, allow_reps, exclude_events) {
     set_up_iteration_tracker();
 
 }
@@ -39,7 +40,6 @@ void otf_instants_pool::set_up_iteration_tracker() {
 
     --events_it;
 
-
     // for each of the formula variables, we add an entry to the to the
     // iterator helper containing the formula variable, how often to switch
     // it,  and the second-to-last iterator.
@@ -63,7 +63,6 @@ void otf_instants_pool::set_up_iteration_tracker() {
         form_vars_it++;
     }
 
-
 }
 
 /**
@@ -72,7 +71,6 @@ void otf_instants_pool::set_up_iteration_tracker() {
  * @return
  */
 shared_ptr<map<string, string>> otf_instants_pool::get_next_instantiation() {
-
     shared_ptr<map<string, string>> inst_map_at_pos = std::make_shared<
             map<string, string>>();
 
