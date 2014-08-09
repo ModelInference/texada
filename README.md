@@ -12,21 +12,16 @@ Texada is developed in C++. The rest of this page describes the steps to get Tex
 
 ### Directory Structure
 
-      Texada -- top level directory in which repo is stored, contains makefile
-         /texada-src -- contains all source code and generated .o, .d files
-            /bin  -- created by makefile, contains .o, .d files
-               /src -- contains src objects
-                  /checkers
-                  /instantiation-tools
-                  /main 
-                  /parsing
-               /tests -- contains test objects
-            /src -- source code for main project
-               /checkers -- code for checkers, which traverse traces and formulae to check that those formulae (instantiated prop. types) hold on trace
-               /instantiation-tools -- tools to create all permutations of events for instantiations, to instantiate a SPOT formula
-               /main -- contains main and main mining functions
-               /parsing -- code for trace parsing 
-            /tests -- main project tests
+* Texada -- top level directory in which repo is stored, contains makefile
+    * /texada-src -- contains all source code and generated .o, .d files
+        * /bin  -- created by makefile, contains .o, .d files
+        * /src -- source code for main project
+            * /checkers -- code for checkers, which traverse traces and formulae to check that those formulae (instantiated prop. types) hold on trace
+            * /instantiation-tools -- tools to create all permutations of events for instantiations, to instantiate a SPOT formula
+            * /main -- contains main and main mining functions
+            * /parsing -- code for trace parsing 
+        * /tests -- main project tests
+
 
 ### Required libraries
 
