@@ -1,14 +1,16 @@
 # Introduction
 
-Texada is a research tool designed for extracting patterns from text data. Specifically, Texada is designed for mining specifications from program executions. To use Texada you need to provide it with at least the following two inputs:
+Texada is a research tool designed for extracting patterns from text data. Specifically, Texada mines temporal relations from totally-ordered sequences of events. To use Texada you need to provide it with at least the following two inputs:
 
 1. A user-defined linear temporal logic ([LTL](http://en.wikipedia.org/wiki/Linear_temporal_logic)) formula whose atomic propositions are variables. We call this a property type.
 
-2. A text file containing multiple program executions, each of which is composed of a totally ordered sequence of events. We call this a log.
+2. A text file containing multiple traces, each of which is composed of a totally ordered sequence of events. We call this a log.
 
-Texada's output is a set of LTL formulae that are instantiations of the input property type. That is, in an instantiation, the variable atomic propositions are replaced with events from the log. The output set of formulae all satisfy the input set of executions in the log. That is, each formula evaluates to true over each of the executions.
+Texada's output is a set of LTL formulae that are instantiations of the input property type. That is, in an instantiation, the variable atomic propositions are replaced with events from the log. Each formula in the output satisfies all of the input traces in the input log. That is, each formula evaluates to true over each of the traces.
 
-Texada is developed in C++. The rest of this page describes the steps to get Texada working from a newly cloned repository.
+As an example, consider the LTL property type that encodes the "x always followed by y" temporal relation between "x" and "y": G(x => F(y)). This property states that whenever an event of type "x" appears in a trace, it must be followed in the same trace by an event of type "y". Given an input log with two traces: "a,b,a,b,c" and "c,a,b,b", then Texada will output the following two property instantiations: G(a => F(b)), G(b => F(b)). That is, in the input two traces "a always followed by b" and "b always followed by b".
+
+Texada is developed in C++. The rest of this page describes the steps to get Texada working from a freshly cloned repository. Texada has been tested on Linux and OSX.
 
 ### Directory Structure
 
@@ -25,13 +27,13 @@ Texada is developed in C++. The rest of this page describes the steps to get Tex
 
 ### Required libraries
 
-Texada depends on a few non standard libraries, [Google Test](https://code.google.com/p/googletest/), [SPOT](http://spot.lip6.fr/wiki/GetSpot), and [Boost](http://www.boost.org/). Note that SPOT itself also depends on Boost. 
+Texada depends on a few non-standard libraries, [Google Test](https://code.google.com/p/googletest/), [SPOT](http://spot.lip6.fr/wiki/GetSpot), and [Boost](http://www.boost.org/). Note that SPOT itself also depends on Boost. 
 
 #### Google Test
 
 Google test can be downloaded [here](http://code.google.com/p/googletest/). To integrate with Texada, the location of Google Test headers and libraries will need to be inputted to uservars.mk (see "Building the project" below), so unpack and build Google Test in a logical place.
 
-#####If using Eclipse:
+##### If using Eclipse:
 
 Google Test can be used in Eclipse if the C/C++ Unit Testing Support item, which can be installed along with the CDT. To install the CDT and Unit Testing Support, add the website http://download.eclipse.org/tools/cdt/releases/youreclipseversion to the Help->Install New Software... dialogue, with youreclipseversion replaced by your eclipse version (e.g. Kepler). The C/C++ Unit Testing Support can then be installed under CDT Optional Features.
 
