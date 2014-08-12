@@ -31,23 +31,35 @@ Texada depends on a few non-standard libraries, [Google Test](https://code.googl
 
 #### Google Test
 
-Google test can be downloaded [here](http://code.google.com/p/googletest/). To integrate with Texada, the location of Google Test headers and libraries will need to be inputted to uservars.mk (see "Building the project" below), so unpack and build Google Test in a logical place.
+Download Google Test [here](http://code.google.com/p/googletest/), and follow the instructions on the website to build it. 
+
+To integrate with Texada, the location of Google Test headers and libraries will need to be inputted to uservars.mk (see "Building the project" below), so make note of where Google Test is being extracted and built.
 
 ##### If using Eclipse:
 
-Google Test can be used in Eclipse if the C/C++ Unit Testing Support item, which can be installed along with the CDT. To install the CDT and Unit Testing Support, add the website http://download.eclipse.org/tools/cdt/releases/youreclipseversion to the Help->Install New Software... dialogue, with youreclipseversion replaced by your eclipse version (e.g. Kepler). The C/C++ Unit Testing Support can then be installed under CDT Optional Features.
+Google Test can be used in Eclipse if the C/C++ Unit Testing Support item has been installed, which can be done along with the CDT installation. To install the CDT and Unit Testing Support, add the website http://download.eclipse.org/tools/cdt/releases/youreclipseversion to the Help->Install New Software... dialogue, with youreclipseversion replaced by your eclipse version (e.g. Kepler). The C/C++ Unit Testing Support can then be installed under CDT Optional Features.
 
 To create a test, create a new Runner using 'Run As -> Run Configurations -> C/C++ Unit Test. Choose 'Google Tests Runner' for 'Tests Runner' in the 'C/C++ Testing' tab. In the 'Main' tab, enter texadatest as the C/C++ Application and click 'Use workspace settings' in the 'Build (if required) before launching' section.
 
+#### Boost
+
+Download Boost [here](http://www.boost.org/doc/libs/1_56_0/more/getting_started/unix-variants.html) (for *nix machines) or [here](http://www.boost.org/doc/libs/1_56_0/more/getting_started/windows.html) (for Windows machines), and follow the instructions on the website to install it. Note that Texada depends on the non-header library, ProgramOptions, which needs to be built separately (see "5. Prepare to Use a Boost Library Binary" on the Boost website).
+
+To integrate with Texada, the location of Boost headers will need to be inputted to uservars.mk (see "Building the project" below), so make note of where it is being extracted.
+
+Texada uses boost_program_options and not boost_program_options-mt. An older installation of Boost may only have the -mt version. 
+
 #### SPOT
 
-To install SPOT, navigate to the link above and download the tar.gz file. Extract the file with:
+Download SPOT [here](http://spot.lip6.fr/wiki/GetSpot), and extract the file with:
 
     tar -zxvf spot-version.tar.gz
 
-You will need to provide the location of SPOT headers to uservars.mk, so make sure to extract to a logical place. Note that SPOT requires the installation of the [Boost](http://www.boost.org/) libraries. Its full functionality requires Python 2.0+ headers, but if these are not already installed, they can be omitted for the purposes of Texada. 
+To integrate with Texada, the location of SPOT headers will need to be inputted to uservars.mk (see "Building the project" below), so make note of where it is being extracted. 
 
-Navigate to the extracted SPOT folder and run these commands to install SPOT:
+Note that SPOT requires the installation of the [Boost](http://www.boost.org/) libraries. Its full functionality requires Python 2.0+ headers, but if these are not already installed, they can be omitted for the purposes of Texada. 
+
+To install SPOT, navigate to the extracted SPOT folder and run these commands:
 
     ./configure (or ./configure --disable-python if Python is not installed)
     make
@@ -55,14 +67,6 @@ Navigate to the extracted SPOT folder and run these commands to install SPOT:
     make install
 
 make install should place library files in a logical place for your OS. 
-
-#### Boost
-
-The boost program_options library is used by Texada. You can install Boost [here](http://www.boost.org/doc/libs/1_55_0/more/getting_started/index.html). Texada will require the location of Boost header files to run.
-
-Texada depends on one non-header only library, ProgramOptions. This will need to be built seperately according the Boost's instructions. 
-
-Texada uses boost_program_options and not boost_program_options-mt. An older installation of Boost may only have the -mt version. 
 
 ### Cloning project
 
@@ -82,12 +86,12 @@ To run tests and the runtime comparision option from command line, you must defi
 In the top-level Texada directory, where the makefile exists, there is a file called uservars.mk.example. Rename it to uservars.mk.  In this file, provide the correct values for the following five variables:
 
     SPOT_LIB: the location of the spot library
-    SPOT_INCL: the location of pot header files 
+    SPOT_INCL: the location of spot header files 
     GTEST_LIB: the location of gtest and gtest_main libraries
     GTEST_INCL: the location of google test header files
     BOOST_INCL: the location of Boost header files
 
-SPOT\_LIB will probably point to /pathtospot/spot/src/.libs if that is where libspot.a is. On a ubuntu machine, SPOT\_INCL will likely point to /usr/local/include/spot. The GTest libraries will be located wherever you built GTest and the GTest headers should be in /pathtogtest/gtest/include (GTEST_INCL should point there). BOOST_INCL may point to /usr/include/boost on a Ubunutu Machine
+SPOT\_LIB will probably point to /pathtospot/spot/src/.libs if that is where libspot.a is. On a ubuntu machine, SPOT\_INCL will likely point to /usr/local/include/spot. The GTest libraries will be located wherever you built GTest and the GTest headers should be in /pathtogtest/gtest/include (GTEST_INCL should point there). BOOST_INCL may point to /usr/include/boost on a Ubunutu Machine; otherwise the Boost header files can be found in /pathtoboost/boost_1_56_5/boost.
 
 If building from shell, simply type the *make* command in the top-level directory.
 
