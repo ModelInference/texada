@@ -173,10 +173,10 @@ TEST(PrefixTreeCheckerTets, TestSimpleTree){
 
     texada::prefix_tree_checker checker;
 
-    ASSERT_TRUE(checker.check(afby_form, all_traces->get_trace_start(0), 0));
-    ASSERT_TRUE(checker.check(afby_form, all_traces->get_trace_start(1), 1));
-    ASSERT_FALSE(checker.check(afby_form, all_traces->get_trace_start(2), 2));
-    ASSERT_FALSE(checker.check(afby_form, all_traces->get_trace_start(3), 3));
+    ASSERT_TRUE(checker.check_on_single_trace(afby_form, all_traces->get_trace_start(0), 0));
+    ASSERT_TRUE(checker.check_on_single_trace(afby_form, all_traces->get_trace_start(1), 1));
+    ASSERT_FALSE(checker.check_on_single_trace(afby_form, all_traces->get_trace_start(2), 2));
+    ASSERT_FALSE(checker.check_on_single_trace(afby_form, all_traces->get_trace_start(3), 3));
 
     afby_form->destroy();
 

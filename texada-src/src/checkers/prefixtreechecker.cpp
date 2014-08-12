@@ -7,6 +7,7 @@
 
 #include "prefixtreechecker.h"
 
+
 namespace texada {
 
 prefix_tree_checker::prefix_tree_checker() {
@@ -18,32 +19,6 @@ prefix_tree_checker::~prefix_tree_checker() {
     // TODO Auto-generated destructor stub
 }
 
-bool prefix_tree_checker::check_on_tree(const spot::ltl::formula* form_node, shared_ptr<prefix_tree_node> trace_node){
-    // stub in the 1 there
-    // commence traversal of tree through one trace
-    bool is_formula_valid = check(form_node,trace_node,1);
-    // if it was false on a trace, it's false overall
-    if (!is_formula_valid){
-        return is_formula_valid;
-    }
-    // Perform DFS is the formula was true on the first trace
-    while (!bps_to_visit.empty()){
-        // get the pointer to the last branch point we saw
-        shared_ptr<prefix_tree_node> bp_to_visit = bps_to_visit.back().node;
-        // which num child to visit; we want to visit the
-        // next branch, so increment by 1.
-        int child_to_visit = ++bps_to_visit.back().branches_visited;
-        // if we're visiting the last branch, we can remove this point from
-        // the branch points to visit
-        if (child_to_visit >= bp_to_visit->num_children()){
-            bps_to_visit.pop_back();
-        }
-        // visit the (child_to_visit)th child. visiting with check on tree to get
-        is_formula_valid = check_on_tree(form_node,bp_to_visit->get_nth_child(child_to_visit));
-    }
-    //stub
-    return false;
-}
 
 /**
  * Since SPOT's visitor only takes in one parameter (the formula), the accept functionality
@@ -53,22 +28,22 @@ bool prefix_tree_checker::check_on_tree(const spot::ltl::formula* form_node, sha
  * @param trace: pointer to the start of the trace
  * @return whether node holds on trace
  */
-bool prefix_tree_checker::check(const spot::ltl::formula* form_node, shared_ptr<prefix_tree_node> trace_node, int id) {
+bool prefix_tree_checker::check_on_single_trace(const spot::ltl::formula* form_node, shared_ptr<prefix_tree_node> trace_node, int id) {
     switch (form_node->kind()) {
     case spot::ltl::formula::Constant:
-        return check(static_cast<const spot::ltl::constant*>(form_node), trace_node, id);
+        return check_on_single_trace(static_cast<const spot::ltl::constant*>(form_node), trace_node, id);
     case spot::ltl::formula::AtomicProp:
-        return check(static_cast<const spot::ltl::atomic_prop*>(form_node), trace_node,id);
+        return check_on_single_trace(static_cast<const spot::ltl::atomic_prop*>(form_node), trace_node,id);
     case spot::ltl::formula::UnOp:
-        return check(static_cast<const spot::ltl::unop*>(form_node), trace_node, id);
+        return check_on_single_trace(static_cast<const spot::ltl::unop*>(form_node), trace_node, id);
     case spot::ltl::formula::BinOp:
-        return check(static_cast<const spot::ltl::binop*>(form_node), trace_node, id);
+        return check_on_single_trace(static_cast<const spot::ltl::binop*>(form_node), trace_node, id);
     case spot::ltl::formula::MultOp:
-        return check(static_cast<const spot::ltl::multop*>(form_node), trace_node, id);
+        return check_on_single_trace(static_cast<const spot::ltl::multop*>(form_node), trace_node, id);
     case spot::ltl::formula::BUnOp:
-        return check(static_cast<const spot::ltl::bunop*>(form_node));
+        return check_on_single_trace(static_cast<const spot::ltl::bunop*>(form_node));
     case spot::ltl::formula::AutomatOp:
-        return check(static_cast<const spot::ltl::automatop*>(form_node));
+        return check_on_single_trace(static_cast<const spot::ltl::automatop*>(form_node));
     default:
         return false;
     }
@@ -80,7 +55,7 @@ bool prefix_tree_checker::check(const spot::ltl::formula* form_node, shared_ptr<
  * @param trace: pointer to the start of the trace
  * @return whether node holds on trace
  */
-inline bool prefix_tree_checker::check(const spot::ltl::atomic_prop *form_node, shared_ptr<prefix_tree_node> trace_node, int id) {
+inline bool prefix_tree_checker::check_on_single_trace(const spot::ltl::atomic_prop *form_node, shared_ptr<prefix_tree_node> trace_node, int id) {
     return (trace_node->get_name() == form_node->name()) ? true : false;
 }
 
@@ -92,7 +67,7 @@ inline bool prefix_tree_checker::check(const spot::ltl::atomic_prop *form_node, 
  * @param trace: pointer to the start of the trace
  * @return whether node holds on trace
  */
-bool prefix_tree_checker::check(const spot::ltl::constant *form_node, shared_ptr<prefix_tree_node> trace_node, int id ){
+bool prefix_tree_checker::check_on_single_trace(const spot::ltl::constant *form_node, shared_ptr<prefix_tree_node> trace_node, int id ){
     spot::ltl::constant::type value = form_node->val();
     switch (value) {
     case spot::ltl::constant::True:
@@ -122,7 +97,7 @@ bool prefix_tree_checker::check(const spot::ltl::constant *form_node, shared_ptr
  * @param trace: pointer to the start of the trace
  * @return whether node holds on trace
  */
-bool prefix_tree_checker::check(const spot::ltl::binop *form_node, shared_ptr<prefix_tree_node> trace_node, int id) {
+bool prefix_tree_checker::check_on_single_trace(const spot::ltl::binop *form_node, shared_ptr<prefix_tree_node> trace_node, int id) {
     spot::ltl::binop::type opkind = form_node->op();
 
     switch (opkind) {
@@ -130,19 +105,19 @@ bool prefix_tree_checker::check(const spot::ltl::binop *form_node, shared_ptr<pr
     //XOR case: if first is true, return true if second is false,
     //if first is false, return true if second is true.
     case spot::ltl::binop::Xor:
-        return (check(form_node->first(), trace_node, id)) ?
-                !(check(form_node->second(), trace_node, id)) : check(form_node->second(), trace_node,id);
+        return (check_on_single_trace(form_node->first(), trace_node, id)) ?
+                !(check_on_single_trace(form_node->second(), trace_node, id)) : check_on_single_trace(form_node->second(), trace_node,id);
 
         //Implies case: if first is true, return true if second is true,
         //if first is false, return true.
     case spot::ltl::binop::Implies:
-        return check(form_node->first(), trace_node, id) ? check(form_node->second(), trace_node, id) : true;
+        return check_on_single_trace(form_node->first(), trace_node, id) ? check_on_single_trace(form_node->second(), trace_node, id) : true;
 
         //Equiv case: if first is true, return true if second is true,
         //if first is false, return true if second is false.
     case spot::ltl::binop::Equiv:
-        return check(form_node->first(), trace_node, id) ?
-                check(form_node->second(), trace_node, id) : !check(form_node->second(), trace_node, id);
+        return check_on_single_trace(form_node->first(), trace_node, id) ?
+                check_on_single_trace(form_node->second(), trace_node, id) : !check_on_single_trace(form_node->second(), trace_node, id);
 
         //Until case
     case spot::ltl::binop::U:
@@ -152,16 +127,16 @@ bool prefix_tree_checker::check(const spot::ltl::binop *form_node, shared_ptr<pr
         }
         // if the second condition is satisfied and we have gotten here,
         // the first condition held all the way up here, so true
-        else if (check(form_node->second(), trace_node, id)) {
+        else if (check_on_single_trace(form_node->second(), trace_node, id)) {
             return true;
         }
         // if the first condition does not hold before the second, false
-        else if (!check(form_node->first(), trace_node, id)) {
+        else if (!check_on_single_trace(form_node->first(), trace_node, id)) {
             return false;
         }
         // if the first condition holds, check on the next suffix trace
         else {
-            return check(form_node, trace_node->get_child(id), id);
+            return check_on_single_trace(form_node, trace_node->get_child(id), id);
         }
 
         //Release case
@@ -172,17 +147,17 @@ bool prefix_tree_checker::check(const spot::ltl::binop *form_node, shared_ptr<pr
         }
         // if the f & s is satisfied and we have gotten here,
         // the second condition held all the way up here, so true
-        else if (check(form_node->second(), trace_node, id) && check(form_node->first(), trace_node, id)) {
+        else if (check_on_single_trace(form_node->second(), trace_node, id) && check_on_single_trace(form_node->first(), trace_node, id)) {
             return true;
         }
 
         // if the second condition does not hold before f & s, false
-        else if (!check(form_node->second(), trace_node, id)) {
+        else if (!check_on_single_trace(form_node->second(), trace_node, id)) {
             return false;
         }
         // if the second condition holds, check on the next suffix trace
         else {
-            return check(form_node, trace_node->get_child(id), id);
+            return check_on_single_trace(form_node, trace_node->get_child(id), id);
         }
 
         //Weak until case: identical to until except base case
@@ -193,16 +168,16 @@ bool prefix_tree_checker::check(const spot::ltl::binop *form_node, shared_ptr<pr
         }
         // if the second condition is satisfied and we have gotten here,
         // the first condition held all the way up here, so true
-        else if (check(form_node->second(), trace_node, id)) {
+        else if (check_on_single_trace(form_node->second(), trace_node, id)) {
             return true;
         }
         // if the first condition does not hold before the second, false
-        else if (!check(form_node->first(), trace_node, id)) {
+        else if (!check_on_single_trace(form_node->first(), trace_node, id)) {
             return false;
         }
         // if the first condition holds, check on the next suffix trace
         else {
-            return check(form_node, trace_node->get_child(id), id);
+            return check_on_single_trace(form_node, trace_node->get_child(id), id);
         }
 
     default:
@@ -223,7 +198,7 @@ bool prefix_tree_checker::check(const spot::ltl::binop *form_node, shared_ptr<pr
  * @param trace: pointer to the start of the trace
  * @return whether node holds on trace
  */
-bool prefix_tree_checker::check(const spot::ltl::unop *form_node, shared_ptr<prefix_tree_node> trace_node, int id) {
+bool prefix_tree_checker::check_on_single_trace(const spot::ltl::unop *form_node, shared_ptr<prefix_tree_node> trace_node, int id) {
 
     spot::ltl::unop::type optype = form_node->op();
 
@@ -239,7 +214,7 @@ bool prefix_tree_checker::check(const spot::ltl::unop *form_node, shared_ptr<pre
         } else {
             //Return whether subformula is true on this trace, recursive check on
             // all subsequent traces.
-            return check(form_node->child(), trace_node, id) && check(form_node, trace_node->get_child(id), id);
+            return check_on_single_trace(form_node->child(), trace_node, id) && check_on_single_trace(form_node, trace_node->get_child(id), id);
         }
 
         // Finally case
@@ -250,7 +225,7 @@ bool prefix_tree_checker::check(const spot::ltl::unop *form_node, shared_ptr<pre
         } else {
             //Return whether subformula is true on this trace, recursive check on
             // all subsequent traces.
-            return check(form_node->child(), trace_node, id) || check(form_node, trace_node->get_child(id), id);
+            return check_on_single_trace(form_node->child(), trace_node, id) || check_on_single_trace(form_node, trace_node->get_child(id), id);
         }
 
         // Next case
@@ -266,13 +241,13 @@ bool prefix_tree_checker::check(const spot::ltl::unop *form_node, shared_ptr<pre
         // if node->child() or any subsequent child is X, we enter the base case
         // below, remaining in the array.
         if (trace_node->is_terminal()) {
-            return check(form_node->child(), trace_node, id);
+            return check_on_single_trace(form_node->child(), trace_node, id);
         }
-        return check(form_node->child(), trace_node->get_child(id), id);
+        return check_on_single_trace(form_node->child(), trace_node->get_child(id), id);
 
         // Not case
     case spot::ltl::unop::Not:
-        return !check(form_node->child(), trace_node, id);
+        return !check_on_single_trace(form_node->child(), trace_node, id);
 
         // Other operators are not LTL, don't support them
     default:
@@ -291,7 +266,7 @@ bool prefix_tree_checker::check(const spot::ltl::unop *form_node, shared_ptr<pre
  * @param trace: pointer to the start of the trace
  * @return whether node holds on the trace
  */
-bool prefix_tree_checker::check(const spot::ltl::multop* form_node, shared_ptr<prefix_tree_node> trace_node, int id) {
+bool prefix_tree_checker::check_on_single_trace(const spot::ltl::multop* form_node, shared_ptr<prefix_tree_node> trace_node, int id) {
     spot::ltl::multop::type opkind = form_node->op();
 
     switch (opkind) {
@@ -303,7 +278,7 @@ bool prefix_tree_checker::check(const spot::ltl::multop* form_node, shared_ptr<p
         // end of the loop, then none of the children were true and we return
         // false.
         for (int i = 0; i < numkids; i++) {
-            if (check(form_node->nth(i), trace_node, id)) {
+            if (check_on_single_trace(form_node->nth(i), trace_node, id)) {
                 return true;
             }
         }
@@ -316,7 +291,7 @@ bool prefix_tree_checker::check(const spot::ltl::multop* form_node, shared_ptr<p
         // end of the loop, then none of the children were false and we return
         // true.
         for (int i = 0; i < numkids; i++) {
-            if (!check(form_node->nth(i), trace_node, id)) {
+            if (!check_on_single_trace(form_node->nth(i), trace_node, id)) {
                 return false;
             }
         }
@@ -328,6 +303,37 @@ bool prefix_tree_checker::check(const spot::ltl::multop* form_node, shared_ptr<p
 
     }
 
+}
+
+
+/**
+ * Gets the next node if this is a prefix tree node.
+ * @param current_node
+ * @return
+ */
+linear_trace_checker::trace_node prefix_tree_checker::get_next_event(const trace_node current_node){
+    trace_node return_node;
+    // TODO: stub for version w/o memoization
+    get<shared_ptr<prefix_tree_node>>(return_node) = get<shared_ptr<prefix_tree_node>>(current_node)->get_child(1);
+    return return_node;
+}
+
+/**
+ * Returns true if the current node is terminal
+ * @param current_node current position in trace
+ * @return is this a terminal event
+ */
+bool prefix_tree_checker::is_terminal(const trace_node current_node){
+    return get<const string_event*>(current_node)->is_terminal();
+}
+
+/**
+ * Returns name of the current event
+ * @param current_node current position in trace
+ * @return is this a terminal event
+ */
+string prefix_tree_checker::event_name(const trace_node current_node){
+    return get<const string_event*>(current_node)->get_name();
 }
 
 } /* namespace texada */
