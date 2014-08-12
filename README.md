@@ -31,7 +31,7 @@ Texada depends on a few non-standard libraries, [Google Test](https://code.googl
 
 #### Google Test
 
-Download Google Test [here](http://code.google.com/p/googletest/), and follow the instructions on the website to build it. 
+Google Test can be downloaded [here](http://code.google.com/p/googletest/). Follow the instructions on the website to build it. 
 
 To integrate with Texada, the location of Google Test headers and libraries will need to be inputted to uservars.mk (see "Building the project" below), so make note of where Google Test is being extracted and built.
 
@@ -43,7 +43,7 @@ To create a test, create a new Runner using 'Run As -> Run Configurations -> C/C
 
 #### Boost
 
-Download Boost [here](http://www.boost.org/doc/libs/1_56_0/more/getting_started/unix-variants.html) (for *nix machines) or [here](http://www.boost.org/doc/libs/1_56_0/more/getting_started/windows.html) (for Windows machines), and follow the instructions on the website to install it. Note that Texada depends on the non-header library, ProgramOptions, which needs to be built separately (see "5. Prepare to Use a Boost Library Binary" on the Boost website).
+Boost can be downloaded [here](http://www.boost.org/doc/libs/1_56_0/more/getting_started/unix-variants.html) (for *nix machines) or [here](http://www.boost.org/doc/libs/1_56_0/more/getting_started/windows.html) (for Windows machines). Follow the instructions on the website to install it. Note that Texada depends on the non-header library, ProgramOptions, which needs to be built separately (see "5. Prepare to Use a Boost Library Binary" on the Boost website).
 
 To integrate with Texada, the location of Boost headers will need to be inputted to uservars.mk (see "Building the project" below), so make note of where it is being extracted.
 
@@ -51,11 +51,11 @@ Texada uses boost_program_options and not boost_program_options-mt. An older ins
 
 #### SPOT
 
-Download SPOT [here](http://spot.lip6.fr/wiki/GetSpot), and extract the file with:
+SPOT can be downloaded [here](http://spot.lip6.fr/wiki/GetSpot). Extract the file with:
 
     tar -zxvf spot-version.tar.gz
 
-To integrate with Texada, the location of SPOT headers will need to be inputted to uservars.mk (see "Building the project" below), so make note of where it is being extracted. 
+To integrate with Texada, the location of SPOT headers and library will need to be inputted to uservars.mk (see "Building the project" below), so make note of where it is being extracted. 
 
 Note that SPOT requires the installation of the [Boost](http://www.boost.org/) libraries. Its full functionality requires Python 2.0+ headers, but if these are not already installed, they can be omitted for the purposes of Texada. 
 
