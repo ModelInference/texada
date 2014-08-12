@@ -27,18 +27,18 @@ linear_trace_checker::~linear_trace_checker() {
  * @return whether node holds on trace
  */
 bool linear_trace_checker::check(const spot::ltl::formula* node,
-        const string_event *trace) {
+        const trace_node trace_pt) {
     switch (node->kind()) {
     case spot::ltl::formula::Constant:
-        return check(static_cast<const spot::ltl::constant*>(node), trace);
+        return check(static_cast<const spot::ltl::constant*>(node), trace_pt);
     case spot::ltl::formula::AtomicProp:
-        return check(static_cast<const spot::ltl::atomic_prop*>(node), trace);
+        return check(static_cast<const spot::ltl::atomic_prop*>(node), trace_pt);
     case spot::ltl::formula::UnOp:
-        return check(static_cast<const spot::ltl::unop*>(node), trace);
+        return check(static_cast<const spot::ltl::unop*>(node), trace_pt);
     case spot::ltl::formula::BinOp:
-        return check(static_cast<const spot::ltl::binop*>(node), trace);
+        return check(static_cast<const spot::ltl::binop*>(node), trace_pt);
     case spot::ltl::formula::MultOp:
-        return check(static_cast<const spot::ltl::multop*>(node), trace);
+        return check(static_cast<const spot::ltl::multop*>(node), trace_pt);
     case spot::ltl::formula::BUnOp:
         return check(static_cast<const spot::ltl::bunop*>(node));
     case spot::ltl::formula::AutomatOp:
@@ -55,8 +55,8 @@ bool linear_trace_checker::check(const spot::ltl::formula* node,
  * @return whether node holds on trace
  */
 inline bool linear_trace_checker::check(const spot::ltl::atomic_prop *node,
-        const string_event *trace) {
-    return (trace->get_name() == node->name()) ? true : false;
+        const trace_node trace_pt) {
+    return (event_name(trace_pt) == node->name()) ? true : false;
 }
 
 /**
@@ -68,7 +68,7 @@ inline bool linear_trace_checker::check(const spot::ltl::atomic_prop *node,
  * @return whether node holds on trace
  */
 bool linear_trace_checker::check(const spot::ltl::constant *node,
-        const string_event *trace) {
+        const trace_node trace_pt) {
     spot::ltl::constant::type value = node->val();
     switch (value) {
     case spot::ltl::constant::True:
@@ -99,94 +99,97 @@ bool linear_trace_checker::check(const spot::ltl::constant *node,
  * @return whether node holds on trace
  */
 bool linear_trace_checker::check(const spot::ltl::binop *node,
-        const string_event *trace) {
+        const trace_node trace_pt) {
+    // find the operation kind of the given node
     spot::ltl::binop::type opkind = node->op();
+    // name its first and second operands
     const spot::ltl::formula * p = node->first();
     const spot::ltl::formula * q = node->second();
+    // get the string_event*
 
     switch (opkind) {
 
     //XOR case: p xor q. if p is true, return true if q is false,
     //if p is false, return true if q is true.
     case spot::ltl::binop::Xor: {
-        bool qholds = check(q, trace);
-        return (check(p, trace)) ? !qholds : qholds;
+        bool qholds = check(q, trace_pt);
+        return (check(p, trace_pt)) ? !qholds : qholds;
     }
         //Implies case:  p -> q if p is true, return true if q is true,
         //if p is false, return true.
     case spot::ltl::binop::Implies: {
-        return check(p, trace) ? check(q, trace) : true;
+        return check(p, trace_pt) ? check(q, trace_pt) : true;
     }
         //Equiv case:  p <-> q if p is true, return true if q is true,
         //if p is false, return true if q is false.
     case spot::ltl::binop::Equiv:{
-        bool qholds = check(q, trace);
-        return check(p, trace) ?
+        bool qholds = check(q, trace_pt);
+        return check(p, trace_pt) ?
                qholds : !qholds;
     }
         //Until case: p U q
     case spot::ltl::binop::U:{
         //if we get here, we did not see q: thus, false
-        if (trace->is_terminal()) {
+        if (is_terminal(trace_pt)) {
             return false;
         }
         // if the q holds here, we have not yet seen q or !p, (these
         //  cause return) so true
-        else if (check(q, trace)) {
+        else if (check(q, trace_pt)) {
             return true;
         }
         // we know q does not hold from above, so if p does not hold,
         // we have !p and !q, which violates p U q.
-        else if (!check(p, trace)) {
+        else if (!check(p, trace_pt)) {
             return false;
         }
         // if !q and p holds, check on the next suffix trace
         else {
-            return check(node, trace + 1);
+            return check(node, get_next_event(trace_pt));
         }
     }
         //Release case: p R q
     case spot::ltl::binop::R:{
         //if we get here, q always held: true
-        if (trace->is_terminal()) {
+        if (is_terminal(trace_pt)) {
             return true;
         }
         // if !q occurs before p & q, false
-        else if (!check(q, trace)) {
+        else if (!check(q, trace_pt)) {
             return false;
         }
 
         // we know from the previous if that q holds and held up to here,
         // so if p also holds, return true
-        else if (check(p, trace)) {
+        else if (check(p, trace_pt)) {
             return true;
         }
 
         // if the q holds, check on the next suffix trace
         else {
-            return check(node, trace + 1);
+            return check(node, get_next_event(trace_pt));
         }
     }
 
         //Weak until case: identical to until except base case
     case spot::ltl::binop::W:{
         //if we get here, we did not see q or !p, so true.
-        if (trace->is_terminal()) {
+        if (is_terminal(trace_pt)) {
             return true;
         }
         // if the q holds here, we have not yet seen q or !p, (these
         //  cause return) so true
-        else if (check(q, trace)) {
+        else if (check(q, trace_pt)) {
             return true;
         }
         // we know q does not hold from above, so if p does not hold,
         // we have !p and !q, which violates p U q.
-        else if (!check(p, trace)) {
+        else if (!check(p, trace_pt)) {
             return false;
         }
         // if !q and p holds, check on the next suffix trace
         else {
-            return check(node, trace + 1);
+            return check(node, get_next_event(trace_pt));
         }
     }
 
@@ -209,9 +212,10 @@ bool linear_trace_checker::check(const spot::ltl::binop *node,
  * @return whether node holds on trace
  */
 bool linear_trace_checker::check(const spot::ltl::unop *node,
-        const string_event *trace) {
-
+        const trace_node trace_pt) {
+    // the operation type
     spot::ltl::unop::type optype = node->op();
+    //renaming the child p
     const spot::ltl::formula * p = node->child();
 
     //TODO: refactor node->child into a variable
@@ -221,37 +225,37 @@ bool linear_trace_checker::check(const spot::ltl::unop *node,
     // Globally case: Gp
     case spot::ltl::unop::G:
         // base case: if we're at END_VAR, return true to not effect &&
-        if (trace->is_terminal()) {
+        if (is_terminal(trace_pt)) {
             return true;
         } else {
             //Return whether subformula is true on this trace, recursive check on
             // all subsequent traces.
-            return check(p, trace) && check(node, trace + 1);
+            return check(p, trace_pt) && check(node, get_next_event(trace_pt));
         }
 
         // Finally case: Fp
     case spot::ltl::unop::F:
         // base case: if we're at END_VAR, return false to not effect ||
-        if (trace->is_terminal()) {
+        if (is_terminal(trace_pt)) {
             return false;
         } else {
             //Return whether subformula is true on this trace, recursive check on
             // all subsequent traces.
-            return check(p, trace) || check(node, trace + 1);
+            return check(p, trace_pt) || check(node, get_next_event(trace_pt));
         }
 
         // Next case: Xp
     case spot::ltl::unop::X:
         // if we are at the terminal event, the next event is also a terminal
         // event. Since we are traversing a finite tree, this will terminate.
-        if (trace->is_terminal()) {
-            return check(p, trace);
+        if (is_terminal(trace_pt)) {
+            return check(p, trace_pt);
         }
-        return check(p, trace + 1);
+        return check(p, get_next_event(trace_pt));
 
         // Not case: !p
     case spot::ltl::unop::Not:
-        return !check(p, trace);
+        return !check(p, trace_pt);
 
         // Other operators are not LTL, don't support them
     default:
@@ -271,7 +275,8 @@ bool linear_trace_checker::check(const spot::ltl::unop *node,
  * @return whether node holds on the trace
  */
 bool linear_trace_checker::check(const spot::ltl::multop* node,
-        const string_event *trace) {
+        const trace_node trace_pt) {
+    // is this an and or an or
     spot::ltl::multop::type opkind = node->op();
 
     switch (opkind) {
@@ -283,7 +288,7 @@ bool linear_trace_checker::check(const spot::ltl::multop* node,
         // end of the loop, then none of the children were true and we return
         // false.
         for (int i = 0; i < numkids; i++) {
-            if (check(node->nth(i), trace)) {
+            if (check(node->nth(i), trace_pt)) {
                 return true;
             }
         }
@@ -296,7 +301,7 @@ bool linear_trace_checker::check(const spot::ltl::multop* node,
         // end of the loop, then none of the children were false and we return
         // true.
         for (int i = 0; i < numkids; i++) {
-            if (!check(node->nth(i), trace)) {
+            if (!check(node->nth(i), trace_pt)) {
                 return false;
             }
         }
@@ -308,6 +313,35 @@ bool linear_trace_checker::check(const spot::ltl::multop* node,
 
     }
 
+}
+
+/**
+ * Gets the next node if this is a linear trace node.
+ * @param current_node
+ * @return
+ */
+linear_trace_checker::trace_node linear_trace_checker::get_next_event(const trace_node current_node){
+    trace_node return_node;
+    get<const string_event*>(return_node) = get<const string_event*>(current_node) + 1;
+    return return_node;
+}
+
+/**
+ * Returns true if the current node is terminal
+ * @param current_node current position in trace
+ * @return is this a terminal event
+ */
+bool linear_trace_checker::is_terminal(const trace_node current_node){
+    return get<const string_event*>(current_node)->is_terminal();
+}
+
+/**
+ * Returns name of the current event
+ * @param current_node current position in trace
+ * @return is this a terminal event
+ */
+string linear_trace_checker::event_name(const trace_node current_node){
+    return get<const string_event*>(current_node)->get_name();
 }
 
 /**
@@ -337,7 +371,9 @@ vector<map<string, string>> valid_instants_on_traces(
                 bool valid = true;
                 for (set<vector<string_event>>::iterator traces_it = traces->begin();
                 traces_it != traces->end(); traces_it++) {
-                    bool valid_on_trace = checker.check(instantiated_prop_type,&(traces_it->at(0)));
+                    linear_trace_checker::trace_node current_trace;
+                    boost::get<const string_event*>(current_trace) = &(traces_it->at(0));
+                    bool valid_on_trace = checker.check(instantiated_prop_type, current_trace);
                     if (!valid_on_trace) {
                         valid = false;
                         break;
