@@ -26,11 +26,16 @@ std::string causefirst_string = "((!y)W x)&G(x->XFy)";
 std::string onecause_string = "G(x->X((!x)U y))";
 std::string oneeffect_string = "G((x->X(Fy))&(y->X((!y)W x)))";
 
-std::string texada_base = std::string(getenv("TEXADA_HOME"));
 
 // Checks that the linear checker finds all finally
 // occurrences it should find
 TEST(PropertyTypeMinerTest, EventuallyEvent) {
+    if (getenv("TEXADA_HOME") == NULL){
+        std::cerr << "Error: TEXADA_HOME is undefined. \n";
+        FAIL();
+    }
+    std::string texada_base = std::string(getenv("TEXADA_HOME"));
+
     std::set<const spot::ltl::formula*> set =
             texada::mine_lin_property_type("Fx",
                     texada_base
@@ -45,6 +50,12 @@ TEST(PropertyTypeMinerTest, EventuallyEvent) {
 // Checks that linear checked finds the resource
 // allocation pattern in a trace which matches (ab+c)*
 TEST(PropertyTypeMinerTest, ResourceAllocation) {
+    if (getenv("TEXADA_HOME") == NULL){
+        std::cerr << "Error: TEXADA_HOME is undefined. \n";
+        FAIL();
+    }
+    std::string texada_base = std::string(getenv("TEXADA_HOME"));
+
     std::set<const spot::ltl::formula*> set =
             texada::mine_lin_property_type(
                     "(!(y | z) W x) & G((x -> X((!x U z)&(!z U y)))&(y->XFz)&(z->X(!(y | z) W x)))",
@@ -61,6 +72,12 @@ TEST(PropertyTypeMinerTest, ResourceAllocation) {
 // S and T precede P after Q
 
 TEST(PropertyTypeMinerTest, STprecedesPafterQ) {
+    if (getenv("TEXADA_HOME") == NULL){
+        std::cerr << "Error: TEXADA_HOME is undefined. \n";
+        FAIL();
+    }
+    std::string texada_base = std::string(getenv("TEXADA_HOME"));
+
 
     // find all valid instantiations of the property type
     std::set<const spot::ltl::formula*> set = texada::mine_lin_property_type(
@@ -112,6 +129,13 @@ TEST(PropertyTypeMinerTest, STprecedesPafterQ) {
  */
 std::array<bool, 8> set_up_perracotta_tests(std::string formula, bool use_map) {
     std::array<bool, 8> output_array;
+
+    if (getenv("TEXADA_HOME") == NULL){
+        std::cerr << "Error: TEXADA_HOME is undefined. \n";
+        return output_array;
+    }
+    std::string texada_base = std::string(getenv("TEXADA_HOME"));
+
     //order of sources
     // Response
     std::string response_source = texada_base + "/traces/perracotta-type-traces/response/trace.txt";
@@ -406,6 +430,12 @@ TEST(PropertyTypeMinerTest, OneEffect) {
 // Checks that the map checker finds all finally
 // occurrences it should find
 TEST(PropertyTypeMinerMapTest, EventuallyEvent) {
+    if (getenv("TEXADA_HOME") == NULL){
+        std::cerr << "Error: TEXADA_HOME is undefined. \n";
+        FAIL();
+    }
+    std::string texada_base = std::string(getenv("TEXADA_HOME"));
+
     std::set<const spot::ltl::formula*> set =
             texada::mine_map_property_type("Fx",
                     texada_base
@@ -421,6 +451,12 @@ TEST(PropertyTypeMinerMapTest, EventuallyEvent) {
 // Checks that map checker finds the resource
 // allocation pattern in a trace which matches (ab+c)*
 TEST(PropertyTypeMinerMapTest, ResourceAllocation) {
+    if (getenv("TEXADA_HOME") == NULL){
+        std::cerr << "Error: TEXADA_HOME is undefined. \n";
+        FAIL();
+    }
+    std::string texada_base = std::string(getenv("TEXADA_HOME"));
+
     std::set<const spot::ltl::formula*> set =
             texada::mine_map_property_type(
                     "(!(y | z) W x) & G((x -> X((!x U z)&(!z U y)))&(y->XFz)&(z->X(!(y | z) W x)))",
@@ -436,6 +472,12 @@ TEST(PropertyTypeMinerMapTest, ResourceAllocation) {
 // Checks that map checker finds the resource
 // allocation pattern in a trace which matches (ab+c)*
 TEST(PropertyTypeMinerMapTest, SmallResourceAllocation) {
+    if (getenv("TEXADA_HOME") == NULL){
+        std::cerr << "Error: TEXADA_HOME is undefined. \n";
+        FAIL();
+    }
+    std::string texada_base = std::string(getenv("TEXADA_HOME"));
+
     std::set<const spot::ltl::formula*> set =
             texada::mine_map_property_type(
                     "(!(y | z) W x) & G((x -> X((!x U z)&(!z U y)))&(y->XFz)&(z->X(!(y | z) W x)))",

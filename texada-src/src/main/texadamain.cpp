@@ -36,6 +36,10 @@ void set_up_timed_mining(boost::program_options::variables_map opts_map) {
  * @param use_map
  */
 void mine_on_increasing_events(boost::program_options::variables_map opts_map) {
+    if (getenv("TEXADA_HOME") == NULL){
+        std::cerr << "Error: TEXADA_HOME is undefined. \n";
+        return;
+    }
     std::string trace_base = std::string(getenv("TEXADA_HOME"))
             + "/traces/vary-invs-fixed2/log-25000_invs-";
 

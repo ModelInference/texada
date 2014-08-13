@@ -206,6 +206,10 @@ TEST(MapCheckerTest,SmallTrace){
 
 // testing whether map trace mines a more complex formula correctly.
 TEST(MapCheckerTest,ResourceAllocation){
+    if (getenv("TEXADA_HOME") == NULL){
+        std::cerr << "Error: TEXADA_HOME is undefined. \n";
+        FAIL();
+    }
     std::string texada_home = std::string(getenv("TEXADA_HOME"));
 
     std::string file_source = texada_home + "/traces/resource-allocation/smallabc.txt";

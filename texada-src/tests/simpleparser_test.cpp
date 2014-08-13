@@ -5,7 +5,10 @@
 #include <stdlib.h>
 // Tests that the simple parser correctly parses a small trace
 TEST(SimpleParserTest, SmallFile) {
-
+    if (getenv("TEXADA_HOME") == NULL){
+        std::cerr << "Error: TEXADA_HOME is undefined. \n";
+        FAIL();
+    }
     std::ifstream infile(
             std::string(getenv("TEXADA_HOME"))
                     + "/traces/vary-tracelen/smalltrace.txt");
@@ -34,6 +37,11 @@ TEST(SimpleParserTest, SmallFile) {
 
 // Test that the parser separates multiple traces as it should
 TEST(SimpleParserTest, MultipleTracesOneFile) {
+    if (getenv("TEXADA_HOME") == NULL){
+        std::cerr << "Error: TEXADA_HOME is undefined. \n";
+        FAIL();
+    }
+
     std::ifstream infile(
             std::string(getenv("TEXADA_HOME"))
                     + "/traces/vary-tracelen/etypes-10_events-250_execs-20.txt");
@@ -56,6 +64,11 @@ TEST(SimpleParserTest, MultipleTracesOneFile) {
 
 // Checks that the parser parses a small file into a map properly
 TEST(SimpleParserTest, MapTraceSmallFile) {
+    if (getenv("TEXADA_HOME") == NULL){
+        std::cerr << "Error: TEXADA_HOME is undefined. \n";
+        FAIL();
+    }
+
     std::ifstream infile(
             std::string(getenv("TEXADA_HOME"))
                     + "/traces/vary-tracelen/smalltrace.txt");
@@ -80,6 +93,11 @@ TEST(SimpleParserTest, MapTraceSmallFile) {
 // checks that the parser divides the map traces properly, and
 // that they're the right length (by checking the position of the terminal event)
 TEST(SimpleParserTest, MapTraceLargeFile) {
+    if (getenv("TEXADA_HOME") == NULL){
+        std::cerr << "Error: TEXADA_HOME is undefined. \n";
+        FAIL();
+    }
+
     std::ifstream infile(
             std::string(getenv("TEXADA_HOME"))
                     + "/traces/vary-tracelen/etypes-10_events-250_execs-20.txt");
@@ -102,6 +120,11 @@ TEST(SimpleParserTest, MapTraceLargeFile) {
 }
 
 TEST(SimpleParserTest, PreTreeTrace) {
+    if (getenv("TEXADA_HOME") == NULL){
+        std::cerr << "Error: TEXADA_HOME is undefined. \n";
+        FAIL();
+    }
+
     std::ifstream infile(
             std::string(getenv("TEXADA_HOME"))
                     + "/traces/parsing-tests/simple-pre-tree.txt");
