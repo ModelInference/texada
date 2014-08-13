@@ -6,6 +6,7 @@
  */
 
 #include "lineartracechecker.h"
+#include <ltlvisit/tostring.hh>
 #include "../instantiation-tools/apsubbingcloner.h"
 #include "../instantiation-tools/pregeninstantspool.h"
 namespace texada {
@@ -152,7 +153,6 @@ map<int, bool> linear_trace_checker::check(const spot::ltl::binop *node,
     set<int> trace_ids = get_trace_ids(trace_pt);
 
     switch (opkind) {
-
     //XOR case: p xor q. if p is true, return true if q is false,
     //if p is false, return true if q is true.
     case spot::ltl::binop::Xor: {
@@ -170,8 +170,10 @@ map<int, bool> linear_trace_checker::check(const spot::ltl::binop *node,
         //Implies case:  p -> q if p is true, return true if q is true,
         //if p is false, return true.
     case spot::ltl::binop::Implies: {
-        map<int, bool> qholds = check(q, trace_pt);
         map<int, bool> pholds = check(p, trace_pt);
+
+
+        map<int, bool> qholds = check(q, trace_pt);
         for (map<int, bool>::iterator pholds_it = pholds.begin();
                 pholds_it != pholds.end(); pholds_it++) {
             bool qholds_on_trace = qholds.find(pholds_it->first)->second;
@@ -221,6 +223,29 @@ map<int, bool> linear_trace_checker::check(const spot::ltl::binop *node,
             return check_on_kids(node, get_next_event(trace_pt));
         }
     }
+
+    //Weak until case: identical to until except base case
+    case spot::ltl::binop::W: {
+        //if we get here, we did not see q or !p, so true.
+        if (is_terminal(trace_pt)) {
+            return create_int_bool_map(trace_ids, true);
+        }
+        // if the q holds here, we have not yet seen q or !p, (these
+        //  cause return) so true
+        else if (check_on_trace(q, trace_pt)) {
+            return create_int_bool_map(trace_ids, true);
+        }
+        // we know q does not hold from above, so if p does not hold,
+        // we have !p and !q, which violates p U q.
+        else if (!check_on_trace(p, trace_pt)) {
+            create_int_bool_map(trace_ids, false);
+        }
+        // if !q and p holds, check on the next suffix trace
+        else {
+            return check_on_kids(node, get_next_event(trace_pt));
+        }
+    }
+
         //Release case: p R q
     case spot::ltl::binop::R: {
         //if we get here, q always held: true
@@ -244,30 +269,10 @@ map<int, bool> linear_trace_checker::check(const spot::ltl::binop *node,
         }
     }
 
-        //Weak until case: identical to until except base case
-    case spot::ltl::binop::W: {
-        //if we get here, we did not see q or !p, so true.
-        if (is_terminal(trace_pt)) {
-            return create_int_bool_map(trace_ids, true);
-        }
-        // if the q holds here, we have not yet seen q or !p, (these
-        //  cause return) so true
-        else if (check_on_trace(q, trace_pt)) {
-            return create_int_bool_map(trace_ids, true);
-        }
-        // we know q does not hold from above, so if p does not hold,
-        // we have !p and !q, which violates p U q.
-        else if (!check_on_trace(p, trace_pt)) {
-            create_int_bool_map(trace_ids, false);
-        }
-        // if !q and p holds, check on the next suffix trace
-        else {
-            return check_on_kids(node, get_next_event(trace_pt));
-        }
-    }
+
 
     default:
-        std::cerr << "Unsupported binary operator. Returning false. \n";
+        std::cerr << "Unsupported binary operator: "<< opkind << ". Returning false. \n";
         return map<int, bool>();
 
     }
@@ -297,6 +302,15 @@ map<int, bool> linear_trace_checker::check(const spot::ltl::unop *node,
 
     switch (optype) {
 
+    // Next case: Xp
+       case spot::ltl::unop::X:
+           // if we are at the terminal event, the next event is also a terminal
+           // event. Since we are traversing a finite tree, this will terminate.
+           if (is_terminal(trace_pt)) {
+               return check(p, trace_pt);
+           }
+           return check_on_kids(p, get_next_event(trace_pt));
+
     // Finally case: Fp
     case spot::ltl::unop::F:
         // base case: if we're at END_VAR, return false to not effect ||
@@ -307,7 +321,7 @@ map<int, bool> linear_trace_checker::check(const spot::ltl::unop *node,
             // all subsequent traces.
             map<int,bool> first_map = check(p, trace_pt);
             map<set<int>, trace_node> kids = get_next_event(trace_pt);
-            map<int,bool> second_map = check(node, kids);
+            map<int,bool> second_map = check_on_kids(node, kids);
             return or_map(first_map, second_map);
         }
 
@@ -320,17 +334,10 @@ map<int, bool> linear_trace_checker::check(const spot::ltl::unop *node,
             //Return whether subformula is true on this trace, recursive check on
             // all subsequent traces.
             return and_map(check(p, trace_pt),
-                    check(node, get_next_event(trace_pt)));
+                    check_on_kids(node, get_next_event(trace_pt)));
         }
 
-        // Next case: Xp
-    case spot::ltl::unop::X:
-        // if we are at the terminal event, the next event is also a terminal
-        // event. Since we are traversing a finite tree, this will terminate.
-        if (is_terminal(trace_pt)) {
-            return check(p, trace_pt);
-        }
-        return check(p, get_next_event(trace_pt));
+
 
         // Not case: !p
     case spot::ltl::unop::Not:

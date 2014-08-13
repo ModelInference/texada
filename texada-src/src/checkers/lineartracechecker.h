@@ -19,7 +19,6 @@
 
 #include "../instantiation-tools/pregeninstantspool.h"
 
-#include "../exceptions/unsupportedoperatorexception.h"
 
 namespace texada {
 using std::shared_ptr;
