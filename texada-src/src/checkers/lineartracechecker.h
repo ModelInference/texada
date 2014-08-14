@@ -22,6 +22,7 @@
 
 namespace texada {
 using std::shared_ptr;
+using std::set;
 using boost::get;
 
 /**
@@ -42,13 +43,13 @@ public:
 
 
 private:
-	virtual map<int,bool> check(const spot::ltl::formula* node, const trace_node trace_pt);
-	virtual map<int,bool> check_on_kids(const spot::ltl::formula* node, map<set<int>,trace_node> trace_pts);
-    virtual map<int,bool> check(const spot::ltl::atomic_prop* node, const trace_node trace_pt);
-    virtual map<int,bool> check(const spot::ltl::constant* node, const trace_node trace_pt);
-    virtual map<int,bool> check(const spot::ltl::binop* node, const trace_node trace_pt);
-    virtual map<int,bool> check(const spot::ltl::unop* node,  const trace_node trace_pt);
-    virtual map<int,bool> check(const spot::ltl::multop* node,  const trace_node trace_pt);
+	virtual map<int,bool> check(const spot::ltl::formula* node, const trace_node trace_pt, set<int> trace_ids);
+	virtual map<int,bool> check_on_kids(const spot::ltl::formula* node, map<set<int>,trace_node> trace_pts, set<int> trace_ids);
+    virtual map<int,bool> check(const spot::ltl::atomic_prop* node, const trace_node trace_pt, set<int> trace_ids);
+    virtual map<int,bool> check(const spot::ltl::constant* node, const trace_node trace_pt, set<int> trace_ids);
+    virtual map<int,bool> check(const spot::ltl::binop* node, const trace_node trace_pt, set<int> trace_ids);
+    virtual map<int,bool> check(const spot::ltl::unop* node,  const trace_node trace_pt, set<int> trace_ids);
+    virtual map<int,bool> check(const spot::ltl::multop* node,  const trace_node trace_pt, set<int> trace_ids);
 
     virtual map<set<int>,trace_node> get_next_event(const trace_node current_node);
     virtual set<int> get_trace_ids(const trace_node current_node);
@@ -62,6 +63,8 @@ private:
     map<int,bool> or_map (map<int,bool>,map<int,bool>);
 
     bool constant_vals(map<int,bool>,bool);
+    void add_satisfying_values(map<int,bool>& returned_vals, bool to_satisfy,
+            map<int,bool>& map_to_return,set<int>& to_check);
 
     /**
      * both the next types are not supported.

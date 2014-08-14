@@ -9,6 +9,9 @@
 #include <ltlvisit/tostring.hh>
 #include "../instantiation-tools/apsubbingcloner.h"
 #include "../instantiation-tools/pregeninstantspool.h"
+
+#include <algorithm>
+
 namespace texada {
 
 linear_trace_checker::linear_trace_checker() {
@@ -27,7 +30,8 @@ linear_trace_checker::~linear_trace_checker() {
  */
 bool linear_trace_checker::check_on_trace(const spot::ltl::formula* node,
         const trace_node trace_pt) {
-    map<int, bool> branch_results = check(node, trace_pt);
+    map<int, bool> branch_results = check(node, trace_pt,
+            get_trace_ids(trace_pt));
     for (map<int, bool>::iterator result_it = branch_results.begin();
             result_it != branch_results.end(); result_it++) {
         if (!result_it->second) {
@@ -47,18 +51,23 @@ bool linear_trace_checker::check_on_trace(const spot::ltl::formula* node,
  * @return whether node holds on trace
  */
 map<int, bool> linear_trace_checker::check(const spot::ltl::formula* node,
-        const trace_node trace_pt) {
+        const trace_node trace_pt, set<int> trace_ids) {
     switch (node->kind()) {
     case spot::ltl::formula::Constant:
-        return check(static_cast<const spot::ltl::constant*>(node), trace_pt);
+        return check(static_cast<const spot::ltl::constant*>(node), trace_pt,
+                trace_ids);
     case spot::ltl::formula::AtomicProp:
-        return check(static_cast<const spot::ltl::atomic_prop*>(node), trace_pt);
+        return check(static_cast<const spot::ltl::atomic_prop*>(node), trace_pt,
+                trace_ids);
     case spot::ltl::formula::UnOp:
-        return check(static_cast<const spot::ltl::unop*>(node), trace_pt);
+        return check(static_cast<const spot::ltl::unop*>(node), trace_pt,
+                trace_ids);
     case spot::ltl::formula::BinOp:
-        return check(static_cast<const spot::ltl::binop*>(node), trace_pt);
+        return check(static_cast<const spot::ltl::binop*>(node), trace_pt,
+                trace_ids);
     case spot::ltl::formula::MultOp:
-        return check(static_cast<const spot::ltl::multop*>(node), trace_pt);
+        return check(static_cast<const spot::ltl::multop*>(node), trace_pt,
+                trace_ids);
     case spot::ltl::formula::BUnOp:
         return check(static_cast<const spot::ltl::bunop*>(node));
     case spot::ltl::formula::AutomatOp:
@@ -75,7 +84,7 @@ map<int, bool> linear_trace_checker::check(const spot::ltl::formula* node,
  * @return whether node holds on trace
  */
 map<int, bool> linear_trace_checker::check(const spot::ltl::atomic_prop *node,
-        const trace_node trace_pt) {
+        const trace_node trace_pt, set<int> trace_ids) {
     // evaluate whether the AP holds
     bool is_this_event = (event_name(trace_pt) == node->name()) ? true : false;
     // return in trace_id -> bool map
@@ -91,7 +100,7 @@ map<int, bool> linear_trace_checker::check(const spot::ltl::atomic_prop *node,
  * @return whether node holds on trace
  */
 map<int, bool> linear_trace_checker::check(const spot::ltl::constant *node,
-        const trace_node trace_pt) {
+        const trace_node trace_pt, set<int> trace_ids) {
     spot::ltl::constant::type value = node->val();
     set<int> this_trace_ids = get_trace_ids(trace_pt);
 
@@ -111,18 +120,34 @@ map<int, bool> linear_trace_checker::check(const spot::ltl::constant *node,
 }
 
 /**
- * Explores all branches with node
+ * Explores all specified branches with node.
  * @param node
- * @param trace_pts
- * @return
+ * @param trace_pts the children of the previous branch point
+ * @param trace_ids the branches to check
+ * @return map of evaluation values.
  */
 map<int, bool> linear_trace_checker::check_on_kids(
-        const spot::ltl::formula* node, map<set<int>, trace_node> trace_pts) {
+        const spot::ltl::formula* node, map<set<int>, trace_node> kids,
+        set<int> trace_ids) {
+    // return map
     map<int, bool> return_map;
-    for (map<set<int>, trace_node>::iterator it = trace_pts.begin();
-            it != trace_pts.end(); it++) {
-        map<int, bool> result_on_kid = check(node, it->second);
-        return_map.insert(result_on_kid.begin(), result_on_kid.end());
+    // start iterating through the kids
+    for (map<set<int>, trace_node>::iterator kids_it = kids.begin();
+            kids_it != kids.end(); kids_it++) {
+        // intersection of this kid's traces and the traces we want to pursue
+        set<int> intersect;
+        std::set_intersection(trace_ids.begin(), trace_ids.end(),
+                kids_it->first.begin(), kids_it->first.end(),
+                std::inserter(intersect, intersect.begin()));
+        // if there's a branch we want to pursue in kid, go check down.
+        // only check branches we want to check.
+        if (intersect.size() != 0) {
+            map<int, bool> result_on_kid = check(node, kids_it->second,
+                    intersect);
+            return_map.insert(result_on_kid.begin(), result_on_kid.end());
+            break;
+
+        }
 
     }
     return return_map;
@@ -143,21 +168,20 @@ map<int, bool> linear_trace_checker::check_on_kids(
  * @return whether node holds on trace
  */
 map<int, bool> linear_trace_checker::check(const spot::ltl::binop *node,
-        const trace_node trace_pt) {
+        const trace_node trace_pt, set<int> trace_ids) {
     // find the operation kind of the given node
     spot::ltl::binop::type opkind = node->op();
     // name its first and second operands
     const spot::ltl::formula * p = node->first();
     const spot::ltl::formula * q = node->second();
-    // get the trace_ids
-    set<int> trace_ids = get_trace_ids(trace_pt);
+    map<int, bool> return_map;
 
     switch (opkind) {
     //XOR case: p xor q. if p is true, return true if q is false,
     //if p is false, return true if q is true.
     case spot::ltl::binop::Xor: {
-        map<int, bool> qholds = check(q, trace_pt);
-        map<int, bool> pholds = check(p, trace_pt);
+        map<int, bool> qholds = check(q, trace_pt, trace_ids);
+        map<int, bool> pholds = check(p, trace_pt, trace_ids);
         for (map<int, bool>::iterator pholds_it = pholds.begin();
                 pholds_it != pholds.end(); pholds_it++) {
             bool qholds_on_trace = qholds.find(pholds_it->first)->second;
@@ -170,34 +194,26 @@ map<int, bool> linear_trace_checker::check(const spot::ltl::binop *node,
         //Implies case:  p -> q if p is true, return true if q is true,
         //if p is false, return true.
     case spot::ltl::binop::Implies: {
-        map<int, bool> pholds = check(p, trace_pt);
-
-        // check if p is false all along and we don't need to recurse
-        bool pfalse_on_all = constant_vals(pholds,false);
-        // return p -> q is true on all if p is false.
-        if (pfalse_on_all) return create_int_bool_map(trace_ids,true);
-
-        map<int, bool> qholds = check(q, trace_pt);
-        for (map<int, bool>::iterator pholds_it = pholds.begin();
-                pholds_it != pholds.end(); pholds_it++) {
-            bool qholds_on_trace = qholds.find(pholds_it->first)->second;
-            pholds_it->second = (pholds_it->second) ? qholds_on_trace : true;
-
+        map<int, bool> pholds = check(p, trace_pt, trace_ids);
+        // where p is false we don't need to recurse. Add those
+        // pairs and remove trace_ids where !p.
+        add_satisfying_values(pholds, false, return_map, trace_ids);
+        // we've added false when this actually makes p -> q true,
+        // so not all the values:
+        return_map = not_map(return_map);
+        // if some traces return p, then the value of p -> q is
+        // the value of q on this point.
+        if (trace_ids.size() != 0) {
+            map<int, bool> qholds = check(q, trace_pt, trace_ids);
+            return_map.insert(qholds.begin(), qholds.end());
         }
-        return pholds;
-        //TODO: The above just lost the optmization below. CAN IT BE SAVED?
-        // UPDATE: semi-solved. Can we prevent exploration of uneeded branches?
-        // (e.g. q is not evaluated unless p holds. This is a major problem
-        // for many formulae, i.e. where we have things like
-        // G(a->X((!a U c)&(!c U b))).
-        // we really don't want to calculate that second part if it's not necessary.
-        //return check_on_trace(p, trace_pt) ? check_on_trace(q, trace_pt) : true;
+        return return_map;
     }
         //Equiv case:  p <-> q if p is true, return true if q is true,
         //if p is false, return true if q is false.
     case spot::ltl::binop::Equiv: {
-        map<int, bool> qholds = check(q, trace_pt);
-        map<int, bool> pholds = check(p, trace_pt);
+        map<int, bool> qholds = check(q, trace_pt, trace_ids);
+        map<int, bool> pholds = check(p, trace_pt, trace_ids);
         for (map<int, bool>::iterator pholds_it = pholds.begin();
                 pholds_it != pholds.end(); pholds_it++) {
             bool qholds_on_trace = qholds.find(pholds_it->first)->second;
@@ -209,76 +225,107 @@ map<int, bool> linear_trace_checker::check(const spot::ltl::binop *node,
     }
         //Until case: p U q
     case spot::ltl::binop::U: {
-        //TODO: in until, etc, should I be using the check instead of check_on_trace?
+        //TODO: in until, etc, check needs to be used, not check_on_trace
         //if we get here, we did not see q: thus, false
         if (is_terminal(trace_pt)) {
             return create_int_bool_map(trace_ids, false);
         }
         // if the q holds here, we have not yet seen q or !p, (these
-        //  cause return) so true
-        else if (check_on_trace(q, trace_pt)) {
-            return create_int_bool_map(trace_ids, true);
+        //  cause return) so true values are true overall
+        map<int, bool> q_holds = check(q, trace_pt, trace_ids);
+        add_satisfying_values(q_holds, true, return_map, trace_ids);
+        // if q held on all traces, return
+        if (trace_ids.size() == 0) {
+            return return_map;
         }
         // we know q does not hold from above, so if p does not hold,
         // we have !p and !q, which violates p U q.
-        else if (!check_on_trace(p, trace_pt)) {
-            return create_int_bool_map(trace_ids, false);
+        map<int, bool> p_holds = check(p, trace_pt, trace_ids);
+        // where !p, !(p U q), so insert as false:
+        add_satisfying_values(p_holds, false, return_map, trace_ids);
+        // if we've determined values on all traces, return
+        if (trace_ids.size() == 0) {
+            return return_map;
         }
+
         // if !q and p holds, check on the next suffix trace
-        else {
-            return check_on_kids(node, get_next_event(trace_pt));
-        }
+        map<int, bool> pUq_on_kids = check_on_kids(node,
+                get_next_event(trace_pt), trace_ids);
+        // those values are the value of pUq on here
+        return_map.insert(pUq_on_kids.begin(), pUq_on_kids.end());
+        return return_map;
+
     }
 
-    //Weak until case: identical to until except base case
+        //Weak until case: identical to until except base case
     case spot::ltl::binop::W: {
-        //if we get here, we did not see q or !p, so true.
+        //if we get here, we did not see q or !p: thus, true
         if (is_terminal(trace_pt)) {
             return create_int_bool_map(trace_ids, true);
         }
+
         // if the q holds here, we have not yet seen q or !p, (these
-        //  cause return) so true
-        else if (check_on_trace(q, trace_pt)) {
-            return create_int_bool_map(trace_ids, true);
+        //  cause return) so true values are true overall
+        map<int, bool> q_holds = check(q, trace_pt, trace_ids);
+        add_satisfying_values(q_holds, true, return_map, trace_ids);
+        // if q held on all traces, return
+        if (trace_ids.size() == 0) {
+            return return_map;
         }
         // we know q does not hold from above, so if p does not hold,
         // we have !p and !q, which violates p U q.
-        else if (!check_on_trace(p, trace_pt)) {
-            create_int_bool_map(trace_ids, false);
+        map<int, bool> p_holds = check(p, trace_pt, trace_ids);
+        // where !p, !(p U q), so insert as false:
+        add_satisfying_values(p_holds, false, return_map, trace_ids);
+        // if we've determined values on all traces, return
+        if (trace_ids.size() == 0) {
+            return return_map;
         }
+
         // if !q and p holds, check on the next suffix trace
-        else {
-            return check_on_kids(node, get_next_event(trace_pt));
-        }
+        map<int, bool> pUq_on_kids = check_on_kids(node,
+                get_next_event(trace_pt), trace_ids);
+        // those values are the value of pUq on here
+        return_map.insert(pUq_on_kids.begin(), pUq_on_kids.end());
+        return return_map;
     }
 
         //Release case: p R q
     case spot::ltl::binop::R: {
-        //if we get here, q always held: true
+        //if we get here, q was always true, so true
         if (is_terminal(trace_pt)) {
             return create_int_bool_map(trace_ids, true);
         }
-        // if !q occurs before p & q, false
-        else if (!check_on_trace(q, trace_pt)) {
-            return create_int_bool_map(trace_ids, false);
+        // if the !q holds here, since we haven't yet seen p,
+        // p R q is false (!q occurred before p)
+        map<int, bool> q_holds = check(q, trace_pt, trace_ids);
+        add_satisfying_values(q_holds, false, return_map, trace_ids);
+        // if !q held on all traces, return
+        if (trace_ids.size() == 0) {
+            return return_map;
         }
 
-        // we know from the previous if that q holds and held up to here,
-        // so if p also holds, return true
-        else if (check_on_trace(p, trace_pt)) {
-            return create_int_bool_map(trace_ids, true);
+        // traces remaining in trace_ids where ones where q held, so
+        // if p holds, p & q holds:
+        map<int, bool> p_holds = check(p, trace_pt, trace_ids);
+        // where p, p & q, so p R q, so insert as true:
+        add_satisfying_values(p_holds, true, return_map, trace_ids);
+        // if we've determined values on all traces, return
+        if (trace_ids.size() == 0) {
+            return return_map;
         }
 
-        // if the q holds, check on the next suffix trace
-        else {
-            return check_on_kids(node, get_next_event(trace_pt));
-        }
+        // if !p and q, check on next suffix trace
+        map<int, bool> pRq_on_kids = check_on_kids(node,
+                get_next_event(trace_pt), trace_ids);
+        // those values are the value of pUq on here
+        return_map.insert(pRq_on_kids.begin(), pRq_on_kids.end());
+        return return_map;
     }
 
-
-
     default:
-        std::cerr << "Unsupported binary operator: "<< opkind << ". Returning false. \n";
+        std::cerr << "Unsupported binary operator: " << opkind
+                << ". Returning false. \n";
         return map<int, bool>();
 
     }
@@ -296,39 +343,46 @@ map<int, bool> linear_trace_checker::check(const spot::ltl::binop *node,
  * @return whether node holds on trace
  */
 map<int, bool> linear_trace_checker::check(const spot::ltl::unop *node,
-        const trace_node trace_pt) {
+        const trace_node trace_pt, set<int> trace_ids) {
     // the operation type
     spot::ltl::unop::type optype = node->op();
     //renaming the child p
     const spot::ltl::formula * p = node->child();
-    //get trace ids
-    set<int> trace_ids = get_trace_ids(trace_pt);
+    // create return map:
+    map<int, bool> return_map;
 
     //TODO: refactor node->child into a variable
 
     switch (optype) {
 
     // Next case: Xp
-       case spot::ltl::unop::X:
-           // if we are at the terminal event, the next event is also a terminal
-           // event. Since we are traversing a finite tree, this will terminate.
-           if (is_terminal(trace_pt)) {
-               return check(p, trace_pt);
-           }
-           return check_on_kids(p, get_next_event(trace_pt));
+    case spot::ltl::unop::X:
+        // if we are at the terminal event, the next event is also a terminal
+        // event. Since we are traversing a finite tree, this will terminate.
+        if (is_terminal(trace_pt)) {
+            return check(p, trace_pt, trace_ids);
+        }
+        return check_on_kids(p, get_next_event(trace_pt), trace_ids);
 
-    // Finally case: Fp
+        // Finally case: Fp
     case spot::ltl::unop::F:
         // base case: if we're at END_VAR, return false to not effect ||
         if (is_terminal(trace_pt)) {
             return create_int_bool_map(trace_ids, false);
         } else {
-            //Return whether subformula is true on this trace, recursive check on
-            // all subsequent traces.
-            map<int,bool> first_map = check(p, trace_pt);
-            map<set<int>, trace_node> kids = get_next_event(trace_pt);
-            map<int,bool> second_map = check_on_kids(node, kids);
-            return or_map(first_map, second_map);
+            // check whether p is true
+            map<int, bool> p_holds_here = check(p, trace_pt, trace_ids);
+            // for those where p is true, add to return map and remove
+            // from trace_ids to prevent recursion
+            add_satisfying_values(p_holds_here, true, return_map, trace_ids);
+            // add the values that were not truncated
+            if (trace_ids.size() != 0) {
+                map<int, bool> Fp_holds_on_rest = check_on_kids(node,
+                        get_next_event(trace_pt), trace_ids);
+                return_map.insert(Fp_holds_on_rest.begin(),
+                        Fp_holds_on_rest.end());
+            }
+            return return_map;
         }
 
         // Globally case: Gp
@@ -337,17 +391,24 @@ map<int, bool> linear_trace_checker::check(const spot::ltl::unop *node,
         if (is_terminal(trace_pt)) {
             return create_int_bool_map(trace_ids, true);
         } else {
-            //Return whether subformula is true on this trace, recursive check on
-            // all subsequent traces.
-            return and_map(check(p, trace_pt),
-                    check_on_kids(node, get_next_event(trace_pt)));
+            // check whether p is true
+            map<int, bool> p_holds_here = check(p, trace_pt, trace_ids);
+            // for those where p is false, add to return map and remove
+            // from trace_ids to prevent recursion
+            add_satisfying_values(p_holds_here, false, return_map, trace_ids);
+            // add the values that were not truncated
+            if (trace_ids.size() != 0) {
+                map<int, bool> Fp_holds_on_rest = check_on_kids(node,
+                        get_next_event(trace_pt), trace_ids);
+                return_map.insert(Fp_holds_on_rest.begin(),
+                        Fp_holds_on_rest.end());
+            }
+            return return_map;
         }
-
-
 
         // Not case: !p
     case spot::ltl::unop::Not:
-        return not_map(check(p, trace_pt));
+        return not_map(check(p, trace_pt, trace_ids));
 
         // Other operators are not LTL, don't support them
     default:
@@ -367,13 +428,11 @@ map<int, bool> linear_trace_checker::check(const spot::ltl::unop *node,
  * @return whether node holds on the trace
  */
 map<int, bool> linear_trace_checker::check(const spot::ltl::multop* node,
-        const trace_node trace_pt) {
+        const trace_node trace_pt, set<int> trace_ids) {
     // is this an and or an or
     spot::ltl::multop::type opkind = node->op();
     // the return map;
     map<int, bool> return_map;
-    // get the trace_ids
-    set<int> trace_ids = get_trace_ids(trace_pt);
 
     switch (opkind) {
 
@@ -384,17 +443,17 @@ map<int, bool> linear_trace_checker::check(const spot::ltl::multop* node,
         // end of the loop, then none of the children were true and we return
         // false.
         for (int i = 0; i < numkids; i++) {
-            map<int, bool> kid_valids = check(node->nth(i), trace_pt);
-            //fill with true if we find it true on children:
-            // TODO: lots of optimization lost.
-            for (map<int, bool>::iterator kid_valids_it = kid_valids.begin();
-                    kid_valids_it != kid_valids.end(); kid_valids_it++) {
-                if (kid_valids_it->second) {
-                    return_map.emplace(kid_valids_it->first, true);
-                }
+            map<int, bool> kid_valids = check(node->nth(i), trace_pt,
+                    trace_ids);
+            // add the children who are true, remove trace_ids we no longer need to check
+            add_satisfying_values(kid_valids, true, return_map, trace_ids);
+            // then continue if trace_ids is not empty
+            if (trace_ids.size() == 0) {
+                break;
             }
         }
-        // fill with otherwise false
+        // if no kid was true on a trace, that trace_id will remain in trace_ids
+        // and we will add false to the map
         for (set<int>::iterator it = trace_ids.begin(); it != trace_ids.end();
                 it++) {
             return_map.emplace(*it, false);
@@ -409,17 +468,18 @@ map<int, bool> linear_trace_checker::check(const spot::ltl::multop* node,
         // end of the loop, then none of the children were false and we return
         // true.
         for (int i = 0; i < numkids; i++) {
-            map<int, bool> kid_valids = check(node->nth(i), trace_pt);
-            //fill with false if we find it false on children:
-            // TODO: lots of optimization lost.
-            for (map<int, bool>::iterator kid_valids_it = kid_valids.begin();
-                    kid_valids_it != kid_valids.end(); kid_valids_it++) {
-                if (!kid_valids_it->second) {
-                    return_map.emplace(kid_valids_it->first, false);
-                }
+            map<int, bool> kid_valids = check(node->nth(i), trace_pt,
+                    trace_ids);
+            // add false children to return_map and remove those trace ids
+            // from trace ids, thereby truncating evaluation.
+            add_satisfying_values(kid_valids, false, return_map, trace_ids);
+            // then continue if trace_ids is not empty
+            if (trace_ids.size() == 0) {
+                break;
             }
         }
-        // fill with otherwise true
+        // if no kid was false on a trace, it will remain in trace_ids, so
+        // put it in as true.
         for (set<int>::iterator it = trace_ids.begin(); it != trace_ids.end();
                 it++) {
             return_map.emplace(*it, true);
@@ -551,14 +611,36 @@ map<int, bool> linear_trace_checker::not_map(map<int, bool> map) {
  * @param value
  * @return
  */
-bool linear_trace_checker::constant_vals(map<int,bool> map,bool value){
-    for (std::map<int, bool>::iterator it = map.begin();
-            it != map.end(); it++) {
-        if (it->second != value){
+bool linear_trace_checker::constant_vals(map<int, bool> map, bool value) {
+    for (std::map<int, bool>::iterator it = map.begin(); it != map.end();
+            it++) {
+        if (it->second != value) {
             return false;
         }
     }
     return true;
+}
+
+/**
+ * Adds the pairs from returned_vals whose second is equal to to_satisfy
+ * to map_to_return and the keys of the added pairs are removed from to_check.
+ * @param returned_vals the values to filter
+ * @param to_satisfy the value to truncate with
+ * @param map_to_return map of return values for parent function
+ * @param to_check the remaining traces to check; remove those for which
+ * a truncating value has been found.
+ */
+void linear_trace_checker::add_satisfying_values(map<int, bool>& returned_vals,
+        bool to_satisfy, map<int, bool>& map_to_return, set<int>& to_check) {
+    for (map<int, bool>::iterator it = returned_vals.begin();
+            it != returned_vals.end(); it++) {
+        if (it->second == to_satisfy) {
+            map_to_return.insert(*it);
+            to_check.erase(it->first);
+        }
+
+    }
+
 }
 
 /**
