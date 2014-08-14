@@ -42,7 +42,7 @@ private:
         return false;
     }
 
-    virtual trace_node get_next_event(const trace_node current_node);
+    virtual map<set<int>,trace_node> get_next_event(const trace_node current_node);
     virtual bool is_terminal (const trace_node current_node);
     virtual string event_name (const trace_node current_node);
 

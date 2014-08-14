@@ -172,6 +172,10 @@ map<int, bool> linear_trace_checker::check(const spot::ltl::binop *node,
     case spot::ltl::binop::Implies: {
         map<int, bool> pholds = check(p, trace_pt);
 
+        // check if p is false all along and we don't need to recurse
+        bool pfalse_on_all = constant_vals(pholds,false);
+        // return p -> q is true on all if p is false.
+        if (pfalse_on_all) return create_int_bool_map(trace_ids,true);
 
         map<int, bool> qholds = check(q, trace_pt);
         for (map<int, bool>::iterator pholds_it = pholds.begin();
@@ -182,6 +186,7 @@ map<int, bool> linear_trace_checker::check(const spot::ltl::binop *node,
         }
         return pholds;
         //TODO: The above just lost the optmization below. CAN IT BE SAVED?
+        // UPDATE: semi-solved. Can we prevent exploration of uneeded branches?
         // (e.g. q is not evaluated unless p holds. This is a major problem
         // for many formulae, i.e. where we have things like
         // G(a->X((!a U c)&(!c U b))).
@@ -204,6 +209,7 @@ map<int, bool> linear_trace_checker::check(const spot::ltl::binop *node,
     }
         //Until case: p U q
     case spot::ltl::binop::U: {
+        //TODO: in until, etc, should I be using the check instead of check_on_trace?
         //if we get here, we did not see q: thus, false
         if (is_terminal(trace_pt)) {
             return create_int_bool_map(trace_ids, false);
@@ -537,6 +543,22 @@ map<int, bool> linear_trace_checker::not_map(map<int, bool> map) {
         it->second = !it->second;
     }
     return map;
+}
+
+/**
+ * Checks that all the values of map are equal to value
+ * @param map
+ * @param value
+ * @return
+ */
+bool linear_trace_checker::constant_vals(map<int,bool> map,bool value){
+    for (std::map<int, bool>::iterator it = map.begin();
+            it != map.end(); it++) {
+        if (it->second != value){
+            return false;
+        }
+    }
+    return true;
 }
 
 /**

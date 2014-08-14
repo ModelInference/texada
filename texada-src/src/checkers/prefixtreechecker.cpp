@@ -311,11 +311,15 @@ bool prefix_tree_checker::check_on_single_trace(const spot::ltl::multop* form_no
  * @param current_node
  * @return
  */
-linear_trace_checker::trace_node prefix_tree_checker::get_next_event(const trace_node current_node){
+map<set<int>,linear_trace_checker::trace_node> prefix_tree_checker::get_next_event(const trace_node current_node){
     trace_node return_node;
+    map<set<int>,trace_node> return_map;
+    set<int> return_set;
+    return_set.insert(0);
     // TODO: stub for version w/o memoization
     get<shared_ptr<prefix_tree_node>>(return_node) = get<shared_ptr<prefix_tree_node>>(current_node)->get_child(1);
-    return return_node;
+    return_map.emplace(return_set,return_node);
+    return return_map;
 }
 
 /**
