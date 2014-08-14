@@ -61,6 +61,8 @@ private:
     map<int,bool> and_map (map<int,bool>,map<int,bool>);
     map<int,bool> or_map (map<int,bool>,map<int,bool>);
 
+    bool constant_vals(map<int,bool>,bool);
+
     /**
      * both the next types are not supported.
      */
