@@ -18,7 +18,7 @@ namespace texada {
 using std::vector;
 using boost::get;
 
-class prefix_tree_checker : public linear_trace_checker {
+class prefix_tree_checker {
 public:
     prefix_tree_checker();
     virtual ~prefix_tree_checker();
