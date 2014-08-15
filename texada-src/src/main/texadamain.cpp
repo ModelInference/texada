@@ -86,7 +86,11 @@ int main(int ac, char* av[]) {
                 "specify file containing command line options. Any options entered directly to command line will override file options.")(
                 "event,e",
                 boost::program_options::value<std::vector<std::string> >(),
-                "specify a variable in the formula to be interpreted as a constant event.");
+                "specify a variable in the formula to be interpreted as a constant event.")
+                ("regex,r", boost::program_options::value<std::vector<std::string> >(),
+                "event types in log file. Written 'a(?<ETYPE>x)b' where a,b,x are regular expressions and x indicates a matching line's event type [default (?<ETYPE>*)]")
+                ("separator_regex,s", boost::program_options::value<std::string>(), "regular expression matching lines which separate the log into different traces [default --]")
+                ("ignore_nm_lines,i", "ignore lines that do not match any of the passed regular expressions");
 
         boost::program_options::positional_options_description pos_desc;
         pos_desc.add("log_file", 1);
