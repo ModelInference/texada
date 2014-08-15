@@ -16,19 +16,28 @@
 #include <boost/functional/hash.hpp>
 #include <boost/unordered_map.hpp>
 #include "../instantiation-tools/pregeninstantspool.h"
+#include "boolbasedchecker.h"
 
 namespace texada {
+
+struct interval {
+    long start = 0;
+    long end = LONG_MAX;
+    bool operator==(const interval other) const {
+        return (start == other.start && end == other.end);
+    }
+};
 
 /**
  * Class to check whether an LTL formula holds on a trace in the form of a map.
  * Note that this class uses LONG_MAX as infinity.
  */
-class map_trace_checker {
+class map_trace_checker : public bool_based_checker<interval>{
 
 public:
     map_trace_checker(const map<string_event, vector<long>>*);
     virtual ~map_trace_checker();
-    bool check_on_trace(const spot::ltl::formula *);
+    bool check_on_trace(const spot::ltl::formula *, interval intvl = interval());
     /**
      * This class uses relative positions to check to occurrence of events. As
      * such, it has three extra groups of functions: find first, last and all
@@ -36,13 +45,6 @@ public:
      * first, last or all occurrence(s) of the formula in that interval.
      */
 private:
-    struct interval {
-        long start = 0;
-        long end = LONG_MAX;
-        bool operator==(const interval other) const {
-            return (start == other.start && end == other.end);
-        }
-    };
 
     struct formula_interval {
         const spot::ltl::formula* formula;
@@ -79,12 +81,22 @@ private:
     // the trace this map trace checker checks on
     const map<string_event, vector<long>> * trace_map;
 
-    bool check(const spot::ltl::formula *, interval);
-    bool check(const spot::ltl::atomic_prop *, interval);
-    bool check(const spot::ltl::constant *, interval);
-    bool check(const spot::ltl::unop *, interval);
-    bool check(const spot::ltl::multop *, interval);
-    bool check(const spot::ltl::binop *, interval);
+    virtual bool ap_check(const spot::ltl::atomic_prop* node,
+            interval intvl, std::set<int> trace_ids = std::set<int>());
+    virtual bool until_check(const spot::ltl::binop* node,
+            interval intvl, std::set<int> trace_ids = std::set<int>());
+    virtual bool release_check(const spot::ltl::binop* node,
+            interval intvl, std::set<int> trace_ids = std::set<int>());
+    virtual bool weakuntil_check(const spot::ltl::binop* node,
+            interval intvl, std::set<int> trace_ids = std::set<int>());
+    virtual bool strongrelease_check(const spot::ltl::binop* node,
+                interval intvl, std::set<int> trace_ids = std::set<int>());
+    virtual bool globally_check(const spot::ltl::unop* node,
+            interval intvl, std::set<int> trace_ids = std::set<int>());
+    virtual bool finally_check(const spot::ltl::unop* node,
+            interval intvl, std::set<int> trace_ids = std::set<int>());
+    virtual bool next_check(const spot::ltl::unop* node,
+            interval intvl, std::set<int> trace_ids = std::set<int>());
 
     long find_first_occurrence(const spot::ltl::formula*, interval);
     long find_first_occurrence(const spot::ltl::multop*, interval);
@@ -93,8 +105,8 @@ private:
     long find_first_occurrence(const spot::ltl::binop*, interval);
     long find_first_occurrence(const spot::ltl::atomic_prop*, interval);
 
-    long return_and_add(const spot::ltl::formula*, interval, long);
-    long return_and_add_end(const spot::ltl::formula*, interval, long);
+    long return_and_add_first(const spot::ltl::formula*, interval, long);
+    long return_and_add_last(const spot::ltl::formula*, interval, long);
 
     long find_last_occurrence(const spot::ltl::formula*, interval);
     long find_last_occurrence(const spot::ltl::atomic_prop*, interval);
@@ -106,14 +118,6 @@ private:
     /**
      * automatop and bunop are not supported.
      */
-    bool check(const spot::ltl::automatop* node) {
-        std::cerr << "Type automatop unsupported. \n";
-        return false;
-    }
-    bool check(const spot::ltl::bunop* node) {
-        std::cerr << "Type bunop unsupported. \n";
-        return false;
-    }
     long find_first_occurrence(const spot::ltl::automatop*) {
         std::cerr << "Type automatop unsupported. \n";
         return -1;

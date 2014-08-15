@@ -41,73 +41,21 @@ map_trace_checker::~map_trace_checker() {
  * @param node formula to check
  * @return true if node holds on the trace, false otherwise
  */
-bool map_trace_checker::check_on_trace(const spot::ltl::formula* node) {
-    //std::cout << "###";
-    interval base_interval;
-    base_interval.end = terminal_pos - 1;
-    return check(node, base_interval);
+bool map_trace_checker::check_on_trace(const spot::ltl::formula* node,
+        interval intvl) {
+    intvl.end = terminal_pos - 1;
+    return this->check(node, intvl);
 
 }
-/**
- * Checks whether a formula holds on the given interval. Switch method to assign
- * formula to its helper.
- * @param node formula to check
- * @param intvl interval to check on
- * @return true if node holds over intvl, false otherwise
- */
-bool map_trace_checker::check(const spot::ltl::formula* node, interval intvl) {
-    switch (node->kind()) {
-
-    case spot::ltl::formula::Constant:
-        return check(static_cast<const spot::ltl::constant*>(node), intvl);
-    case spot::ltl::formula::AtomicProp:
-        return check(static_cast<const spot::ltl::atomic_prop*>(node), intvl);
-    case spot::ltl::formula::UnOp:
-        return check(static_cast<const spot::ltl::unop*>(node), intvl);
-    case spot::ltl::formula::BinOp:
-        return check(static_cast<const spot::ltl::binop*>(node), intvl);
-    case spot::ltl::formula::MultOp:
-        return check(static_cast<const spot::ltl::multop*>(node), intvl);
-    case spot::ltl::formula::BUnOp:
-        return check(static_cast<const spot::ltl::bunop*>(node));
-    case spot::ltl::formula::AutomatOp:
-        return check(static_cast<const spot::ltl::automatop*>(node));
-    default:
-        return false;
-    }
-
-}
-
-/**
- * Checks whether a const formula holds on the given interval.
- * @param node formula to check
- * @param intvl interval to check on
- * @return true if node holds over intvl, false otherwise
- */
-bool map_trace_checker::check(const spot::ltl::constant* node, interval intvl) {
-    spot::ltl::constant::type value = node->val();
-    switch (value) {
-    case spot::ltl::constant::True:
-        return true;
-    case spot::ltl::constant::False:
-        return false;
-    case spot::ltl::constant::EmptyWord:
-        std::cerr
-                << "We came across the empty word. Returning vacuously true. \n";
-        return true;
-    default:
-        return false;
-    }
-}
-
 /**
  * Checks whether a atomic proposition holds on the given interval.
  * @param node formula to check
  * @param intvl interval to check on
+ * @param trace_ids
  * @return true if node holds over intvl, false otherwise
  */
-bool map_trace_checker::check(const spot::ltl::atomic_prop* node,
-        interval intvl) {
+bool map_trace_checker::ap_check(const spot::ltl::atomic_prop* node,
+        interval intvl, std::set<int> trace_ids) {
     try {
         std::vector<long> to_search = trace_map->at(string_event(node->name()));
         if (std::binary_search(to_search.begin(), to_search.end(),
@@ -118,263 +66,214 @@ bool map_trace_checker::check(const spot::ltl::atomic_prop* node,
     } catch (std::out_of_range &e) {
         return false;
     }
-
 }
 
 /**
- * Checks whether a unop formula holds on the given interval.
- * @param node formula to check
+ * Checks until on the interval: given p U q, need q to occur and !p
+ * not to occur before q.
+ * @param node p U q to check
  * @param intvl interval to check on
- * @return true if node holds over intvl, false otherwise
+ * @param trace_ids
+ * @return
  */
-bool map_trace_checker::check(const spot::ltl::unop* node, interval intvl) {
-    //std::cout << "Checking " << spot::ltl::to_string(node) << " on trace from " << intvl.start << "-" << intvl.end<< "\n";
-    spot::ltl::unop::type optype = node->op();
-
-    switch (optype) {
-
-    // Globally case: given Gp, find first occurrence of !p. If it
-    // never occurs, globally holds.
-    case spot::ltl::unop::G: {
-        // Globally operator holds on all future events, so
-        // extend interval until terminal point
-        intvl.end = terminal_pos - 1;
-        const spot::ltl::formula * neg_norm_child =
-                spot::ltl::negative_normal_form(node->child(), true);
-        long first_occ = find_first_occurrence(neg_norm_child, intvl);
-        neg_norm_child->destroy();
-        if (first_occ == -1)
-            return true;
-        else
-            return false;
-    }
-
-        // Finally case: given Fp, find find occurrence. If it ever occurs,
-        // finally holds
-    case spot::ltl::unop::F: {
-        // Finally operator holds on all future events, so
-        // extend interval until terminal point.
-        intvl.end = terminal_pos - 1;
-        long first_occ = find_first_occurrence(node->child(), intvl);
-        if (first_occ == -1)
-            return false;
-        else
-            return true;
-    }
-
-        // Next case: if the start and end of the interval are at the same place,
-        // then instead of moving start forward, the next event is the terminal
-        // event. Else we move the start of the interval forward to check on the
-        // next event.
-    case spot::ltl::unop::X: {
-        if (intvl.start == intvl.end) {
-            intvl.start = terminal_pos - 1;
-            intvl.end = terminal_pos - 1;
-            return check(node->child(), intvl);
-        }
-        intvl.start++;
-        return check(node->child(), intvl);
-    }
-
-        // Not case: true if, given !p, p does not hold.
-    case spot::ltl::unop::Not: {
-        return !(check(node->child(), intvl));
-    }
-
-        // Other operators are not LTL, don't support them
-    default:
-        std::cerr << "Unsupported unary operator. Returning false. \n";
-        return false;
-
-    }
-}
-
-/**
- * Checks whether a binop formula holds on the given interval.
- * @param node formula to check
- * @param intvl interval to check on
- * @return true if node holds over intvl, false otherwise
- */
-bool map_trace_checker::check(const spot::ltl::binop *node, interval intvl) {
-    //std::cout << "Checking " << spot::ltl::to_string(node) << " on trace from " << intvl.start << "-" << intvl.end<< "\n";
-    spot::ltl::binop::type opkind = node->op();
-
-    switch (opkind) {
-
-    // XOr case: if first is true, return true if second is false,
-    // if first is false, return true if second is true.
-    case spot::ltl::binop::Xor:
-        return (check(node->first(), intvl)) ?
-                !(check(node->second(), intvl)) : check(node->second(), intvl);
-
-        // Implies case: if first is true, return true if second is true,
-        //if first is false, return true.
-    case spot::ltl::binop::Implies:
-        return check(node->first(), intvl) ? check(node->second(), intvl) : true;
-
-        // Equiv case: if first is true, return true if second is true,
-        // if first is false, return true if second is false.
-    case spot::ltl::binop::Equiv:
-        return check(node->first(), intvl) ?
-                check(node->second(), intvl) : !check(node->second(), intvl);
-
-        // Until case: given p U q, need q to occur and !p not to occur before q.
-    case spot::ltl::binop::U: {
-        // U deals with all the future, so extend interval
-        intvl.end = terminal_pos - 1;
-        // find q
-        long first_occ_second = find_first_occurrence(node->second(), intvl);
-        // if q never occurs
-        if (first_occ_second == -1) {
-            return false;
-        }
-        // construct !p
-        const spot::ltl::formula * neg_norm_first =
-                spot::ltl::negative_normal_form(node->first(), true);
-        // check that !p never occurs
-        long first_occ_neg_first = find_first_occurrence(neg_norm_first, intvl);
-        // clean up !p
-        neg_norm_first->destroy();
-        // make sure !p did not occur before q
-        if (first_occ_neg_first < first_occ_second) {
-            return false;
-        } else
-            return true;
-    }
-
-        // Release case: given q R p, we need to check that p holds until
-        // the first occurrence of q
-        // Note: release doesn't make much sense with two atomic
-        // propositions as first and second as two events can't both hold
-    case spot::ltl::binop::R: {
-        // need to make sure there's no violation of R after end of intvl
-        intvl.end = terminal_pos - 1;
-
-        // construct and find the first occurrence of !p
-        const spot::ltl::formula * neg_norm_second =
-                spot::ltl::negative_normal_form(node->second(), true);
-        long first_occ_neg_second = find_first_occurrence(neg_norm_second,
-                intvl);
-        neg_norm_second->destroy();
-
-        // find first occurrence of q
-        long first_occ_first = find_first_occurrence(node->first(), intvl);
-
-        // if q never occurs, q R p holds only if !p never occurs
-        if (first_occ_first == -1) {
-            return (first_occ_neg_second == -1);
-        }
-        // at the first q, p must still hold so the first !p
-        // must be strictly after the first q
-        else if (first_occ_neg_second <= first_occ_first) {
-            return false;
-        } else
-            return true;
-    }
-
-        // Weak until case: identical to until except base case
-        // given p W q, !p cannot occur before q
-    case spot::ltl::binop::W: {
-        // need to make sure there's no violation of W after intvl.end
-        intvl.end = terminal_pos - 1;
-        // Find first q
-        long first_occ_second = find_first_occurrence(node->second(), intvl);
-
-        // construct and find first !p
-        const spot::ltl::formula * neg_norm_first =
-                spot::ltl::negative_normal_form(node->first(), true);
-        long first_occ_neg_first = find_first_occurrence(neg_norm_first, intvl);
-        neg_norm_first->destroy();
-
-        // if q never occurs, p W q holds only if !p never occurs
-        if (first_occ_second == -1) {
-            return (first_occ_neg_first == -1);
-        }
-        // p W q holds if !p does not occur stricly before q
-        else if (first_occ_neg_first < first_occ_second) {
-            return false;
-        } else
-            return true;
-    }
-
-        //Strong Release case: dual of weak until, identical to weak release except base
-        // given q M p, q must occur and !p can only occur strictly after q
-    case spot::ltl::binop::M: {
-        // extend to make sure to violation occurs after the end of the interval
-        intvl.end = terminal_pos - 1;
-        // construct and find first !p
-        const spot::ltl::formula * neg_norm_second =
-                spot::ltl::negative_normal_form(node->second(), true);
-        long first_occ_neg_second = find_first_occurrence(neg_norm_second,
-                intvl);
-        neg_norm_second->destroy();
-
-        // find first q
-        long first_occ_first = find_first_occurrence(node->first(), intvl);
-
-        // q must occur in strong release
-        if (first_occ_first == -1) {
-            return false;
-        }
-        // at the first q, p must still hold so the first !p
-        // must be strictly after the first q
-        else if (first_occ_neg_second <= first_occ_first) {
-            return false;
-        } else
-            return true;
-
-    }
-
-    default:
-        std::cerr << "Unsupported binary operator. Returning false. \n";
-        return false;
-
-    }
-}
-
-/**
- * Checks whether a multop (and or or) formula holds on the given interval.
- * @param node formula to check
- * @param intvl interval to check on
- * @return true if node holds over intvl, false otherwise
- */
-bool map_trace_checker::check(const spot::ltl::multop* node, interval intvl) {
-    //std::cout << "Checking " << spot::ltl::to_string(node) << " on trace from " << intvl.start << "-" << intvl.end<< "\n";
-    spot::ltl::multop::type opkind = node->op();
-
-    switch (opkind) {
-
-    case spot::ltl::multop::Or: {
-        int numkids = node->size();
-        // for each of the multop's children, we check if it is true: if it is,
-        // we short circuit and return true. If we have not returned by the
-        // end of the loop, then none of the children were true and we return
-        // false.
-        for (int i = 0; i < numkids; i++) {
-            if (check(node->nth(i), intvl)) {
-                return true;
-            }
-        }
+bool map_trace_checker::until_check(const spot::ltl::binop* node,
+        interval intvl, std::set<int> trace_ids) {
+    const spot::ltl::formula* p = node->first();
+    const spot::ltl::formula* q = node->second();
+    // U deals with all the future, so extend interval
+    intvl.end = terminal_pos - 1;
+    // find q
+    long first_occ_q = find_first_occurrence(q, intvl);
+    // if q never occurs, until does not hold
+    if (first_occ_q == -1) {
         return false;
     }
-    case spot::ltl::multop::And: {
-        int numkids = node->size();
-        // for each of the multop's children, we check if it is false: if it is,
-        // we short circuit and return false. If we have not returned by the
-        // end of the loop, then none of the children were false and we return
-        // true.
-        for (int i = 0; i < numkids; i++) {
-            if (!check(node->nth(i), intvl)) {
-                return false;
-            }
-        }
+
+    // construct !p
+    const spot::ltl::formula * not_p = spot::ltl::negative_normal_form(p, true);
+    // check that !p never occurs
+    long first_occ_not_p = find_first_occurrence(not_p, intvl);
+    // clean up !p
+    not_p->destroy();
+
+    // make sure !p did not occur before q
+    if (first_occ_not_p < first_occ_q) {
+        return false;
+    } else
         return true;
-    }
-    default:
-        std::cerr << "Unsupported multiple operator. Returning false. \n";
-        return false;
 
+}
+
+/**
+ * Checks release on the interval: given p R q, q to hold up to and including
+ * p's first occurrence
+ * @param node p R q to check
+ * @param intvl interval to check on
+ * @param trace_ids
+ * @return
+ */
+bool map_trace_checker::release_check(const spot::ltl::binop* node,
+        interval intvl, std::set<int> trace_ids) {
+    const spot::ltl::formula* p = node->first();
+    const spot::ltl::formula* q = node->second();
+
+    // need to make sure there's no violation of R after end of intvl
+    intvl.end = terminal_pos - 1;
+
+    // construct and find the first occurrence of !q
+    const spot::ltl::formula * not_q = spot::ltl::negative_normal_form(q, true);
+    long first_occ_not_q = find_first_occurrence(not_q, intvl);
+    not_q->destroy();
+
+    // find first occurrence of p
+    long first_occ_p = find_first_occurrence(p, intvl);
+
+    // if p never occurs, p R q holds only if !q never occurs
+    if (first_occ_p == -1) {
+        return (first_occ_not_q == -1);
     }
+    // at the first p, q must still hold so the first !q
+    // must be strictly after the first p
+    else if (first_occ_not_q <= first_occ_p) {
+        return false;
+    } else
+        return true;
+}
+
+/**
+ * Checks weak until on the interval: given p U q, need !p
+ * not to occur before q.
+ * @param node p W q to check
+ * @param intvl interval to check on
+ * @param trace_ids
+ * @return
+ */
+bool map_trace_checker::weakuntil_check(const spot::ltl::binop* node,
+        interval intvl, std::set<int> trace_ids) {
+    const spot::ltl::formula* p = node->first();
+    const spot::ltl::formula* q = node->second();
+    // need to make sure there's no violation of W after intvl.end
+    intvl.end = terminal_pos - 1;
+    // Find first q
+    long first_occ_q = find_first_occurrence(q, intvl);
+
+    // construct and find first !p
+    const spot::ltl::formula * not_p = spot::ltl::negative_normal_form(p, true);
+    long first_occ_not_p = find_first_occurrence(not_p, intvl);
+    not_p->destroy();
+
+    // if q never occurs, p W q holds only if !p never occurs
+    if (first_occ_q == -1) {
+        return (first_occ_not_p == -1);
+    }
+    // p W q holds if !p does not occur strictly before q
+    else if (first_occ_not_p < first_occ_q) {
+        return false;
+    } else
+        return true;
+}
+
+/**
+ * Checks release on the interval: given p M q, q to hold up to and including
+ * p's first occurrence, and p must occur
+ * @param node p M q to check
+ * @param intvl interval to check on
+ * @param trace_ids
+ * @return
+ */
+bool map_trace_checker::strongrelease_check(const spot::ltl::binop* node,
+        interval intvl, std::set<int> trace_ids) {
+    const spot::ltl::formula* p = node->first();
+    const spot::ltl::formula* q = node->second();
+
+    // need to make sure there's no violation of R after end of intvl
+    intvl.end = terminal_pos - 1;
+
+    // construct and find the first occurrence of !q
+    const spot::ltl::formula * not_q = spot::ltl::negative_normal_form(q, true);
+    long first_occ_not_q = find_first_occurrence(not_q, intvl);
+    not_q->destroy();
+
+    // find first occurrence of p
+    long first_occ_p = find_first_occurrence(p, intvl);
+
+    // if p never occurs, p M q holds only if !p never occurs
+    if (first_occ_p == -1) {
+        return false;
+    }
+    // at the first p, q must still hold so the first !q
+    // must be strictly after the first p
+    else if (first_occ_not_q <= first_occ_p) {
+        return false;
+    } else
+        return true;
+}
+
+/**
+ * Checks whether Gp holds on the interval. Find first occurrence
+ * of !p; if !p never occurs, Gp holds.
+ * @param node Gp
+ * @param intvl interval
+ * @param trace_ids
+ * @return
+ */
+bool map_trace_checker::globally_check(const spot::ltl::unop* node,
+        interval intvl, std::set<int> trace_ids) {
+    const spot::ltl::formula* p = node->child();
+    // Globally operator holds on all future events, so
+    // extend interval until terminal point
+    intvl.end = terminal_pos - 1;
+    //construct and find first !p
+    const spot::ltl::formula * not_p = spot::ltl::negative_normal_form(p, true);
+    long first_occ = find_first_occurrence(not_p, intvl);
+    not_p->destroy();
+    if (first_occ == -1)
+        return true;
+    else
+        return false;
+}
+
+/**
+ * Check whether Fp holds on the interval; find if p ever occurs
+ * @param node Fp
+ * @param intvl interval to check on
+ * @param trace_ids
+ * @return
+ */
+bool map_trace_checker::finally_check(const spot::ltl::unop* node,
+        interval intvl, std::set<int> trace_ids) {
+    const spot::ltl::formula* p = node->child();
+    // Finally operator holds on all future events, so
+    // extend interval until terminal point.
+    intvl.end = terminal_pos - 1;
+    long first_occ = find_first_occurrence(p, intvl);
+    if (first_occ == -1)
+        return false;
+    else
+        return true;
+}
+
+/**
+ * Checks that Xp holds on the interval.
+ * @param node Xp
+ * @param intvl interval to check on
+ * @param trace_ids
+ * @return
+ */
+bool map_trace_checker::next_check(const spot::ltl::unop* node, interval intvl,
+        std::set<int> trace_ids) {
+    const spot::ltl::formula* p = node->child();
+    // if the start and end of the interval are at the same place,
+    // the next event is the terminal: check there
+    if (intvl.start == intvl.end) {
+        intvl.start = terminal_pos - 1;
+        intvl.end = terminal_pos - 1;
+        return this->check(p, intvl);
+    }
+    // move the start of the interval forward to check p on the next event.
+    intvl.start++;
+    return this->check(p, intvl);
+
 }
 
 /**
@@ -420,7 +319,7 @@ long map_trace_checker::find_first_occurrence(const spot::ltl::formula* node,
  * @param first_occ the first occ of node on the interval intvl
  * @return first_occ
  */
-long map_trace_checker::return_and_add(const spot::ltl::formula* node,
+long map_trace_checker::return_and_add_first(const spot::ltl::formula* node,
         interval intvl, long first_occ) {
     // we can add intervals with one-off start of interval if
     // the first occurrence is not the first of the interval
@@ -463,7 +362,7 @@ long map_trace_checker::return_and_add(const spot::ltl::formula* node,
  * @param last_occ the last occ of node on the interval intvl
  * @return last_occ
  */
-long map_trace_checker::return_and_add_end(const spot::ltl::formula* node,
+long map_trace_checker::return_and_add_last(const spot::ltl::formula* node,
         interval intvl, long last_occ) {
     formula_interval storer;
     storer.formula = node;
@@ -517,8 +416,7 @@ long map_trace_checker::find_first_occurrence(
                  * does not occur in intvl
                  */
                 if (newpos + 1 >= to_search.size()) {
-                    //std::cout << "It's -1. \n";
-                    return return_and_add(node, intvl, -1);
+                    return return_and_add_first(node, intvl, -1);
                 }
                 if (to_search[newpos + 1] >= intvl.start) {
                     /**
@@ -530,8 +428,7 @@ long map_trace_checker::find_first_occurrence(
                      * newpos is smaller than the start, but the next occurrence is within bounds
                      */
                     if (to_search[newpos + 1] <= intvl.end) {
-                        //std::cout << "It's " << to_search[newpos+1] << ".\n";
-                        return return_and_add(node, intvl,
+                        return return_and_add_first(node, intvl,
                                 to_search[newpos + 1]);
                     }
                     /**
@@ -544,8 +441,7 @@ long map_trace_checker::find_first_occurrence(
                      * does not occur within intvl
                      */
                     else {
-                        //std::cout << "It's -1. \n";
-                        return return_and_add(node, intvl, -1);
+                        return return_and_add_first(node, intvl, -1);
                     }
                 }
 
@@ -563,8 +459,7 @@ long map_trace_checker::find_first_occurrence(
              * newpos is the start: this is the first occurrence
              */
             else if (to_search[newpos] == intvl.start) {
-                //std::cout << "It's " << intvl.start << ".\n";
-                return return_and_add(node, intvl, intvl.start);
+                return return_and_add_first(node, intvl, intvl.start);
             } else {
                 if (newpos == 0) {
                     /**
@@ -576,8 +471,8 @@ long map_trace_checker::find_first_occurrence(
                      *  newpos is larger than the start, but smaller than the end
                      */
                     if (to_search[newpos] <= intvl.end) {
-                        //std::cout << "It's " << to_search[newpos] << ".\n";
-                        return return_and_add(node, intvl, to_search[newpos]);
+                        return return_and_add_first(node, intvl,
+                                to_search[newpos]);
                     }
                     /**
                      * case where
@@ -588,8 +483,7 @@ long map_trace_checker::find_first_occurrence(
                      *  newpos is larger than the start and the end, so not in range
                      */
                     else {
-                        //std::cout << "It's -1.\n";
-                        return return_and_add(node, intvl, -1);
+                        return return_and_add_first(node, intvl, -1);
                     }
                 }
                 /**
@@ -605,8 +499,7 @@ long map_trace_checker::find_first_occurrence(
         }
     } catch (std::out_of_range &e) {
         // this means we didn't find the event in the trace map, so it never occurs;
-        //std::cout << "It's -1.\n";
-        return return_and_add(node, intvl, -1);
+        return return_and_add_first(node, intvl, -1);
     }
 }
 
@@ -662,7 +555,7 @@ long map_trace_checker::find_first_occurrence(const spot::ltl::multop* node,
         intvl.start = total_first_occ;
         for (int i = 0; i < numkids; i++) {
             // if any of them fail, this cannot be the first occurrence
-            if (!check(node->nth(i), intvl)) {
+            if (!this->check(node->nth(i), intvl)) {
                 // find the first occurrence starting after the point
                 // we just checked for first occurrence
                 if (intvl.start != intvl.end) {
@@ -784,7 +677,6 @@ long map_trace_checker::find_first_occurrence(const spot::ltl::unop* node,
  */
 long map_trace_checker::find_first_occurrence(const spot::ltl::binop* node,
         interval intvl) {
-    //std::cout << "Finding first occurrence of " << spot::ltl::to_string(node) << " on trace from " << intvl.start << "-" << intvl.end<< "\n";
     spot::ltl::binop::type opkind = node->op();
 
     switch (opkind) {
@@ -1150,7 +1042,7 @@ long map_trace_checker::find_last_occurrence(const spot::ltl::atomic_prop* node,
 
                 // case where all is to the left
                 if (newpos == 0) {
-                    return return_and_add_end(node, intvl, -1);
+                    return return_and_add_last(node, intvl, -1);
                 }
                 //else if the previous is smaller than or equal to the end
                 if (to_search[newpos - 1] <= intvl.end) {
@@ -1158,7 +1050,7 @@ long map_trace_checker::find_last_occurrence(const spot::ltl::atomic_prop* node,
                     if (to_search[newpos - 1] >= intvl.start) {
                         return to_search[newpos - 1];
                     } else {
-                        return return_and_add_end(node, intvl, -1);
+                        return return_and_add_last(node, intvl, -1);
                     }
                 }
                 // if it's bigger than intvl.end and the one before was also too big,
@@ -1167,7 +1059,7 @@ long map_trace_checker::find_last_occurrence(const spot::ltl::atomic_prop* node,
             }
 
             else if (to_search[newpos] == intvl.end) {
-                return return_and_add_end(node, intvl, intvl.end);
+                return return_and_add_last(node, intvl, intvl.end);
             }
             // else to_search[newpos]<intvl.end
             else {
@@ -1175,12 +1067,12 @@ long map_trace_checker::find_last_occurrence(const spot::ltl::atomic_prop* node,
                 if (newpos >= to_search.size() - 1) {
                     // and it's larger than the start, then it's the last event
                     if (to_search[newpos] >= intvl.start) {
-                        return return_and_add_end(node, intvl,
+                        return return_and_add_last(node, intvl,
                                 to_search[newpos]);
                     }
                     // else if it's smaller than the start, it's not in the interval
                     else {
-                        return return_and_add_end(node, intvl, -1);
+                        return return_and_add_last(node, intvl, -1);
                     }
                 }
                 // else newpos is too small so we have to go to the right side
@@ -1189,7 +1081,7 @@ long map_trace_checker::find_last_occurrence(const spot::ltl::atomic_prop* node,
         }
     } catch (std::out_of_range &e) {
         // this means we didn't find the event in the trace map, so it never occurs;
-        return return_and_add_end(node, intvl, -1);
+        return return_and_add_last(node, intvl, -1);
     }
 }
 /**
@@ -1240,7 +1132,7 @@ long map_trace_checker::find_last_occurrence(const spot::ltl::multop* node,
         // check each child at the possible and location
         for (int i = 0; i < numkids; i++) {
             // if one fails
-            if (!check(node->nth(i), temp)) {
+            if (!this->check(node->nth(i), temp)) {
                 // if the interval is not one long, we can move
                 // it to try and find the last in the previous part
                 if (intvl.start < temp.start) {
@@ -1273,7 +1165,6 @@ long map_trace_checker::find_last_occurrence(const spot::ltl::multop* node,
  */
 long map_trace_checker::find_last_occurrence(const spot::ltl::unop* node,
         interval intvl) {
-    //std::cout << "Finding last occurrence of " << spot::ltl::to_string(node) << " on trace from " << intvl.start << "-" << intvl.end<< "\n";
     spot::ltl::unop::type optype = node->op();
 
     switch (optype) {
@@ -1611,7 +1502,7 @@ long map_trace_checker::find_last_occurrence(const spot::ltl::binop* node,
         }
         temp.start = last_first;
         // check to see if p holds at q; if it does, return that position
-        if (check(node->second(), temp)) {
+        if (this->check(node->second(), temp)) {
             return last_first;
         }
         // else if it doesn't hold and we don't have any other choices
@@ -1663,7 +1554,7 @@ long map_trace_checker::find_last_occurrence(const spot::ltl::binop* node,
 
         temp.start = intvl.start;
         // check to see if p holds at q; if it does, return that q
-        if (check(node->second(), temp)) {
+        if (this->check(node->second(), temp)) {
             return last_first;
         }
         // else if it doesn't hold and we don't have any other choices, -1

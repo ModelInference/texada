@@ -94,6 +94,40 @@ bool linear_trace_checker::release_check(const spot::ltl::binop* node,
 }
 
 /**
+ * p M q will be true if !q does not occur before (inclusive) q. q must occur.
+ * @param node: the atomic proposition to check
+ * @param trace: pointer to the start of the trace
+ * @param trace_ids
+ * @return
+ */
+bool linear_trace_checker::strongrelease_check(const spot::ltl::binop* node,
+        const string_event* trace_pt, std::set<int> trace_ids) {
+    const spot::ltl::formula * p = node->first();
+    const spot::ltl::formula * q = node->second();
+
+    //if we get here, q always held, p never occurred: false
+    if (trace_pt->is_terminal()) {
+        return false;
+    }
+    // if !q occurs before p & q, false
+    else if (!this->check(q, trace_pt)) {
+        return false;
+    }
+
+    // we know from the previous if that q holds and held up to here,
+    // so if p also holds, return true
+    else if (this->check(p, trace_pt)) {
+        return true;
+    }
+
+    // if the q holds, check on the next suffix trace
+    else {
+        return this->check(node, trace_pt + 1);
+    }
+
+}
+
+/**
  * p W q will be true if !p does not occur before (exclusive) q
  * @param node: the atomic proposition to check
  * @param trace: pointer to the start of the trace

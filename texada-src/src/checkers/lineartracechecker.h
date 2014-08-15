@@ -33,12 +33,14 @@ public:
 private:
 
 
-	 virtual bool ap_check(const spot::ltl::atomic_prop* node,
+	virtual bool ap_check(const spot::ltl::atomic_prop* node,
 	            const string_event* trace_pt, std::set<int> trace_ids = std::set<int>());
     virtual bool until_check(const spot::ltl::binop* node,
             const string_event* trace_pt, std::set<int> trace_ids = std::set<int>());
     virtual bool release_check(const spot::ltl::binop* node,
             const string_event* trace_pt, std::set<int> trace_ids = std::set<int>());
+    virtual bool strongrelease_check(const spot::ltl::binop* node,
+                const string_event* trace_pt, std::set<int> trace_ids = std::set<int>());
     virtual bool weakuntil_check(const spot::ltl::binop* node,
             const string_event* trace_pt, std::set<int> trace_ids = std::set<int>());
     virtual bool globally_check(const spot::ltl::unop* node,
