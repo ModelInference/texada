@@ -88,7 +88,7 @@ int main(int ac, char* av[]) {
                 boost::program_options::value<std::vector<std::string> >(),
                 "specify a variable in the formula to be interpreted as a constant event.")
                 ("regex,r", boost::program_options::value<std::vector<std::string> >(),
-                "event types in log file. Written 'a(?<ETYPE>x)b' where a,b,x are regular expressions and x indicates a matching line's event type [default (?<ETYPE>*)]")
+                "event types in log file. Written 'a(?<ETYPE>x)b' where a,b,x are regular expressions and x indicates a matching line's event type [default (?<ETYPE>.*)]")
                 ("separator_regex,s", boost::program_options::value<std::string>(), "regular expression matching lines which separate the log into different traces [default --]")
                 ("ignore_nm_lines,i", "ignore lines that do not match any of the passed regular expressions");
 
