@@ -10,16 +10,9 @@
 #include "../instantiation-tools/pregeninstantspool.h"
 namespace texada {
 
-linear_trace_checker::linear_trace_checker() : bool_based_checker(){
-
-}
-
-linear_trace_checker::~linear_trace_checker() {
-
-}
 
 bool linear_trace_checker::check_on_trace(const spot::ltl::formula * node, const string_event * trace){
-    return check(node, trace);
+    return this->check(node, trace);
 }
 
 /**
@@ -28,7 +21,7 @@ bool linear_trace_checker::check_on_trace(const spot::ltl::formula * node, const
  * @param trace: pointer to the start of the trace
  * @return whether node holds on trace
  */
-bool linear_trace_checker::check(const spot::ltl::atomic_prop *node,
+bool linear_trace_checker::ap_check(const spot::ltl::atomic_prop *node,
         const string_event *trace, std::set<int> trace_ids) {
     return (trace->get_name() == node->name()) ? true : false;
 }
@@ -52,17 +45,17 @@ bool linear_trace_checker::until_check(const spot::ltl::binop* node,
     }
     // if the q holds here, we have not yet seen q or !p, (these
     //  cause return) so true
-    else if (check(q, trace_pt)) {
+    else if (this->check(q, trace_pt)) {
         return true;
     }
     // we know q does not hold from above, so if p does not hold,
     // we have !p and !q, which violates p U q.
-    else if (!check(p, trace_pt)) {
+    else if (!this->check(p, trace_pt)) {
         return false;
     }
     // if !q and p holds, check on the next suffix trace
     else {
-        return check(node, trace_pt + 1);
+        return this->check(node, trace_pt + 1);
     }
 }
 
@@ -83,19 +76,19 @@ bool linear_trace_checker::release_check(const spot::ltl::binop* node,
         return true;
     }
     // if !q occurs before p & q, false
-    else if (!check(q, trace_pt)) {
+    else if (!this->check(q, trace_pt)) {
         return false;
     }
 
     // we know from the previous if that q holds and held up to here,
     // so if p also holds, return true
-    else if (check(p, trace_pt)) {
+    else if (this->check(p, trace_pt)) {
         return true;
     }
 
     // if the q holds, check on the next suffix trace
     else {
-        return check(node, trace_pt + 1);
+        return this->check(node, trace_pt + 1);
     }
 
 }
@@ -117,17 +110,17 @@ bool linear_trace_checker::weakuntil_check(const spot::ltl::binop* node,
     }
     // if the q holds here, we have not yet seen q or !p, (these
     //  cause return) so true
-    else if (check(q, trace_pt)) {
+    else if (this->check(q, trace_pt)) {
         return true;
     }
     // we know q does not hold from above, so if p does not hold,
     // we have !p and !q, which violates p U q.
-    else if (!check(p, trace_pt)) {
+    else if (!this->check(p, trace_pt)) {
         return false;
     }
     // if !q and p holds, check on the next suffix trace
     else {
-        return check(node, trace_pt + 1);
+        return this->check(node, trace_pt + 1);
     }
 
 
@@ -151,7 +144,7 @@ bool linear_trace_checker::globally_check(const spot::ltl::unop* node,
     } else {
         //Return whether subformula is true on this trace, recursive check on
         // all subsequent traces.
-        return check(p, trace_pt) && check(node, trace_pt + 1);
+        return this->check(p, trace_pt) && this->check(node, trace_pt + 1);
     }
 }
 
@@ -173,7 +166,7 @@ bool linear_trace_checker::finally_check(const spot::ltl::unop* node,
     } else {
         //Return whether subformula is true on this trace, recursive check on
         // all subsequent traces.
-        return check(p, trace_pt) || check(node, trace_pt + 1);
+        return this->check(p, trace_pt) || this->check(node, trace_pt + 1);
     }
 }
 
@@ -192,9 +185,9 @@ bool linear_trace_checker::next_check(const spot::ltl::unop* node,
     // if we are at the terminal event, the next event is also a terminal
     // event. Since we are traversing a finite tree, this will terminate.
     if (trace_pt->is_terminal()) {
-        return check(p, trace_pt);
+        return this->check(p, trace_pt);
     }
-    return check(p, trace_pt + 1);
+    return this->check(p, trace_pt + 1);
 }
 
 

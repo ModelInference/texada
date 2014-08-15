@@ -25,19 +25,16 @@ namespace texada {
  */
 class linear_trace_checker : public bool_based_checker<const string_event*>{
 public:
-	linear_trace_checker();
-	virtual ~linear_trace_checker();
+	linear_trace_checker() {};
+	virtual ~linear_trace_checker() {};
 
 	bool check_on_trace(const spot::ltl::formula* node, const string_event *trace);
 
 private:
 
-	// override the atomic prop
-	virtual bool check(const spot::ltl::atomic_prop* node,
-	         const string_event* trace_pt, std::set<int> trace_ids = std::set<int>());
-    virtual bool check(const spot::ltl::formula* node,
-             const string_event* trace_pt, std::set<int> trace_ids = std::set<int>());
 
+	 virtual bool ap_check(const spot::ltl::atomic_prop* node,
+	            const string_event* trace_pt, std::set<int> trace_ids = std::set<int>());
     virtual bool until_check(const spot::ltl::binop* node,
             const string_event* trace_pt, std::set<int> trace_ids = std::set<int>());
     virtual bool release_check(const spot::ltl::binop* node,
@@ -50,12 +47,7 @@ private:
             const string_event* trace_pt, std::set<int> trace_ids = std::set<int>());
     virtual bool next_check(const spot::ltl::unop* node,
             const string_event* trace_pt, std::set<int> trace_ids = std::set<int>());
-    virtual bool not_check(const spot::ltl::unop* node,
-            const string_event* trace_pt, std::set<int> trace_ids = std::set<int>());
-    virtual bool or_check(const spot::ltl::multop* node,
-            const string_event* trace_pt, std::set<int> trace_ids = std::set<int>());
-    virtual bool and_check(const spot::ltl::multop* node,
-            const string_event* trace_pt, std::set<int> trace_ids = std::set<int>());
+
 
 
 };
