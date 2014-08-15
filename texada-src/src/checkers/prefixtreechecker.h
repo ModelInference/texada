@@ -22,7 +22,7 @@ class prefix_tree_checker : public linear_trace_checker {
 public:
     prefix_tree_checker();
     virtual ~prefix_tree_checker();
-    typedef boost::variant<const string_event*,shared_ptr<prefix_tree_node>> trace_node;
+    typedef shared_ptr<prefix_tree_node> trace_node;
 
     virtual bool check_on_trace(const spot::ltl::formula* node, const trace_node trace_pt);
 
@@ -55,11 +55,6 @@ private:
     virtual map<int,bool> check(const spot::ltl::binop* node, const trace_node trace_pt, set<int> trace_ids);
     virtual map<int,bool> check(const spot::ltl::unop* node,  const trace_node trace_pt, set<int> trace_ids);
     virtual map<int,bool> check(const spot::ltl::multop* node,  const trace_node trace_pt, set<int> trace_ids);
-
-    virtual map<set<int>,trace_node> get_next_event(const trace_node current_node);
-    virtual set<int> get_trace_ids(const trace_node current_node);
-    virtual bool is_terminal (const trace_node current_node);
-    virtual string event_name (const trace_node current_node);
 
     map<int,bool> create_int_bool_map (set<int>, bool);
 
