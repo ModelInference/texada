@@ -833,6 +833,11 @@ void prefix_tree_checker::add_satisfying_values(map<int, bool>& returned_vals,
     }
 
 }
+//TODO: stub.unstub.
+set<int> prefix_tree_checker::get_trace_ids(const trace_node current_node){
+    return set<int>();
+
+}
 
 /**
  * Gets the next node if this is a prefix tree node.

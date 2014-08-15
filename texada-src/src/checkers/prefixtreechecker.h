@@ -10,11 +10,13 @@
 
 #include "../parsing/prefixtree.h"
 #include "lineartracechecker.h"
+#include <boost/variant.hpp>
 #include <ltlast/allnodes.hh>
 #include <vector>
 
 namespace texada {
 using std::vector;
+using boost::get;
 
 class prefix_tree_checker : public linear_trace_checker {
 public:
