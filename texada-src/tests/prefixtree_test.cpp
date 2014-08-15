@@ -187,6 +187,10 @@ TEST(PrefixTreeCheckerTest, TestSimpleTree){
 }
 
 TEST(PrefixTreeCheckerTest, TestOnTrace){
+    if (getenv("TEXADA_HOME") == NULL){
+        std::cerr << "Error: TEXADA_HOME is undefined. \n";
+        FAIL();
+    }
     std::ifstream infile(
             std::string(getenv("TEXADA_HOME"))
                     + "/traces/parsing-tests/simple-pre-tree.txt");
@@ -205,4 +209,6 @@ TEST(PrefixTreeCheckerTest, TestOnTrace){
 
 
 }
+
+
 
