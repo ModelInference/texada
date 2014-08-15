@@ -162,7 +162,7 @@ TEST(PrefixTreeTest,CreateSimpleTree) {
 
 }
 
-TEST(PrefixTreeCheckerTets, TestSimpleTree){
+TEST(PrefixTreeCheckerTest, TestSimpleTree){
 
     // get simple tree
     texada::prefix_tree * all_traces = create_simple_tree();
