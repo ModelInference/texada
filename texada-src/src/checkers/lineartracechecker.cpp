@@ -10,42 +10,9 @@
 #include "../instantiation-tools/pregeninstantspool.h"
 namespace texada {
 
-linear_trace_checker::linear_trace_checker() {
 
-}
-
-linear_trace_checker::~linear_trace_checker() {
-
-}
-
-/**
- * Since SPOT's visitor only takes in one parameter (the formula), the accept functionality
- * cannot be used. Thus we need a function that takes in a general formula and correctly
- * assigns which helper should deal with it.
- * @param node: the atomic proposition to check
- * @param trace: pointer to the start of the trace
- * @return whether node holds on trace
- */
-bool linear_trace_checker::check(const spot::ltl::formula* node,
-        const string_event *trace) {
-    switch (node->kind()) {
-    case spot::ltl::formula::Constant:
-        return check(static_cast<const spot::ltl::constant*>(node), trace);
-    case spot::ltl::formula::AtomicProp:
-        return check(static_cast<const spot::ltl::atomic_prop*>(node), trace);
-    case spot::ltl::formula::UnOp:
-        return check(static_cast<const spot::ltl::unop*>(node), trace);
-    case spot::ltl::formula::BinOp:
-        return check(static_cast<const spot::ltl::binop*>(node), trace);
-    case spot::ltl::formula::MultOp:
-        return check(static_cast<const spot::ltl::multop*>(node), trace);
-    case spot::ltl::formula::BUnOp:
-        return check(static_cast<const spot::ltl::bunop*>(node));
-    case spot::ltl::formula::AutomatOp:
-        return check(static_cast<const spot::ltl::automatop*>(node));
-    default:
-        return false;
-    }
+bool linear_trace_checker::check_on_trace(const spot::ltl::formula * node, const string_event * trace){
+    return this->check(node, trace);
 }
 
 /**
@@ -54,261 +21,209 @@ bool linear_trace_checker::check(const spot::ltl::formula* node,
  * @param trace: pointer to the start of the trace
  * @return whether node holds on trace
  */
-inline bool linear_trace_checker::check(const spot::ltl::atomic_prop *node,
-        const string_event *trace) {
+bool linear_trace_checker::ap_check(const spot::ltl::atomic_prop *node,
+        const string_event *trace, std::set<int> trace_ids) {
     return (trace->get_name() == node->name()) ? true : false;
 }
 
 /**
- * spot::ltl::constant is either true, false, or empty word. On true, we return true
- * and on false we return false. Checking an empty word on a trace should probably
- * be true (since if the formula expresses nothing, it should vacuously hold true).
+ * p U q will be true if !p does not occur before (exclusive) q
+ * Also, q must occur.
  * @param node: the atomic proposition to check
  * @param trace: pointer to the start of the trace
- * @return whether node holds on trace
+ * @param trace_ids
+ * @return
  */
-bool linear_trace_checker::check(const spot::ltl::constant *node,
-        const string_event *trace) {
-    spot::ltl::constant::type value = node->val();
-    switch (value) {
-    case spot::ltl::constant::True:
-        return true;
-    case spot::ltl::constant::False:
-        return false;
-    case spot::ltl::constant::EmptyWord:
-        std::cerr
-                << "We came across the empty word. Returning vacuously true. \n";
-        return true;
-    default:
-        return false;
-    }
-}
-
-/**
- * There are many binary operations. Each will be true for different reasons:
- * XOR: if first or second is true, but not both
- * Implies: if first is false, or both are true
- * Equiv: if both are false or both are true
- * Until: If second is true, return true. If it's not, check that first is:
- * if it's not, false, if it is, check next suffix trace. Second must occur.
- * Weak Until: As with until, but second must not occur
- * Release: first R second == second W (first & second)
- * Other operators are not supported
- * @param node: the atomic proposition to check
- * @param trace: pointer to the start of the trace
- * @return whether node holds on trace
- */
-bool linear_trace_checker::check(const spot::ltl::binop *node,
-        const string_event *trace) {
-    spot::ltl::binop::type opkind = node->op();
+bool linear_trace_checker::until_check(const spot::ltl::binop* node,
+        const string_event* trace_pt, std::set<int> trace_ids) {
     const spot::ltl::formula * p = node->first();
     const spot::ltl::formula * q = node->second();
 
-    switch (opkind) {
-
-    //XOR case: p xor q. if p is true, return true if q is false,
-    //if p is false, return true if q is true.
-    case spot::ltl::binop::Xor: {
-        bool qholds = check(q, trace);
-        return (check(p, trace)) ? !qholds : qholds;
-    }
-        //Implies case:  p -> q if p is true, return true if q is true,
-        //if p is false, return true.
-    case spot::ltl::binop::Implies: {
-        return check(p, trace) ? check(q, trace) : true;
-    }
-        //Equiv case:  p <-> q if p is true, return true if q is true,
-        //if p is false, return true if q is false.
-    case spot::ltl::binop::Equiv:{
-        bool qholds = check(q, trace);
-        return check(p, trace) ?
-               qholds : !qholds;
-    }
-        //Until case: p U q
-    case spot::ltl::binop::U:{
-        //if we get here, we did not see q: thus, false
-        if (trace->is_terminal()) {
-            return false;
-        }
-        // if the q holds here, we have not yet seen q or !p, (these
-        //  cause return) so true
-        else if (check(q, trace)) {
-            return true;
-        }
-        // we know q does not hold from above, so if p does not hold,
-        // we have !p and !q, which violates p U q.
-        else if (!check(p, trace)) {
-            return false;
-        }
-        // if !q and p holds, check on the next suffix trace
-        else {
-            return check(node, trace + 1);
-        }
-    }
-        //Release case: p R q
-    case spot::ltl::binop::R:{
-        //if we get here, q always held: true
-        if (trace->is_terminal()) {
-            return true;
-        }
-        // if !q occurs before p & q, false
-        else if (!check(q, trace)) {
-            return false;
-        }
-
-        // we know from the previous if that q holds and held up to here,
-        // so if p also holds, return true
-        else if (check(p, trace)) {
-            return true;
-        }
-
-        // if the q holds, check on the next suffix trace
-        else {
-            return check(node, trace + 1);
-        }
-    }
-
-        //Weak until case: identical to until except base case
-    case spot::ltl::binop::W:{
-        //if we get here, we did not see q or !p, so true.
-        if (trace->is_terminal()) {
-            return true;
-        }
-        // if the q holds here, we have not yet seen q or !p, (these
-        //  cause return) so true
-        else if (check(q, trace)) {
-            return true;
-        }
-        // we know q does not hold from above, so if p does not hold,
-        // we have !p and !q, which violates p U q.
-        else if (!check(p, trace)) {
-            return false;
-        }
-        // if !q and p holds, check on the next suffix trace
-        else {
-            return check(node, trace + 1);
-        }
-    }
-
-    default:
-        std::cerr << "Unsupported binary operator. Returning false. \n";
-        return false;
-
-    }
-}
-
-/**
- * A unary operation is either G, F, X or Not. SPOT also includes some other binary operators
- * which are not supported by this checker.
- * A formula which is globally true must be true on every trace suffix of the given trace.
- * A formula which is finally true must be true on some trace suffix of the given trace.
- * A formula which is next true must be true on the next trace suffix of the given trace.
- * A formula is not true is its negation holds on the current trace.
- * @param node: the atomic proposition to check
- * @param trace: pointer to the start of the trace
- * @return whether node holds on trace
- */
-bool linear_trace_checker::check(const spot::ltl::unop *node,
-        const string_event *trace) {
-
-    spot::ltl::unop::type optype = node->op();
-    const spot::ltl::formula * p = node->child();
-
-    //TODO: refactor node->child into a variable
-
-    switch (optype) {
-
-    // Globally case: Gp
-    case spot::ltl::unop::G:
-        // base case: if we're at END_VAR, return true to not effect &&
-        if (trace->is_terminal()) {
-            return true;
-        } else {
-            //Return whether subformula is true on this trace, recursive check on
-            // all subsequent traces.
-            return check(p, trace) && check(node, trace + 1);
-        }
-
-        // Finally case: Fp
-    case spot::ltl::unop::F:
-        // base case: if we're at END_VAR, return false to not effect ||
-        if (trace->is_terminal()) {
-            return false;
-        } else {
-            //Return whether subformula is true on this trace, recursive check on
-            // all subsequent traces.
-            return check(p, trace) || check(node, trace + 1);
-        }
-
-        // Next case: Xp
-    case spot::ltl::unop::X:
-        // if we are at the terminal event, the next event is also a terminal
-        // event. Since we are traversing a finite tree, this will terminate.
-        if (trace->is_terminal()) {
-            return check(p, trace);
-        }
-        return check(p, trace + 1);
-
-        // Not case: !p
-    case spot::ltl::unop::Not:
-        return !check(p, trace);
-
-        // Other operators are not LTL, don't support them
-    default:
-        std::cerr << "Unsupported unary operator. Returning false. \n";
-        return false;
-
-    }
-
-}
-
-/**
- * Multop includes or and and. SPOT also has other multops which are not supported.
- * Each element of the and needs to be true on the trace; only one element of the
- * or must be true on the trace.
- * @param node: the atomic proposition to check
- * @param trace: pointer to the start of the trace
- * @return whether node holds on the trace
- */
-bool linear_trace_checker::check(const spot::ltl::multop* node,
-        const string_event *trace) {
-    spot::ltl::multop::type opkind = node->op();
-
-    switch (opkind) {
-
-    case spot::ltl::multop::Or: {
-        int numkids = node->size();
-        // for each of the multop's children, we check if it is true: if it is,
-        // we short circuit and return true. If we have not returned by the
-        // end of the loop, then none of the children were true and we return
-        // false.
-        for (int i = 0; i < numkids; i++) {
-            if (check(node->nth(i), trace)) {
-                return true;
-            }
-        }
+    //if we get here, we did not see q: thus, false
+    if (trace_pt->is_terminal()) {
         return false;
     }
-    case spot::ltl::multop::And: {
-        int numkids = node->size();
-        // for each of the multop's children, we check if it is false: if it is,
-        // we short circuit and return false. If we have not returned by the
-        // end of the loop, then none of the children were false and we return
-        // true.
-        for (int i = 0; i < numkids; i++) {
-            if (!check(node->nth(i), trace)) {
-                return false;
-            }
-        }
+    // if the q holds here, we have not yet seen q or !p, (these
+    //  cause return) so true
+    else if (this->check(q, trace_pt)) {
         return true;
     }
-    default:
-        std::cerr << "Unsupported multiple operator. Returning false. \n";
+    // we know q does not hold from above, so if p does not hold,
+    // we have !p and !q, which violates p U q.
+    else if (!this->check(p, trace_pt)) {
         return false;
+    }
+    // if !q and p holds, check on the next suffix trace
+    else {
+        return this->check(node, trace_pt + 1);
+    }
+}
 
+/**
+ * p R q will be true if !q does not occur before (inclusive) q
+ * @param node: the atomic proposition to check
+ * @param trace: pointer to the start of the trace
+ * @param trace_ids
+ * @return
+ */
+bool linear_trace_checker::release_check(const spot::ltl::binop* node,
+        const string_event* trace_pt, std::set<int> trace_ids) {
+    const spot::ltl::formula * p = node->first();
+    const spot::ltl::formula * q = node->second();
+
+    //if we get here, q always held: true
+    if (trace_pt->is_terminal()) {
+        return true;
+    }
+    // if !q occurs before p & q, false
+    else if (!this->check(q, trace_pt)) {
+        return false;
+    }
+
+    // we know from the previous if that q holds and held up to here,
+    // so if p also holds, return true
+    else if (this->check(p, trace_pt)) {
+        return true;
+    }
+
+    // if the q holds, check on the next suffix trace
+    else {
+        return this->check(node, trace_pt + 1);
     }
 
 }
+
+/**
+ * p M q will be true if !q does not occur before (inclusive) q. q must occur.
+ * @param node: the atomic proposition to check
+ * @param trace: pointer to the start of the trace
+ * @param trace_ids
+ * @return
+ */
+bool linear_trace_checker::strongrelease_check(const spot::ltl::binop* node,
+        const string_event* trace_pt, std::set<int> trace_ids) {
+    const spot::ltl::formula * p = node->first();
+    const spot::ltl::formula * q = node->second();
+
+    //if we get here, q always held, p never occurred: false
+    if (trace_pt->is_terminal()) {
+        return false;
+    }
+    // if !q occurs before p & q, false
+    else if (!this->check(q, trace_pt)) {
+        return false;
+    }
+
+    // we know from the previous if that q holds and held up to here,
+    // so if p also holds, return true
+    else if (this->check(p, trace_pt)) {
+        return true;
+    }
+
+    // if the q holds, check on the next suffix trace
+    else {
+        return this->check(node, trace_pt + 1);
+    }
+
+}
+
+/**
+ * p W q will be true if !p does not occur before (exclusive) q
+ * @param node: the atomic proposition to check
+ * @param trace: pointer to the start of the trace
+ * @param trace_ids
+ * @return
+ */
+bool linear_trace_checker::weakuntil_check(const spot::ltl::binop* node,
+        const string_event* trace_pt, std::set<int> trace_ids) {
+    const spot::ltl::formula * p = node->first();
+    const spot::ltl::formula * q = node->second();
+    //if we get here, we did not see q or !p, so true.
+    if (trace_pt->is_terminal()) {
+        return true;
+    }
+    // if the q holds here, we have not yet seen q or !p, (these
+    //  cause return) so true
+    else if (this->check(q, trace_pt)) {
+        return true;
+    }
+    // we know q does not hold from above, so if p does not hold,
+    // we have !p and !q, which violates p U q.
+    else if (!this->check(p, trace_pt)) {
+        return false;
+    }
+    // if !q and p holds, check on the next suffix trace
+    else {
+        return this->check(node, trace_pt + 1);
+    }
+
+
+}
+
+
+/**
+ * Gp will be true if Gp is true on every trace suffix of the given
+ * trace, i.e. if p holds at all time
+ * @param node: the atomic proposition to check
+ * @param trace: pointer to the start of the trace
+ * @param trace_ids
+ * @return
+ */
+bool linear_trace_checker::globally_check(const spot::ltl::unop* node,
+        const string_event* trace_pt, std::set<int> trace_ids) {
+    const spot::ltl::formula * p = node->child();
+    // base case: if we're at END_VAR, return true to not effect &&
+    if (trace_pt->is_terminal()) {
+        return true;
+    } else {
+        //Return whether subformula is true on this trace, recursive check on
+        // all subsequent traces.
+        return this->check(p, trace_pt) && this->check(node, trace_pt + 1);
+    }
+}
+
+
+/**
+ * Fp will be true if Fp is true on some trace suffix of the given
+ * trace, i.e. if p holds at some time
+ * @param node: the atomic proposition to check
+ * @param trace: pointer to the start of the trace
+ * @param trace_ids
+ * @return
+ */
+bool linear_trace_checker::finally_check(const spot::ltl::unop* node,
+        const string_event* trace_pt, std::set<int> trace_ids) {
+    const spot::ltl::formula * p = node->child();
+    // base case: if we're at END_VAR, return false to not effect ||
+    if (trace_pt->is_terminal()) {
+        return false;
+    } else {
+        //Return whether subformula is true on this trace, recursive check on
+        // all subsequent traces.
+        return this->check(p, trace_pt) || this->check(node, trace_pt + 1);
+    }
+}
+
+
+/**
+ * Xp will be true if p is true on the next suffix of the given
+ * trace, i.e. if p holds at the next time
+ * @param node: the atomic proposition to check
+ * @param trace: pointer to the start of the trace
+ * @param trace_ids
+ * @return
+ */
+bool linear_trace_checker::next_check(const spot::ltl::unop* node,
+        const string_event* trace_pt, std::set<int> trace_ids) {
+    const spot::ltl::formula * p = node->child();
+    // if we are at the terminal event, the next event is also a terminal
+    // event. Since we are traversing a finite tree, this will terminate.
+    if (trace_pt->is_terminal()) {
+        return this->check(p, trace_pt);
+    }
+    return this->check(p, trace_pt + 1);
+}
+
 
 /**
  * Check all instantiations of the property type given on the traces
@@ -332,12 +247,12 @@ vector<map<string, string>> valid_instants_on_traces(
                     break;
                 }
                 const spot::ltl::formula * instantiated_prop_type = instantiate(prop_type,*current_instantiation,
-                        instantiator->get_events_to_exclude());
+                instantiator->get_events_to_exclude());
                 // is the instantiation valid?
                 bool valid = true;
                 for (set<vector<string_event>>::iterator traces_it = traces->begin();
                 traces_it != traces->end(); traces_it++) {
-                    bool valid_on_trace = checker.check(instantiated_prop_type,&(traces_it->at(0)));
+                    bool valid_on_trace = checker.check_on_trace(instantiated_prop_type,&(traces_it->at(0)));
                     if (!valid_on_trace) {
                         valid = false;
                         break;

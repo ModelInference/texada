@@ -10,6 +10,7 @@
 
 #include <ltlast/allnodes.hh>
 #include "../parsing/stringevent.h"
+#include "boolbasedchecker.h"
 #include <iostream>
 
 #include "../instantiation-tools/pregeninstantspool.h"
@@ -22,31 +23,32 @@ namespace texada {
  * form of a vector.
  *
  */
-class linear_trace_checker {
+class linear_trace_checker : public bool_based_checker<const string_event*>{
 public:
-	linear_trace_checker();
-	virtual ~linear_trace_checker();
+	linear_trace_checker() {};
+	virtual ~linear_trace_checker() {};
 
-	bool check(const spot::ltl::formula* node, const string_event *trace);
+	bool check_on_trace(const spot::ltl::formula* node, const string_event *trace);
 
 private:
-    bool check(const spot::ltl::atomic_prop* node, const string_event *trace);
-    bool check(const spot::ltl::constant* node, const string_event *trace);
-    bool check(const spot::ltl::binop* node, const string_event *trace);
-    bool check(const spot::ltl::unop* node,  const string_event *trace);
-    bool check(const spot::ltl::multop* node,  const string_event *trace);
 
-    /**
-     * both the next types are not supported.
-     */
-    bool check(const spot::ltl::automatop* node) {
-    	std::cerr << "Type automatop unsupported. \n";
-    	    	return false;
-    }
-    bool check(const spot::ltl::bunop* node) {
-    	std::cerr << "Type bunop unsupported. \n";
-    	return false;
-    }
+
+	virtual bool ap_check(const spot::ltl::atomic_prop* node,
+	            const string_event* trace_pt, std::set<int> trace_ids = std::set<int>());
+    virtual bool until_check(const spot::ltl::binop* node,
+            const string_event* trace_pt, std::set<int> trace_ids = std::set<int>());
+    virtual bool release_check(const spot::ltl::binop* node,
+            const string_event* trace_pt, std::set<int> trace_ids = std::set<int>());
+    virtual bool strongrelease_check(const spot::ltl::binop* node,
+                const string_event* trace_pt, std::set<int> trace_ids = std::set<int>());
+    virtual bool weakuntil_check(const spot::ltl::binop* node,
+            const string_event* trace_pt, std::set<int> trace_ids = std::set<int>());
+    virtual bool globally_check(const spot::ltl::unop* node,
+            const string_event* trace_pt, std::set<int> trace_ids = std::set<int>());
+    virtual bool finally_check(const spot::ltl::unop* node,
+            const string_event* trace_pt, std::set<int> trace_ids = std::set<int>());
+    virtual bool next_check(const spot::ltl::unop* node,
+            const string_event* trace_pt, std::set<int> trace_ids = std::set<int>());
 
 
 
