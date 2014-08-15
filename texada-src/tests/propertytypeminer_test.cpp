@@ -112,6 +112,12 @@ TEST(PropertyTypeMinerTest, STprecedesPafterQ) {
  */
 std::array<bool, 8> set_up_perracotta_tests(std::string formula, bool use_map) {
     std::array<bool, 8> output_array;
+    std::string trace_type;
+    if (use_map){
+        trace_type = "' -m ";
+    } else {
+        trace_type = "' -l ";
+    }
     //order of sources
     // Response
     std::string response_source = texada_base + "/traces/perracotta-type-traces/response/trace.txt";
@@ -149,7 +155,7 @@ std::array<bool, 8> set_up_perracotta_tests(std::string formula, bool use_map) {
     // mine the property type in response source, and check
     // that the valid instantiation (instanted_form) is found
     std::set<const spot::ltl::formula*> response_set =
-            texada::mine_property_type(texada::set_options_from_string("-f '" + formula + "' -l " + response_source));
+            texada::mine_property_type(texada::set_options_from_string("-f '" + formula + trace_type + response_source));
     bool containsab = false;
     for (std::set<const spot::ltl::formula*>::iterator it =
             response_set.begin(); it != response_set.end(); it++) {
@@ -164,7 +170,7 @@ std::array<bool, 8> set_up_perracotta_tests(std::string formula, bool use_map) {
     // mine the property type in alternating source, and check
     // that the valid instantiation (instanted_form) is found
     std::set<const spot::ltl::formula*> alternating_set =
-            texada::mine_property_type(texada::set_options_from_string("-f '" + formula + "' -l " + alternating_source));
+            texada::mine_property_type(texada::set_options_from_string("-f '" + formula + trace_type + alternating_source));
     containsab = false;
     for (std::set<const spot::ltl::formula*>::iterator it =
             alternating_set.begin(); it != alternating_set.end(); it++) {
@@ -178,7 +184,7 @@ std::array<bool, 8> set_up_perracotta_tests(std::string formula, bool use_map) {
     // mine the property type in multieffect source, and check
     // that the valid instantiation (instanted_form) is found
     std::set<const spot::ltl::formula*> multieffect_set =
-            texada::mine_property_type(texada::set_options_from_string("-f '" + formula + "' -l " + multieffect_source));
+            texada::mine_property_type(texada::set_options_from_string("-f '" + formula + trace_type + multieffect_source));
     containsab = false;
     for (std::set<const spot::ltl::formula*>::iterator it =
             multieffect_set.begin(); it != multieffect_set.end(); it++) {
@@ -193,7 +199,7 @@ std::array<bool, 8> set_up_perracotta_tests(std::string formula, bool use_map) {
     // mine the property type in multicause source, and check
     // that the valid instantiation (instanted_form) is found
     std::set<const spot::ltl::formula*> multicause_set =
-            texada::mine_property_type(texada::set_options_from_string("-f '" + formula + "' -l " + multicause_source));
+            texada::mine_property_type(texada::set_options_from_string("-f '" + formula + trace_type + multicause_source));
     containsab = false;
     for (std::set<const spot::ltl::formula*>::iterator it =
             multicause_set.begin(); it != multicause_set.end(); it++) {
@@ -208,7 +214,7 @@ std::array<bool, 8> set_up_perracotta_tests(std::string formula, bool use_map) {
     // mine the property type in effectfirst source, and check
     // that the valid instantiation (instanted_form) is found
     std::set<const spot::ltl::formula*> effectfirst_set =
-            texada::mine_property_type(texada::set_options_from_string("-f '" + formula + "' -l " + effectfirst_source));
+            texada::mine_property_type(texada::set_options_from_string("-f '" + formula + trace_type + effectfirst_source));
     containsab = false;
     for (std::set<const spot::ltl::formula*>::iterator it =
             effectfirst_set.begin(); it != effectfirst_set.end(); it++) {
@@ -223,7 +229,7 @@ std::array<bool, 8> set_up_perracotta_tests(std::string formula, bool use_map) {
     // mine the property type in cause source, and check
     // that the valid instantiation (instanted_form) is found
     std::set<const spot::ltl::formula*> causefirst_set =
-            texada::mine_property_type(texada::set_options_from_string("-f '" + formula + "' -l " + causefirst_source));
+            texada::mine_property_type(texada::set_options_from_string("-f '" + formula + trace_type + causefirst_source));
     containsab = false;
     for (std::set<const spot::ltl::formula*>::iterator it =
             causefirst_set.begin(); it != causefirst_set.end(); it++) {
@@ -238,7 +244,7 @@ std::array<bool, 8> set_up_perracotta_tests(std::string formula, bool use_map) {
     // mine the property type in response source, and check
     // that the valid instantiation (instanted_form) is found
     std::set<const spot::ltl::formula*> onecause_set =
-            texada::mine_property_type(texada::set_options_from_string("-f '" + formula + "' -l " + onecause_source));
+            texada::mine_property_type(texada::set_options_from_string("-f '" + formula + trace_type + onecause_source));
     containsab = false;
     for (std::set<const spot::ltl::formula*>::iterator it =
             onecause_set.begin(); it != onecause_set.end(); it++) {
@@ -253,7 +259,7 @@ std::array<bool, 8> set_up_perracotta_tests(std::string formula, bool use_map) {
     // mine the property type in oneffect source, and check
     // that the valid instantiation (instanted_form) is found
     std::set<const spot::ltl::formula*> oneeffect_set =
-            texada::mine_property_type(texada::set_options_from_string("-f '" + formula + "' -l " + oneeffect_source));
+            texada::mine_property_type(texada::set_options_from_string("-f '" + formula + trace_type + oneeffect_source));
     containsab = false;
     for (std::set<const spot::ltl::formula*>::iterator it =
             oneeffect_set.begin(); it != oneeffect_set.end(); it++) {
