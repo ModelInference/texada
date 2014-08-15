@@ -59,10 +59,7 @@ private:
     map<int,bool> create_int_bool_map (set<int>, bool);
 
     map<int,bool> not_map (map<int,bool>);
-    map<int,bool> and_map (map<int,bool>,map<int,bool>);
-    map<int,bool> or_map (map<int,bool>,map<int,bool>);
 
-    bool constant_vals(map<int,bool>,bool);
     void add_satisfying_values(map<int,bool>& returned_vals, bool to_satisfy,
             map<int,bool>& map_to_return,set<int>& to_check);
 

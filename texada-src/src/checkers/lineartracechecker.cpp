@@ -556,41 +556,7 @@ map<int, bool> linear_trace_checker::create_int_bool_map(set<int> ids,
     return return_map;
 }
 
-/**
- * Returns the map with corresponding values between the two maps combined with
- * and
- * REQUIRES: maps contain same keys
- * @param map1 first map
- * @param map2 second map
- * @return
- */
-map<int, bool> linear_trace_checker::and_map(map<int, bool> map1,
-        map<int, bool> map2) {
-    for (std::map<int, bool>::iterator it = map1.begin(); it != map1.end();
-            it++) {
-        bool val_in_map2 = map2.find(it->first)->second;
-        it->second = it->second && val_in_map2;
-    }
-    return map1;
-}
 
-/**
- * Returns the map with corresponding values between the two maps combined with
- * or
- * REQUIRES: maps contain same keys
- * @param map1 first map
- * @param map2 second map
- * @return
- */
-map<int, bool> linear_trace_checker::or_map(map<int, bool> map1,
-        map<int, bool> map2) {
-    for (std::map<int, bool>::iterator it = map1.begin(); it != map1.end();
-            it++) {
-        bool val_in_map2 = map2.find(it->first)->second;
-        it->second = it->second || val_in_map2;
-    }
-    return map1;
-}
 
 /**
  * Returns the same map with all its values negatived
@@ -605,21 +571,6 @@ map<int, bool> linear_trace_checker::not_map(map<int, bool> map) {
     return map;
 }
 
-/**
- * Checks that all the values of map are equal to value
- * @param map
- * @param value
- * @return
- */
-bool linear_trace_checker::constant_vals(map<int, bool> map, bool value) {
-    for (std::map<int, bool>::iterator it = map.begin(); it != map.end();
-            it++) {
-        if (it->second != value) {
-            return false;
-        }
-    }
-    return true;
-}
 
 /**
  * Adds the pairs from returned_vals whose second is equal to to_satisfy
