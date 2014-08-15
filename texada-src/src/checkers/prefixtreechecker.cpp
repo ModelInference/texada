@@ -313,7 +313,7 @@ bool prefix_tree_checker::check_on_single_trace(const spot::ltl::multop* form_no
 bool prefix_tree_checker::check_on_trace(const spot::ltl::formula* node,
         const trace_node trace_pt) {
     map<int, bool> branch_results = check(node, trace_pt,
-            get_trace_ids(trace_pt));
+            trace_pt->get_trace_ids());
     for (map<int, bool>::iterator result_it = branch_results.begin();
             result_it != branch_results.end(); result_it++) {
         if (!result_it->second) {
@@ -368,9 +368,9 @@ map<int, bool> prefix_tree_checker::check(const spot::ltl::formula* node,
 map<int, bool> prefix_tree_checker::check(const spot::ltl::atomic_prop *node,
         const trace_node trace_pt, set<int> trace_ids) {
     // evaluate whether the AP holds
-    bool is_this_event = (event_name(trace_pt) == node->name()) ? true : false;
+    bool is_this_event = (trace_pt->get_name() == node->name()) ? true : false;
     // return in trace_id -> bool map
-    return create_int_bool_map(get_trace_ids(trace_pt), is_this_event);
+    return create_int_bool_map(trace_pt->get_trace_ids(), is_this_event);
 }
 
 /**
@@ -384,7 +384,7 @@ map<int, bool> prefix_tree_checker::check(const spot::ltl::atomic_prop *node,
 map<int, bool> prefix_tree_checker::check(const spot::ltl::constant *node,
         const trace_node trace_pt, set<int> trace_ids) {
     spot::ltl::constant::type value = node->val();
-    set<int> this_trace_ids = get_trace_ids(trace_pt);
+    set<int> this_trace_ids = trace_pt->get_trace_ids();
 
     switch (value) {
     case spot::ltl::constant::True: {
@@ -509,7 +509,7 @@ map<int, bool> prefix_tree_checker::check(const spot::ltl::binop *node,
     case spot::ltl::binop::U: {
         //TODO: in until, etc, check needs to be used, not check_on_trace
         //if we get here, we did not see q: thus, false
-        if (is_terminal(trace_pt)) {
+        if (trace_pt->is_terminal()) {
             return create_int_bool_map(trace_ids, false);
         }
         // if the q holds here, we have not yet seen q or !p, (these
@@ -532,7 +532,7 @@ map<int, bool> prefix_tree_checker::check(const spot::ltl::binop *node,
 
         // if !q and p holds, check on the next suffix trace
         map<int, bool> pUq_on_kids = check_on_kids(node,
-                get_next_event(trace_pt), trace_ids);
+                trace_pt->get_children(), trace_ids);
         // those values are the value of pUq on here
         return_map.insert(pUq_on_kids.begin(), pUq_on_kids.end());
         return return_map;
@@ -542,7 +542,7 @@ map<int, bool> prefix_tree_checker::check(const spot::ltl::binop *node,
         //Weak until case: identical to until except base case
     case spot::ltl::binop::W: {
         //if we get here, we did not see q or !p: thus, true
-        if (is_terminal(trace_pt)) {
+        if (trace_pt->is_terminal()) {
             return create_int_bool_map(trace_ids, true);
         }
 
@@ -566,7 +566,7 @@ map<int, bool> prefix_tree_checker::check(const spot::ltl::binop *node,
 
         // if !q and p holds, check on the next suffix trace
         map<int, bool> pUq_on_kids = check_on_kids(node,
-                get_next_event(trace_pt), trace_ids);
+                trace_pt->get_children(), trace_ids);
         // those values are the value of pUq on here
         return_map.insert(pUq_on_kids.begin(), pUq_on_kids.end());
         return return_map;
@@ -575,7 +575,7 @@ map<int, bool> prefix_tree_checker::check(const spot::ltl::binop *node,
         //Release case: p R q
     case spot::ltl::binop::R: {
         //if we get here, q was always true, so true
-        if (is_terminal(trace_pt)) {
+        if (trace_pt->is_terminal()) {
             return create_int_bool_map(trace_ids, true);
         }
         // if the !q holds here, since we haven't yet seen p,
@@ -599,7 +599,7 @@ map<int, bool> prefix_tree_checker::check(const spot::ltl::binop *node,
 
         // if !p and q, check on next suffix trace
         map<int, bool> pRq_on_kids = check_on_kids(node,
-                get_next_event(trace_pt), trace_ids);
+                trace_pt->get_children(), trace_ids);
         // those values are the value of pUq on here
         return_map.insert(pRq_on_kids.begin(), pRq_on_kids.end());
         return return_map;
@@ -641,15 +641,15 @@ map<int, bool> prefix_tree_checker::check(const spot::ltl::unop *node,
     case spot::ltl::unop::X:
         // if we are at the terminal event, the next event is also a terminal
         // event. Since we are traversing a finite tree, this will terminate.
-        if (is_terminal(trace_pt)) {
+        if (trace_pt->is_terminal()) {
             return check(p, trace_pt, trace_ids);
         }
-        return check_on_kids(p, get_next_event(trace_pt), trace_ids);
+        return check_on_kids(p, trace_pt->get_children(), trace_ids);
 
         // Finally case: Fp
     case spot::ltl::unop::F:
         // base case: if we're at END_VAR, return false to not effect ||
-        if (is_terminal(trace_pt)) {
+        if (trace_pt->is_terminal()) {
             return create_int_bool_map(trace_ids, false);
         } else {
             // check whether p is true
@@ -660,7 +660,7 @@ map<int, bool> prefix_tree_checker::check(const spot::ltl::unop *node,
             // add the values that were not truncated
             if (trace_ids.size() != 0) {
                 map<int, bool> Fp_holds_on_rest = check_on_kids(node,
-                        get_next_event(trace_pt), trace_ids);
+                        trace_pt->get_children(), trace_ids);
                 return_map.insert(Fp_holds_on_rest.begin(),
                         Fp_holds_on_rest.end());
             }
@@ -670,7 +670,7 @@ map<int, bool> prefix_tree_checker::check(const spot::ltl::unop *node,
         // Globally case: Gp
     case spot::ltl::unop::G:
         // base case: if we're at END_VAR, return true to not effect &&
-        if (is_terminal(trace_pt)) {
+        if (trace_pt->is_terminal()) {
             return create_int_bool_map(trace_ids, true);
         } else {
             // check whether p is true
@@ -681,7 +681,7 @@ map<int, bool> prefix_tree_checker::check(const spot::ltl::unop *node,
             // add the values that were not truncated
             if (trace_ids.size() != 0) {
                 map<int, bool> Fp_holds_on_rest = check_on_kids(node,
-                        get_next_event(trace_pt), trace_ids);
+                        trace_pt->get_children(), trace_ids);
                 return_map.insert(Fp_holds_on_rest.begin(),
                         Fp_holds_on_rest.end());
             }
@@ -778,9 +778,6 @@ map<int, bool> prefix_tree_checker::check(const spot::ltl::multop* node,
 
 }
 
-
-
-
 /**
  * Creates an int-bool map with all the same bool value and keys given by ids
  * @param ids keys of map
@@ -829,48 +826,8 @@ void prefix_tree_checker::add_satisfying_values(map<int, bool>& returned_vals,
             map_to_return.insert(*it);
             to_check.erase(it->first);
         }
-
     }
-
-}
-//TODO: stub.unstub.
-set<int> prefix_tree_checker::get_trace_ids(const trace_node current_node){
-    return set<int>();
-
 }
 
-/**
- * Gets the next node if this is a prefix tree node.
- * @param current_node
- * @return
- */
-map<set<int>,prefix_tree_checker::trace_node> prefix_tree_checker::get_next_event(const trace_node current_node){
-    trace_node return_node;
-    map<set<int>,trace_node> return_map;
-    set<int> return_set;
-    return_set.insert(0);
-    // TODO: stub for version w/o memoization
-    get<shared_ptr<prefix_tree_node>>(return_node) = get<shared_ptr<prefix_tree_node>>(current_node)->get_child(1);
-    return_map.emplace(return_set,return_node);
-    return return_map;
-}
-
-/**
- * Returns true if the current node is terminal
- * @param current_node current position in trace
- * @return is this a terminal event
- */
-bool prefix_tree_checker::is_terminal(const trace_node current_node){
-    return get<const string_event*>(current_node)->is_terminal();
-}
-
-/**
- * Returns name of the current event
- * @param current_node current position in trace
- * @return is this a terminal event
- */
-string prefix_tree_checker::event_name(const trace_node current_node){
-    return get<const string_event*>(current_node)->get_name();
-}
 
 } /* namespace texada */

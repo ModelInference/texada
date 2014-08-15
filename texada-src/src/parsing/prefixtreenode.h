@@ -46,6 +46,7 @@ public:
     shared_ptr<prefix_tree_node> get_child(int);
     shared_ptr<prefix_tree_node> get_child(string);
     shared_ptr<prefix_tree_node> get_nth_child(int);
+    map<set<int>,shared_ptr<prefix_tree_node>> get_children();
     int num_children();
     bool is_terminal();
 private:
