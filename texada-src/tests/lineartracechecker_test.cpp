@@ -41,26 +41,26 @@ TEST(LinearTraceCheckerTest, AFby) {
     texada::linear_trace_checker* checker = new texada::linear_trace_checker();
 
     // G(a->Fb) should hold on the trace
-    ASSERT_TRUE(checker->check(f,trace));
+    ASSERT_TRUE(checker->check_on_trace(f,trace));
     f->destroy();
 
     // G(a->Fa) also holds because F includes the present as well as the future
     input = "G(a->Fa)";
     f = spot::ltl::parse(input, pel);
-    ASSERT_TRUE(checker->check(f,trace));
+    ASSERT_TRUE(checker->check_on_trace(f,trace));
     f->destroy();
 
     // Adding the next operator makes F talk exclusively about future events;
     // G(a->XFa) does not hold
     input = "G(a->XFa)";
     f = spot::ltl::parse(input, pel);
-    ASSERT_FALSE(checker->check(f,trace));
+    ASSERT_FALSE(checker->check_on_trace(f,trace));
     f->destroy();
 
     // b is not always followed by a.
     input = "G(b->Fa)";
     f = spot::ltl::parse(input, pel);
-    ASSERT_FALSE(checker->check(f,trace));
+    ASSERT_FALSE(checker->check_on_trace(f,trace));
     f->destroy();
 
     //clean up
@@ -87,13 +87,13 @@ TEST(LinearTraceCheckerTest, NextNext) {
     // appended to the end of the trace, is not a.
     std::string input = "G(b->XXa)";
     const spot::ltl::formula* f = spot::ltl::parse(input, pel);
-    ASSERT_FALSE(checker->check(f, trace));
+    ASSERT_FALSE(checker->check_on_trace(f, trace));
     f->destroy();
 
     // G(b->XX!a) should return true because the terminal event is not a
     input = "G(b->XX!a)";
     f = spot::ltl::parse(input, pel);
-    ASSERT_TRUE(checker->check(f, trace));
+    ASSERT_TRUE(checker->check_on_trace(f, trace));
     f->destroy();
 
     // clean up
@@ -134,11 +134,11 @@ TEST(LinearTraceCheckerTest,Alternating) {
 
     // alternating formula should hold on p s p s: we check !s W p on
     // the terminal event
-    ASSERT_TRUE(checker->check(altf, psSucceed));
+    ASSERT_TRUE(checker->check_on_trace(altf, psSucceed));
 
     // alternating formula will be false on p s p s p: we check !p U s
     // on the terminal event (it's false b/c s never occurs)
-    ASSERT_FALSE(checker->check(altf, psFail));
+    ASSERT_FALSE(checker->check_on_trace(altf, psFail));
 
 
     //clean up
@@ -163,14 +163,14 @@ TEST(LinearTraceCheckerTest,Until) {
     texada::linear_trace_checker* checker = new texada::linear_trace_checker();
 
     // check p U q is true
-    ASSERT_TRUE(checker->check(f, trace));
+    ASSERT_TRUE(checker->check_on_trace(f, trace));
     f->destroy();
 
     input = "!p U q";
     f = spot::ltl::parse(input, pel);
 
     // !p U q should also be true
-    ASSERT_TRUE(checker->check(f, trace));
+    ASSERT_TRUE(checker->check_on_trace(f, trace));
     f->destroy();
 
     //clean up
