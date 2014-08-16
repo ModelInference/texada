@@ -51,6 +51,7 @@ OBJS += \
 ./texada-src/bin/src/main/propertytypeminer.o \
 ./texada-src/bin/src/parsing/stringevent.o \
 ./texada-src/bin/src/parsing/simpleparser.o \
+./texada-src/bin/src/parsing/customparser.o \
 ./texada-src/bin/src/parsing/prefixtreenode.o \
 ./texada-src/bin/src/parsing/prefixtree.o
 
