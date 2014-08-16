@@ -345,8 +345,9 @@ bool prefix_tree_checker::check_on_single_trace(
  */
 bool prefix_tree_checker::check_on_trace(const spot::ltl::formula* node,
         const trace_node trace_pt) {
+    set<int> set = trace_pt->get_trace_ids();
     map<int, bool> branch_results = this->check(node, trace_pt,
-            trace_pt->get_trace_ids());
+            set);
     for (map<int, bool>::iterator result_it = branch_results.begin();
             result_it != branch_results.end(); result_it++) {
         if (!result_it->second) {

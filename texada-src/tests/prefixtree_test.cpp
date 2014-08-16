@@ -210,5 +210,34 @@ TEST(PrefixTreeCheckerTest, TestOnTrace){
 
 }
 
+TEST(PrefixTreeCheckerTest, RessourceAlloc){
+    if (getenv("TEXADA_HOME") == NULL){
+        std::cerr << "Error: TEXADA_HOME is undefined. \n";
+        FAIL();
+    }
+    std::ifstream infile(
+            std::string(getenv("TEXADA_HOME"))
+                    + "/traces/resource-allocation/pretreeresalloc.txt");
 
+    texada::simple_parser parser;
+    parser.parse_to_pretrees(infile);
+    std::shared_ptr<texada::prefix_tree> trace_set =
+            parser.return_prefix_trees();
+
+
+    //resource allocation pattern:
+    std::string res_alloc = "(!(b|c) W a)& G((a->X((!a U c)&(!c U b)))&(c->X(!(b|c) W a)))";
+
+    spot::ltl::parse_error_list pe_list;
+    const spot::ltl::formula * resalloc_form = spot::ltl::parse(res_alloc,pe_list);
+
+    texada::prefix_tree_checker checker;
+    std::shared_ptr<texada::prefix_tree_node> beginning = trace_set->get_trace_start(1);
+
+    ASSERT_TRUE(checker.check_on_trace(resalloc_form,beginning));
+    resalloc_form->destroy();
+
+
+
+}
 
