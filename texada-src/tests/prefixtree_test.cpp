@@ -7,8 +7,10 @@
 
 #include "../src/parsing/prefixtree.h"
 #include "../src/checkers/prefixtreechecker.h"
+#include "../src/parsing/simpleparser.h"
 #include <gtest/gtest.h>
 #include <ltlparse/public.hh>
+#include <fstream>
 
 
 texada::prefix_tree * create_simple_tree(){
@@ -162,7 +164,7 @@ TEST(PrefixTreeTest,CreateSimpleTree) {
 
 }
 
-TEST(PrefixTreeCheckerTets, TestSimpleTree){
+TEST(PrefixTreeCheckerTest, TestSimpleTree){
 
     // get simple tree
     texada::prefix_tree * all_traces = create_simple_tree();
@@ -173,14 +175,69 @@ TEST(PrefixTreeCheckerTets, TestSimpleTree){
 
     texada::prefix_tree_checker checker;
 
-    ASSERT_TRUE(checker.check(afby_form, all_traces->get_trace_start(0), 0));
-    ASSERT_TRUE(checker.check(afby_form, all_traces->get_trace_start(1), 1));
-    ASSERT_FALSE(checker.check(afby_form, all_traces->get_trace_start(2), 2));
-    ASSERT_FALSE(checker.check(afby_form, all_traces->get_trace_start(3), 3));
+    ASSERT_TRUE(checker.check_on_single_trace(afby_form, all_traces->get_trace_start(0), 0));
+    ASSERT_TRUE(checker.check_on_single_trace(afby_form, all_traces->get_trace_start(1), 1));
+    ASSERT_FALSE(checker.check_on_single_trace(afby_form, all_traces->get_trace_start(2), 2));
+    ASSERT_FALSE(checker.check_on_single_trace(afby_form, all_traces->get_trace_start(3), 3));
 
     afby_form->destroy();
 
     delete all_traces;
+
+}
+
+TEST(PrefixTreeCheckerTest, TestOnTrace){
+    if (getenv("TEXADA_HOME") == NULL){
+        std::cerr << "Error: TEXADA_HOME is undefined. \n";
+        FAIL();
+    }
+    std::ifstream infile(
+            std::string(getenv("TEXADA_HOME"))
+                    + "/traces/parsing-tests/simple-pre-tree.txt");
+
+    texada::simple_parser parser;
+    parser.parse_to_pretrees(infile);
+    std::shared_ptr<texada::prefix_tree> trace_set =
+            parser.return_prefix_trees();
+
+    spot::ltl::parse_error_list pe_list;
+    const spot::ltl::formula * afby_form = spot::ltl::parse("G(b->XFd)",pe_list);
+    texada::prefix_tree_checker checker;
+    ASSERT_TRUE(checker.check_on_trace(afby_form,trace_set->get_trace_start("a")));
+    afby_form->destroy();
+
+
+
+}
+
+TEST(PrefixTreeCheckerTest, RessourceAlloc){
+    if (getenv("TEXADA_HOME") == NULL){
+        std::cerr << "Error: TEXADA_HOME is undefined. \n";
+        FAIL();
+    }
+    std::ifstream infile(
+            std::string(getenv("TEXADA_HOME"))
+                    + "/traces/resource-allocation/pretreeresalloc.txt");
+
+    texada::simple_parser parser;
+    parser.parse_to_pretrees(infile);
+    std::shared_ptr<texada::prefix_tree> trace_set =
+            parser.return_prefix_trees();
+
+
+    //resource allocation pattern:
+    std::string res_alloc = "(!(b|c) W a)& G((a->X((!a U c)&(!c U b)))&(c->X(!(b|c) W a)))";
+
+    spot::ltl::parse_error_list pe_list;
+    const spot::ltl::formula * resalloc_form = spot::ltl::parse(res_alloc,pe_list);
+
+    texada::prefix_tree_checker checker;
+    std::shared_ptr<texada::prefix_tree_node> beginning = trace_set->get_trace_start(1);
+
+    ASSERT_TRUE(checker.check_on_trace(resalloc_form,beginning));
+    resalloc_form->destroy();
+
+
 
 }
 

@@ -147,6 +147,14 @@ shared_ptr<prefix_tree_node> prefix_tree_node::get_nth_child(int n){
 }
 
 /**
+ * Get all the children of this node
+ * @return
+ */
+map<set<int>,shared_ptr<prefix_tree_node>> prefix_tree_node::get_children(){
+    return children;
+}
+
+/**
  * Return the number of children this node has.
  * @return
  */
