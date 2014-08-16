@@ -16,7 +16,7 @@
 
 #include <boost/program_options.hpp>
 
-#include "../parsing/simpleparser.h"
+#include "../parsing/customparser.h"
 #include "../instantiation-tools/pregeninstantspool.h"
 #include "../instantiation-tools/otfinstantspool.h"
 #include "../instantiation-tools/instantspoolcreator.h"
@@ -117,7 +117,17 @@ set<const spot::ltl::formula*> mine_property_type(
 
     // parse file
     std::ifstream infile(trace_source);
-    simple_parser parser = simple_parser();
+    custom_parser parser = custom_parser();
+    // configure parser based on user options
+    if (opts.count("regex")) {
+    	parser.set_event_types(opts["regex"].as<vector<string>>());
+    }
+    if (opts.count("separator_regex")) {
+    	parser.set_separator(opts["separator_regex"].as<std::string>());
+    }
+    if (opts.count("ignore_nm_lines")) {
+    	parser.ignore_nm_lines();
+    }
     shared_ptr<set<vector<string_event> >> vector_trace_set;
     shared_ptr<set<map<string_event, vector<long>>> > map_trace_set;
     if (use_map) {
