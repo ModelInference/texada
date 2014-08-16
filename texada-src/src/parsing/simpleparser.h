@@ -32,9 +32,9 @@ class simple_parser {
 public:
 	simple_parser();
 	virtual ~simple_parser();
-	void parse_to_vector(std::ifstream &infile);
-	void parse_to_map(std::ifstream &infile);
-	void parse_to_pretrees(std::ifstream &infile);
+	virtual void parse_to_vector(std::ifstream &infile);
+	virtual void parse_to_map(std::ifstream &infile);
+	virtual void parse_to_pretrees(std::ifstream &infile);
 
 	shared_ptr<set<string>> return_events();
 
