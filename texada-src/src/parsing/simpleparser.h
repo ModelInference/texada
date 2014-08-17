@@ -15,6 +15,7 @@
 #include <vector>
 #include <iostream>
 #include <memory>
+#include <boost/regex.hpp>
 
 namespace texada {
 using std::set;
@@ -36,6 +37,10 @@ public:
 	virtual void parse_to_map(std::ifstream &infile);
 	virtual void parse_to_pretrees(std::ifstream &infile);
 
+	void set_event_types(std::vector<std::string> event_types);
+	void set_separator(std::string separator_regex);
+	void ignore_nm_lines();
+
 	shared_ptr<set<string>> return_events();
 
 	shared_ptr<std::set<std::vector<string_event> >> return_vec_trace();
@@ -45,6 +50,12 @@ public:
 	shared_ptr<prefix_tree> return_prefix_trees();
 
 private:
+	std::string get_event_type(std::string log_line);
+	// parser configuration
+	std::vector<boost::regex> event_types;
+	boost::regex separator_regex;
+	bool ignores_nm_lines;
+
 	//rename to unique events
 	shared_ptr<set<vector<string_event> >> vector_trace_set;
 	shared_ptr<set<map<string_event, vector<long>>>> map_trace_set;
