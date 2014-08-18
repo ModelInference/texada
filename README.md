@@ -8,7 +8,7 @@ Texada is a research tool designed for extracting patterns from text data. Speci
 
 Texada's output is a set of LTL formulae that are instantiations of the input property type. That is, in an instantiation, the variable atomic propositions are replaced with events from the log. Each formula in the output satisfies all of the input traces in the input log. That is, each formula evaluates to true over each of the traces.
 
-As an example, consider the LTL property type that encodes the "x always followed by y" temporal relation between "x" and "y": G(x => F(y)). This property states that whenever an event of type "x" appears in a trace, it must be followed in the same trace by an event of type "y". Given an input log with two traces: "a,b,a,b,c" and "c,a,b,b", then Texada will output the following two property instantiations: G(a => F(b)), G(b => F(b)). That is, in the input two traces "a always followed by b" and "b always followed by b".
+As an example, consider the LTL property type that encodes the "x always followed by y" temporal relation between "x" and "y": G(x -> XF(y)). This property states that whenever an event of type "x" appears in a trace, it must be followed in the same trace by an event of type "y". Given an input log with two traces: "a,b,a,b,c" and "c,a,b,b", then Texada will output the property instantiations G(a -> XF(b)). That is, in the input two traces, "a is always followed by b".
 
 Texada is developed in C++. The rest of this page describes the steps to get Texada working from a freshly cloned repository. Texada has been tested on Linux and OSX.
 
