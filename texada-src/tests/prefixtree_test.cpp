@@ -199,13 +199,18 @@ TEST(PrefixTreeCheckerTest, TestOnTrace){
     parser.parse_to_pretrees(infile);
     std::shared_ptr<texada::prefix_tree> trace_set =
             parser.return_prefix_trees();
-
     spot::ltl::parse_error_list pe_list;
     const spot::ltl::formula * afby_form = spot::ltl::parse("G(b->XFd)",pe_list);
     texada::prefix_tree_checker checker;
     ASSERT_TRUE(checker.check_on_trace(afby_form,trace_set->get_trace_start("a")));
     afby_form->destroy();
 
+
+    afby_form = spot::ltl::parse("G(x->XFy)",pe_list);
+    std::map<std::string,std::string> inst_map;
+    inst_map.emplace("x", "b");
+    inst_map.emplace("y", "d");
+    ASSERT_TRUE(checker.check_on_trace(afby_form,trace_set->get_trace_start("a"), inst_map));
 
 
 }

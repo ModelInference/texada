@@ -62,6 +62,15 @@ bool prefix_tree_checker::check_on_single_trace(
     }
 }
 
+//TODO:Comment.....
+bool prefix_tree_checker::check_on_trace(
+        const spot::ltl::formula* form_node,
+        shared_ptr<prefix_tree_node> trace_node, map<string,string> instantiations_){
+    use_memo = true;
+    instantiations = instantiations_;
+    return check_on_trace(form_node, trace_node);
+}
+
 /**
  * Checking a single event on a trace means we check it on the first element of the trace
  * @param node: the atomic proposition to check
@@ -419,10 +428,21 @@ map<int, bool> prefix_tree_checker::true_check(std::set<int> trace_ids) {
  */
 map<int, bool> prefix_tree_checker::ap_check(const spot::ltl::atomic_prop* node,
         trace_node trace_pt, std::set<int> trace_ids) {
+    if (use_memo){
+        if (instantiations.find(node->name()) != instantiations.end()){
+            bool is_this_event = (instantiations.find(node->name()))->second == trace_pt->get_name();
+            return create_int_bool_map(trace_ids, is_this_event);
+        } else
+        {
+            std::cout << "SHOULD NOT GET HERE \n";
+            return create_int_bool_map(trace_ids,false);
+        }
+    } else {
     // evaluate whether the AP holds
     bool is_this_event = (trace_pt->get_name() == node->name()) ? true : false;
     // return in trace_id -> bool map
     return create_int_bool_map(trace_ids, is_this_event);
+    }
 }
 
 /**
@@ -906,6 +926,23 @@ void prefix_tree_checker::add_satisfying_values(map<int, bool>& returned_vals,
             map_to_return.insert(*it);
             to_check.erase(it->first);
         }
+    }
+}
+
+void prefix_tree_checker::add_to_memo_map(const spot::ltl::atomic_prop* node,
+        trace_node trace_pt, map<int,bool> return_val){
+    memo_key insert_key;
+    insert_key.node = node;
+    insert_key.trace_pt = trace_pt;
+    // STUB: TODO get correct bindings
+    insert_key.relevant_mappings = map<string,string>();
+    boost::unordered_map<memo_key, map<int,bool>, hash_memo_key>::iterator find_this = memo_map.find(insert_key);
+    if (find_this != memo_map.end()){
+        //todo: what can we infer about the value on unchecked traces???
+        memo_map.emplace(insert_key, return_val);
+    } else {
+        for(map<int,bool>::iterator it = return_val.begin(); it != return_val.end() ;it++)
+        find_this->second.insert(*it);
     }
 }
 
