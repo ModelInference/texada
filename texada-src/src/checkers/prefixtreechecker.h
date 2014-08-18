@@ -91,6 +91,11 @@ private:
 
 };
 
+vector<map<string, string>> valid_instants_on_traces(
+        const spot::ltl::formula * prop_type,
+        instants_pool_creator * instantiator,
+        shared_ptr<prefix_tree> traces);
+
 } /* namespace texada */
 
 #endif /* PREFIXTREECHECKER_H_ */
