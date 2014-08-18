@@ -103,11 +103,12 @@ void simple_parser::parse_to_pretrees(std::ifstream &infile) {
     while (std::getline(infile, line)) {
         // if parent is NULL, we just started a new tree.
         if (parent == NULL) {
+            if ((unique_events->find(line) == unique_events->end())) {
+                unique_events->insert(line);
+            }
             trace_id++;
             shared_ptr<prefix_tree_node> trace_start;
             trace_start = pre_tree_traces->get_trace_start(line);
-
-            // todo: what if two -- follow each other. Let's assume they don't
             if (trace_start == NULL) {
                 set<int> trace_ids;
                 trace_ids.insert(trace_id);
@@ -166,7 +167,7 @@ void simple_parser::parse_to_pretrees(std::ifstream &infile) {
 
     }
 
-    // TODO set has been parsed prefix tree
+    has_been_parsed_pretree = true;
 }
 
 /**
@@ -174,7 +175,7 @@ void simple_parser::parse_to_pretrees(std::ifstream &infile) {
  * @return
  */
 shared_ptr<set<string>> simple_parser::return_events() {
-    if (has_been_parsed_vec || has_been_parsed_map) {
+    if (has_been_parsed_vec || has_been_parsed_map || has_been_parsed_pretree) {
         return unique_events;
     } else {
         std::cerr << "No files have been parsed, returning empty set. \n";
@@ -215,7 +216,14 @@ shared_ptr<set<map<string_event, vector<long>>> > simple_parser::return_map_trac
  * @return
  */
 shared_ptr<prefix_tree> simple_parser::return_prefix_trees(){
-    return pre_tree_traces;
+    if (has_been_parsed_pretree) {
+        return pre_tree_traces;
+    } else {
+        std::cerr << "Trace not parsed into pre trees, returning empty prefix trees. \n";
+        return pre_tree_traces;
+    }
+
+
 }
 
 

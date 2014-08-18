@@ -6,6 +6,9 @@
  */
 
 #include "prefixtreechecker.h"
+#include "../instantiation-tools/apsubbingcloner.h"
+
+#include <ltlvisit/tostring.hh>
 
 namespace texada {
 
@@ -346,8 +349,7 @@ bool prefix_tree_checker::check_on_single_trace(
 bool prefix_tree_checker::check_on_trace(const spot::ltl::formula* node,
         const trace_node trace_pt) {
     set<int> set = trace_pt->get_trace_ids();
-    map<int, bool> branch_results = this->check(node, trace_pt,
-            set);
+    map<int, bool> branch_results = this->check(node, trace_pt, set);
     for (map<int, bool>::iterator result_it = branch_results.begin();
             result_it != branch_results.end(); result_it++) {
         if (!result_it->second) {
@@ -384,7 +386,6 @@ map<int, bool> prefix_tree_checker::check_on_kids(
             map<int, bool> result_on_kid = this->check(node, kids_it->second,
                     intersect);
             return_map.insert(result_on_kid.begin(), result_on_kid.end());
-            break;
 
         }
 
@@ -906,6 +907,52 @@ void prefix_tree_checker::add_satisfying_values(map<int, bool>& returned_vals,
             to_check.erase(it->first);
         }
     }
+}
+
+/**
+ * Check all instantiations of the property type given on the traces
+ * and return the valid ones
+ * @param prop_type property type to check.
+ * @param instantiator instantiator to produce next instantiation
+ * @param traces all the traces to check on
+ * @return
+ */
+vector<map<string, string>> valid_instants_on_traces(
+        const spot::ltl::formula * prop_type,
+        instants_pool_creator * instantiator, shared_ptr<prefix_tree> traces) {
+    instantiator->reset_instantiations();
+    // vector to return
+    vector<map<string, string>> return_vec;
+    prefix_tree_checker checker;
+    set<shared_ptr<prefix_tree_node>> iterable_traces =
+            traces->get_start_nodes();
+    while (true) {
+        shared_ptr<map<string, string>> current_instantiation =
+                instantiator->get_next_instantiation();
+        if (current_instantiation == NULL) {
+            break;
+        }
+        const spot::ltl::formula * instantiated_prop_type = instantiate(
+                prop_type, *current_instantiation,
+                instantiator->get_events_to_exclude());
+        // is the instantiation valid?
+        bool valid = true;
+        for (set<shared_ptr<prefix_tree_node>>::iterator it =
+                iterable_traces.begin(); it != iterable_traces.end(); it++) {
+            bool valid_on_trace = checker.check_on_trace(instantiated_prop_type,
+                    *it);
+            if (!valid_on_trace) {
+                valid = false;
+                break;
+            }
+        }
+        instantiated_prop_type->destroy();
+        if (valid) {
+            return_vec.push_back(*current_instantiation);
+        }
+    }
+    return return_vec;
+
 }
 
 } /* namespace texada */
