@@ -21,6 +21,17 @@ prefix_tree_checker::~prefix_tree_checker() {
     // TODO Auto-generated destructor stub
 }
 
+
+/**
+ * Add the bindings map. Only need to be changed at different formulae,
+ * not at different instantitaions.
+ * @param bindings_map
+ */
+void prefix_tree_checker::add_relevant_bindings(
+            map<const spot::ltl::formula*, set<string>> * bindings_map){
+    relevant_bindings_map = bindings_map;
+}
+
 /**
  * Since SPOT's visitor only takes in one parameter (the formula), the accept functionality
  * cannot be used. Thus we need a function that takes in a general formula and correctly
@@ -929,13 +940,21 @@ void prefix_tree_checker::add_satisfying_values(map<int, bool>& returned_vals,
     }
 }
 
-void prefix_tree_checker::add_to_memo_map(const spot::ltl::atomic_prop* node,
+void prefix_tree_checker::add_to_memo_map(const spot::ltl::formula* node,
         trace_node trace_pt, map<int,bool> return_val){
     memo_key insert_key;
     insert_key.node = node;
     insert_key.trace_pt = trace_pt;
-    // STUB: TODO get correct bindings
-    insert_key.relevant_mappings = map<string,string>();
+    set<string> relevant_vars = aps_of_form(node);
+    map<string,string> relevant_map;
+    for (set<string>::iterator var_it = relevant_vars.begin(); var_it != relevant_vars.end(); var_it++){
+        std::map<string,string>::iterator current_mapping = instantiations.find(*var_it);
+        if (current_mapping != instantiations.end()){
+            relevant_map.insert(*current_mapping);
+            //TODO what if the =/= doesn't hold?
+        }
+    }
+    insert_key.relevant_mappings = relevant_map;
     boost::unordered_map<memo_key, map<int,bool>, hash_memo_key>::iterator find_this = memo_map.find(insert_key);
     if (find_this != memo_map.end()){
         //todo: what can we infer about the value on unchecked traces???
@@ -944,6 +963,16 @@ void prefix_tree_checker::add_to_memo_map(const spot::ltl::atomic_prop* node,
         for(map<int,bool>::iterator it = return_val.begin(); it != return_val.end() ;it++)
         find_this->second.insert(*it);
     }
+}
+
+set<string> prefix_tree_checker::aps_of_form(const spot::ltl::formula* node){
+    map<const spot::ltl::formula*, set<string>>::iterator set_pair= relevant_bindings_map->find(node);
+    if (set_pair == relevant_bindings_map->end()){
+        std::cerr << "oh no, this is bad";
+       return set<string>();
+       //TODO: exception
+    }
+    return set_pair->second;
 }
 
 /**
