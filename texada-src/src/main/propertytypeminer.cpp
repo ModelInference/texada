@@ -131,13 +131,13 @@ set<const spot::ltl::formula*> mine_property_type(
     simple_parser parser = simple_parser();
     // configure parser based on user options
     if (opts.count("regex")) {
-    	parser.set_event_types(opts["regex"].as<vector<string>>());
+        parser.set_event_types(opts["regex"].as<vector<string>>());
     }
     if (opts.count("separator_regex")) {
-    	parser.set_separator(opts["separator_regex"].as<std::string>());
+        parser.set_separator(opts["separator_regex"].as<std::string>());
     }
     if (opts.count("ignore_nm_lines")) {
-    	parser.ignore_nm_lines();
+        parser.ignore_nm_lines();
     }
     shared_ptr<set<vector<string_event> >> vector_trace_set;
     shared_ptr<set<map<string_event, vector<long>>> > map_trace_set;

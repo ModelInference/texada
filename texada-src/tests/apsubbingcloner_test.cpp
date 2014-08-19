@@ -22,9 +22,9 @@
 TEST(AtomicPropositionSubbingClonerTest, SimpleTest){
 
     //creating instantiating map
-	std::map<std::string, std::string> map = std::map<std::string, std::string>();
-	// fill map with x->a and y->b
-	map.insert(std::pair<std::string,std::string>("x","a"));
+    std::map<std::string, std::string> map = std::map<std::string, std::string>();
+    // fill map with x->a and y->b
+    map.insert(std::pair<std::string,std::string>("x","a"));
     map.insert(std::pair<std::string,std::string>("y","b"));
 
     //parsing original formula...
