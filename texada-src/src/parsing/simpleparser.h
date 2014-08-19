@@ -50,7 +50,7 @@ public:
 	shared_ptr<prefix_tree> return_prefix_trees();
 
 private:
-	std::string get_event_type(std::string log_line);
+	shared_ptr<std::string> get_event_type(std::string log_line);
 	// parser configuration
 	std::vector<boost::regex> event_types;
 	boost::regex separator_regex;
