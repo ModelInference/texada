@@ -1,5 +1,4 @@
-With or without --allow_same_bindings, the instantiations returned from running 
-texada with arguments from args.txt are:
+With/without --allow_same_bindings, instantiations:
 (!b W a) & G(a -> XFb)
 
 
