@@ -30,11 +30,11 @@ simple_parser::~simple_parser() {
 
 /**
  * Setter for event_types
- * @param event_types: regexes specifying event_types
+ * @param event_types: regular expressions specifying the structure of log
  */
-void simple_parser::set_event_types(std::vector<std::string> regex) {
+void simple_parser::set_event_types(std::vector<std::string> regexes) {
 	this->event_types.clear();
-	for (auto & element : regex) {
+	for (auto & element : regexes) {
 		boost::regex expression(element);
 		this->event_types.push_back(expression);
 	}
@@ -42,14 +42,14 @@ void simple_parser::set_event_types(std::vector<std::string> regex) {
 
 /**
  * Setter for separator_regex
- * @param regex: regex specifying separator line
+ * @param regex: regular expression specifying terminating event
  */
 void simple_parser::set_separator(std::string regex) {
 	this->separator_regex = regex;
 }
 
 /**
- * Configures parser to ignore non-matching lines
+ * Configures parser to ignore lines not matching provided regular expressions
  */
 void simple_parser::ignore_nm_lines() {
 	this->ignores_nm_lines = true;
@@ -72,13 +72,24 @@ void simple_parser::parse_to_vector(std::ifstream &infile) {
             return_vec.clear();
         } else {
         	// get event type of line
-        	std::string etype = simple_parser::get_event_type(line);
-            // assumes one event per line, -- terminates
+        	shared_ptr<std::string> etype = simple_parser::get_event_type(line);
+        	// if etype is NULL, line does not match any of the provided regular expressions
+        	// ignore or exit program based on value of ignores_nm_lines
+        	if (etype == NULL) {
+        		if (ignores_nm_lines) {
+        			continue;
+        		} else {
+        			// TODO: consider returning line number
+        			std::cerr << "Error: the line '" + line + "' did not match any of the provided regular expressions. \n";
+        			exit(1);
+        		}
+        	}
+            // assumes one event per line, line matching separator_regex terminates
             // constructor w/o terminal event false/true
-            return_vec.push_back(string_event(etype));
+            return_vec.push_back(string_event(*etype));
             // if the event is not in the set of events, we add it
-            if ((unique_events->find(etype) == unique_events->end())) {
-                unique_events->insert(etype);
+            if ((unique_events->find(*etype) == unique_events->end())) {
+                unique_events->insert(*etype);
             }
 
         }
@@ -109,15 +120,27 @@ void simple_parser::parse_to_map(std::ifstream &infile) {
             pos_count = 0;
         } else {
         	// get event type of line
-        	std::string etype = get_event_type(line);
-            if ((return_map.find(string_event(etype)) == return_map.end())) {
-                unique_events->insert(etype);
+        	shared_ptr<std::string> etype = simple_parser::get_event_type(line);
+        	// if etype is NULL, line does not match any of the provided regular expressions
+        	// ignore or exit program based on value of ignores_nm_lines
+        	//std::cout << *etype << "\n";
+        	if (etype == NULL) {
+        		if (ignores_nm_lines) {
+        			continue;
+        		} else {
+        			// TODO: consider returning line number
+        			std::cerr << "Error: the line '" + line + "' did not match any of the provided regular expressions. \n";
+        			exit(1);
+        		}
+        	}
+            if ((return_map.find(string_event(*etype)) == return_map.end())) {
+                unique_events->insert(*etype);
                 std::vector<long> pos_vec;
                 pos_vec.push_back(pos_count);
-                return_map.emplace(string_event(etype), pos_vec);
+                return_map.emplace(string_event(*etype), pos_vec);
                 pos_count++;
             } else {
-                return_map.at(string_event(etype)).push_back(pos_count);
+                return_map.at(string_event(*etype)).push_back(pos_count);
                 pos_count++;
             }
         }
@@ -178,13 +201,24 @@ void simple_parser::parse_to_pretrees(std::ifstream &infile) {
 
         } else {
         	// get event type of line
-        	std::string etype = simple_parser::get_event_type(line);
+        	shared_ptr<std::string> etype = simple_parser::get_event_type(line);
+        	// if etype is NULL, line does not match any of the provided regular expressions
+        	// ignore or exit program based on value of ignores_nm_lines
+        	if (etype == NULL) {
+        		if (ignores_nm_lines) {
+        			continue;
+        		} else {
+        			// TODO: consider returning line number
+        			std::cerr << "Error: the line '" + line + "' did not match any of the provided regular expressions. \n";
+        			exit(1);
+        		}
+        	}
             // if the event is not in the set of events, we add it
-            if ((unique_events->find(etype) == unique_events->end())) {
-                unique_events->insert(etype);
+            if ((unique_events->find(*etype) == unique_events->end())) {
+                unique_events->insert(*etype);
             }
             // check if this event is already a child of the parent
-            shared_ptr<prefix_tree_node> twin = parent->get_child(etype);
+            shared_ptr<prefix_tree_node> twin = parent->get_child(*etype);
             if (twin != NULL) {
                 //std::cout << "Added trace id " << trace_id << " to event " << line << ".\n";
                 parent->add_id_to_child(trace_id,twin);
@@ -194,9 +228,9 @@ void simple_parser::parse_to_pretrees(std::ifstream &infile) {
                 set<int> trace_ids;
                 trace_ids.insert(trace_id);
                 shared_ptr<prefix_tree_node> to_insert = std::make_shared<
-                        prefix_tree_node>(etype, trace_ids);
+                        prefix_tree_node>(*etype, trace_ids);
                 parent->add_child(to_insert);
-                parent = parent->get_child(etype);
+                parent = parent->get_child(*etype);
             }
 
         }
@@ -351,19 +385,20 @@ std::vector<std::string> string_to_args(std::string commands){
 }
 
 /**
- * Maps a log line to an event type based on parser's configuration
+ * Maps a log line to an event type based on provided regular expressions
  * @param log_line
- * @return event type of the given log line
+ * @return event type of the given log line or NULL if log line does not match provided regular expressions
  */
-std::string simple_parser::get_event_type(std::string log_line) {
+shared_ptr<std::string> simple_parser::get_event_type(std::string log_line) {
 	boost::smatch results;
 	for (auto & e : this->event_types) {
 		if (boost::regex_match(log_line, results, e)) {
-			return results["ETYPE"];
+			shared_ptr<std::string> etype (new string(results["ETYPE"]));
+			return etype;
 		}
 	}
 	// log_line did not match any of the provided regular expressions
-	// TODO
+	return NULL;
 }
 
 } /* namespace texada */
