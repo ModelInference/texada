@@ -5,6 +5,7 @@
 * [Command line help screen](#markdown-command-line-usage-screen)
 
 # Overview
+-----------------------
 
 Texada is a research tool designed for extracting patterns from text data. Specifically, Texada mines temporal relations from totally-ordered sequences of events. To use Texada you need to provide it with at least the following two inputs:
 
@@ -18,6 +19,7 @@ As an example, consider the LTL property type that encodes the "x always followe
 
 
 # Installation guide
+-----------------------
 
 Texada is developed in C++. This section describes the steps to get
 Texada working from a freshly cloned repository. Texada has been
@@ -116,6 +118,7 @@ To build, press ctrl/cmd-b or right-click on the project and click "Build Projec
 
 
 # Usage guide
+-----------------------
 
 Texada is a command line tool. The following assumes that you were
 able to install Texada by following the installation instructions and
@@ -125,39 +128,41 @@ are able to execute `texadatest` and `texada` binaries.
 
 Here is an example input/output:
 
-Input: `./texada -m -c ./traces/perracotta-type-traces/alternating/args.txt ./traces/perracotta-type-traces/alternating/trace.txt`
+* Input: `./texada -m -c ./traces/perracotta-type-traces/alternating/args.txt ./traces/perracotta-type-traces/alternating/trace.txt`
 
-Where args.txt contains:
-`-f '(!y W x) & G((x -> X(!x U y))&(y -> X(!y W x)))'`
+* Where args.txt contains: `-f '(!y W x) & G((x -> X(!x U y))&(y -> X(!y W x)))'`
 
-Output: `(!b W a) & G((a -> X(!a U b)) & (b -> X(!b W a)))`
+* Output: `(!b W a) & G((a -> X(!a U b)) & (b -> X(!b W a)))`
 
 *TODO: expand*
 
 
 # Command line usage help screen
+-----------------------
 
-> Usage: texada [opt1] ... [optN] log-file
-> 
-> Required options: -f, log-file, one of [-l, -m, -p]
-> 
-> Options:
->   -h [ --help ]                print help message
->   -f [ --property-type ] arg   property type to mine
->   --log-file arg               log file
->   -m [ --map-trace ]           use a map trace representation
->   -l [ --linear-trace ]        use a linear trace representation
->   -p [ --prefix-tree-trace ]   use a prefix tree trace representation
->   --pregen-instants            pre-generate all property type instantiations 
->                                [default: false, using on-fly-instantiation]
->   --allow-same-bindings        allow different formula variables to be bound to
->                                the same events [default: false]
->   -c [ --config-file ] arg     file containing command line options. Command 
->                                line options will override file options.
->   -e [ --event ] arg           formula variable name to be interpreted as a 
->                                constant event.
->   -r [ --regex ] arg           regular expression to parse event types from log
->                                [default (?<ETYPE>.*)]
->   -s [ --separator_regex ] arg regular expression matching execution separator 
->                                lines in the log [default: --]
->   -i [ --ignore_nm_lines ]     ignore non-matching lines [default: false]
+~~~~
+ Usage: texada [opt1] ... [optN] log-file
+ 
+ Required options: -f, log-file, one of [-l, -m, -p]
+ 
+ Options:
+   -h [ --help ]                print help message
+   -f [ --property-type ] arg   property type to mine
+   --log-file arg               log file
+   -m [ --map-trace ]           use a map trace representation
+   -l [ --linear-trace ]        use a linear trace representation
+   -p [ --prefix-tree-trace ]   use a prefix tree trace representation
+   --pregen-instants            pre-generate all property type instantiations 
+                                [default: false, using on-fly-instantiation]
+   --allow-same-bindings        allow different formula variables to be bound to
+                                the same events [default: false]
+   -c [ --config-file ] arg     file containing command line options. Command 
+                                line options will override file options.
+   -e [ --event ] arg           formula variable name to be interpreted as a 
+                                constant event.
+   -r [ --regex ] arg           regular expression to parse event types from log
+                                [default (?<ETYPE>.*)]
+   -s [ --separator_regex ] arg regular expression matching execution separator 
+                                lines in the log [default: --]
+   -i [ --ignore_nm_lines ]     ignore non-matching lines [default: false]
+~~~~
