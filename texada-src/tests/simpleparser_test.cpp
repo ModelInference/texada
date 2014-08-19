@@ -282,3 +282,39 @@ TEST(SimpleParserTest, MultipleRegexOptions) {
     ASSERT_TRUE(events->find("e2") != events->end());
     ASSERT_TRUE(events->find("e3") != events->end());
 }
+
+// Checks that the parser can be configured to ignore non matching lines
+TEST(SimpleParserTest, IgnoreNMLines) {
+    if (getenv("TEXADA_HOME") == NULL){
+        std::cerr << "Error: TEXADA_HOME is undefined. \n";
+        FAIL();
+    }
+    std::ifstream infile(
+            std::string(getenv("TEXADA_HOME"))
+                    + "/traces/regex-parsing-tests/ignore-nm-lines-trace.txt");
+
+    texada::simple_parser * parser = new texada::simple_parser;
+    parser->ignore_nm_lines();
+    std::vector<std::string> etypes;
+    etypes.push_back("--> (?<ETYPE>e[0-9])");
+    parser->set_event_types(etypes);
+
+    parser->parse_to_vector(infile);
+    std::shared_ptr<std::set<std::vector<texada::string_event>>>trace_set =
+    parser->return_vec_trace();
+    std::shared_ptr<std::set<std::string>> events = parser->return_events();
+    delete parser;
+    parser = NULL;
+
+    std::vector<texada::string_event> trace_vec = *trace_set->begin();
+    ASSERT_EQ("e1", trace_vec[0].get_name());
+    ASSERT_EQ("e2", trace_vec[1].get_name());
+    ASSERT_EQ("e3", trace_vec[2].get_name());
+    ASSERT_EQ("e2", trace_vec[3].get_name());
+    ASSERT_TRUE(trace_vec[4].is_terminal());
+
+    ASSERT_EQ(events->size(), 3);
+    ASSERT_TRUE(events->find("e1") != events->end());
+    ASSERT_TRUE(events->find("e2") != events->end());
+    ASSERT_TRUE(events->find("e3") != events->end());
+}
