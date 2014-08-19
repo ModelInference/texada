@@ -35,6 +35,8 @@ public:
 
     bool check_on_single_trace(const spot::ltl::formula* form_node,
             shared_ptr<prefix_tree_node> trace_node, int id);
+    void add_relevant_bindings(
+            map<const spot::ltl::formula*, set<string>> * bindings_map);
 
 private:
 
@@ -124,7 +126,8 @@ private:
             std::size_t seed = form_hash(k.node);
             boost::hash<std::pair<string, string>> map_hash;
             map_hash(*k.relevant_mappings.begin());
-            for (map<string, string>::const_iterator it = k.relevant_mappings.begin();
+            for (map<string, string>::const_iterator it =
+                    k.relevant_mappings.begin();
                     it != k.relevant_mappings.end(); it++) {
                 boost::hash_combine(seed, map_hash(*it));
             }
@@ -136,14 +139,12 @@ private:
 
     };
 
-    boost::unordered_map<memo_key, map<int,bool>, hash_memo_key> memo_map;
-    boost::unordered_map<spot::ltl::formula*, set<string>> relevant_bindings_map;
+    boost::unordered_map<memo_key, map<int, bool>, hash_memo_key> memo_map;
+    map<const spot::ltl::formula*, set<string>> * relevant_bindings_map;
 
-    void add_to_memo_map(const spot::ltl::atomic_prop* node,
-        trace_node trace_pt, map<int,bool>);
-    //thisss should be implemented as a formula visitor, probs
-    void fill_relevant_bindings(spot::ltl::formula*);
-    set<string> aps_of_form(const spot::ltl::atomic_prop * node);
+    void add_to_memo_map(const spot::ltl::formula * node, trace_node trace_pt,
+            map<int, bool>);
+    set<string> aps_of_form(const spot::ltl::formula * node);
 
 };
 
