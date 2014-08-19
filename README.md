@@ -2,7 +2,7 @@
 * [Overview](#markdown-header-overview)
 * [Installation guide](#markdown-header-installation-guide)
 * [Usage guide](#markdown-header-usage-guide)
-* [Command line help screen](#markdown-command-line-usage-screen)
+* [Command line usage screen](#markdown-header-command-line-usage-screen)
 
 # Overview
 -----------------------
@@ -137,7 +137,7 @@ Here is an example input/output:
 *TODO: expand*
 
 
-# Command line usage help screen
+# Command line usage screen
 -----------------------
 
 ~~~~
