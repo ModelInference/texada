@@ -63,6 +63,7 @@ private:
 	shared_ptr<set<string>>  unique_events;
 	bool has_been_parsed_vec = false;
 	bool has_been_parsed_map = false;
+	bool has_been_parsed_pretree = false;
 
 };
 std::vector<std::string> string_to_args(std::string commands);

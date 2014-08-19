@@ -26,6 +26,7 @@ public:
     void add_trace(set<int>, shared_ptr<prefix_tree_node>);
     void add_id_to_trace(int, shared_ptr<prefix_tree_node>);
     shared_ptr<prefix_tree_node> get_trace_start(int);
+    set<shared_ptr<prefix_tree_node>> get_start_nodes();
     shared_ptr<prefix_tree_node> get_trace_start(string);
     int get_num_traces();
 private:
