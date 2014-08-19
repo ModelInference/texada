@@ -26,102 +26,102 @@
 TEST(MapCheckerTest,SmallTrace){
 
     // create the trace map
-	std::map<texada::string_event, std::vector<long>> trace_map;
+    std::map<texada::string_event, std::vector<long>> trace_map;
 
-	// create the position vector for a and insert into trace map
-	texada::string_event aevent = texada::string_event("a");
-	long aposns[] = {0,1};
-	std::vector<long> apos_vec (aposns, aposns + sizeof(aposns) / sizeof(long) );
-	trace_map.insert(std::pair<texada::string_event, std::vector<long>>(aevent,apos_vec));
+    // create the position vector for a and insert into trace map
+    texada::string_event aevent = texada::string_event("a");
+    long aposns[] = {0,1};
+    std::vector<long> apos_vec (aposns, aposns + sizeof(aposns) / sizeof(long) );
+    trace_map.insert(std::pair<texada::string_event, std::vector<long>>(aevent,apos_vec));
 
-	// create the position vector for b and insert into trace map
-	texada::string_event bevent = texada::string_event("b");
-	long bposns[] = {2,3};
-	std::vector<long> bpos_vec (bposns, bposns + sizeof(bposns) / sizeof(long) );
-	trace_map.insert(std::pair<texada::string_event, std::vector<long>>(bevent,bpos_vec));
+    // create the position vector for b and insert into trace map
+    texada::string_event bevent = texada::string_event("b");
+    long bposns[] = {2,3};
+    std::vector<long> bpos_vec (bposns, bposns + sizeof(bposns) / sizeof(long) );
+    trace_map.insert(std::pair<texada::string_event, std::vector<long>>(bevent,bpos_vec));
 
-	// create the position vector for terminal event and insert into trace map
-	texada::string_event termvent = texada::string_event();
-	std::vector<long> tpos_vec;
-	tpos_vec.push_back(4);
-	trace_map.insert(std::pair<texada::string_event, std::vector<long>>(termvent,tpos_vec));
+    // create the position vector for terminal event and insert into trace map
+    texada::string_event termvent = texada::string_event();
+    std::vector<long> tpos_vec;
+    tpos_vec.push_back(4);
+    trace_map.insert(std::pair<texada::string_event, std::vector<long>>(termvent,tpos_vec));
 
-	// create checker and parse error list to parse formula later on
-	texada::map_trace_checker checker = texada::map_trace_checker(&trace_map);
-	spot::ltl::parse_error_list pel;
+    // create checker and parse error list to parse formula later on
+    texada::map_trace_checker checker = texada::map_trace_checker(&trace_map);
+    spot::ltl::parse_error_list pel;
 
 
-	// Tests to try and cover the "check" functions
+    // Tests to try and cover the "check" functions
 
-	std::string input = "G(a->Fb)";
-	const spot::ltl::formula* f = spot::ltl::parse(input, pel);
-	ASSERT_TRUE(checker.check_on_trace(f));
-	f->destroy();
+    std::string input = "G(a->Fb)";
+    const spot::ltl::formula* f = spot::ltl::parse(input, pel);
+    ASSERT_TRUE(checker.check_on_trace(f));
+    f->destroy();
 
-	//until
-	input = "a U b";
-	f = spot::ltl::parse(input,pel);
-	ASSERT_TRUE(checker.check_on_trace(f));
-	f->destroy();
+    //until
+    input = "a U b";
+    f = spot::ltl::parse(input,pel);
+    ASSERT_TRUE(checker.check_on_trace(f));
+    f->destroy();
 
-	//weak until
-	input = "a W b";
-	f = spot::ltl::parse(input,pel);
-	ASSERT_TRUE(checker.check_on_trace(f));
-	f->destroy();
+    //weak until
+    input = "a W b";
+    f = spot::ltl::parse(input,pel);
+    ASSERT_TRUE(checker.check_on_trace(f));
+    f->destroy();
 
-	//release
-	input = "b R a";
-	f = spot::ltl::parse(input,pel);
-	ASSERT_FALSE(checker.check_on_trace(f));
-	f->destroy();
+    //release
+    input = "b R a";
+    f = spot::ltl::parse(input,pel);
+    ASSERT_FALSE(checker.check_on_trace(f));
+    f->destroy();
 
-	//strong release
-	input = "b M a";
-	f = spot::ltl::parse(input,pel);
-	ASSERT_FALSE(checker.check_on_trace(f));
-	f->destroy();
+    //strong release
+    input = "b M a";
+    f = spot::ltl::parse(input,pel);
+    ASSERT_FALSE(checker.check_on_trace(f));
+    f->destroy();
 
-	//xor
-	input = "b xor a";
-	f = spot::ltl::parse(input,pel);
-	ASSERT_TRUE(checker.check_on_trace(f));
-	f->destroy();
+    //xor
+    input = "b xor a";
+    f = spot::ltl::parse(input,pel);
+    ASSERT_TRUE(checker.check_on_trace(f));
+    f->destroy();
 
-	//equiv, iff
-	input = "b <-> a";
-	f = spot::ltl::parse(input,pel);
-	ASSERT_FALSE(checker.check_on_trace(f));
-	f->destroy();
+    //equiv, iff
+    input = "b <-> a";
+    f = spot::ltl::parse(input,pel);
+    ASSERT_FALSE(checker.check_on_trace(f));
+    f->destroy();
 
-	//impliies
-	input = "a -> b";
-	f = spot::ltl::parse(input,pel);
-	ASSERT_FALSE(checker.check_on_trace(f));
-	f->destroy();
+    //impliies
+    input = "a -> b";
+    f = spot::ltl::parse(input,pel);
+    ASSERT_FALSE(checker.check_on_trace(f));
+    f->destroy();
 
-	input = "a -> Fb";
-	f = spot::ltl::parse(input,pel);
-	ASSERT_TRUE(checker.check_on_trace(f));
-	f->destroy();
+    input = "a -> Fb";
+    f = spot::ltl::parse(input,pel);
+    ASSERT_TRUE(checker.check_on_trace(f));
+    f->destroy();
 
-	//or
-	input = "a | b";
-	f = spot::ltl::parse(input,pel);
-	ASSERT_TRUE(checker.check_on_trace(f));
-	f->destroy();
+    //or
+    input = "a | b";
+    f = spot::ltl::parse(input,pel);
+    ASSERT_TRUE(checker.check_on_trace(f));
+    f->destroy();
 
-	//and
-	input = "a & b";
-	f = spot::ltl::parse(input,pel);
-	ASSERT_FALSE(checker.check_on_trace(f));
-	f->destroy();
+    //and
+    input = "a & b";
+    f = spot::ltl::parse(input,pel);
+    ASSERT_FALSE(checker.check_on_trace(f));
+    f->destroy();
 
-	//finally
-	input = "Fa";
-	f = spot::ltl::parse(input,pel);
-	ASSERT_TRUE(checker.check_on_trace(f));
-	f->destroy();
+    //finally
+    input = "Fa";
+    f = spot::ltl::parse(input,pel);
+    ASSERT_TRUE(checker.check_on_trace(f));
+    f->destroy();
 
     //globally
     input = "Ga";
@@ -129,64 +129,64 @@ TEST(MapCheckerTest,SmallTrace){
     ASSERT_FALSE(checker.check_on_trace(f));
     f->destroy();
 
-	// next
-	input = "Xa";
-	f = spot::ltl::parse(input,pel);
-	ASSERT_TRUE(checker.check_on_trace(f));
-	f->destroy();
+    // next
+    input = "Xa";
+    f = spot::ltl::parse(input,pel);
+    ASSERT_TRUE(checker.check_on_trace(f));
+    f->destroy();
 
-	// not
-	input = "!b";
-	f = spot::ltl::parse(input,pel);
-	ASSERT_TRUE(checker.check_on_trace(f));
-	f->destroy();
+    // not
+    input = "!b";
+    f = spot::ltl::parse(input,pel);
+    ASSERT_TRUE(checker.check_on_trace(f));
+    f->destroy();
 
-	// tests to try and cover finding first occurrence
+    // tests to try and cover finding first occurrence
 
-	// first occ next
-	input = "G(X!a)";
-	f = spot::ltl::parse(input,pel);
-	ASSERT_FALSE(checker.check_on_trace(f));
-	f->destroy();
+    // first occ next
+    input = "G(X!a)";
+    f = spot::ltl::parse(input,pel);
+    ASSERT_FALSE(checker.check_on_trace(f));
+    f->destroy();
 
-	// first occ U
-	input = "G(!a R !b)";
-	f = spot::ltl::parse(input,pel);
-	ASSERT_FALSE(checker.check_on_trace(f));
-	f->destroy();
+    // first occ U
+    input = "G(!a R !b)";
+    f = spot::ltl::parse(input,pel);
+    ASSERT_FALSE(checker.check_on_trace(f));
+    f->destroy();
 
-	//first occ W
-	input = "G(!a M !b)";
-	f = spot::ltl::parse(input,pel);
-	ASSERT_FALSE(checker.check_on_trace(f));
-	f->destroy();
+    //first occ W
+    input = "G(!a M !b)";
+    f = spot::ltl::parse(input,pel);
+    ASSERT_FALSE(checker.check_on_trace(f));
+    f->destroy();
 
-	// first occ R
-	input = "G(!b U !a)";
-	f = spot::ltl::parse(input,pel);
-	ASSERT_TRUE(checker.check_on_trace(f));
-	f->destroy();
+    // first occ R
+    input = "G(!b U !a)";
+    f = spot::ltl::parse(input,pel);
+    ASSERT_TRUE(checker.check_on_trace(f));
+    f->destroy();
 
-	// first occ M
-	input = "G(!b W !a)";
-	f = spot::ltl::parse(input,pel);
-	ASSERT_TRUE(checker.check_on_trace(f));
-	f->destroy();
+    // first occ M
+    input = "G(!b W !a)";
+    f = spot::ltl::parse(input,pel);
+    ASSERT_TRUE(checker.check_on_trace(f));
+    f->destroy();
 
-	//first occ G
-	input = "F(G b)";
-	f = spot::ltl::parse(input,pel);
-	ASSERT_TRUE(checker.check_on_trace(f));
-	f->destroy();
+    //first occ G
+    input = "F(G b)";
+    f = spot::ltl::parse(input,pel);
+    ASSERT_TRUE(checker.check_on_trace(f));
+    f->destroy();
 
-	//first occ F
-	input = "F(F a)";
-	f = spot::ltl::parse(input,pel);
-	ASSERT_TRUE(checker.check_on_trace(f));
-	f->destroy();
+    //first occ F
+    input = "F(F a)";
+    f = spot::ltl::parse(input,pel);
+    ASSERT_TRUE(checker.check_on_trace(f));
+    f->destroy();
 
-	//first occ ->
-	input = "F(a->b)";
+    //first occ ->
+    input = "F(a->b)";
     f = spot::ltl::parse(input,pel);
     ASSERT_TRUE(checker.check_on_trace(f));
     f->destroy();
@@ -214,23 +214,23 @@ TEST(MapCheckerTest,ResourceAllocation){
 
     std::string file_source = texada_home + "/traces/resource-allocation/smallabc.txt";
 
-	// parse the ltl formula
-	spot::ltl::parse_error_list pel;
-	const spot::ltl::formula* formula = spot::ltl::parse("(!(b | c) W a) & G((b -> XFc) & (a -> X((!a U c) & (!c U b))) & (c -> X(!(b | c) W a)))", pel);
+    // parse the ltl formula
+    spot::ltl::parse_error_list pel;
+    const spot::ltl::formula* formula = spot::ltl::parse("(!(b | c) W a) & G((b -> XFc) & (a -> X((!a U c) & (!c U b))) & (c -> X(!(b | c) W a)))", pel);
 
 
-	// parse log file
-	std::ifstream infile(file_source);
-	texada::simple_parser * parser =  new texada::simple_parser();
-	parser->parse_to_map(infile);
-	std::shared_ptr<std::set<std::map<texada::string_event,std::vector<long>> >>  trace_set = parser->return_map_trace();
-	std::shared_ptr<std::set<std::string>>  event_set = parser->return_events();
-	delete parser;
+    // parse log file
+    std::ifstream infile(file_source);
+    texada::simple_parser * parser =  new texada::simple_parser();
+    parser->parse_to_map(infile);
+    std::shared_ptr<std::set<std::map<texada::string_event,std::vector<long>> >>  trace_set = parser->return_map_trace();
+    std::shared_ptr<std::set<std::string>>  event_set = parser->return_events();
+    delete parser;
 
-	// check
-	texada::map_trace_checker checker = texada::map_trace_checker(&(*trace_set->begin()));
-	ASSERT_TRUE(checker.check_on_trace(formula));
-	formula->destroy();
+    // check
+    texada::map_trace_checker checker = texada::map_trace_checker(&(*trace_set->begin()));
+    ASSERT_TRUE(checker.check_on_trace(formula));
+    formula->destroy();
 }
 
 
