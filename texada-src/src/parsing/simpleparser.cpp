@@ -55,6 +55,18 @@ void simple_parser::ignore_nm_lines() {
 	this->ignores_nm_lines = true;
 }
 
+
+// TODO ib: the parse_to_* methods below have the same structure --
+// retrieve a line from a file, match a separator reg expression
+// against the line, modify some data structures, otherwise check if
+// it matches a reg exp for event parsing, and modify/create more
+// structures. Refactor all of these methods to use a common single
+// method that provides this structure. Create specialized instances
+// that parse vectors/maps/whatever using inheritance (simplest), or
+// function pointers, or other means of indirection. In a sense, these
+// share structure and we have to refactor this structure out into a
+// reusable piece.
+
 /**
  * Parses the given file into a vector, fills the event set
  * @param filename
@@ -71,6 +83,11 @@ void simple_parser::parse_to_vector(std::ifstream &infile) {
             vector_trace_set->insert(return_vec);
             return_vec.clear();
         } else {
+
+          // TODO ib: indentation difference in else branch -- maintain indent consistency.
+
+          // TODO ib: there is a 'tab' character in indent of next line. Do _not_ use tabs anywhere in the code.
+
         	// get event type of line
         	shared_ptr<std::string> etype = simple_parser::get_event_type(line);
         	// if etype is NULL, line does not match any of the provided regular expressions
@@ -119,6 +136,10 @@ void simple_parser::parse_to_map(std::ifstream &infile) {
             return_map.clear();
             pos_count = 0;
         } else {
+            // TODO ib: the next 14 lines or seem to be copy-pasted
+            // from above. Avoid copy-pasted code like the
+            // plague. Refactor identical code into reusable methods.
+
         	// get event type of line
         	shared_ptr<std::string> etype = simple_parser::get_event_type(line);
         	// if etype is NULL, line does not match any of the provided regular expressions
@@ -201,6 +222,8 @@ void simple_parser::parse_to_pretrees(std::ifstream &infile) {
             }
 
         } else {
+            // TODO ib: more copied code....
+
         	// get event type of line
         	shared_ptr<std::string> etype = simple_parser::get_event_type(line);
         	// if etype is NULL, line does not match any of the provided regular expressions
@@ -398,6 +421,9 @@ std::vector<std::string> string_to_args(std::string commands){
  * @return event type of the given log line or NULL if log line does not match provided regular expressions
  */
 shared_ptr<std::string> simple_parser::get_event_type(std::string log_line) {
+
+  // TODO ib: more tabs and inconsistent indentation level below; fix this across all files.
+
 	boost::smatch results;
 	for (auto & e : this->event_types) {
 		if (boost::regex_match(log_line, results, e)) {

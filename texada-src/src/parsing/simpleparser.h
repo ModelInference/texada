@@ -24,6 +24,10 @@ using std::string;
 using std::map;
 using std::shared_ptr;
 
+// TODO ib: makes sense to rename this to parser. See comment in
+// simpleparser about specializing this parser code through
+// inheritance to parse different data structures for Texada.
+
 /**
  * Creates a simple parser which can parse files in the format returned by
  * invarimint python scripts (one event per line, terminal event is --).
