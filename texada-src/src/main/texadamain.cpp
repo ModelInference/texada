@@ -10,7 +10,7 @@
 #include <ltlvisit/tostring.hh>
 #include <ltlparse/public.hh>
 #include "propertytypeminer.h"
-#include "../parsing/simpleparser.h"
+#include "../parsing/parser.h"
 
 /**
  * Main method, runs Texada mining or timing tests depending on options.

@@ -6,7 +6,7 @@
  */
 
 #include "../src/checkers/maptracechecker.h"
-#include "../src/parsing/simpleparser.h"
+#include "../src/parsing/mapparser.h"
 
 #include <gtest/gtest.h>
 
@@ -221,8 +221,8 @@ TEST(MapCheckerTest,ResourceAllocation){
 
     // parse log file
     std::ifstream infile(file_source);
-    texada::simple_parser * parser =  new texada::simple_parser();
-    parser->parse_to_map(infile);
+    texada::map_parser * parser =  new texada::map_parser();
+    parser->parse(infile);
     std::shared_ptr<std::set<std::map<texada::string_event,std::vector<long>> >>  trace_set = parser->return_map_trace();
     std::shared_ptr<std::set<std::string>>  event_set = parser->return_events();
     delete parser;

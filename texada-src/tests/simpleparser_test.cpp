@@ -1,9 +1,11 @@
 #include <gtest/gtest.h>
-#include "../src/parsing/simpleparser.h"
+#include "../src/parsing/linearparser.h"
+#include "../src/parsing/mapparser.h"
+#include "../src/parsing/prefixtreeparser.h"
 #include <fstream>
 #include <iostream>
 #include <stdlib.h>
-// Tests that the simple parser correctly parses a small trace
+// Tests that the linear parser correctly parses a small trace
 TEST(SimpleParserTest, SmallFile) {
     if (getenv("TEXADA_HOME") == NULL){
         std::cerr << "Error: TEXADA_HOME is undefined. \n";
@@ -13,8 +15,8 @@ TEST(SimpleParserTest, SmallFile) {
             std::string(getenv("TEXADA_HOME"))
                     + "/traces/vary-tracelen/smalltrace.txt");
 
-    texada::simple_parser * parser = new texada::simple_parser;
-    parser->parse_to_vector(infile);
+    texada::linear_parser * parser = new texada::linear_parser;
+    parser->parse(infile);
     std::shared_ptr<std::set<std::vector<texada::string_event>>>trace_set =
     parser->return_vec_trace();
     std::shared_ptr<std::set<std::string>> events = parser->return_events();
@@ -35,7 +37,7 @@ TEST(SimpleParserTest, SmallFile) {
 
 }
 
-// Test that the parser separates multiple traces as it should
+// Test that the linear parser separates multiple traces as it should
 TEST(SimpleParserTest, MultipleTracesOneFile) {
     if (getenv("TEXADA_HOME") == NULL){
         std::cerr << "Error: TEXADA_HOME is undefined. \n";
@@ -45,9 +47,9 @@ TEST(SimpleParserTest, MultipleTracesOneFile) {
     std::ifstream infile(
             std::string(getenv("TEXADA_HOME"))
                     + "/traces/vary-tracelen/etypes-10_events-250_execs-20.txt");
-    texada::simple_parser * parser = new texada::simple_parser;
+    texada::linear_parser * parser = new texada::linear_parser;
 
-    parser->parse_to_vector(infile);
+    parser->parse(infile);
     std::shared_ptr<std::set<std::vector<texada::string_event>>>trace_set =
     parser->return_vec_trace();
 
@@ -62,7 +64,7 @@ TEST(SimpleParserTest, MultipleTracesOneFile) {
     }
 }
 
-// Checks that the parser parses a small file into a map properly
+// Checks that the map parser parses a small file properly
 TEST(SimpleParserTest, MapTraceSmallFile) {
     if (getenv("TEXADA_HOME") == NULL){
         std::cerr << "Error: TEXADA_HOME is undefined. \n";
@@ -72,8 +74,8 @@ TEST(SimpleParserTest, MapTraceSmallFile) {
     std::ifstream infile(
             std::string(getenv("TEXADA_HOME"))
                     + "/traces/vary-tracelen/smalltrace.txt");
-    texada::simple_parser * parser = new texada::simple_parser;
-    parser->parse_to_map(infile);
+    texada::map_parser * parser = new texada::map_parser;
+    parser->parse(infile);
     std::shared_ptr<
             std::set<std::map<texada::string_event, std::vector<long>>> >trace_set =
     parser->return_map_trace();
@@ -90,7 +92,7 @@ TEST(SimpleParserTest, MapTraceSmallFile) {
     ASSERT_EQ(trace.at(texada::string_event()).size(), 1);
 }
 
-// checks that the parser divides the map traces properly, and
+// checks that the map parser divides the traces properly, and
 // that they're the right length (by checking the position of the terminal event)
 TEST(SimpleParserTest, MapTraceLargeFile) {
     if (getenv("TEXADA_HOME") == NULL){
@@ -102,8 +104,8 @@ TEST(SimpleParserTest, MapTraceLargeFile) {
             std::string(getenv("TEXADA_HOME"))
                     + "/traces/vary-tracelen/etypes-10_events-250_execs-20.txt");
 
-    texada::simple_parser * parser = new texada::simple_parser;
-    parser->parse_to_map(infile);
+    texada::map_parser * parser = new texada::map_parser;
+    parser->parse(infile);
     std::shared_ptr<
             std::set<std::map<texada::string_event, std::vector<long>>> >trace_set =
     parser->return_map_trace();
@@ -129,8 +131,8 @@ TEST(SimpleParserTest, PreTreeTrace) {
             std::string(getenv("TEXADA_HOME"))
                     + "/traces/parsing-tests/simple-pre-tree.txt");
 
-    texada::simple_parser parser;
-    parser.parse_to_pretrees(infile);
+    texada::prefix_tree_parser parser;
+    parser.parse(infile);
     std::shared_ptr<texada::prefix_tree> trace_set =
             parser.return_prefix_trees();
 
@@ -194,10 +196,10 @@ TEST(SimpleParserTest, CustomSeparator) {
     std::ifstream infile(
             std::string(getenv("TEXADA_HOME"))
                     + "/traces/regex-parsing-tests/custom-separator.txt");
-    texada::simple_parser * parser = new texada::simple_parser;
+    texada::linear_parser * parser = new texada::linear_parser;
     parser->set_separator("break");
 
-    parser->parse_to_vector(infile);
+    parser->parse(infile);
     std::shared_ptr<std::set<std::vector<texada::string_event>>>trace_set =
     parser->return_vec_trace();
 
@@ -222,12 +224,12 @@ TEST(SimpleParserTest, RegexOption) {
             std::string(getenv("TEXADA_HOME"))
                     + "/traces/regex-parsing-tests/small-structured-trace.txt");
 
-    texada::simple_parser * parser = new texada::simple_parser;
+    texada::linear_parser * parser = new texada::linear_parser;
     std::vector<std::string> etypes;
     etypes.push_back("(?<USER>.*)(?<ETYPE>e[0-9])");
     parser->set_event_types(etypes);
 
-    parser->parse_to_vector(infile);
+    parser->parse(infile);
     std::shared_ptr<std::set<std::vector<texada::string_event>>>trace_set =
     parser->return_vec_trace();
     std::shared_ptr<std::set<std::string>> events = parser->return_events();
@@ -257,13 +259,13 @@ TEST(SimpleParserTest, MultipleRegexOptions) {
             std::string(getenv("TEXADA_HOME"))
                     + "/traces/regex-parsing-tests/small-structured-trace2.txt");
 
-    texada::simple_parser * parser = new texada::simple_parser;
+    texada::linear_parser * parser = new texada::linear_parser;
     std::vector<std::string> etypes;
     etypes.push_back("--> (?<ETYPE>e[0-9])");
     etypes.push_back("<-- (?<ETYPE>e[0-9])");
     parser->set_event_types(etypes);
 
-    parser->parse_to_vector(infile);
+    parser->parse(infile);
     std::shared_ptr<std::set<std::vector<texada::string_event>>>trace_set =
     parser->return_vec_trace();
     std::shared_ptr<std::set<std::string>> events = parser->return_events();
@@ -293,13 +295,13 @@ TEST(SimpleParserTest, IgnoreNMLines) {
             std::string(getenv("TEXADA_HOME"))
                     + "/traces/regex-parsing-tests/ignore-nm-lines-trace.txt");
 
-    texada::simple_parser * parser = new texada::simple_parser;
+    texada::linear_parser * parser = new texada::linear_parser;
     parser->ignore_nm_lines();
     std::vector<std::string> etypes;
     etypes.push_back("--> (?<ETYPE>e[0-9])");
     parser->set_event_types(etypes);
 
-    parser->parse_to_vector(infile);
+    parser->parse(infile);
     std::shared_ptr<std::set<std::vector<texada::string_event>>>trace_set =
     parser->return_vec_trace();
     std::shared_ptr<std::set<std::string>> events = parser->return_events();
