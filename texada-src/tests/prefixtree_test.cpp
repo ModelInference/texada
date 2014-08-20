@@ -7,13 +7,13 @@
 
 #include "../src/parsing/prefixtree.h"
 #include "../src/checkers/prefixtreechecker.h"
+#include "../src/instantiation-tools/subformulaapcollector.h"
 #include "../src/parsing/simpleparser.h"
 #include <gtest/gtest.h>
 #include <ltlparse/public.hh>
 #include <fstream>
 
-
-texada::prefix_tree * create_simple_tree(){
+texada::prefix_tree * create_simple_tree() {
     // create al the sets of trace ids.
     std::set<int> set0123;
     set0123.insert(0);
@@ -36,29 +36,44 @@ texada::prefix_tree * create_simple_tree(){
     set3.insert(3);
 
     // this first a is the anchor of it all
-    std::shared_ptr<texada::prefix_tree_node> first_a = std::make_shared<texada::prefix_tree_node>("a", set0123);
+    std::shared_ptr<texada::prefix_tree_node> first_a = std::make_shared<
+            texada::prefix_tree_node>("a", set0123);
     // first branch
-    std::shared_ptr<texada::prefix_tree_node> first_b = std::make_shared<texada::prefix_tree_node>("b", set01);
-    std::shared_ptr<texada::prefix_tree_node> first_c = std::make_shared<texada::prefix_tree_node>("c", set23);
+    std::shared_ptr<texada::prefix_tree_node> first_b = std::make_shared<
+            texada::prefix_tree_node>("b", set01);
+    std::shared_ptr<texada::prefix_tree_node> first_c = std::make_shared<
+            texada::prefix_tree_node>("c", set23);
 
     // first b branch
-    std::shared_ptr<texada::prefix_tree_node> c_after_b = std::make_shared<texada::prefix_tree_node>("c", set0);
-    std::shared_ptr<texada::prefix_tree_node> d_0 = std::make_shared<texada::prefix_tree_node>("d", set0);
-    std::shared_ptr<texada::prefix_tree_node> terminal_0 = std::make_shared<texada::prefix_tree_node>(set0);
+    std::shared_ptr<texada::prefix_tree_node> c_after_b = std::make_shared<
+            texada::prefix_tree_node>("c", set0);
+    std::shared_ptr<texada::prefix_tree_node> d_0 = std::make_shared<
+            texada::prefix_tree_node>("d", set0);
+    std::shared_ptr<texada::prefix_tree_node> terminal_0 = std::make_shared<
+            texada::prefix_tree_node>(set0);
     //second b branch
-    std::shared_ptr<texada::prefix_tree_node> d_after_b = std::make_shared<texada::prefix_tree_node>("d", set1);
-    std::shared_ptr<texada::prefix_tree_node> e_1 = std::make_shared<texada::prefix_tree_node>("e", set1);
-    std::shared_ptr<texada::prefix_tree_node> terminal_1 = std::make_shared<texada::prefix_tree_node>(set1);
+    std::shared_ptr<texada::prefix_tree_node> d_after_b = std::make_shared<
+            texada::prefix_tree_node>("d", set1);
+    std::shared_ptr<texada::prefix_tree_node> e_1 = std::make_shared<
+            texada::prefix_tree_node>("e", set1);
+    std::shared_ptr<texada::prefix_tree_node> terminal_1 = std::make_shared<
+            texada::prefix_tree_node>(set1);
 
     //first after c
-    std::shared_ptr<texada::prefix_tree_node> e_after_c = std::make_shared<texada::prefix_tree_node>("e", set23);
+    std::shared_ptr<texada::prefix_tree_node> e_after_c = std::make_shared<
+            texada::prefix_tree_node>("e", set23);
     //first branch at e
-    std::shared_ptr<texada::prefix_tree_node> e_2 = std::make_shared<texada::prefix_tree_node>("e", set2);
-    std::shared_ptr<texada::prefix_tree_node> f_2 = std::make_shared<texada::prefix_tree_node>("f", set2);
-    std::shared_ptr<texada::prefix_tree_node> terminal_2 = std::make_shared<texada::prefix_tree_node>(set2);
+    std::shared_ptr<texada::prefix_tree_node> e_2 = std::make_shared<
+            texada::prefix_tree_node>("e", set2);
+    std::shared_ptr<texada::prefix_tree_node> f_2 = std::make_shared<
+            texada::prefix_tree_node>("f", set2);
+    std::shared_ptr<texada::prefix_tree_node> terminal_2 = std::make_shared<
+            texada::prefix_tree_node>(set2);
     //second branch at e
-    std::shared_ptr<texada::prefix_tree_node> d_3 = std::make_shared<texada::prefix_tree_node>("d", set3);
-    std::shared_ptr<texada::prefix_tree_node> terminal_3 = std::make_shared<texada::prefix_tree_node>(set3);
+    std::shared_ptr<texada::prefix_tree_node> d_3 = std::make_shared<
+            texada::prefix_tree_node>("d", set3);
+    std::shared_ptr<texada::prefix_tree_node> terminal_3 = std::make_shared<
+            texada::prefix_tree_node>(set3);
 
     // now add everything.
     first_a->add_child(first_b);
@@ -107,7 +122,6 @@ TEST(PrefixTreeTest,CreateSimpleTree) {
 
     texada::prefix_tree * all_traces = create_simple_tree();
 
-
     /**
      * a-b-c-d
      *  \ \
@@ -117,7 +131,6 @@ TEST(PrefixTreeTest,CreateSimpleTree) {
      *        d
      */
     // make sure we follow through properly.
-
     //trace 0
     ASSERT_EQ("a", all_traces->get_trace_start(0)->get_name());
     ASSERT_EQ("b", all_traces->get_trace_start(0)->get_child(0)->get_name());
@@ -164,21 +177,21 @@ TEST(PrefixTreeTest,CreateSimpleTree) {
 
 }
 
-TEST(PrefixTreeCheckerTest, TestSimpleTree){
+TEST(PrefixTreeCheckerTest, TestSimpleTree) {
 
     // get simple tree
     texada::prefix_tree * all_traces = create_simple_tree();
 
     //parse formulae
     spot::ltl::parse_error_list pe_list;
-    const spot::ltl::formula * afby_form = spot::ltl::parse("G(a->XFb)",pe_list);
+    const spot::ltl::formula * afby_form = spot::ltl::parse("G(a->XFb)",
+            pe_list);
 
     texada::prefix_tree_checker checker;
 
-    ASSERT_TRUE(checker.check_on_single_trace(afby_form, all_traces->get_trace_start(0), 0));
-    ASSERT_TRUE(checker.check_on_single_trace(afby_form, all_traces->get_trace_start(1), 1));
-    ASSERT_FALSE(checker.check_on_single_trace(afby_form, all_traces->get_trace_start(2), 2));
-    ASSERT_FALSE(checker.check_on_single_trace(afby_form, all_traces->get_trace_start(3), 3));
+    ASSERT_FALSE(
+            checker.check_on_trace(afby_form,
+                    all_traces->get_trace_start("a")));
 
     afby_form->destroy();
 
@@ -186,8 +199,8 @@ TEST(PrefixTreeCheckerTest, TestSimpleTree){
 
 }
 
-TEST(PrefixTreeCheckerTest, TestOnTrace){
-    if (getenv("TEXADA_HOME") == NULL){
+TEST(PrefixTreeCheckerTest, TestOnTrace) {
+    if (getenv("TEXADA_HOME") == NULL) {
         std::cerr << "Error: TEXADA_HOME is undefined. \n";
         FAIL();
     }
@@ -200,23 +213,31 @@ TEST(PrefixTreeCheckerTest, TestOnTrace){
     std::shared_ptr<texada::prefix_tree> trace_set =
             parser.return_prefix_trees();
     spot::ltl::parse_error_list pe_list;
-    const spot::ltl::formula * afby_form = spot::ltl::parse("G(b->XFd)",pe_list);
+    const spot::ltl::formula * afby_form = spot::ltl::parse("G(b->XFd)",
+            pe_list);
     texada::prefix_tree_checker checker;
-    ASSERT_TRUE(checker.check_on_trace(afby_form,trace_set->get_trace_start("a")));
+    ASSERT_TRUE(
+            checker.check_on_trace(afby_form, trace_set->get_trace_start("a")));
     afby_form->destroy();
 
-
-    afby_form = spot::ltl::parse("G(x->XFy)",pe_list);
-    std::map<std::string,std::string> inst_map;
+    afby_form = spot::ltl::parse("G(x->XFy)", pe_list);
+    std::map<std::string, std::string> inst_map;
     inst_map.emplace("x", "b");
     inst_map.emplace("y", "d");
-    ASSERT_TRUE(checker.check_on_trace(afby_form,trace_set->get_trace_start("a"), inst_map));
-
+    texada::subformula_ap_collector * collector =
+            new texada::subformula_ap_collector();
+    afby_form->accept(*collector);
+    checker.add_relevant_bindings(&collector->subform_ap_set);
+    ASSERT_TRUE(
+            checker.check_on_trace(afby_form, trace_set->get_trace_start("a"),
+                    inst_map));
+    delete collector;
+    afby_form->destroy();
 
 }
 
-TEST(PrefixTreeCheckerTest, RessourceAlloc){
-    if (getenv("TEXADA_HOME") == NULL){
+TEST(PrefixTreeCheckerTest, RessourceAlloc) {
+    if (getenv("TEXADA_HOME") == NULL) {
         std::cerr << "Error: TEXADA_HOME is undefined. \n";
         FAIL();
     }
@@ -229,20 +250,20 @@ TEST(PrefixTreeCheckerTest, RessourceAlloc){
     std::shared_ptr<texada::prefix_tree> trace_set =
             parser.return_prefix_trees();
 
-
     //resource allocation pattern:
-    std::string res_alloc = "(!(b|c) W a)& G((a->X((!a U c)&(!c U b)))&(c->X(!(b|c) W a)))";
+    std::string res_alloc =
+            "(!(b|c) W a)& G((a->X((!a U c)&(!c U b)))&(c->X(!(b|c) W a)))";
 
     spot::ltl::parse_error_list pe_list;
-    const spot::ltl::formula * resalloc_form = spot::ltl::parse(res_alloc,pe_list);
+    const spot::ltl::formula * resalloc_form = spot::ltl::parse(res_alloc,
+            pe_list);
 
     texada::prefix_tree_checker checker;
-    std::shared_ptr<texada::prefix_tree_node> beginning = trace_set->get_trace_start(1);
+    std::shared_ptr<texada::prefix_tree_node> beginning =
+            trace_set->get_trace_start(1);
 
-    ASSERT_TRUE(checker.check_on_trace(resalloc_form,beginning));
+    ASSERT_TRUE(checker.check_on_trace(resalloc_form, beginning));
     resalloc_form->destroy();
-
-
 
 }
 
