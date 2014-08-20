@@ -11,6 +11,7 @@
 #include <ltlparse/public.hh>
 #include <array>
 #include <fstream>
+#include <time.h>
 #include "../src/instantiation-tools/apsubbingcloner.h"
 
 /**
@@ -61,57 +62,6 @@ TEST(PropertyTypeMinerTest, ResourceAllocation) {
                     "(!(y | z) W x) & G((x -> X((!x U z)&(!z U y)))&(y->XFz)&(z->X(!(y | z) W x)))",
                     texada_base + "/traces/resource-allocation/abc.txt");
     ASSERT_EQ(set.size(), 1);
-    for (std::set<const spot::ltl::formula*>::iterator it = set.begin();
-            it != set.end(); it++) {
-        (*it)->destroy();
-    }
-}
-
-// This test works but takes a long time to run:
-// checks that miner finds the planted instantiation of
-// S and T precede P after Q
-
-TEST(PropertyTypeMinerTest, STprecedesPafterQ) {
-    if (getenv("TEXADA_HOME") == NULL){
-        std::cerr << "Error: TEXADA_HOME is undefined. \n";
-        FAIL();
-    }
-    std::string texada_base = std::string(getenv("TEXADA_HOME"));
-
-
-    // find all valid instantiations of the property type
-    std::set<const spot::ltl::formula*> set = texada::mine_lin_property_type(
-            "(G!y) | (!y U (y & Fx -> (!x U (a & !x & X(!x U z)))))",
-            texada_base + "/traces/resource-allocation/abb4cad.txt");
-
-    // create the correct instantiation map and the instantiated formula corresponding to it
-    std::map<std::string, std::string> inst_map;
-    inst_map.insert(std::pair<std::string, std::string>("x", "c"));
-    inst_map.insert(std::pair<std::string, std::string>("y", "d"));
-    inst_map.insert(std::pair<std::string, std::string>("z", "b"));
-    inst_map.insert(std::pair<std::string, std::string>("a", "a"));
-    spot::ltl::parse_error_list pel;
-    const spot::ltl::formula * orig_form = spot::ltl::parse(
-            "(G!y) | (!y U (y & Fx -> (!x U (a & !x & X(!x U z)))))",
-            pel);
-    const spot::ltl::formula * instanted_form = texada::instantiate(
-            orig_form, inst_map, std::vector<std::string>());
-
-    // check that the valid instantiations contain the one created above
-    bool contains_instated_form = false;
-    for (std::set<const spot::ltl::formula*>::iterator i = set.begin();
-            i != set.end(); i++) {
-        if (*i == instanted_form) {
-            contains_instated_form = true;
-            break;
-        }
-    }
-    std::cout << set.size() << "\n";
-
-    //clean up
-    orig_form->destroy();
-    instanted_form->destroy();
-    ASSERT_TRUE(contains_instated_form);
     for (std::set<const spot::ltl::formula*>::iterator it = set.begin();
             it != set.end(); it++) {
         (*it)->destroy();
@@ -629,4 +579,75 @@ TEST(PropertyTypeMinerMapTest, OneEffect) {
     ASSERT_FALSE(eval_array[6]);
     ASSERT_TRUE(eval_array[7]);
 }
+
+TEST(CheckerEquivalencyTest, STprecedesPafterQ) {
+    if (getenv("TEXADA_HOME") == NULL) {
+        std::cerr << "Error: TEXADA_HOME is undefined. \n";
+        FAIL();
+    }
+    std::string texada_base = std::string(getenv("TEXADA_HOME"));
+    clock_t begin, end;
+
+    // find all valid instantiations of the property type
+
+    std::set<const spot::ltl::formula*> set1 =
+            texada::mine_property_type(
+                    texada::set_options_from_string(
+                            "-f '(G!y) | (!y U (y & Fx -> (!x U (a & !x & X(!x U z)))))' -l "
+                                    + texada_base
+                                    + "/traces/resource-allocation/abb4cad.txt"));
+
+
+    std::set<const spot::ltl::formula*> set2 =
+            texada::mine_property_type(
+                    texada::set_options_from_string(
+                            "-f '(G!y) | (!y U (y & Fx -> (!x U (a & !x & X(!x U z)))))' -p "
+                                    + texada_base
+                                    + "/traces/resource-allocation/abb4cad.txt"));
+
+    std::set<const spot::ltl::formula*> set3 =
+            texada::mine_property_type(
+                    texada::set_options_from_string(
+                            "-f '(G!y) | (!y U (y & Fx -> (!x U (a & !x & X(!x U z)))))' -m "
+                                    + texada_base
+                                    + "/traces/resource-allocation/abb4cad.txt"));
+
+    ASSERT_EQ(set1,set2);
+    ASSERT_EQ(set1,set3);
+
+    // create the correct instantiation map and the instantiated formula corresponding to it
+    std::map<std::string, std::string> inst_map;
+    inst_map.insert(std::pair<std::string, std::string>("x", "c"));
+    inst_map.insert(std::pair<std::string, std::string>("y", "d"));
+    inst_map.insert(std::pair<std::string, std::string>("z", "b"));
+    inst_map.insert(std::pair<std::string, std::string>("a", "a"));
+    spot::ltl::parse_error_list pel;
+    const spot::ltl::formula * orig_form = spot::ltl::parse(
+            "(G!y) | (!y U (y & Fx -> (!x U (a & !x & X(!x U z)))))",
+            pel);
+    const spot::ltl::formula * instanted_form = texada::instantiate(
+            orig_form, inst_map, std::vector<std::string>());
+
+    // check that the valid instantiations contain the one created above
+    bool contains_instated_form = false;
+    for (std::set<const spot::ltl::formula*>::iterator i = set1.begin();
+            i != set1.end(); i++) {
+        if (*i == instanted_form) {
+            contains_instated_form = true;
+            break;
+        }
+    }
+    std::cout << set1.size() << "\n";
+
+    //clean up
+    orig_form->destroy();
+    instanted_form->destroy();
+    ASSERT_TRUE(contains_instated_form);
+    for (std::set<const spot::ltl::formula*>::iterator it = set1.begin();
+            it != set1.end(); it++) {
+        (*it)->destroy();
+    }
+
+}
+
 
