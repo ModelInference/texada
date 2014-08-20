@@ -129,6 +129,7 @@ int main(int ac, char* av[]) {
                 found_instants.begin(); it != found_instants.end(); it++) {
             std::cout << spot::ltl::to_string(*it) << "\n";
         }
+        std::cout << found_instants.size() << "\n";
 
         // exception catching
     } catch (std::exception& e) {

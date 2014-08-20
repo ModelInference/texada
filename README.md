@@ -1,4 +1,11 @@
-# Introduction
+## Table of contents
+* [Overview](#markdown-header-overview)
+* [Installation guide](#markdown-header-installation-guide)
+* [Usage guide](#markdown-header-usage-guide)
+* [Command line usage screen](#markdown-header-command-line-usage-screen)
+
+# Overview
+-----------------------
 
 Texada is a research tool designed for extracting patterns from text data. Specifically, Texada mines temporal relations from totally-ordered sequences of events. To use Texada you need to provide it with at least the following two inputs:
 
@@ -10,7 +17,13 @@ Texada's output is a set of LTL formulae that are instantiations of the input pr
 
 As an example, consider the LTL property type that encodes the "x always followed by y" temporal relation between "x" and "y": G(x -> XF(y)). This property states that whenever an event of type "x" appears in a trace, it must be followed in the same trace by an event of type "y". Given an input log with two traces: "a,b,a,b,c" and "c,a,b,b", then Texada will output the property instantiations G(a -> XF(b)). That is, in the input two traces, "a is always followed by b".
 
-Texada is developed in C++. The rest of this page describes the steps to get Texada working from a freshly cloned repository. Texada has been tested on Linux and OSX.
+
+# Installation guide
+-----------------------
+
+Texada is developed in C++. This section describes the steps to get
+Texada working from a freshly cloned repository. Texada has been
+tested on Linux and OSX.
 
 ### Directory Structure
 
@@ -102,3 +115,54 @@ There is a file included in the repo called .cproject.example. Remove the .examp
 Check that in 'Properties -> C/C++Build -> Builder Settings', 'Generate Makefiles automatically' is disabled. and Build Location is the Texada project. This should be ${workspace_loc:/Texada}, but can be navigated to via clicking the Workspace... option and selecting the Texada project. 
 
 To build, press ctrl/cmd-b or right-click on the project and click "Build Project"
+
+
+# Usage guide
+-----------------------
+
+Texada is a command line tool. The following assumes that you were
+able to install Texada by following the installation instructions and
+are able to execute `texadatest` and `texada` binaries.
+
+## Example usage
+
+Here is an example input/output:
+
+* Input: `./texada -m -c ./traces/perracotta-type-traces/alternating/args.txt ./traces/perracotta-type-traces/alternating/trace.txt`
+
+* Where args.txt contains: `-f '(!y W x) & G((x -> X(!x U y))&(y -> X(!y W x)))'`
+
+* Output: `(!b W a) & G((a -> X(!a U b)) & (b -> X(!b W a)))`
+
+*TODO: expand*
+
+
+# Command line usage screen
+-----------------------
+
+~~~~
+ Usage: texada [opt1] ... [optN] log-file
+ 
+ Required options: -f, log-file, one of [-l, -m, -p]
+ 
+ Options:
+   -h [ --help ]                print help message
+   -f [ --property-type ] arg   property type to mine
+   --log-file arg               log file
+   -m [ --map-trace ]           use a map trace representation
+   -l [ --linear-trace ]        use a linear trace representation
+   -p [ --prefix-tree-trace ]   use a prefix tree trace representation
+   --pregen-instants            pre-generate all property type instantiations 
+                                [default: false, using on-fly-instantiation]
+   --allow-same-bindings        allow different formula variables to be bound to
+                                the same events [default: false]
+   -c [ --config-file ] arg     file containing command line options. Command 
+                                line options will override file options.
+   -e [ --event ] arg           formula variable name to be interpreted as a 
+                                constant event.
+   -r [ --regex ] arg           regular expression to parse event types from log
+                                [default (?<ETYPE>.*)]
+   -s [ --separator_regex ] arg regular expression matching execution separator 
+                                lines in the log [default: --]
+   -i [ --ignore_nm_lines ]     ignore non-matching lines [default: false]
+~~~~
