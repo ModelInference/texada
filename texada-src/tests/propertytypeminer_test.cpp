@@ -579,7 +579,7 @@ TEST(PropertyTypeMinerMapTest, OneEffect) {
     ASSERT_FALSE(eval_array[6]);
     ASSERT_TRUE(eval_array[7]);
 }
-
+/*
 TEST(CheckerEquivalencyTest, STprecedesPafterQ) {
     if (getenv("TEXADA_HOME") == NULL) {
         std::cerr << "Error: TEXADA_HOME is undefined. \n";
@@ -649,5 +649,5 @@ TEST(CheckerEquivalencyTest, STprecedesPafterQ) {
     }
 
 }
-
+*
 
