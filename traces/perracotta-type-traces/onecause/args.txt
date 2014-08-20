@@ -1,6 +1,1 @@
--f 'G(x -> X(!x U y))' -l  /YOUR/TEXADA/LOCATION/traces/perracotta-type-traces/onecause/trace.txt
-
---
-
--l can be replaced with another trace type and the results should be the same. 
-
+-f 'G(x -> X(!x U y))'
