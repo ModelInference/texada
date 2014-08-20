@@ -33,23 +33,10 @@ public:
     bool check_on_trace(const spot::ltl::formula* node,
             const trace_node trace_pt, map<string, string>);
 
-    bool check_on_single_trace(const spot::ltl::formula* form_node,
-            shared_ptr<prefix_tree_node> trace_node, int id);
     void add_relevant_bindings(
             map<const spot::ltl::formula*, set<string>> * bindings_map);
 
 private:
-
-    bool check_on_single_trace(const spot::ltl::atomic_prop* form_node,
-            shared_ptr<prefix_tree_node> trace_node, int id);
-    bool check_on_single_trace(const spot::ltl::constant* form_node,
-            shared_ptr<prefix_tree_node> trace_node, int id);
-    bool check_on_single_trace(const spot::ltl::binop* form_node,
-            shared_ptr<prefix_tree_node> trace_node, int id);
-    bool check_on_single_trace(const spot::ltl::unop* form_node,
-            shared_ptr<prefix_tree_node> trace_node, int id);
-    bool check_on_single_trace(const spot::ltl::multop* form_node,
-            shared_ptr<prefix_tree_node> trace_node, int id);
 
     /**
      * both the next types are not supported.
@@ -142,9 +129,13 @@ private:
     boost::unordered_map<memo_key, map<int, bool>, hash_memo_key> memo_map;
     map<const spot::ltl::formula*, set<string>> * relevant_bindings_map;
 
+    map<int,bool> retrieve_memo (const spot::ltl::formula* node,
+            trace_node trace_pt, std::set<int> trace_ids);
+
     void add_to_memo_map(const spot::ltl::formula * node, trace_node trace_pt,
             map<int, bool>);
     set<string> aps_of_form(const spot::ltl::formula * node);
+    void clear_memo_map();
 
 };
 
