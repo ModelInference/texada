@@ -51,7 +51,10 @@ OBJS += \
 ./texada-src/bin/src/instantiation-tools/subformulaapcollector.o \
 ./texada-src/bin/src/main/propertytypeminer.o \
 ./texada-src/bin/src/parsing/stringevent.o \
-./texada-src/bin/src/parsing/simpleparser.o \
+./texada-src/bin/src/parsing/parser.o \
+./texada-src/bin/src/parsing/linearparser.o \
+./texada-src/bin/src/parsing/mapparser.o \
+./texada-src/bin/src/parsing/prefixtreeparser.o \
 ./texada-src/bin/src/parsing/prefixtreenode.o \
 ./texada-src/bin/src/parsing/prefixtree.o
 
