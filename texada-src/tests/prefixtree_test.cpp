@@ -8,7 +8,7 @@
 #include "../src/parsing/prefixtree.h"
 #include "../src/checkers/prefixtreechecker.h"
 #include "../src/instantiation-tools/subformulaapcollector.h"
-#include "../src/parsing/simpleparser.h"
+#include "../src/parsing/prefixtreeparser.h"
 #include <gtest/gtest.h>
 #include <ltlparse/public.hh>
 #include <fstream>
@@ -208,8 +208,8 @@ TEST(PrefixTreeCheckerTest, TestOnTrace) {
             std::string(getenv("TEXADA_HOME"))
                     + "/traces/parsing-tests/simple-pre-tree.txt");
 
-    texada::simple_parser parser;
-    parser.parse_to_pretrees(infile);
+    texada::prefix_tree_parser parser;
+    parser.parse(infile);
     std::shared_ptr<texada::prefix_tree> trace_set =
             parser.return_prefix_trees();
     spot::ltl::parse_error_list pe_list;
@@ -245,8 +245,8 @@ TEST(PrefixTreeCheckerTest, RessourceAlloc) {
             std::string(getenv("TEXADA_HOME"))
                     + "/traces/resource-allocation/pretreeresalloc.txt");
 
-    texada::simple_parser parser;
-    parser.parse_to_pretrees(infile);
+    texada::prefix_tree_parser parser;
+    parser.parse(infile);
     std::shared_ptr<texada::prefix_tree> trace_set =
             parser.return_prefix_trees();
 

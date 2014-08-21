@@ -589,14 +589,12 @@ TEST(CheckerEquivalencyTest, STprecedesPafterQ) {
     clock_t begin, end;
 
     // find all valid instantiations of the property type
-
     std::set<const spot::ltl::formula*> set1 =
             texada::mine_property_type(
                     texada::set_options_from_string(
                             "-f '(G!y) | (!y U (y & Fx -> (!x U (a & !x & X(!x U z)))))' -l "
                                     + texada_base
                                     + "/traces/resource-allocation/abb4cad.txt"));
-
 
     std::set<const spot::ltl::formula*> set2 =
             texada::mine_property_type(
@@ -611,7 +609,6 @@ TEST(CheckerEquivalencyTest, STprecedesPafterQ) {
                             "-f '(G!y) | (!y U (y & Fx -> (!x U (a & !x & X(!x U z)))))' -m "
                                     + texada_base
                                     + "/traces/resource-allocation/abb4cad.txt"));
-
     ASSERT_EQ(set1,set2);
     ASSERT_EQ(set1,set3);
 
@@ -649,5 +646,4 @@ TEST(CheckerEquivalencyTest, STprecedesPafterQ) {
     }
 
 }
-
 
