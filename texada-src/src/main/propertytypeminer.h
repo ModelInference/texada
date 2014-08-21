@@ -23,11 +23,11 @@ namespace texada {
 
 // mine property type with map checker
 std::set<const spot::ltl::formula*> mine_map_property_type(
-		std::string formula_string, std::string trace_source);
+        std::string formula_string, std::string trace_source);
 
 // mine property type with linear checker
 std::set<const spot::ltl::formula*> mine_lin_property_type(
-		std::string formula_string, std::string trace_source);
+        std::string formula_string, std::string trace_source);
 
 boost::program_options::variables_map set_options_from_string(std::string input_string);
 
