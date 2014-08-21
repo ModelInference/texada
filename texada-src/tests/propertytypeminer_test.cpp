@@ -601,7 +601,7 @@ TEST(CheckerEquivalencyTest, STprecedesPafterQ) {
     std::set<const spot::ltl::formula*> set2 =
             texada::mine_property_type(
                     texada::set_options_from_string(
-                            "-f '(G!y) | (!y U (y & Fx -> (!x U (a & !x & X(!x U z)))))' -p "
+                            "-f ip -p "
                                     + texada_base
                                     + "/traces/resource-allocation/abb4cad.txt"));
 
