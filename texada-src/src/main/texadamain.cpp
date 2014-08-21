@@ -10,7 +10,7 @@
 #include <ltlvisit/tostring.hh>
 #include <ltlparse/public.hh>
 #include "propertytypeminer.h"
-#include "../parsing/simpleparser.h"
+#include "../parsing/parser.h"
 
 /**
  * Main method, runs Texada mining or timing tests depending on options.
@@ -20,23 +20,29 @@ int main(int ac, char* av[]) {
 
         // setting up the program options
         // desc is the options description, i.e. all the allowed options
-        boost::program_options::options_description desc("Allowed options");
-        desc.add_options()("help,h", "produce help message")("property-type,f",
+        boost::program_options::options_description desc("Usage: texada [opt1] ... [optN] log-file\n\nRequired options: -f, log-file, one of [-l, -m, -p]\n\nOptions");
+        desc.add_options()("help,h", "print help message")("property-type,f",
                 boost::program_options::value<std::string>(),
                 "property type to mine")("log-file",
                 boost::program_options::value<std::string>(),
-                "log file to mine on")("map-trace,m",
-                "mine on a trace in the form of a map")("linear-trace,l",
-                "mine on a linear trace")("prefix-tree-trace,p",
-                "mine on traces in prefix tree form")("pregen-instants",
-                "pregenerate property type instantiations. By default, Texada instantiates them on-the-fly. ")(
+                "log file")("map-trace,m",
+                "use a map trace representation")("linear-trace,l",
+                "use a linear trace representation")("prefix-tree-trace,p",
+                "use a prefix tree trace representation")("pregen-instants",
+                "pre-generate all property type instantiations [default: false, using on-fly-instantiation]")(
                 "allow-same-bindings",
-                "allow different formula variables to be bound to the same events. By default, Texada does not check instantiations of this type.")(
+                "allow different formula variables to be bound to the same events [default: false]")(
                 "config-file,c", boost::program_options::value<std::string>(),
-                "specify file containing command line options. Any options entered directly to command line will override file options.")(
+                "file containing command line options. Command line options will override file options.")(
                 "event,e",
                 boost::program_options::value<std::vector<std::string> >(),
-                "specify a variable in the formula to be interpreted as a constant event.");
+                "formula variable name to be interpreted as a constant event.")
+                ("regex,r", boost::program_options::value<std::vector<std::string> >(),
+                "regular expression to parse event types from log [default (?<ETYPE>.*)]")
+                ("separator_regex,s", boost::program_options::value<std::string>(), "regular expression matching execution separator lines in the log [default: --]")
+                ("ignore_nm_lines,i", "ignore non-matching lines [default: false]"); 
+
+        // TODO ib: make sure that ignore_nm_lines is false by default.
 
         boost::program_options::positional_options_description pos_desc;
         pos_desc.add("log-file", 1);
@@ -49,7 +55,7 @@ int main(int ac, char* av[]) {
         boost::program_options::notify(opts_map);
 
         if (opts_map.empty()) {
-            std::cerr << "Error: no arguments provided. \n";
+            std::cerr << "Error: missing arguments. \n";
             std::cout << desc << "\n";
             return 1;
         }
@@ -85,7 +91,8 @@ int main(int ac, char* av[]) {
         //error if no specified trace type
         if (!(opts_map.count("map-trace") || opts_map.count("linear-trace")
                 || opts_map.count("prefix-tree-trace"))) {
-            std::cerr << "Error: specify a trace type. \n";
+            std::cerr << "Error: missing a trace representaiton type. \n";
+            std::cout << desc << "\n";
             return 1;
 
         }
@@ -96,19 +103,21 @@ int main(int ac, char* av[]) {
                         && opts_map.count("prefix-tree-trace"))
                 || (opts_map.count("prefix-tree-trace")
                         && opts_map.count("linear-trace"))) {
-            std::cerr << "Error: specify only one trace type. \n";
+            std::cerr << "Error: specify only one trace representation type. \n";
             return 1;
         }
 
         // error if no property type
         if (!opts_map.count("property-type")) {
-            std::cerr << "Error: no inputted property type. \n";
+            std::cerr << "Error: missing formula. \n";
+            std::cout << desc << "\n";
             return 1;
         }
 
         // error if no log file
         if (!opts_map.count("log-file")) {
-            std::cerr << "Error: did not provide log file. \n";
+            std::cerr << "Error: missing log file. \n";
+            std::cout << desc << "\n";
             return 1;
         }
 

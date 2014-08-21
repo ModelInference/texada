@@ -1,6 +1,6 @@
 RM := rm -rf
 
-LIBS := -lspot -lgtest -lpthread -lgtest_main -lboost_program_options
+LIBS := -lspot -lgtest -lpthread -lgtest_main -lboost_program_options -lboost_regex
 
 TX_SRC := texada-src/
 SRC := $(TX_SRC)src/
