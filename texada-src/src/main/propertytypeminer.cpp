@@ -16,7 +16,10 @@
 
 #include <boost/program_options.hpp>
 
-#include "../parsing/simpleparser.h"
+#include "../parsing/parser.h"
+#include "../parsing/linearparser.h"
+#include "../parsing/mapparser.h"
+#include "../parsing/prefixtreeparser.h"
 #include "../instantiation-tools/pregeninstantspool.h"
 #include "../instantiation-tools/otfinstantspool.h"
 #include "../instantiation-tools/instantspoolcreator.h"
@@ -45,7 +48,12 @@ boost::program_options::variables_map set_options_from_string(
             "linear-trace,l", "mine on a linear trace")("prefix-tree-trace,p",
             "mine on traces in prefix tree form")("pregen-instants",
             "pregenerate property type instantiations. ")("allow-same-bindings",
-            "allow different formula variables to be bound to the same events.");
+            "allow different formula variables to be bound to the same events.")
+            ("regex,r", boost::program_options::value<std::vector<std::string> >(),
+            "regular expression to parse event types from log [default (?<ETYPE>.*)]")
+            ("separator_regex,s", boost::program_options::value<std::string>(),
+            "regular expression matching execution separator lines in the log [default: --]")
+            ("ignore_nm_lines,i", "ignore non-matching lines [default: false]");
 
     boost::program_options::positional_options_description pos_desc;
     pos_desc.add("log-file", 1);
@@ -128,24 +136,30 @@ set<const spot::ltl::formula*> mine_property_type(
 
     // parse file
     std::ifstream infile(trace_source);
-    simple_parser parser = simple_parser();
-    shared_ptr<set<vector<string_event> >> vector_trace_set;
-    shared_ptr<set<map<string_event, vector<long>>> > map_trace_set;
-    shared_ptr<prefix_tree> prefix_tree_traces;
+    parser * parser;
     if (use_map) {
-        parser.parse_to_map(infile);
-        map_trace_set = parser.return_map_trace();
+        parser = new map_parser();
     } else if (use_lin) {
-        parser.parse_to_vector(infile);
-        vector_trace_set = parser.return_vec_trace();
+        parser = new linear_parser();
     } else if (use_pretree) {
-        parser.parse_to_pretrees(infile);
-        prefix_tree_traces = parser.return_prefix_trees();
+        parser = new prefix_tree_parser();
     } else {
         std::cerr << "Trace type not specified, nothing gets parsed.";
+        exit(1);
     }
+    // configure parser based on user options
+    if (opts.count("regex")) {
+        parser->set_event_types(opts["regex"].as<vector<string>>());
+    }
+    if (opts.count("separator_regex")) {
+        parser->set_separator(opts["separator_regex"].as<std::string>());
+    }
+    if (opts.count("ignore_nm_lines")) {
+        parser->ignore_nm_lines();
+    }
+    parser->parse(infile);
 
-    shared_ptr<set<string>> event_set = parser.return_events();
+    shared_ptr<set<string>> event_set = parser->return_events();
     // if we don't want repetition and there are already events
     // in the formula, we can just exclude them from the event set
     // to start with
@@ -184,12 +198,15 @@ set<const spot::ltl::formula*> mine_property_type(
     vector<map<string, string>> valid_instants;
     // check all valid instantiations on each trace
     if (use_lin) {
+        shared_ptr<set<vector<string_event> >> vector_trace_set = dynamic_cast<linear_parser*>(parser)->return_vec_trace();
         valid_instants = valid_instants_on_traces(formula, instantiator,
                 vector_trace_set);
     } else if (use_map) {
+        shared_ptr<set<map<string_event, vector<long>>> > map_trace_set = dynamic_cast<map_parser*>(parser)->return_map_trace();
         valid_instants = valid_instants_on_traces(formula, instantiator,
                 map_trace_set);
     } else if (use_pretree) {
+        shared_ptr<prefix_tree> prefix_tree_traces = dynamic_cast<prefix_tree_parser*>(parser)->return_prefix_trees();
         valid_instants = valid_instants_on_traces(formula, instantiator,
                 prefix_tree_traces);
     }
@@ -206,6 +223,7 @@ set<const spot::ltl::formula*> mine_property_type(
     }
 
     delete instantiator;
+    delete parser;
     formula->destroy();
     return return_set;
 

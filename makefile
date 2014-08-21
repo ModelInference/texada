@@ -1,6 +1,6 @@
 RM := rm -rf
 
-LIBS := -lspot -lgtest -lpthread -lgtest_main -lboost_program_options
+LIBS := -lspot -lgtest -lpthread -lgtest_main -lboost_program_options -lboost_regex
 
 SRC := texada-src/src/
 BIN_ROOT := texada-src/bin/
