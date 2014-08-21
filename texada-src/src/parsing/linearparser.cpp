@@ -34,7 +34,7 @@ shared_ptr<set<vector<string_event> >> linear_parser::return_vec_trace() {
 
 /**
  * Helper function called from within parser::parse(std::ifstream &infile)
- * TODO: method description
+ * Ends the current trace being built
  */
 void linear_parser::end_trace() {
     temp_trace.push_back(string_event());
@@ -44,7 +44,7 @@ void linear_parser::end_trace() {
 
 /**
  * Helper function called from within parser::parse(std::ifstream &infile)
- * TODO: method description
+ * Adds event to the current trace being built
  * @param event name
  */
 void linear_parser::add_event(std::string event) {

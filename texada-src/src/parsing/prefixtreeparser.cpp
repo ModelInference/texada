@@ -36,7 +36,7 @@ shared_ptr<prefix_tree> prefix_tree_parser::return_prefix_trees() {
 
 /**
  * Helper function called from within parser::parse(std::ifstream &infile)
- * TODO: method description
+ * Ends the current trace being built
  */
 void prefix_tree_parser::end_trace() {
     shared_ptr<prefix_tree_node> twin = temp_trace->get_child(
@@ -58,7 +58,7 @@ void prefix_tree_parser::end_trace() {
 
 /**
  * Helper function called from within parser::parse(std::ifstream &infile)
- * TODO: method description
+ * Adds event to the current trace being built
  * @param event name
  */
 void prefix_tree_parser::add_event(std::string event) {
