@@ -33,7 +33,7 @@ shared_ptr<set<map<string_event, vector<long>>> > map_parser::return_map_trace()
 
 /**
  * Helper function called from within parser::parse(std::ifstream &infile)
- * TODO: method description
+ * Ends the current trace being built
  */
 void map_parser::end_trace() {
     std::vector<long> pos_vec;
@@ -46,7 +46,7 @@ void map_parser::end_trace() {
 
 /**
  * Helper function called from within parser::parse(std::ifstream &infile)
- * TODO: method description
+ * Adds event to the current trace being built
  * @param event name
  */
 void map_parser::add_event(std::string event) {

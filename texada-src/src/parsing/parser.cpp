@@ -225,12 +225,17 @@ shared_ptr<std::string> parser::get_event_type(std::string log_line) {
 }
 
 /**
- * TODO: describe method
+ * Helper function called from within parser::parse(std::ifstream &infile) to
+ * be overriden by implementing class.
+ * Ends the current trace being built.
  */
 void parser::end_trace() {}
 
 /**
- * TODO: describe method
+ * Helper function called from within parser::parse(std::ifstream &infile) to
+ * be overriden by implementing class.
+ * Adds event to the current trace beign built.
+ * @param event name
  */
 void parser::add_event(std::string event) {}
 
