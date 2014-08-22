@@ -24,7 +24,7 @@
 #include "../checkers/lineartracechecker.h"
 #include "../checkers/prefixtreechecker.h"
 #include "../instantiation-tools/apsubbingcloner.h"
-#include "setoptsformain.h"
+#include "opts.h"
 
 namespace texada {
 
@@ -39,8 +39,7 @@ namespace texada {
 set<const spot::ltl::formula*> mine_lin_property_type(string formula_string,
         string trace_source) {
     return mine_property_type(
-            set_options(true,
-                    "-f '" + formula_string + "' -l " + trace_source));
+            set_options("-f '" + formula_string + "' -l " + trace_source));
 }
 
 /**
@@ -54,8 +53,7 @@ set<const spot::ltl::formula*> mine_lin_property_type(string formula_string,
 set<const spot::ltl::formula*> mine_map_property_type(string formula_string,
         string trace_source) {
     return mine_property_type(
-            set_options(true,
-                    "-f '" + formula_string + "' -m " + trace_source));
+            set_options("-f '" + formula_string + "' -m " + trace_source));
 }
 
 /**
