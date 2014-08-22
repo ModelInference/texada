@@ -1,19 +1,21 @@
 /*
- * setoptsformain.cpp
+ * opts.cpp
  *
  *  Created on: Aug 22, 2014
  *      Author: clemieux
  */
 
-#include "setoptsformain.h"
+#include "opts.h"
 #include <boost/tokenizer.hpp>
 #include <boost/token_functions.hpp>
+
+namespace texada{
 
 /**
  * Get texada options description
  * @return
  */
-boost::program_options::options_description texada::get_options_description() {
+boost::program_options::options_description get_options_description() {
     // setting up the program options
     // desc is the options description, i.e. all the allowed options
     boost::program_options::options_description desc("Allowed options");
@@ -36,22 +38,27 @@ boost::program_options::options_description texada::get_options_description() {
 
 }
 
-boost::program_options::positional_options_description texada::get_pos_opts_desc(){
+/**
+ * Get positional options.
+ * @return
+ */
+boost::program_options::positional_options_description get_pos_opts_desc(){
     boost::program_options::positional_options_description pos_desc;
     pos_desc.add("log-file", 1);
     return pos_desc;
 
 }
 
+
 /**
  * Set the options from string if use_string is true, else from command-line options
- * @param use_string
+ * @param use_string if true, use input string
  * @param input_string
  * @param ac
  * @param av
  * @return
  */
-boost::program_options::variables_map texada::set_options(bool use_string,
+boost::program_options::variables_map set_options(bool use_string,
         std::string input_string, int ac, char* av[]) {
 
     // setting up the program options
@@ -64,7 +71,7 @@ boost::program_options::variables_map texada::set_options(bool use_string,
     //parsing the options passed to command line
     boost::program_options::variables_map opts_map;
     if (use_string) {
-        std::vector<std::string> args = texada::string_to_args(input_string);
+        std::vector<std::string> args = string_to_args(input_string);
         // Parse the file and store the options
         boost::program_options::store(
                 boost::program_options::command_line_parser(args).options(desc).positional(
@@ -81,13 +88,35 @@ boost::program_options::variables_map texada::set_options(bool use_string,
 
 }
 
+
+
+/**
+ * Set the options from string
+ * @param input_string
+ * @return
+ */
+boost::program_options::variables_map set_options(std::string input_string) {
+    return set_options(true, input_string, 0, NULL);
+}
+
+/**
+ * Set the options from string
+ * @param input_string
+ * @return
+ */
+boost::program_options::variables_map set_options(int ac, char* av[]) {
+    return set_options(false, "", ac, av);
+}
+
+
+
 /**
  * Parses a block string of commands into the individual arguments
  * for insertion to option maps
  * @param commands
  * @return
  */
-std::vector<std::string> texada::string_to_args(std::string commands) {
+std::vector<std::string> string_to_args(std::string commands) {
 
     // separate arguments by spaces or newlines
     boost::char_separator<char> seperator(" \n\r");
@@ -171,3 +200,5 @@ std::vector<std::string> texada::string_to_args(std::string commands) {
     return args;
 
 }
+
+};
