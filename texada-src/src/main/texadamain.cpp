@@ -6,7 +6,7 @@
 #include <iterator>
 #include <fstream>
 #include <string>
-#include "setoptsformain.h"
+#include "opts.h"
 #include <ltlvisit/tostring.hh>
 #include <ltlparse/public.hh>
 
@@ -19,8 +19,7 @@
 int main(int ac, char* av[]) {
     try {
 
-        boost::program_options::variables_map opts_map = texada::set_options(
-                false, "", ac, av);
+        boost::program_options::variables_map opts_map = texada::set_options(ac, av);
 
         if (opts_map.empty()) {
             std::cerr << "Error: no arguments provided. \n";
@@ -48,13 +47,10 @@ int main(int ac, char* av[]) {
             std::stringstream file_string_stream;
             file_string_stream << infile.rdbuf();
             std::string file_string = file_string_stream.str();
-            std::vector<std::string> args = texada::string_to_args(file_string);
-            // Parse the file and store the options
-            boost::program_options::store(
-                    boost::program_options::command_line_parser(args).options(
-                            texada::get_options_description()).positional(
-                                    texada::get_pos_opts_desc()).run(), opts_map);
-
+            boost::program_options::variables_map file_opts_map = texada::set_options(file_string);
+            // insert will not override mapping if it already exists,
+            // giving priority to command line opts.
+            opts_map.insert(file_opts_map.begin(),file_opts_map.end());
         }
 
         //error if no specified trace type

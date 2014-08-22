@@ -1,20 +1,21 @@
 /*
- * setoptsformain.h
+ * opts.h
  *
  *  Created on: Aug 22, 2014
  *      Author: clemieux
  */
 
-#ifndef SETOPTSFORMAIN_H_
-#define SETOPTSFORMAIN_H_
+#ifndef OPTS_H_
+#define OPTS_H_
 
 #include <boost/program_options.hpp>
 #include <string>
 
 namespace texada{
 
-boost::program_options::variables_map set_options(bool use_string,
-        std::string input_string, int ac = 0, char* av[] = NULL );
+boost::program_options::variables_map set_options(std::string input_string);
+
+boost::program_options::variables_map set_options(int ac, char* av[]);
 
 std::vector<std::string> string_to_args(std::string commands);
 
