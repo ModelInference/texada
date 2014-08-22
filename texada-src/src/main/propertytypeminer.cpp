@@ -95,7 +95,7 @@ set<const spot::ltl::formula*> mine_property_type(
 
     // parse file
     std::ifstream infile(trace_source);
-    if (infile.failbit){
+    if (infile.fail()){
         std::cerr << "Error: could not open file \n";
         return set<const spot::ltl::formula*>();
     }
