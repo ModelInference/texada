@@ -9,8 +9,7 @@
 #include <vector>
 #include <fstream>
 #include <iostream>
-#include <boost/tokenizer.hpp>
-#include <boost/token_functions.hpp>
+
 
 namespace texada {
 
@@ -226,99 +225,5 @@ shared_ptr<prefix_tree> simple_parser::return_prefix_trees(){
 
 }
 
-
-/**
- * Parses a block string of commands into the individual arguments
- * for insertion to option maps
- * @param commands
- * @return
- */
-std::vector<std::string> string_to_args(std::string commands){
-
-    // separate arguments by spaces or newlines
-    boost::char_separator<char> seperator(" \n\r");
-    // split the arguments by spaces or newlines
-    boost::tokenizer<boost::char_separator<char> > tok(commands,
-            seperator);
-
-    //check for any quotes: want to not split things inside quotes
-    // to store the args after having fixed quote issues
-    std::vector<std::string> quote_parsed_input;
-    // to know our state inside quotes
-    bool inside_quotes = false;
-    bool ended_quote = true;
-    // where in the quote_parsed_input is the current quote
-    int quote_start_pos;
-    // is this a ' or "
-    char quote_start_char;
-    // go through the first tokenized parsing
-    for (boost::tokenizer<boost::char_separator<char> >::iterator it =
-            tok.begin(); it != tok.end(); it++) {
-        if (inside_quotes == true) {
-            // if inside quotes and we found an end quote:
-            if ((*it).find_first_of("\'\"") != std::string::npos) {
-                // if it's not the correct endquote, error
-                if (it->at((*it).find_first_of("\'\""))
-                        != quote_start_char) {
-                    std::cerr << "Error: mismatched quotes. \n";
-                    //TODO: throw excpetion
-                }
-                // if it's the correct end quote, we've ended our quote
-                ended_quote = true;
-                inside_quotes = false;
-                std::string element = std::string(*it);
-                // add the end part of the quote to the quoted element
-                // in the args vector
-                quote_parsed_input[quote_start_pos] =
-                        quote_parsed_input[quote_start_pos] + " "
-                                + element.substr(0,
-                                        (*it).find_first_of("\'\""));
-            } else {
-                // if we're inside quotes, just stick this part
-                // onto the inside of quotes
-                quote_parsed_input[quote_start_pos] =
-                        quote_parsed_input[quote_start_pos] + " "
-                                + (*it);
-            }
-
-        } else if ((*it).find_first_of("\'\"") == 0) {
-            //TODO: missing some cases, i.e. "ah"a
-            // if we just found an opening quote, but there's an end
-            // quote in this token, just push in the quoteless object
-            if ((*it).find_last_of("\'\"") == (*it).length() - 1) {
-                std::string first_element = std::string(*it);
-                quote_parsed_input.push_back(
-                        first_element.substr(1, (*it).length() - 2));
-
-            } else {
-                // if we just found an opening quote and it's not a one-block
-                // quote, we're inside quotes
-                inside_quotes = true;
-                ended_quote = false;
-                quote_start_char = it->at((*it).find_first_of("\'\""));
-                quote_start_pos = quote_parsed_input.size();
-                std::string first_element = std::string(*it);
-                quote_parsed_input.push_back(first_element.substr(1));
-            }
-        }
-        // if we're not inside a quote and we didn't find a quote,
-        // just push it normally
-        else {
-            quote_parsed_input.push_back(*it);
-        }
-    }
-    //TODO: can I just use inside_quotes instead
-    if (!ended_quote) {
-        std::cerr << "Error: missing \' or \". \n";
-        //TODO: throw exception
-    }
-
-    std::vector<std::string> args;
-    // copy the options into args
-    std::copy(quote_parsed_input.begin(), quote_parsed_input.end(),
-            back_inserter(args));
-    return args;
-
-}
 
 } /* namespace texada */

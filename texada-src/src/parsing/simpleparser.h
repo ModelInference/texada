@@ -55,7 +55,6 @@ private:
 	bool has_been_parsed_pretree = false;
 
 };
-std::vector<std::string> string_to_args(std::string commands);
 }
 
 
