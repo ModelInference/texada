@@ -6,9 +6,10 @@
 #include <iterator>
 #include <fstream>
 #include <string>
-#include <boost/program_options.hpp>
+#include "setoptsformain.h"
 #include <ltlvisit/tostring.hh>
 #include <ltlparse/public.hh>
+
 #include "propertytypeminer.h"
 #include "../parsing/simpleparser.h"
 
@@ -18,45 +19,18 @@
 int main(int ac, char* av[]) {
     try {
 
-        // setting up the program options
-        // desc is the options description, i.e. all the allowed options
-        boost::program_options::options_description desc("Allowed options");
-        desc.add_options()("help,h", "produce help message")("property-type,f",
-                boost::program_options::value<std::string>(),
-                "property type to mine")("log-file",
-                boost::program_options::value<std::string>(),
-                "log file to mine on")("map-trace,m",
-                "mine on a trace in the form of a map")("linear-trace,l",
-                "mine on a linear trace")("prefix-tree-trace,p",
-                "mine on traces in prefix tree form")("pregen-instants",
-                "pregenerate property type instantiations. By default, Texada instantiates them on-the-fly. ")(
-                "allow-same-bindings",
-                "allow different formula variables to be bound to the same events. By default, Texada does not check instantiations of this type.")(
-                "config-file,c", boost::program_options::value<std::string>(),
-                "specify file containing command line options. Any options entered directly to command line will override file options.")(
-                "event,e",
-                boost::program_options::value<std::vector<std::string> >(),
-                "specify a variable in the formula to be interpreted as a constant event.");
-
-        boost::program_options::positional_options_description pos_desc;
-        pos_desc.add("log-file", 1);
-
-        //parsing the options passed to command line
-        boost::program_options::variables_map opts_map;
-        boost::program_options::store(
-                boost::program_options::command_line_parser(ac, av).options(
-                        desc).positional(pos_desc).run(), opts_map);
-        boost::program_options::notify(opts_map);
+        boost::program_options::variables_map opts_map = texada::set_options(
+                false, "", ac, av);
 
         if (opts_map.empty()) {
             std::cerr << "Error: no arguments provided. \n";
-            std::cout << desc << "\n";
+            std::cout << texada::get_options_description() << "\n";
             return 1;
         }
 
         // outputs the option information if --help is inputted
         if (opts_map.count("help")) {
-            std::cout << desc << "\n";
+            std::cout << texada::get_options_description() << "\n";
             return 0;
         }
 
@@ -78,7 +52,8 @@ int main(int ac, char* av[]) {
             // Parse the file and store the options
             boost::program_options::store(
                     boost::program_options::command_line_parser(args).options(
-                            desc).positional(pos_desc).run(), opts_map);
+                            texada::get_options_description()).positional(
+                                    texada::get_pos_opts_desc()).run(), opts_map);
 
         }
 
