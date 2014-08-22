@@ -266,8 +266,8 @@ bool map_trace_checker::next_check(const spot::ltl::unop* node, interval intvl,
     // if the start and end of the interval are at the same place,
     // the next event is the terminal: check there
     if (intvl.start == intvl.end) {
-        intvl.start = terminal_pos - 1;
-        intvl.end = terminal_pos - 1;
+        intvl.start = terminal_pos;
+        intvl.end = terminal_pos;
         return this->check(p, intvl);
     }
     // move the start of the interval forward to check p on the next event.
