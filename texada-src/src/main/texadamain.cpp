@@ -53,6 +53,8 @@ int main(int ac, char* av[]) {
             opts_map.insert(file_opts_map.begin(),file_opts_map.end());
         }
 
+
+
         //error if no specified trace type
         if (!(opts_map.count("map-trace") || opts_map.count("linear-trace")
                 || opts_map.count("prefix-tree-trace"))) {

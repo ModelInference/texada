@@ -95,6 +95,10 @@ set<const spot::ltl::formula*> mine_property_type(
 
     // parse file
     std::ifstream infile(trace_source);
+    if (infile.failbit){
+        std::cerr << "Error: could not open file \n";
+        return set<const spot::ltl::formula*>();
+    }
     simple_parser parser = simple_parser();
     shared_ptr<set<vector<string_event> >> vector_trace_set;
     shared_ptr<set<map<string_event, vector<long>>> > map_trace_set;
