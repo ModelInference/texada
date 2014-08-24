@@ -10,7 +10,7 @@
 
 #include <ltlast/allnodes.hh>
 #include "instantspoolcreator.h"
-#include "../parsing/stringevent.h"
+#include "../trace/stringevent.h"
 #include <string>
 #include <set>
 #include <map>

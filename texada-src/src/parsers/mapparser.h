@@ -12,6 +12,13 @@
 
 namespace texada {
 
+/**
+ * This class inherits from the abstract parser class and allows
+ * parsing of a sequence of log lines into a set of maps, where each map
+ * represents an individual trace. Specifically, each map represents
+ * a mapping of events in a trace to vectors of log lines in which
+ * the event occurs.
+ */
 class map_parser: public parser {
 public:
     map_parser();

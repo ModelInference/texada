@@ -16,10 +16,10 @@
 
 #include <boost/program_options.hpp>
 
-#include "../parsing/parser.h"
-#include "../parsing/linearparser.h"
-#include "../parsing/mapparser.h"
-#include "../parsing/prefixtreeparser.h"
+#include "../parser/parser.h"
+#include "../parser/linearparser.h"
+#include "../parser/mapparser.h"
+#include "../parser/prefixtreeparser.h"
 #include "../instantiation-tools/pregeninstantspool.h"
 #include "../instantiation-tools/otfinstantspool.h"
 #include "../instantiation-tools/instantspoolcreator.h"
@@ -27,45 +27,9 @@
 #include "../checkers/lineartracechecker.h"
 #include "../checkers/prefixtreechecker.h"
 #include "../instantiation-tools/apsubbingcloner.h"
+#include "setoptsformain.h"
 
 namespace texada {
-
-/**
- * This method exists to ensure compatibility of tests which used
- * the argument version of mine_property_type. Needs to update to match
- * with texada main.
- * @param input_string
- * @return
- */
-boost::program_options::variables_map set_options_from_string(
-        string input_string) {
-    boost::program_options::options_description desc("Allowed options");
-    desc.add_options()("property-type,f",
-            boost::program_options::value<std::string>(),
-            "property type to mine")("log-file",
-            boost::program_options::value<std::string>(), "log file to mine on")(
-            "map-trace,m", "mine on a trace in the form of a map")(
-            "linear-trace,l", "mine on a linear trace")("prefix-tree-trace,p",
-            "mine on traces in prefix tree form")("pregen-instants",
-            "pregenerate property type instantiations. ")("allow-same-bindings",
-            "allow different formula variables to be bound to the same events.")
-            ("regex,r", boost::program_options::value<std::vector<std::string> >(),
-            "regular expression to parse event types from log [default (?<ETYPE>.*)]")
-            ("separator_regex,s", boost::program_options::value<std::string>(),
-            "regular expression matching execution separator lines in the log [default: --]")
-            ("ignore_nm_lines,i", "ignore non-matching lines [default: false]");
-
-    boost::program_options::positional_options_description pos_desc;
-    pos_desc.add("log-file", 1);
-    boost::program_options::variables_map opts;
-    std::vector<std::string> args = texada::string_to_args(input_string);
-
-    boost::program_options::store(
-            boost::program_options::command_line_parser(args).options(desc).positional(
-                    pos_desc).run(), opts);
-
-    return opts;
-}
 
 /**
  * Finds instantiations of the given property type using the linear
@@ -78,7 +42,7 @@ boost::program_options::variables_map set_options_from_string(
 set<const spot::ltl::formula*> mine_lin_property_type(string formula_string,
         string trace_source) {
     return mine_property_type(
-            set_options_from_string(
+            set_options(true,
                     "-f '" + formula_string + "' -l " + trace_source));
 }
 
@@ -93,7 +57,7 @@ set<const spot::ltl::formula*> mine_lin_property_type(string formula_string,
 set<const spot::ltl::formula*> mine_map_property_type(string formula_string,
         string trace_source) {
     return mine_property_type(
-            set_options_from_string(
+            set_options(true,
                     "-f '" + formula_string + "' -m " + trace_source));
 }
 

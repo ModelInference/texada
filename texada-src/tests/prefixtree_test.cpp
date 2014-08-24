@@ -5,10 +5,10 @@
  *      Author: clemieux
  */
 
-#include "../src/parsing/prefixtree.h"
+#include "../src/trace/prefixtree.h"
 #include "../src/checkers/prefixtreechecker.h"
 #include "../src/instantiation-tools/subformulaapcollector.h"
-#include "../src/parsing/prefixtreeparser.h"
+#include "../src/parsers/prefixtreeparser.h"
 #include <gtest/gtest.h>
 #include <ltlparse/public.hh>
 #include <fstream>

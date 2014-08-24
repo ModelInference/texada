@@ -6,63 +6,29 @@
 #include <iterator>
 #include <fstream>
 #include <string>
-#include <boost/program_options.hpp>
+#include "opts.h"
 #include <ltlvisit/tostring.hh>
 #include <ltlparse/public.hh>
+
 #include "propertytypeminer.h"
-#include "../parsing/parser.h"
+#include "../parsers/parser.h"
 
 /**
  * Main method, runs Texada mining or timing tests depending on options.
  */
 int main(int ac, char* av[]) {
     try {
-
-        // setting up the program options
-        // desc is the options description, i.e. all the allowed options
-        boost::program_options::options_description desc("Usage: texada [opt1] ... [optN] log-file\n\nRequired options: -f, log-file, one of [-l, -m, -p]\n\nOptions");
-        desc.add_options()("help,h", "print help message")("property-type,f",
-                boost::program_options::value<std::string>(),
-                "property type to mine")("log-file",
-                boost::program_options::value<std::string>(),
-                "log file")("map-trace,m",
-                "use a map trace representation")("linear-trace,l",
-                "use a linear trace representation")("prefix-tree-trace,p",
-                "use a prefix tree trace representation")("pregen-instants",
-                "pre-generate all property type instantiations [default: false, using on-fly-instantiation]")(
-                "allow-same-bindings",
-                "allow different formula variables to be bound to the same events [default: false]")(
-                "config-file,c", boost::program_options::value<std::string>(),
-                "file containing command line options. Command line options will override file options.")(
-                "event,e",
-                boost::program_options::value<std::vector<std::string> >(),
-                "formula variable name to be interpreted as a constant event.")
-                ("regex,r", boost::program_options::value<std::vector<std::string> >(),
-                "regular expression to parse event types from log [default (?<ETYPE>.*)]")
-                ("separator_regex,s", boost::program_options::value<std::string>(), "regular expression matching execution separator lines in the log [default: --]")
-                ("ignore_nm_lines,i", "ignore non-matching lines [default: false]"); 
-
-        // TODO ib: make sure that ignore_nm_lines is false by default.
-
-        boost::program_options::positional_options_description pos_desc;
-        pos_desc.add("log-file", 1);
-
-        //parsing the options passed to command line
-        boost::program_options::variables_map opts_map;
-        boost::program_options::store(
-                boost::program_options::command_line_parser(ac, av).options(
-                        desc).positional(pos_desc).run(), opts_map);
-        boost::program_options::notify(opts_map);
+        boost::program_options::variables_map opts_map = texada::set_options(ac, av);
 
         if (opts_map.empty()) {
-            std::cerr << "Error: missing arguments. \n";
-            std::cout << desc << "\n";
+            std::cerr << "Error: no arguments provided. \n";
+            std::cout << texada::get_options_description() << "\n";
             return 1;
         }
 
         // outputs the option information if --help is inputted
         if (opts_map.count("help")) {
-            std::cout << desc << "\n";
+            std::cout << texada::get_options_description() << "\n";
             return 0;
         }
 
@@ -80,12 +46,10 @@ int main(int ac, char* av[]) {
             std::stringstream file_string_stream;
             file_string_stream << infile.rdbuf();
             std::string file_string = file_string_stream.str();
-            std::vector<std::string> args = texada::string_to_args(file_string);
-            // Parse the file and store the options
-            boost::program_options::store(
-                    boost::program_options::command_line_parser(args).options(
-                            desc).positional(pos_desc).run(), opts_map);
-
+            boost::program_options::variables_map file_opts_map = texada::set_options(file_string);
+            // insert will not override mapping if it already exists,
+            // giving priority to command line opts.
+            opts_map.insert(file_opts_map.begin(),file_opts_map.end());
         }
 
         //error if no specified trace type

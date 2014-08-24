@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
-#include "../src/parsing/linearparser.h"
-#include "../src/parsing/mapparser.h"
-#include "../src/parsing/prefixtreeparser.h"
+#include "../src/parsers/linearparser.h"
+#include "../src/parsers/mapparser.h"
+#include "../src/parsers/prefixtreeparser.h"
 #include <fstream>
 #include <iostream>
 #include <stdlib.h>
