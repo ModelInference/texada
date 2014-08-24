@@ -52,11 +52,12 @@ int main(int ac, char* av[]) {
             opts_map.insert(file_opts_map.begin(),file_opts_map.end());
         }
 
+
+
         //error if no specified trace type
         if (!(opts_map.count("map-trace") || opts_map.count("linear-trace")
                 || opts_map.count("prefix-tree-trace"))) {
             std::cerr << "Error: missing a trace representaiton type. \n";
-            std::cout << desc << "\n";
             return 1;
 
         }
@@ -74,14 +75,12 @@ int main(int ac, char* av[]) {
         // error if no property type
         if (!opts_map.count("property-type")) {
             std::cerr << "Error: missing formula. \n";
-            std::cout << desc << "\n";
             return 1;
         }
 
         // error if no log file
         if (!opts_map.count("log-file")) {
             std::cerr << "Error: missing log file. \n";
-            std::cout << desc << "\n";
             return 1;
         }
 

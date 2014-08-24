@@ -16,10 +16,10 @@
 
 #include <boost/program_options.hpp>
 
-#include "../parser/parser.h"
-#include "../parser/linearparser.h"
-#include "../parser/mapparser.h"
-#include "../parser/prefixtreeparser.h"
+#include "../parsers/parser.h"
+#include "../parsers/linearparser.h"
+#include "../parsers/mapparser.h"
+#include "../parsers/prefixtreeparser.h"
 #include "../instantiation-tools/pregeninstantspool.h"
 #include "../instantiation-tools/otfinstantspool.h"
 #include "../instantiation-tools/instantspoolcreator.h"
@@ -27,7 +27,7 @@
 #include "../checkers/lineartracechecker.h"
 #include "../checkers/prefixtreechecker.h"
 #include "../instantiation-tools/apsubbingcloner.h"
-#include "setoptsformain.h"
+#include "opts.h"
 
 namespace texada {
 
@@ -42,8 +42,7 @@ namespace texada {
 set<const spot::ltl::formula*> mine_lin_property_type(string formula_string,
         string trace_source) {
     return mine_property_type(
-            set_options(true,
-                    "-f '" + formula_string + "' -l " + trace_source));
+            set_options("-f '" + formula_string + "' -l " + trace_source));
 }
 
 /**
@@ -57,8 +56,7 @@ set<const spot::ltl::formula*> mine_lin_property_type(string formula_string,
 set<const spot::ltl::formula*> mine_map_property_type(string formula_string,
         string trace_source) {
     return mine_property_type(
-            set_options(true,
-                    "-f '" + formula_string + "' -m " + trace_source));
+            set_options("-f '" + formula_string + "' -m " + trace_source));
 }
 
 /**
@@ -100,6 +98,11 @@ set<const spot::ltl::formula*> mine_property_type(
 
     // parse file
     std::ifstream infile(trace_source);
+    if (infile.fail()){
+        std::cerr << "Error: could not open file \n";
+        return set<const spot::ltl::formula*>();
+    }
+
     parser * parser;
     if (use_map) {
         parser = new map_parser();
