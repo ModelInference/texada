@@ -7,7 +7,7 @@
  */
 
 #include "../src/checkers/lineartracechecker.h"
-#include "../src/parsing/stringevent.h"
+#include "../src/trace/stringevent.h"
 
 #include <ltlparse/public.hh>
 #include <ltlvisit/tostring.hh>

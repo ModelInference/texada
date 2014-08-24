@@ -8,6 +8,7 @@
 #include "opts.h"
 #include <boost/tokenizer.hpp>
 #include <boost/token_functions.hpp>
+#include <iostream>
 
 namespace texada{
 
@@ -33,7 +34,12 @@ boost::program_options::options_description get_options_description() {
             "specify file containing command line options. Any options entered directly to command line will override file options.")(
             "event,e",
             boost::program_options::value<std::vector<std::string> >(),
-            "specify a variable in the formula to be interpreted as a constant event.");
+            "specify a variable in the formula to be interpreted as a constant event.")
+            ("regex,r", boost::program_options::value<std::vector<std::string> >(),
+            "regular expression to parse event types from log [default (?<ETYPE>.*)]")
+            ("separator_regex,s", boost::program_options::value<std::string>(), 
+            "regular expression matching execution separator lines in the log [default: --]")
+            ("ignore_nm_lines,i", "ignore non-matching lines [default: false]");
     return desc;
 
 }
