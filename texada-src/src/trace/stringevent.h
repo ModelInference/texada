@@ -13,11 +13,10 @@
 namespace texada {
 
 /**
- * represents a string event, with a name and whether or not it is a terminal event
+ * Represents a string event that is parsed from an input log.
  */
 class string_event {
 public:
-
     string_event();
     string_event(std::string);
     virtual ~string_event();
@@ -27,9 +26,12 @@ public:
     bool is_terminal() const;
     void set_name(std::string);
     void set_terminal(bool);
-private:
 
+private:
+    // The string representation of the event.
     std::string name;
+
+    // Whether or not this is the last event for a trace.
     bool isTerminal;
 };
 

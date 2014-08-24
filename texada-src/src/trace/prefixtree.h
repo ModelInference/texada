@@ -30,8 +30,7 @@ public:
     shared_ptr<prefix_tree_node> get_trace_start(string);
     int get_num_traces();
 private:
-    // contains the start of each trace corresponding
-    // to is trace_id
+    // Contains the start of each trace corresponding to is trace_id.
     map<set<int>,shared_ptr<prefix_tree_node>> traces;
 };
 
