@@ -1,3 +1,27 @@
+#######################
+# Include local 
+-include uservars.mk
+#######################
+
+ifndef TEXADA_HOME
+  $(error TEXADA_HOME shell variable is not set)
+endif
+ifndef SPOT_LIB
+  $(error SPOT_LIB variable is not set (see uservars.mk.example))
+endif
+ifndef GTEST_LIB
+  $(error GTEST_LIB variable is not set (see uservars.mk.example))
+endif
+ifndef SPOT_INCL
+  $(error SPOT_INCL variable is not set (see uservars.mk.example))
+endif
+ifndef GTEST_INCL
+  $(error GTEST_INCL variable is not set (see uservars.mk.example))
+endif
+ifndef BOOST_INCL
+  $(error BOOST_INCL variable is not set (see uservars.mk.example))
+endif
+
 RM := rm -rf
 
 LIBS := -lspot -lgtest -lpthread -lgtest_main -lboost_program_options -lboost_regex
@@ -12,11 +36,6 @@ MAIN := texadamain
 
 CC := g++
 CFLAGS = -std=c++11 -I$(SPOT_INCL) -I$(GTEST_INCL) -I$(BOOST_INCL) -O2 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o "$@" "$<"  
-
-#######################
-# Include local 
--include uservars.mk
-#######################
 
 # Add inputs and outputs from these tool invocations to the build variables 
 
