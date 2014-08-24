@@ -11,14 +11,13 @@
 #include <ltlparse/public.hh>
 
 #include "propertytypeminer.h"
-#include "../parsing/simpleparser.h"
+#include "../parsers/parser.h"
 
 /**
  * Main method, runs Texada mining or timing tests depending on options.
  */
 int main(int ac, char* av[]) {
     try {
-
         boost::program_options::variables_map opts_map = texada::set_options(ac, av);
 
         if (opts_map.empty()) {
@@ -58,7 +57,7 @@ int main(int ac, char* av[]) {
         //error if no specified trace type
         if (!(opts_map.count("map-trace") || opts_map.count("linear-trace")
                 || opts_map.count("prefix-tree-trace"))) {
-            std::cerr << "Error: specify a trace type. \n";
+            std::cerr << "Error: missing a trace representaiton type. \n";
             return 1;
 
         }
@@ -69,19 +68,19 @@ int main(int ac, char* av[]) {
                         && opts_map.count("prefix-tree-trace"))
                 || (opts_map.count("prefix-tree-trace")
                         && opts_map.count("linear-trace"))) {
-            std::cerr << "Error: specify only one trace type. \n";
+            std::cerr << "Error: specify only one trace representation type. \n";
             return 1;
         }
 
         // error if no property type
         if (!opts_map.count("property-type")) {
-            std::cerr << "Error: no inputted property type. \n";
+            std::cerr << "Error: missing formula. \n";
             return 1;
         }
 
         // error if no log file
         if (!opts_map.count("log-file")) {
-            std::cerr << "Error: did not provide log file. \n";
+            std::cerr << "Error: missing log file. \n";
             return 1;
         }
 

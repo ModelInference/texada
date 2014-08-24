@@ -9,7 +9,7 @@
 #define LINEARTRACECHECKER_H_
 
 #include <ltlast/allnodes.hh>
-#include "../parsing/stringevent.h"
+#include "../trace/stringevent.h"
 #include "boolbasedchecker.h"
 #include <iostream>
 

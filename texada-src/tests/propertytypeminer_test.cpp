@@ -609,7 +609,6 @@ TEST(CheckerEquivalencyTest, STprecedesPafterQ) {
     std::string texada_base = std::string(getenv("TEXADA_HOME"));
 
     // find all valid instantiations of the property type
-
     std::set<const spot::ltl::formula*> set1 =
             texada::mine_property_type(
                     texada::set_options(

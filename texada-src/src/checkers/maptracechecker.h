@@ -7,7 +7,7 @@
 
 #ifndef MAPTRACECHECKER_H_
 #define MAPTRACECHECKER_H_
-#include "../parsing/stringevent.h"
+#include "../trace/stringevent.h"
 #include <map>
 #include <unordered_map>
 #include <vector>
