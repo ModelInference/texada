@@ -12,6 +12,11 @@
 
 namespace texada {
 
+/**
+ * This class inherits from the abstract parser class and allows
+ * parsing of a sequence of log lines into a set of vectors, where
+ * each vector represents an individual trace.
+ */
 class linear_parser: public parser {
 public:
     linear_parser();

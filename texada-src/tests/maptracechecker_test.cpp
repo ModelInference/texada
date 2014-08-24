@@ -6,7 +6,7 @@
  */
 
 #include "../src/checkers/maptracechecker.h"
-#include "../src/parsing/mapparser.h"
+#include "../src/parsers/mapparser.h"
 
 #include <gtest/gtest.h>
 

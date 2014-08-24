@@ -8,7 +8,7 @@
 #ifndef PREFIXTREECHECKER_H_
 #define PREFIXTREECHECKER_H_
 
-#include "../parsing/prefixtree.h"
+#include "../trace/prefixtree.h"
 #include "ltlformulachecker.h"
 #include "lineartracechecker.h"
 #include <boost/functional/hash.hpp>

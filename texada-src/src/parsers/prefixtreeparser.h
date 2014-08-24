@@ -12,6 +12,10 @@
 
 namespace texada {
 
+/**
+ * This class inherits from the abstract parser class and allows
+ * parsing of a sequence of log lines into a prefix tree.
+ */
 class prefix_tree_parser: public parser {
 public:
     prefix_tree_parser();
