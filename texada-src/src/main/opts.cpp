@@ -8,6 +8,7 @@
 #include "opts.h"
 #include <boost/tokenizer.hpp>
 #include <boost/token_functions.hpp>
+#include <iostream>
 
 namespace texada{
 
