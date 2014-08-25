@@ -200,8 +200,6 @@ bool linear_trace_checker::finally_check(const spot::ltl::unop* node,
     if (trace_pt->is_terminal()) {
         return false;
     } else {
-        if (spot::ltl::to_string(node) == "F(e0 & ((e2 & X((!e1 U e4) & (e1 R (!e4 | G!e3)))) M !e1))")
-        {std::cout << pos << "\n";pos++;}
         //Return whether subformula is true on this trace, recursive check on
         // all subsequent traces.
         return this->check(p, trace_pt) || this->check(node, trace_pt + 1);
