@@ -128,9 +128,13 @@ bool map_trace_checker::release_check(const spot::ltl::binop* node,
     // find first occurrence of p
     long first_occ_p = find_first_occurrence(p, intvl);
 
-    // if p never occurs, p R q holds only if !q never occurs
+    // if !q never occurs, p R q holds
+    if (first_occ_not_q == -1) {
+        return true;
+    }
+    // if p never occurs and !q occurred, false
     if (first_occ_p == -1) {
-        return (first_occ_not_q == -1);
+        return false;
     }
     // at the first p, q must still hold so the first !q
     // must be strictly after the first p
@@ -197,10 +201,16 @@ bool map_trace_checker::strongrelease_check(const spot::ltl::binop* node,
     // find first occurrence of p
     long first_occ_p = find_first_occurrence(p, intvl);
 
-    // if p never occurs, p M q holds only if !p never occurs
+    // if p never occurs, p M q does not hold
     if (first_occ_p == -1) {
         return false;
     }
+
+    // if !q never occurs and p does, p M q holds
+    if (first_occ_not_q == -1){
+        return true;
+    }
+
     // at the first p, q must still hold so the first !q
     // must be strictly after the first p
     else if (first_occ_not_q <= first_occ_p) {
@@ -544,8 +554,9 @@ long map_trace_checker::find_first_occurrence(const spot::ltl::multop* node,
         for (int i = 0; i < numkids; i++) {
             long first_occ = find_first_occurrence(node->nth(i), intvl);
             // if one of the children never occurs, neither does the and
-            if (first_occ == -1)
+            if (first_occ == -1){
                 return -1;
+            }
             if (first_occ > total_first_occ) {
                 total_first_occ = first_occ;
             }
@@ -875,8 +886,8 @@ long map_trace_checker::find_first_occurrence(const spot::ltl::binop* node,
             if (last_occ_neg_second == -1)
                 return intvl.start;
             // last !p is after the end of intvl, q R p never holds on intvl
-            else if (last_occ_neg_second >= intvl.end)
-                return -1;
+            else if (last_occ_neg_second >= intvl.end){
+                return -1;}
             // last !p in middle of intvl, q R p starts after that.
             else
                 return ++last_occ_neg_second;
@@ -890,7 +901,7 @@ long map_trace_checker::find_first_occurrence(const spot::ltl::binop* node,
         neg_norm_second->destroy();
         // if !p occurs when q does, it is not a case of release
         if (last_occ_neg_second == temp.end) {
-            // if it's the end of the original intvl, we haven't found
+             // if it's the end of the original intvl, we haven't found
             // q R p
             if (intvl.end <= temp.end)
                 return -1;
@@ -900,6 +911,7 @@ long map_trace_checker::find_first_occurrence(const spot::ltl::binop* node,
         }
         // if !p never occurs, q R p first occurs
         // at the start of the interval
+
         else if (last_occ_neg_second == -1) {
             return intvl.start;
         }
@@ -919,15 +931,15 @@ long map_trace_checker::find_first_occurrence(const spot::ltl::binop* node,
         // find first q
         long first_occ_first = find_first_occurrence(node->first(), temp);
         // if q never occurs, neither does q M p.
-        if (first_occ_first == -1)
-            return -1;
+        if (first_occ_first == -1){
+             return -1;}
         // set temp to search for last !p before (inclusive) q
         temp.end = first_occ_first;
         // create and find last !p before (inclusive) q
         const spot::ltl::formula * neg_norm_second =
                 spot::ltl::negative_normal_form(node->second(), true);
         long last_occ_neg_second = find_last_occurrence(neg_norm_second, temp);
-        neg_norm_second->destroy();
+         neg_norm_second->destroy();
         // if !p occurs when q does, q M p does not hold there
         if (last_occ_neg_second == temp.end) {
             // if that q was out of the interval, q M p

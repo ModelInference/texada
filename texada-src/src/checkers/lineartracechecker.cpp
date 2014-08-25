@@ -8,6 +8,7 @@
 #include "lineartracechecker.h"
 #include "../instantiation-tools/apsubbingcloner.h"
 #include "../instantiation-tools/pregeninstantspool.h"
+#include "ltlvisit/tostring.hh"
 namespace texada {
 
 
@@ -194,10 +195,13 @@ bool linear_trace_checker::globally_check(const spot::ltl::unop* node,
 bool linear_trace_checker::finally_check(const spot::ltl::unop* node,
         const string_event* trace_pt, std::set<int> trace_ids) {
     const spot::ltl::formula * p = node->child();
+
     // base case: if we're at END_VAR, return false to not effect ||
     if (trace_pt->is_terminal()) {
         return false;
     } else {
+        if (spot::ltl::to_string(node) == "F(e0 & ((e2 & X((!e1 U e4) & (e1 R (!e4 | G!e3)))) M !e1))")
+        {std::cout << pos << "\n";pos++;}
         //Return whether subformula is true on this trace, recursive check on
         // all subsequent traces.
         return this->check(p, trace_pt) || this->check(node, trace_pt + 1);
