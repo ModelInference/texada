@@ -32,7 +32,6 @@ public:
 
 private:
 
-	int pos = 0;
 	virtual bool ap_check(const spot::ltl::atomic_prop* node,
 	            const string_event* trace_pt, std::set<int> trace_ids = std::set<int>());
     virtual bool until_check(const spot::ltl::binop* node,
