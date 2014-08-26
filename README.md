@@ -124,17 +124,139 @@ Texada is a command line tool. The following assumes that you were
 able to install Texada by following the installation instructions and
 are able to execute `texadatest` and `texada` binaries.
 
-## Example usage
+## Basic options
 
-Here is an example input/output:
+The basic command line to invoke Texada looks like this:
 
-* Input: `./texada -m -c ./traces/perracotta-type-traces/alternating/args.txt ./traces/perracotta-type-traces/alternating/trace.txt`
+    ./texada -m -f 'G(x -> X(F(y))' --log-file path/to/some/logfile.txt
 
-* Where args.txt contains: `-f '(!y W x) & G((x -> X(!x U y))&(y -> X(!y W x)))'`
+This is the simplest invocation of Texada and it consists of four parts:
 
-* Output: `(!b W a) & G((a -> X(!a U b)) & (b -> X(!b W a)))`
+A call to run the Texada program,
 
-*TODO: expand*
+    ./texada ...
+
+An argument specifying the trace representation type,
+
+    ... -m ...
+
+(-m specifies that the program will internally represent traces as maps. In place of -m, we can input -l or -p, which would tell the program to represent traces as vectors or prefix-trees, respectively. Note that these choices do not effect the output of the program, only its efficiency.)
+
+An argument specifying the property type to mine,
+
+    ... -f 'G(x -> X(F(y))' ...
+
+And lastly, an argument specifying the log file to mine.
+
+    ... --log-file path/to/some/logfile.txt
+
+
+In order to see these arguments in context, we look at a very basic example.
+
+
+## Example 1
+
+Suppose we have the following log in the form of a text file located at ~/texada/traces/basic_log.txt.
+
+    a
+    c
+    d
+    --
+    b
+    d
+    c
+    d
+    --
+
+By default, Texada interprets '--' as the termination of a trace; so the above log would be interpreted as a set of two traces {"a,c,d","b,d,c,d"}. All other lines are interpreted as events, and equivalent lines (i.e. lines whose strings match) are interpreted as instances of the same event.
+
+Now, suppose that we want to find out whether there are events x and y, such that whenever x occurs, y occurs right afterwards. In LTL this can be expressed as 'G(x -> XF(y))'. To determine such events we run Texada as follows:
+
+    ./texada -m -f 'G(x -> X(F(y))' --log-file ~/texada/traces/basic_log.txt
+
+This produces the following output:
+
+    'G(c -> X(F(d))'
+
+which says that c is always followed by d. And looking at our log, we see that indeed this is true.
+
+
+## Additional options
+
+A more advanced invocation of Texada, using additional options, looks like this (note that this example covers only a subset of all possible options; see "Command line usage screen" below for a full listing):
+
+    ./texada -m -f 'G(x -> X(F(y))' --log-file path/to/some/logfile.txt -r 'SUCCESS: (?<ETYPE>.*)' 'FAIL: (?<ETYPE>.*)' -s 'end' -i
+
+Here, in addition to the 4 required arguments seen previously, we see the following additional options:
+
+A set of regular expressions specifying the structure of log lines (see "Regular expression arguments" below for more information),
+
+    ... -r 'SUCCESS: (?<ETYPE>.*)' 'FAIL: (?<ETYPE>.*)'
+
+(by the above regular expressions, two log lines 'SUCCESS: open door' and 'FAIL: open door' would be considered instances of the same event 'open door')
+
+A regular expression specifying the lines which are to mark the termination of a trace,
+
+    ... -s 'end'
+
+And lastly, a flag specifying that all lines which fail to match the provided regular expressions are to be ignored.
+
+    ... -i
+
+
+As before, we look at a simple example to see these arguments in context.
+
+
+## Example 2
+
+
+Suppose we have the following log in the form of a text file as before located at ~/texada/traces/structured_log.txt.
+
+    // This is a comment
+    SUCCESS: a
+    SUCCESS: c
+    // This is another commment
+    FAIL: d
+    end
+    SUCCESS: b
+    FAIL: d
+    SUCCESS: c
+    SUCCESS: d
+    end
+
+Note that in Texada's default setting, this log would be interpreted as one single, non-terminating trace, with lines like "// This is a comment" interpreted as events.
+
+But suppose we would like Texada to interpret 'end' as marking the termination of a trace and ignore lines beginning with '//'. Futhermore, we would like the program to ignore the "SUCCESS: " and "FAIL: " parts of the log lines and determine a line's event type purely on the final symbols (e.g. we would like to interpret "SUCCESS: d" and "FAIL: d" as instances of the same event "d"). In order to do this, we would append the following options to our command:
+
+    ... -r 'SUCCESS: (?<ETYPE>.*)' 'FAIL: (?<ETYPE>.*)' -s 'end' -i
+
+Here, the input
+
+    ... -r 'SUCCESS: (?<ETYPE>.*)' ...
+
+says, in effect, that if a log line matches the regular expression 'SUCCESS: (?<ETYPE>.\*)', its event type is the string captured by the named group (?<ETYPE>.\*).
+
+In full, a command to find events x and y which satisfy the relationship 'x is always followed by y' (or in LTL: 'G(x -> XF(y))') would look like this:
+
+    ./texada -m -f 'G(x -> X(F(y))' --log-file ~/texada/traces/structured_log.txt -r 'SUCCESS: (?<ETYPE>.*)' 'FAIL: (?<ETYPE>.*)' -s 'end' -i
+
+This would produce the following output:
+
+    'G(c -> X(F(d))'
+
+
+## Regular expression arguments
+
+
+Texada relies on user-supplied regular expressions ([Perl regular expressions](http://www.boost.org/doc/libs/1_55_0/libs/regex/doc/html/boost_regex/syntax/perl_syntax.html)) to parse structured log lines. By default, Texada will treat every single line as an event, equivalent lines (i.e. lines whose strings match) as instances of the same event type, and "--" as partitions between traces. However, in order to parse logs which contain any kind of structure, regular expressions must be provided to determine the event type of a log line.
+
+There are two command line options which require regular expression arguments: 
+
+First, the option -s, which specifies the log lines to be interpreted as partitions between traces, takes along with it a single regular expression, and all lines matching said regular expression will be treated as partitions between traces. 
+
+Second, the option -r takes along with it a list of regular expressions, each specifying the structure of some log line. Unlike option -s, the regex arguments of -r require a capturing group having the name <ETYPE> to be specified. When the program runs, it will go through each line and try to match it with one of these regular expressions; once a match is found, the string captured by the named group <ETYPE> will become the event type of the line.
+
+If a line fails to match any of the provided regular expressions, the program will be unable to go on and abort. In order to ignore these unmatched log lines, -i option can be invoked.
 
 
 # Command line usage screen
