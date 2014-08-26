@@ -144,7 +144,7 @@ An argument specifying the trace representation type,
 
 An argument specifying the property type to mine,
 
-    ... -f 'G(x -> X(F(y))' ...
+    ... -f 'G(x -> XF(y))' ...
 
 And lastly, an argument specifying the log file to mine.
 
@@ -170,9 +170,9 @@ Suppose we have the following log in the form of a text file located at ~/texada
 
 By default, Texada interprets '--' as the termination of a trace; so the above log would be interpreted as a set of two traces {"a,c,d","b,d,c,d"}. All other lines are interpreted as events, and equivalent lines (i.e. lines whose strings match) are interpreted as instances of the same event.
 
-Now, suppose that we want to find out whether there are events x and y, such that whenever x occurs, y occurs right afterwards. In LTL this can be expressed as 'G(x -> XF(y))'. To determine such events we run Texada as follows:
+Now, suppose that we want to find out whether there are events x and y, such instances of x is always followed by an instance of y. In LTL this can be expressed as 'G(x -> XF(y))'. To determine such events we run Texada as follows:
 
-    ./texada -m -f 'G(x -> X(F(y))' --log-file ~/texada/traces/basic_log.txt
+    ./texada -m -f 'G(x -> XF(y))' --log-file ~/texada/traces/basic_log.txt
 
 This produces the following output:
 
