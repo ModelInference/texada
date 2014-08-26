@@ -96,6 +96,11 @@ bool map_trace_checker::until_check(const spot::ltl::binop* node,
     // clean up !p
     not_p->destroy();
 
+    // if !p never occurs and q occurs, until holds
+    if (first_occ_not_p == -1){
+        return true;
+    }
+
     // make sure !p did not occur before q
     if (first_occ_not_p < first_occ_q) {
         return false;
@@ -166,10 +171,16 @@ bool map_trace_checker::weakuntil_check(const spot::ltl::binop* node,
     long first_occ_not_p = find_first_occurrence(not_p, intvl);
     not_p->destroy();
 
-    // if q never occurs, p W q holds only if !p never occurs
-    if (first_occ_q == -1) {
-        return (first_occ_not_p == -1);
+    // if !p never occurs, p W q holds
+    if (first_occ_not_p == -1){
+        return true;
     }
+
+    // if q never occurs and !p occurs (from above), false
+    if (first_occ_q == -1) {
+        return false;
+    }
+
     // p W q holds if !p does not occur strictly before q
     else if (first_occ_not_p < first_occ_q) {
         return false;
