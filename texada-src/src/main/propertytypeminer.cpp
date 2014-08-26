@@ -148,6 +148,12 @@ set<const spot::ltl::formula*> mine_property_type(
                     variables->erase(it);
                 }
             }
+            // if variables has become empty, it means that all events
+            // in the log were included as constants. break out of the
+            // loop before a call to it++ triggers a segfault.
+            if (variables->empty()) {
+                break;
+            }
         }
     }
 
