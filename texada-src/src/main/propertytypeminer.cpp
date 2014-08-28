@@ -130,11 +130,11 @@ set<const spot::ltl::formula*> mine_property_type(
     // if we don't want repetition and there are already events
     // in the formula, we can just exclude them from the event set
     // to start with
-    if (!allow_reps && (specified_formula_events.size() > 0)) {
-        for (int i = 0; i < specified_formula_events.size(); i++) {
-            event_set->erase(specified_formula_events.at(i));
-        }
-    }
+    //if (!allow_reps && (specified_formula_events.size() > 0)) {
+    //    for (int i = 0; i < specified_formula_events.size(); i++) {
+    //        event_set->erase(specified_formula_events.at(i));
+    //    }
+    //}
 
     // create the set of formula's variables
     shared_ptr<spot::ltl::atomic_prop_set> variables(
