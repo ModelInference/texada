@@ -20,6 +20,7 @@
 #include "../parsers/linearparser.h"
 #include "../parsers/mapparser.h"
 #include "../parsers/prefixtreeparser.h"
+#include "../instantiation-tools/constinstantspool.h"
 #include "../instantiation-tools/pregeninstantspool.h"
 #include "../instantiation-tools/otfinstantspool.h"
 #include "../instantiation-tools/instantspoolcreator.h"
@@ -98,7 +99,7 @@ set<const spot::ltl::formula*> mine_property_type(
 
     // parse file
     std::ifstream infile(trace_source);
-    if (infile.fail()){
+    if (infile.fail()) {
         std::cerr << "Error: could not open file \n";
         return set<const spot::ltl::formula*>();
     }
@@ -127,24 +128,34 @@ set<const spot::ltl::formula*> mine_property_type(
     parser->parse(infile);
 
     shared_ptr<set<string>> event_set = parser->return_events();
+    // if we don't want repetition and there are already events
+    // in the formula, we can just exclude them from the event set
+    // to start with
+    if (!allow_reps && (specified_formula_events.size() > 0)) {
+        for (int i = 0; i < specified_formula_events.size(); i++) {
+            event_set->erase(specified_formula_events.at(i));
+        }
+    }
 
     // create the set of formula's variables
     shared_ptr<spot::ltl::atomic_prop_set> variables(
             spot::ltl::atomic_prop_collect(formula));
-    // remove events from variables
+    // remove variables which are specified as constant events
     if (specified_formula_events.size() > 0) {
-        for (spot::ltl::atomic_prop_set::iterator it = variables->begin();
-                it != variables->end(); it++) {
+        spot::ltl::atomic_prop_set::iterator it = variables->begin();
+        while (it != variables->end()) {
+            bool erase = false;
             for (int i = 0; i < specified_formula_events.size(); i++) {
                 if ((*it)->name() == specified_formula_events.at(i)) {
-                    variables->erase(it);
+                    erase = true;
                 }
             }
-            // if variables has become empty, it means that all events
-            // in the log were included as constants. break out of the
-            // loop before a call to it++ triggers a segfault.
-            if (variables->empty()) {
-                break;
+            if (erase) {
+                spot::ltl::atomic_prop_set::iterator toErase = it;
+                ++it;
+                variables->erase(toErase);
+            } else {
+                ++it;
             }
         }
     }
@@ -152,7 +163,9 @@ set<const spot::ltl::formula*> mine_property_type(
     // create the instantiator
     instants_pool_creator * instantiator;
 
-    if (pregen_instants) {
+    if (variables->empty()) {
+        instantiator = new const_instants_pool(formula);
+    } else if (pregen_instants) {
         instantiator = new pregen_instants_pool(event_set, variables,
                 allow_reps, specified_formula_events);
     } else {
@@ -163,7 +176,8 @@ set<const spot::ltl::formula*> mine_property_type(
     vector<map<string, string>> valid_instants;
     // check all valid instantiations on each trace
     if (use_lin) {
-        shared_ptr<set<vector<string_event> >> vector_trace_set = dynamic_cast<linear_parser*>(parser)->return_vec_trace();
+        shared_ptr<set<vector<string_event> >> vector_trace_set =
+                dynamic_cast<linear_parser*>(parser)->return_vec_trace();
         valid_instants = valid_instants_on_traces(formula, instantiator,
                 vector_trace_set);
     } else if (use_map) {
