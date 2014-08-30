@@ -18,6 +18,12 @@ instants_pool_creator::instants_pool_creator(shared_ptr<set<string>> events_,
 
 }
 
+instants_pool_creator::instants_pool_creator() {
+    unique_events = NULL;
+    formula_vars = NULL;
+    allow_repetition = false;
+}
+
 instants_pool_creator::~instants_pool_creator() {
 }
 

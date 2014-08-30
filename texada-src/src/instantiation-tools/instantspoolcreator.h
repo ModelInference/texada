@@ -32,6 +32,7 @@ public:
     instants_pool_creator(shared_ptr<set<string>>  events,
             shared_ptr<spot::ltl::atomic_prop_set> ltlevents, bool allow_reps,
             vector<string> exclude_events = vector<string>());
+    instants_pool_creator();
     virtual ~instants_pool_creator();
     //return to the start of the instantiations.
     virtual shared_ptr<map<string,string>>  get_next_instantiation() = 0;
