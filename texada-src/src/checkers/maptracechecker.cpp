@@ -810,8 +810,8 @@ long map_trace_checker::find_first_occurrence(const spot::ltl::binop* node,
         // on the first element of the interval
         if (last_occ_neg_first == -1)
             return intvl.start;
-        // if the last !p before is after the end of our original
-        // interval, p U q hodls nowhere on that interval
+        // if the last !p before q is after the end of our original
+        // interval, p U q holds nowhere on that interval
         if (last_occ_neg_first >= intvl.end) {
             return -1;
         }
