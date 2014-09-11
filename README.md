@@ -23,7 +23,10 @@ As an example, consider the LTL property type that encodes the "x always followe
 
 Texada is developed in C++. This section describes the steps to get
 Texada working from a freshly cloned repository. Texada has been
-tested on Linux and OSX.
+tested on Linux and OSX. 
+
+If you are installing on Ubuntu, we have
+compiled all the commands you need to run to get started on [this wiki page](https://bitbucket.org/bestchai/texada/wiki/Home).
 
 ### Directory Structure
 
