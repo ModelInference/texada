@@ -1,0 +1,3 @@
+With/without --allow_same_bindings, instantiations:
+G(b -> XFc)
+
