@@ -1,0 +1,1 @@
+-f 'Fq -> (!q U (q & (!p W (p W (!p W (p W G!p))))))'
