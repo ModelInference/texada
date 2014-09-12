@@ -1,0 +1,1 @@
+-f 'G (q -> (p -> (!r U (s & !r & X(!r U t)))) U (r | G (p -> (s & XF t))))'
