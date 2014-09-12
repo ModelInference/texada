@@ -1,0 +1,10 @@
+Without --allow_same_bindings, instantiations:
+Fe -> (!e U a)
+
+With --allow_same_bindings, instantiations:
+Fa -> (!a U a)
+Fb -> (!b U b)
+Fc -> (!c U c)
+Fd -> (!d U d)
+Fe -> (!e U a)
+Fe -> (!e U e)
