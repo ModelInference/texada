@@ -1,0 +1,34 @@
+<!--
+a:link {color: #660099}     /* unvisited link; old: #660099 */
+a:visited {color: #660099}  /* visited link; old: #660099 */
+a:hover {color: red}     /* mouse over link; old: #088A08 */
+a:active {color: red}    /* selected link */
+
+a   { text-decoration:none;  }
+
+body { background-color: white; }
+
+#main {
+        margin-left: auto;
+	margin-right: auto;
+	font: 14px Arial;
+	font-stretch: 10%;
+	width: 50%;
+	text-align:left;
+	padding: 0px 15px 15px;
+	cellpadding: 15px;
+	border: 1px solid;
+        border-color: #006400;
+	rules: none;
+	frame: box;
+	background-color: white;
+}
+
+#footer {
+	font: 12px Arial;
+	font-stretch: 10%;
+	color: gray;
+}
+
+
+-->
