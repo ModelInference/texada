@@ -20,6 +20,12 @@ func renderTemplate(w http.ResponseWriter, tmpl string, data interface{}) {
 	}
 }
 
+type Output struct {
+    OutputTitle string
+    OutputResult string
+    OutputDisplay string
+}
+
 // Handle a mine POST.
 func mineHandler(w http.ResponseWriter, r *http.Request) {
 	// Retrieve form data.
@@ -70,11 +76,17 @@ func mineHandler(w http.ResponseWriter, r *http.Request) {
 	os.Remove(argsfile.Name())
 	outstr := strings.TrimSpace(string(outbytes))
 	// cmdfull := cmd + " -c " + argsfile.Name() + " " + logfile.Name()
-	renderTemplate(w, "index", "Texada output:\n" + outstr)
+
+
+	result := Output{OutputTitle: "Texada output:", OutputResult: outstr, OutputDisplay: "block"}
+	
+	// renderTemplate(w, "index", "Texada output:\n" + outstr)
+	renderTemplate(w, "index", result)
 }
 
 func viewHandler(w http.ResponseWriter, r *http.Request) {
-	renderTemplate(w, "index", nil)
+	result := Output{OutputTitle: "", OutputResult: "", OutputDisplay: "none"}
+	renderTemplate(w, "index", result)
 }
 
 func main() {
