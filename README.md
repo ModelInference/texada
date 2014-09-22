@@ -1,3 +1,7 @@
+## Try the [Texada service](http://elaine.nss.cs.ubc.ca:8080/texada/) from your browser ##
+-----------------------
+
+
 ## Table of contents
 * [Overview](#markdown-header-overview)
 * [Installation guide](#markdown-header-installation-guide)
