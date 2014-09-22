@@ -1,4 +1,5 @@
 <!--
+
 a:link {color: #660099}     /* unvisited link; old: #660099 */
 a:visited {color: #660099}  /* visited link; old: #660099 */
 a:hover {color: red}     /* mouse over link; old: #088A08 */
@@ -9,26 +10,67 @@ a   { text-decoration:none;  }
 body { background-color: white; }
 
 #main {
-        margin-left: auto;
-	margin-right: auto;
-	font: 14px Arial;
-	font-stretch: 10%;
-	width: 50%;
-	text-align:left;
-	padding: 0px 15px 15px;
-	cellpadding: 15px;
-	border: 1px solid;
-        border-color: #006400;
-	rules: none;
-	frame: box;
-	background-color: white;
+    margin-left: auto;
+    margin-right: auto;
+    font: 14px Arial;
+    font-stretch: 10%;
+    width: 50%;
+    text-align:left;
+    padding: 0px 15px 15px;
+    cellpadding: 15px;
+    border: 1px solid;
+    border-color: #006400;
+    rules: none;
+    frame: box;
+    background-color: white;
 }
 
 #footer {
-	font: 12px Arial;
-	font-stretch: 10%;
-	color: gray;
+    float: right;
+    font: 12px Arial;
+    font-stretch: 10%;
+    color: gray;
 }
 
+.input {
+    border: 1px solid #006;
+    background: #ffc;
+    font-family: sans-serif; 
+    font-size: 14px;
+}
+.input:hover {
+    border: 1px solid #f00;
+    background: #ffc;
+}
+.button {
+    border: 1px solid #006;
+    background: #ccf;
+    font-family: sans-serif; 
+    font-size: 20px;
+}
+.button:hover {
+    border: 1px solid #f00;
+    background: #eef;
+}
+
+textarea {
+    width: 300px;
+    padding: 2px;
+}
+
+input {
+    width: 300px;
+    padding: 2px;
+}
+
+.output {
+    display: none;
+    padding: 2px;
+    border: 1px solid #006;
+    background: #eef;
+    font-family: sans-serif; 
+    font-size: 14px;
+    width: 300px;
+}
 
 -->
