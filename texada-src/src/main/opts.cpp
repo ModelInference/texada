@@ -39,7 +39,10 @@ boost::program_options::options_description get_options_description() {
             "regular expression to parse event types from log [default (?<ETYPE>.*)]")
             ("separator_regex,s", boost::program_options::value<std::string>(), 
             "regular expression matching execution separator lines in the log [default: --]")
-            ("ignore_nm_lines,i", "ignore non-matching lines [default: false]");
+            ("ignore_nm_lines,i", "ignore non-matching lines [default: false]")
+            ("support", "show the support for each finding") // TODO: add hotkey for sup
+            ("confidence", boost::program_options::value<int>(), // TODO: add hotkey for confidence
+            "find all instances above the given confidence threshold. Must be between 0 to 100 [default: 100]");
     return desc;
 
 }
