@@ -80,6 +80,20 @@ set<const spot::ltl::formula*> mine_property_type(
     bool allow_reps = opts.count("allow-same-bindings");
     // whether to pregenerate instantiations
     bool pregen_instants = opts.count("pregen-instants");
+    // whether to output finding support
+    bool show_sup = opts.count("support");
+    // the confidence threshold
+    int conf_threshold;
+    if (opts.count("confidence")) {
+        conf_threshold = opts["confidence"].as<int>();
+    } else {
+        conf_threshold = 100;
+    }
+    // check that confidence threshold is within range
+    if (conf_threshold < 0 || conf_threshold > 100) {
+        std::cerr << "conf_threshold must be between 0 to 100 \n";
+        exit(1);
+    }
     // the property type
     string prop_type = opts["property-type"].as<std::string>();
     // trace source
