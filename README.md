@@ -1,4 +1,4 @@
-## Try the [Texada service](http://elaine.nss.cs.ubc.ca:8080/texada/) from your browser ##
+## Try the [Texada service](http://bestchai.bitbucket.org/texada/) from your browser ##
 -----------------------
 
 
