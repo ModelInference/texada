@@ -9,17 +9,20 @@
 #define BOOLBASEDCHECKER_H_
 
 #include "ltlformulachecker.h"
+#include "statistic.h"
 
 namespace texada {
 
 /**
  * superclass for bool-based ltl formula checkers
  */
-template <typename T>
-class bool_based_checker : public ltl_formula_checker<bool,T> {
+template<typename T>
+class bool_based_checker: public ltl_formula_checker<statistic, T> {
 public:
-    bool_based_checker() {}
-    virtual ~bool_based_checker() {}
+    bool_based_checker() {
+    }
+    virtual ~bool_based_checker() {
+    }
 
 protected:
     /**
@@ -27,8 +30,12 @@ protected:
      * @param trace_ids
      * @return
      */
-    virtual bool false_check(std::set<int> trace_ids) {
-        return false;
+    virtual statistic false_check(std::set<int> trace_ids) { // Dennis: compute and return sup and sup_pot;  change return type to return support and confidence (or support potential?)
+        statistic result;
+        result.is_satisfied = false;
+        // result.support = 0;
+        // result.support_potential = 0;
+        return result;
     }
 
     /**
@@ -36,8 +43,12 @@ protected:
      * @param trace_ids
      * @return
      */
-    virtual bool true_check(std::set<int> trace_ids) {
-        return true;
+    virtual statistic true_check(std::set<int> trace_ids) { // Dennis: compute and return sup and sup_pot;  change return type to return support and confidence (or support potential?)
+        statistic result;
+        result.is_satisfied = true;
+        // result.support = 0;
+        // result.support_potential = 0;
+        return result;
     }
 
     /**
@@ -47,12 +58,18 @@ protected:
      * @param trace_ids
      * @return
      */
-    virtual bool xor_check(const spot::ltl::binop* node, T trace_pt,
+    virtual statistic xor_check(const spot::ltl::binop* node, T trace_pt, // Dennis: compute and return sup and sup_pot;  change return type to return support and confidence (or support potential?)
             std::set<int> trace_ids) {
         const spot::ltl::formula * p = node->first();
         const spot::ltl::formula * q = node->second();
-        bool qholds = this->check(q, trace_pt);
-        return (this->check(p, trace_pt)) ? !qholds : qholds;
+        statistic result_p = this->check(p, trace_pt);
+        statistic result_q = this->check(q, trace_pt);
+        statistic result;
+        result.is_satisfied = (!result_p.is_satisfied && result_q.is_satisfied)
+                || (result_p.is_satisfied && !result_q.is_satisfied);
+        // result.support = ?;
+        // result.support_potential = ?;
+        return result;
     }
 
     /**
@@ -62,12 +79,17 @@ protected:
      * @param trace_ids
      * @return
      */
-    virtual bool equiv_check(const spot::ltl::binop* node,
+    virtual statistic equiv_check(const spot::ltl::binop* node, // Dennis: compute and return sup and sup_pot;  change return type to return support and confidence (or support potential?)
             T trace_pt, std::set<int> trace_ids) {
         const spot::ltl::formula * p = node->first();
         const spot::ltl::formula * q = node->second();
-        bool qholds = this->check(q, trace_pt);
-        return this->check(p, trace_pt) ? qholds : !qholds;
+        statistic result_p = this->check(p, trace_pt);
+        statistic result_q = this->check(q, trace_pt);
+        statistic result;
+        result.is_satisfied = (result_p.is_satisfied == result_q.is_satisfied);
+        // result.support = ?;
+        // result.support_potential = ?;
+        return result;
     }
 
     /**
@@ -77,11 +99,17 @@ protected:
      * @param trace_ids
      * @return
      */
-    virtual bool implies_check(const spot::ltl::binop* node,
+    virtual statistic implies_check(const spot::ltl::binop* node, // Dennis: compute and return sup and sup_pot;  change return type to return support and confidence (or support potential?)
             T trace_pt, std::set<int> trace_ids) {
         const spot::ltl::formula * p = node->first();
         const spot::ltl::formula * q = node->second();
-        return (!this->check(p, trace_pt)) ? true : this->check(q, trace_pt);
+        statistic result_p = this->check(p, trace_pt);
+        statistic result_q = this->check(q, trace_pt);
+        statistic result;
+        result.is_satisfied = !result_p.is_satisfied || result_q.is_satisfied;
+        // result.support = (result_p.is_satisfied) ? result_q.support : 0;
+        // result.support_potential = (result_p.is_satisfied) ? result_q.support_potential : 0;
+        return result;
 
     }
 
@@ -92,10 +120,15 @@ protected:
      * @param trace_ids
      * @return
      */
-    virtual bool not_check(const spot::ltl::unop* node, T trace_pt,
+    virtual statistic not_check(const spot::ltl::unop* node, T trace_pt, // Dennis: compute and return sup and sup_pot;  change return type to return support and confidence (or support potential?)
             std::set<int> trace_ids) {
         const spot::ltl::formula * p = node->child();
-        return !this->check(p, trace_pt);
+        statistic result_p = this->check(p, trace_pt);
+        statistic result;
+        result.is_satisfied = !result_p.is_satisfied;
+        // result.support = ?;
+        // result.support_potential = ?;
+        return result;
     }
 
     /**
@@ -105,20 +138,22 @@ protected:
      * @param trace_ids
      * @return
      */
-    virtual bool and_check(const spot::ltl::multop* node, T trace_pt,
+    virtual statistic and_check(const spot::ltl::multop* node, T trace_pt, // Dennis: compute and return sup and sup_pot;  change return type to return support and confidence (or support potential?)
             std::set<int> trace_ids) {
         int numkids = node->size();
         // for each of the and's children, we check if it is false: if it is,
         // we short circuit and return false. If we have not returned by the
         // end of the loop, then none of the children were false and we return
         // true.
+        statistic result = statistic(true, 0, 0);
+        statistic result_p;
         for (int i = 0; i < numkids; i++) {
-            if (!this->check(node->nth(i), trace_pt)) {
-                return false;
-            }
+            result_p = this->check(node->nth(i), trace_pt);
+            result.is_satisfied = result.is_satisfied && result_p.is_satisfied;
+            // result.support = ?;
+            // result.support_potential = ?;
         }
-        return true;
-
+        return result;
     }
 
     /**
@@ -128,19 +163,22 @@ protected:
      * @param trace_ids
      * @return
      */
-    virtual bool or_check(const spot::ltl::multop* node, T trace_pt,
+    virtual statistic or_check(const spot::ltl::multop* node, T trace_pt, // Dennis: compute and return sup and sup_pot;  change return type to return support and confidence (or support potential?)
             std::set<int> trace_ids) {
         int numkids = node->size();
         // for each of the or's children, we check if it is true: if it is,
         // we short circuit and return true. If we have not returned by the
         // end of the loop, then none of the children were true and we return
         // false.
+        statistic result = statistic(true, 0, 0);
+        statistic result_p;
         for (int i = 0; i < numkids; i++) {
-            if (this->check(node->nth(i), trace_pt)) {
-                return true;
-            }
+            result_p = this->check(node->nth(i), trace_pt);
+            result.is_satisfied = result.is_satisfied || result_p.is_satisfied;
+            // result.support = ?;
+            // result.support_potential = ?;
         }
-        return false;
+        return result;
 
     }
 
