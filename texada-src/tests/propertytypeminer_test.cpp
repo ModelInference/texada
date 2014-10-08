@@ -7,6 +7,7 @@
 
 #include "../src/main/propertytypeminer.h"
 #include "../src/main/opts.h"
+#include "../src/checkers/statistic.h"
 #include <gtest/gtest.h>
 #include <ltlvisit/tostring.hh>
 #include <ltlparse/public.hh>
@@ -37,14 +38,14 @@ TEST(PropertyTypeMinerTest, EventuallyEvent) {
     }
     std::string texada_base = std::string(getenv("TEXADA_HOME"));
 
-    std::set<const spot::ltl::formula*> set =
+    std::set<std::pair<const spot::ltl::formula*, texada::statistic>> set =
             texada::mine_lin_property_type("Fx",
                     texada_base
                             + "/traces/vary-tracelen/etypes-10_events-250_execs-20.txt");
     ASSERT_EQ(set.size(), 10);
-    for (std::set<const spot::ltl::formula*>::iterator it = set.begin();
+    for (std::set<std::pair<const spot::ltl::formula*, texada::statistic>>::iterator it = set.begin();
             it != set.end(); it++) {
-        (*it)->destroy();
+        (it->first)->destroy();
     }
 }
 
@@ -57,14 +58,14 @@ TEST(PropertyTypeMinerTest, ResourceAllocation) {
     }
     std::string texada_base = std::string(getenv("TEXADA_HOME"));
 
-    std::set<const spot::ltl::formula*> set =
+    std::set<std::pair<const spot::ltl::formula*, texada::statistic>> set =
             texada::mine_lin_property_type(
                     "(!(y | z) W x) & G((x -> X((!x U z)&(!z U y)))&(y->XFz)&(z->X(!(y | z) W x)))",
                     texada_base + "/traces/resource-allocation/abc.txt");
     ASSERT_EQ(set.size(), 1);
-    for (std::set<const spot::ltl::formula*>::iterator it = set.begin();
+    for (std::set<std::pair<const spot::ltl::formula*, texada::statistic>>::iterator it = set.begin();
             it != set.end(); it++) {
-        (*it)->destroy();
+        (it->first)->destroy();
     }
 }
 
@@ -131,138 +132,138 @@ std::array<bool, 8> set_up_perracotta_tests(std::string formula, bool use_map) {
 
     // mine the property type in response source, and check
     // that the valid instantiation (instanted_form) is found
-    std::set<const spot::ltl::formula*> response_set =
-            texada::mine_property_type(
+    std::set<std::pair<const spot::ltl::formula*, texada::statistic>> response_set =
+            texada::mine_property_type(                                             // Dennis: modify to account for changed return type (repeat for each test below)
                     texada::set_options(
                             "-f '" + formula + trace_type + response_source));
     bool containsab = false;
-    for (std::set<const spot::ltl::formula*>::iterator it =
+    for (std::set<std::pair<const spot::ltl::formula*, texada::statistic>>::iterator it =                         // Dennis: modify to account for changed return type (repeat for each test below)
             response_set.begin(); it != response_set.end(); it++) {
-        if (*it == instanted_form) {
+        if ((*it).first == instanted_form) {
             containsab = true;
         }
-        (*it)->destroy();
+        ((*it).first)->destroy();
     }
     // add whether it was found to the return val
     output_array[0] = (containsab);
 
     // mine the property type in alternating source, and check
     // that the valid instantiation (instanted_form) is found
-    std::set<const spot::ltl::formula*> alternating_set =
+    std::set<std::pair<const spot::ltl::formula*, texada::statistic>> alternating_set =
             texada::mine_property_type(
                     texada::set_options(
                             "-f '" + formula + trace_type
                                     + alternating_source));
     containsab = false;
-    for (std::set<const spot::ltl::formula*>::iterator it =
+    for (std::set<std::pair<const spot::ltl::formula*, texada::statistic>>::iterator it =
             alternating_set.begin(); it != alternating_set.end(); it++) {
-        if (*it == instanted_form) {
+        if ((*it).first == instanted_form) {
             containsab = true;
         }
-        (*it)->destroy();
+        ((*it).first)->destroy();
     }
     output_array[1] = (containsab);
 
     // mine the property type in multieffect source, and check
     // that the valid instantiation (instanted_form) is found
-    std::set<const spot::ltl::formula*> multieffect_set =
+    std::set<std::pair<const spot::ltl::formula*, texada::statistic>> multieffect_set =
             texada::mine_property_type(
                     texada::set_options(
                             "-f '" + formula + trace_type
                                     + multieffect_source));
     containsab = false;
-    for (std::set<const spot::ltl::formula*>::iterator it =
+    for (std::set<std::pair<const spot::ltl::formula*, texada::statistic>>::iterator it =
             multieffect_set.begin(); it != multieffect_set.end(); it++) {
-        if (*it == instanted_form) {
+        if ((*it).first == instanted_form) {
             containsab = true;
         }
-        (*it)->destroy();
+        ((*it).first)->destroy();
     }
     // add whether it was found to the return val
     output_array[2] = (containsab);
 
     // mine the property type in multicause source, and check
     // that the valid instantiation (instanted_form) is found
-    std::set<const spot::ltl::formula*> multicause_set =
+    std::set<std::pair<const spot::ltl::formula*, texada::statistic>> multicause_set =
             texada::mine_property_type(
                     texada::set_options(
                             "-f '" + formula + trace_type + multicause_source));
     containsab = false;
-    for (std::set<const spot::ltl::formula*>::iterator it =
+    for (std::set<std::pair<const spot::ltl::formula*, texada::statistic>>::iterator it =
             multicause_set.begin(); it != multicause_set.end(); it++) {
-        if (*it == instanted_form) {
+        if ((*it).first == instanted_form) {
             containsab = true;
         }
-        (*it)->destroy();
+        ((*it).first)->destroy();
     }
     // add whether it was found to the return val
     output_array[3] = (containsab);
 
     // mine the property type in effectfirst source, and check
     // that the valid instantiation (instanted_form) is found
-    std::set<const spot::ltl::formula*> effectfirst_set =
+    std::set<std::pair<const spot::ltl::formula*, texada::statistic>> effectfirst_set =
             texada::mine_property_type(
                     texada::set_options(
                             "-f '" + formula + trace_type
                                     + effectfirst_source));
     containsab = false;
-    for (std::set<const spot::ltl::formula*>::iterator it =
+    for (std::set<std::pair<const spot::ltl::formula*, texada::statistic>>::iterator it =
             effectfirst_set.begin(); it != effectfirst_set.end(); it++) {
-        if (*it == instanted_form) {
+        if ((*it).first == instanted_form) {
             containsab = true;
         }
-        (*it)->destroy();
+        ((*it).first)->destroy();
     }
     // add whether it was found to the return val
     output_array[4] = (containsab);
 
     // mine the property type in cause source, and check
     // that the valid instantiation (instanted_form) is found
-    std::set<const spot::ltl::formula*> causefirst_set =
+    std::set<std::pair<const spot::ltl::formula*, texada::statistic>> causefirst_set =
             texada::mine_property_type(
                     texada::set_options(
                             "-f '" + formula + trace_type + causefirst_source));
     containsab = false;
-    for (std::set<const spot::ltl::formula*>::iterator it =
+    for (std::set<std::pair<const spot::ltl::formula*, texada::statistic>>::iterator it =
             causefirst_set.begin(); it != causefirst_set.end(); it++) {
-        if (*it == instanted_form) {
+        if ((*it).first == instanted_form) {
             containsab = true;
         }
-        (*it)->destroy();
+        ((*it).first)->destroy();
     }
     // add whether it was found to the return val
     output_array[5] = (containsab);
 
     // mine the property type in response source, and check
     // that the valid instantiation (instanted_form) is found
-    std::set<const spot::ltl::formula*> onecause_set =
+    std::set<std::pair<const spot::ltl::formula*, texada::statistic>> onecause_set =
             texada::mine_property_type(
                     texada::set_options(
                             "-f '" + formula + trace_type + onecause_source));
     containsab = false;
-    for (std::set<const spot::ltl::formula*>::iterator it =
+    for (std::set<std::pair<const spot::ltl::formula*, texada::statistic>>::iterator it =
             onecause_set.begin(); it != onecause_set.end(); it++) {
-        if (*it == instanted_form) {
+        if ((*it).first == instanted_form) {
             containsab = true;
         }
-        (*it)->destroy();
+        ((*it).first)->destroy();
     }
     // add whether it was found to the return val
     output_array[6] = (containsab);
 
     // mine the property type in oneffect source, and check
     // that the valid instantiation (instanted_form) is found
-    std::set<const spot::ltl::formula*> oneeffect_set =
+    std::set<std::pair<const spot::ltl::formula*, texada::statistic>> oneeffect_set =
             texada::mine_property_type(
                     texada::set_options(
                             "-f '" + formula + trace_type + oneeffect_source));
     containsab = false;
-    for (std::set<const spot::ltl::formula*>::iterator it =
+    for (std::set<std::pair<const spot::ltl::formula*, texada::statistic>>::iterator it =
             oneeffect_set.begin(); it != oneeffect_set.end(); it++) {
-        if (*it == instanted_form) {
+        if ((*it).first == instanted_form) {
             containsab = true;
         }
-        (*it)->destroy();
+        ((*it).first)->destroy();
     }
     // add whether it was found to the return val
     output_array[7] = (containsab);
@@ -414,14 +415,14 @@ TEST(PropertyTypeMinerMapTest, EventuallyEvent) {
     }
     std::string texada_base = std::string(getenv("TEXADA_HOME"));
 
-    std::set<const spot::ltl::formula*> set =
+    std::set<std::pair<const spot::ltl::formula*, texada::statistic>> set =
             texada::mine_map_property_type("Fx",
                     texada_base
                             + "/traces/vary-tracelen/etypes-10_events-250_execs-20.txt");
     ASSERT_EQ(set.size(), 10);
-    for (std::set<const spot::ltl::formula*>::iterator it = set.begin();
+    for (std::set<std::pair<const spot::ltl::formula*, texada::statistic>>::iterator it = set.begin();
             it != set.end(); it++) {
-        (*it)->destroy();
+        ((*it).first)->destroy();
     }
     set.clear();
 }
@@ -435,14 +436,14 @@ TEST(PropertyTypeMinerMapTest, ResourceAllocation) {
     }
     std::string texada_base = std::string(getenv("TEXADA_HOME"));
 
-    std::set<const spot::ltl::formula*> set =
+    std::set<std::pair<const spot::ltl::formula*, texada::statistic>> set =
             texada::mine_map_property_type(
                     "(!(y | z) W x) & G((x -> X((!x U z)&(!z U y)))&(y->XFz)&(z->X(!(y | z) W x)))",
                     texada_base + "/traces/resource-allocation/abc.txt");
     ASSERT_EQ(set.size(), 1);
-    for (std::set<const spot::ltl::formula*>::iterator it = set.begin();
+    for (std::set<std::pair<const spot::ltl::formula*, texada::statistic>>::iterator it = set.begin();
             it != set.end(); it++) {
-        (*it)->destroy();
+        ((*it).first)->destroy();
     }
     set.clear();
 }
@@ -456,15 +457,15 @@ TEST(PropertyTypeMinerMapTest, SmallResourceAllocation) {
     }
     std::string texada_base = std::string(getenv("TEXADA_HOME"));
 
-    std::set<const spot::ltl::formula*> set =
+    std::set<std::pair<const spot::ltl::formula*, texada::statistic>> set =
             texada::mine_map_property_type(
                     "(!(y | z) W x) & G((x -> X((!x U z)&(!z U y)))&(y->XFz)&(z->X(!(y | z) W x)))",
                     texada_base + "/traces/resource-allocation/smallabc.txt");
 
     ASSERT_EQ(set.size(), 1);
-    for (std::set<const spot::ltl::formula*>::iterator it = set.begin();
+    for (std::set<std::pair<const spot::ltl::formula*, texada::statistic>>::iterator it = set.begin();
             it != set.end(); it++) {
-        (*it)->destroy();
+        ((*it).first)->destroy();
     }
     set.clear();
 }
@@ -609,28 +610,28 @@ TEST(CheckerEquivalencyTest, STprecedesPafterQ) {
     std::string texada_base = std::string(getenv("TEXADA_HOME"));
 
     // find all valid instantiations of the property type
-    std::set<const spot::ltl::formula*> set1 =
+    std::set<std::pair<const spot::ltl::formula*, texada::statistic>> set1 =                                                      // Dennis: modify to account for changed return type
             texada::mine_property_type(
                     texada::set_options(
                             "-f '(G!y) | (!y U (y & Fx -> (!x U (a & !x & X(!x U z)))))' -l "
                                     + texada_base
                                     + "/traces/resource-allocation/abb4cad.txt"));
 
-    std::set<const spot::ltl::formula*> set2 =
+    std::set<std::pair<const spot::ltl::formula*, texada::statistic>> set2 =
             texada::mine_property_type(
                     texada::set_options(
                             "-f '(G!y) | (!y U (y & Fx -> (!x U (a & !x & X(!x U z)))))' -p "
                                     + texada_base
                                     + "/traces/resource-allocation/abb4cad.txt"));
 
-    std::set<const spot::ltl::formula*> set3 =
+    std::set<std::pair<const spot::ltl::formula*, texada::statistic>> set3 =
             texada::mine_property_type(
                     texada::set_options(
                             "-f '(G!y) | (!y U (y & Fx -> (!x U (a & !x & X(!x U z)))))' -m "
                                     + texada_base
                                     + "/traces/resource-allocation/abb4cad.txt"));
 
-    ASSERT_EQ(set1, set2);
+    ASSERT_EQ(set1, set2);                                                                          // Dennis: maybe need to be modified, but maybe not
     ASSERT_EQ(set1, set3);
 
     // create the correct instantiation map and the instantiated formula corresponding to it
@@ -647,9 +648,9 @@ TEST(CheckerEquivalencyTest, STprecedesPafterQ) {
 
     // check that the valid instantiations contain the one created above
     bool contains_instated_form = false;
-    for (std::set<const spot::ltl::formula*>::iterator i = set1.begin();
+    for (std::set<std::pair<const spot::ltl::formula*, texada::statistic>>::iterator i = set1.begin();                            // Dennis: either modify or extract set1 from the original output somewhere above
             i != set1.end(); i++) {
-        if (*i == instanted_form) {
+        if ((*i).first == instanted_form) {
             contains_instated_form = true;
             break;
         }
@@ -660,10 +661,20 @@ TEST(CheckerEquivalencyTest, STprecedesPafterQ) {
     orig_form->destroy();
     instanted_form->destroy();
     ASSERT_TRUE(contains_instated_form);
-    for (std::set<const spot::ltl::formula*>::iterator it = set1.begin();
+    for (std::set<std::pair<const spot::ltl::formula*, texada::statistic>>::iterator it = set1.begin();
             it != set1.end(); it++) {
-        (*it)->destroy();
+        ((*it).first)->destroy();
     }
 
+}
+
+// checking that the property type miner return correct support count for findings
+TEST(PropertyTypeMinerTest, Support) {
+    // TODO
+}
+
+// checking that the property type miner properly filters findings based on confidence threshold
+TEST(ConfidenceFilteringTest, ConfidenceFilter) {
+    // TODO
 }
 

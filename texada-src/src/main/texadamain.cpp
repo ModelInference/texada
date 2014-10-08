@@ -12,6 +12,7 @@
 
 #include "propertytypeminer.h"
 #include "../parsers/parser.h"
+#include "../checkers/statistic.h"
 
 /**
  * Main method, runs Texada mining or timing tests depending on options.
@@ -85,12 +86,13 @@ int main(int ac, char* av[]) {
         }
 
         // the set of valid instantiations
-        std::set<const spot::ltl::formula*> found_instants =
+        std::set<std::pair<const spot::ltl::formula*, texada::statistic>> found_instants =
                 texada::mine_property_type(opts_map);
         // print out all the valid instantiations as return
-        for (std::set<const spot::ltl::formula*>::iterator it =
+        for (std::set<std::pair<const spot::ltl::formula*, texada::statistic>>::iterator it =
                 found_instants.begin(); it != found_instants.end(); it++) {
-            std::cout << spot::ltl::to_string(*it) << "\n";
+            std::cout << spot::ltl::to_string((*it).first) << "\n";
+            // Dennis: need to output support and confidence !!!!!!!!!!!!!!!!!!!!!!!!!!
         }
 
         // exception catching

@@ -55,90 +55,90 @@ TEST(MapCheckerTest,SmallTrace){
 
     std::string input = "G(a->Fb)";
     const spot::ltl::formula* f = spot::ltl::parse(input, pel);
-    ASSERT_TRUE(checker.check_on_trace(f));
+    ASSERT_TRUE((checker.check_on_trace(f)).is_satisfied);
     f->destroy();
 
     //until
     input = "a U b";
     f = spot::ltl::parse(input,pel);
-    ASSERT_TRUE(checker.check_on_trace(f));
+    ASSERT_TRUE((checker.check_on_trace(f)).is_satisfied);
     f->destroy();
 
     //weak until
     input = "a W b";
     f = spot::ltl::parse(input,pel);
-    ASSERT_TRUE(checker.check_on_trace(f));
+    ASSERT_TRUE((checker.check_on_trace(f)).is_satisfied);
     f->destroy();
 
     //release
     input = "b R a";
     f = spot::ltl::parse(input,pel);
-    ASSERT_FALSE(checker.check_on_trace(f));
+    ASSERT_FALSE((checker.check_on_trace(f)).is_satisfied);
     f->destroy();
 
     //strong release
     input = "b M a";
     f = spot::ltl::parse(input,pel);
-    ASSERT_FALSE(checker.check_on_trace(f));
+    ASSERT_FALSE((checker.check_on_trace(f)).is_satisfied);
     f->destroy();
 
     //xor
     input = "b xor a";
     f = spot::ltl::parse(input,pel);
-    ASSERT_TRUE(checker.check_on_trace(f));
+    ASSERT_TRUE((checker.check_on_trace(f)).is_satisfied);
     f->destroy();
 
     //equiv, iff
     input = "b <-> a";
     f = spot::ltl::parse(input,pel);
-    ASSERT_FALSE(checker.check_on_trace(f));
+    ASSERT_FALSE((checker.check_on_trace(f)).is_satisfied);
     f->destroy();
 
     //impliies
     input = "a -> b";
     f = spot::ltl::parse(input,pel);
-    ASSERT_FALSE(checker.check_on_trace(f));
+    ASSERT_FALSE((checker.check_on_trace(f)).is_satisfied);
     f->destroy();
 
     input = "a -> Fb";
     f = spot::ltl::parse(input,pel);
-    ASSERT_TRUE(checker.check_on_trace(f));
+    ASSERT_TRUE((checker.check_on_trace(f)).is_satisfied);
     f->destroy();
 
     //or
     input = "a | b";
     f = spot::ltl::parse(input,pel);
-    ASSERT_TRUE(checker.check_on_trace(f));
+    ASSERT_TRUE((checker.check_on_trace(f)).is_satisfied);
     f->destroy();
 
     //and
     input = "a & b";
     f = spot::ltl::parse(input,pel);
-    ASSERT_FALSE(checker.check_on_trace(f));
+    ASSERT_FALSE((checker.check_on_trace(f)).is_satisfied);
     f->destroy();
 
     //finally
     input = "Fa";
     f = spot::ltl::parse(input,pel);
-    ASSERT_TRUE(checker.check_on_trace(f));
+    ASSERT_TRUE((checker.check_on_trace(f)).is_satisfied);
     f->destroy();
 
     //globally
     input = "Ga";
     f = spot::ltl::parse(input,pel);
-    ASSERT_FALSE(checker.check_on_trace(f));
+    ASSERT_FALSE((checker.check_on_trace(f)).is_satisfied);
     f->destroy();
 
     // next
     input = "Xa";
     f = spot::ltl::parse(input,pel);
-    ASSERT_TRUE(checker.check_on_trace(f));
+    ASSERT_TRUE((checker.check_on_trace(f)).is_satisfied);
     f->destroy();
 
     // not
     input = "!b";
     f = spot::ltl::parse(input,pel);
-    ASSERT_TRUE(checker.check_on_trace(f));
+    ASSERT_TRUE((checker.check_on_trace(f)).is_satisfied);
     f->destroy();
 
     // tests to try and cover finding first occurrence
@@ -146,61 +146,61 @@ TEST(MapCheckerTest,SmallTrace){
     // first occ next
     input = "G(X!a)";
     f = spot::ltl::parse(input,pel);
-    ASSERT_FALSE(checker.check_on_trace(f));
+    ASSERT_FALSE((checker.check_on_trace(f)).is_satisfied);
     f->destroy();
 
     // first occ U
     input = "G(!a R !b)";
     f = spot::ltl::parse(input,pel);
-    ASSERT_FALSE(checker.check_on_trace(f));
+    ASSERT_FALSE((checker.check_on_trace(f)).is_satisfied);
     f->destroy();
 
     //first occ W
     input = "G(!a M !b)";
     f = spot::ltl::parse(input,pel);
-    ASSERT_FALSE(checker.check_on_trace(f));
+    ASSERT_FALSE((checker.check_on_trace(f)).is_satisfied);
     f->destroy();
 
     // first occ R
     input = "G(!b U !a)";
     f = spot::ltl::parse(input,pel);
-    ASSERT_TRUE(checker.check_on_trace(f));
+    ASSERT_TRUE((checker.check_on_trace(f)).is_satisfied);
     f->destroy();
 
     // first occ M
     input = "G(!b W !a)";
     f = spot::ltl::parse(input,pel);
-    ASSERT_TRUE(checker.check_on_trace(f));
+    ASSERT_TRUE((checker.check_on_trace(f)).is_satisfied);
     f->destroy();
 
     //first occ G
     input = "F(G b)";
     f = spot::ltl::parse(input,pel);
-    ASSERT_TRUE(checker.check_on_trace(f));
+    ASSERT_TRUE((checker.check_on_trace(f)).is_satisfied);
     f->destroy();
 
     //first occ F
     input = "F(F a)";
     f = spot::ltl::parse(input,pel);
-    ASSERT_TRUE(checker.check_on_trace(f));
+    ASSERT_TRUE((checker.check_on_trace(f)).is_satisfied);
     f->destroy();
 
     //first occ ->
     input = "F(a->b)";
     f = spot::ltl::parse(input,pel);
-    ASSERT_TRUE(checker.check_on_trace(f));
+    ASSERT_TRUE((checker.check_on_trace(f)).is_satisfied);
     f->destroy();
 
     //first occ xor
     input = "G(!(a xor b))";
     f = spot::ltl::parse(input,pel);
-    ASSERT_FALSE(checker.check_on_trace(f));
+    ASSERT_FALSE((checker.check_on_trace(f)).is_satisfied);
     f->destroy();
 
     //first occ <->
     input = "F((a<->b))";
     f = spot::ltl::parse(input,pel);
-    ASSERT_FALSE(checker.check_on_trace(f));
+    ASSERT_FALSE((checker.check_on_trace(f)).is_satisfied);
     f->destroy();
 }
 
@@ -229,10 +229,14 @@ TEST(MapCheckerTest,ResourceAllocation){
 
     // check
     texada::map_trace_checker checker = texada::map_trace_checker(&(*trace_set->begin()));
-    ASSERT_TRUE(checker.check_on_trace(formula));
+    ASSERT_TRUE((checker.check_on_trace(formula)).is_satisfied);
     formula->destroy();
 }
 
 
+// checking support and support potential of property instances are computed properly
+TEST(MapCheckerTest, SupAndSupPot) {
+    // TODO
+}
 
 
