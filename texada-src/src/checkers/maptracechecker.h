@@ -17,6 +17,8 @@
 #include <boost/unordered_map.hpp>
 #include "../instantiation-tools/pregeninstantspool.h"
 #include "boolbasedchecker.h"
+#include "statistic.h"
+#include "finding.h"
 
 namespace texada {
 
@@ -37,7 +39,7 @@ class map_trace_checker : public bool_based_checker<interval>{
 public:
     map_trace_checker(const map<string_event, vector<long>>*);
     virtual ~map_trace_checker();
-    bool check_on_trace(const spot::ltl::formula *, interval intvl = interval());
+    statistic check_on_trace(const spot::ltl::formula *, interval intvl = interval());
     /**
      * This class uses relative positions to check to occurrence of events. As
      * such, it has three extra groups of functions: find first, last and all
@@ -81,21 +83,21 @@ private:
     // the trace this map trace checker checks on
     const map<string_event, vector<long>> * trace_map;
 
-    virtual bool ap_check(const spot::ltl::atomic_prop* node,
+    virtual statistic ap_check(const spot::ltl::atomic_prop* node,
             interval intvl, std::set<int> trace_ids = std::set<int>());
-    virtual bool until_check(const spot::ltl::binop* node,
+    virtual statistic until_check(const spot::ltl::binop* node,
             interval intvl, std::set<int> trace_ids = std::set<int>());
-    virtual bool release_check(const spot::ltl::binop* node,
+    virtual statistic release_check(const spot::ltl::binop* node,
             interval intvl, std::set<int> trace_ids = std::set<int>());
-    virtual bool weakuntil_check(const spot::ltl::binop* node,
+    virtual statistic weakuntil_check(const spot::ltl::binop* node,
             interval intvl, std::set<int> trace_ids = std::set<int>());
-    virtual bool strongrelease_check(const spot::ltl::binop* node,
+    virtual statistic strongrelease_check(const spot::ltl::binop* node,
                 interval intvl, std::set<int> trace_ids = std::set<int>());
-    virtual bool globally_check(const spot::ltl::unop* node,
+    virtual statistic globally_check(const spot::ltl::unop* node,
             interval intvl, std::set<int> trace_ids = std::set<int>());
-    virtual bool finally_check(const spot::ltl::unop* node,
+    virtual statistic finally_check(const spot::ltl::unop* node,
             interval intvl, std::set<int> trace_ids = std::set<int>());
-    virtual bool next_check(const spot::ltl::unop* node,
+    virtual statistic next_check(const spot::ltl::unop* node,
             interval intvl, std::set<int> trace_ids = std::set<int>());
 
     long find_first_occurrence(const spot::ltl::formula*, interval);
@@ -138,10 +140,16 @@ private:
 
 };
 
-vector<map<string, string>> valid_instants_on_traces(
+vector<finding> valid_instants_on_traces(
         const spot::ltl::formula * prop_type,
         instants_pool_creator * instantiator,
         shared_ptr<set<map<string_event, vector<long>>>>);
+
+/*vector<finding> valid_instants_on_traces(
+        const spot::ltl::formula * prop_type,
+        instants_pool_creator * instantiator,
+        shared_ptr<set<map<string_event, vector<long>>>>,
+        int conf_threshold);*/
 } /* namespace texada */
 
 #endif /* MAPTRACECHECKER_H_ */
