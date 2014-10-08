@@ -11,6 +11,7 @@
 #include <set>
 #include <ltlast/allnodes.hh>
 #include <iostream>
+#include "statistic.h"
 
 namespace texada {
 
@@ -18,14 +19,14 @@ namespace texada {
  * Superclass for all property type checkers based on ltl
  * formulae trees
  */
-template<typename return_type, typename trace_type>
+template<typename return_type, typename trace_type>                     // Dennis: not sure what this means
 class ltl_formula_checker {
 
 public:
     ltl_formula_checker() {}
     virtual ~ltl_formula_checker() {}
     // top level check on trace
-    virtual bool check_on_trace(const spot::ltl::formula * node,
+    virtual statistic check_on_trace(const spot::ltl::formula * node,        // Dennis: change return type to (sup, conf)
             trace_type trace_pt)= 0;
 protected:
 

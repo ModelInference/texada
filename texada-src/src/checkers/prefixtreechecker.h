@@ -15,22 +15,24 @@
 #include <boost/unordered_map.hpp>
 #include <ltlast/allnodes.hh>
 #include <vector>
+#include "statistic.h"
+#include "finding.h"
 
 namespace texada {
 using std::vector;
 using boost::get;
 
-class prefix_tree_checker: public ltl_formula_checker<map<int, bool>,
+class prefix_tree_checker: public ltl_formula_checker<map<int, statistic>,
         shared_ptr<prefix_tree_node>> {
 public:
     prefix_tree_checker();
     virtual ~prefix_tree_checker();
     typedef shared_ptr<prefix_tree_node> trace_node;
 
-    virtual bool check_on_trace(const spot::ltl::formula* node,
+    virtual statistic check_on_trace(const spot::ltl::formula* node,
             const trace_node trace_pt);
 
-    bool check_on_trace(const spot::ltl::formula* node,
+    statistic check_on_trace(const spot::ltl::formula* node,
             const trace_node trace_pt, map<string, string>);
 
     void add_relevant_bindings(
@@ -41,54 +43,54 @@ private:
     /**
      * both the next types are not supported.
      */
-    bool check_on_single_trace(const spot::ltl::automatop* node) {
+    statistic check_on_single_trace(const spot::ltl::automatop* node) {
         std::cerr << "Type automatop unsupported. \n";
-        return false;
+        return statistic(false, 0, 0);
     }
-    bool check_on_single_trace(const spot::ltl::bunop* node) {
+    statistic check_on_single_trace(const spot::ltl::bunop* node) {
         std::cerr << "Type bunop unsupported. \n";
-        return false;
+        return statistic(false, 0, 0);
     }
 
-    virtual map<int, bool> check_on_kids(const spot::ltl::formula* node,
+    virtual map<int, statistic> check_on_kids(const spot::ltl::formula* node,
             map<set<int>, trace_node> trace_pts, set<int> trace_ids);
 
-    map<int, bool> create_int_bool_map(set<int>, bool);
+    map<int, statistic> create_int_bool_map(set<int>, statistic);   // Dennis: should rename to int_statistic_map
 
-    map<int, bool> not_map(map<int, bool>);
+    map<int, statistic> not_map(map<int, statistic>);
 
-    void add_satisfying_values(map<int, bool>& returned_vals, bool to_satisfy,
-            map<int, bool>& map_to_return, set<int>& to_check);
+    void add_satisfying_values(map<int, statistic>& returned_vals, bool to_satisfy,
+            map<int, statistic>& map_to_return, set<int>& to_check);
 
-    virtual map<int, bool> false_check(std::set<int> trace_ids);
-    virtual map<int, bool> true_check(std::set<int> trace_ids);
-    virtual map<int, bool> ap_check(const spot::ltl::atomic_prop* node,
+    virtual map<int, statistic> false_check(std::set<int> trace_ids);
+    virtual map<int, statistic> true_check(std::set<int> trace_ids);
+    virtual map<int, statistic> ap_check(const spot::ltl::atomic_prop* node,
             trace_node trace_pt, std::set<int> trace_ids);
-    virtual map<int, bool> xor_check(const spot::ltl::binop* node,
+    virtual map<int, statistic> xor_check(const spot::ltl::binop* node,
             trace_node trace_pt, std::set<int> trace_ids);
-    virtual map<int, bool> equiv_check(const spot::ltl::binop* node,
+    virtual map<int, statistic> equiv_check(const spot::ltl::binop* node,
             trace_node trace_pt, std::set<int> trace_ids);
-    virtual map<int, bool> implies_check(const spot::ltl::binop* node,
+    virtual map<int, statistic> implies_check(const spot::ltl::binop* node,
             trace_node trace_pt, std::set<int> trace_ids);
-    virtual map<int, bool> until_check(const spot::ltl::binop* node,
+    virtual map<int, statistic> until_check(const spot::ltl::binop* node,
             trace_node trace_pt, std::set<int> trace_ids);
-    virtual map<int, bool> release_check(const spot::ltl::binop* node,
+    virtual map<int, statistic> release_check(const spot::ltl::binop* node,
             trace_node trace_pt, std::set<int> trace_ids);
-    virtual map<int, bool> weakuntil_check(const spot::ltl::binop* node,
+    virtual map<int, statistic> weakuntil_check(const spot::ltl::binop* node,
             trace_node trace_pt, std::set<int> trace_ids);
-    virtual map<int, bool> strongrelease_check(const spot::ltl::binop* node,
+    virtual map<int, statistic> strongrelease_check(const spot::ltl::binop* node,
             trace_node trace_pt, std::set<int> trace_ids);
-    virtual map<int, bool> globally_check(const spot::ltl::unop* node,
+    virtual map<int, statistic> globally_check(const spot::ltl::unop* node,
             trace_node trace_pt, std::set<int> trace_ids);
-    virtual map<int, bool> finally_check(const spot::ltl::unop* node,
+    virtual map<int, statistic> finally_check(const spot::ltl::unop* node,
             trace_node trace_pt, std::set<int> trace_ids);
-    virtual map<int, bool> next_check(const spot::ltl::unop* node,
+    virtual map<int, statistic> next_check(const spot::ltl::unop* node,
             trace_node trace_pt, std::set<int> trace_ids);
-    virtual map<int, bool> not_check(const spot::ltl::unop* node,
+    virtual map<int, statistic> not_check(const spot::ltl::unop* node,
             trace_node trace_pt, std::set<int> trace_ids);
-    virtual map<int, bool> or_check(const spot::ltl::multop* node,
+    virtual map<int, statistic> or_check(const spot::ltl::multop* node,
             trace_node trace_pt, std::set<int> trace_ids);
-    virtual map<int, bool> and_check(const spot::ltl::multop* node,
+    virtual map<int, statistic> and_check(const spot::ltl::multop* node,
             trace_node trace_pt, std::set<int> trace_ids);
 
     // Memo related-stuff:
@@ -126,20 +128,22 @@ private:
 
     };
 
-    boost::unordered_map<memo_key, map<int, bool>, hash_memo_key> memo_map;
+    boost::unordered_map<memo_key, map<int, statistic>, hash_memo_key> memo_map;
     map<const spot::ltl::formula*, set<string>> * relevant_bindings_map;
 
-    map<int,bool> retrieve_memo (const spot::ltl::formula* node,
+    map<int,statistic> retrieve_memo (const spot::ltl::formula* node,
             trace_node trace_pt, std::set<int> trace_ids);
 
     void add_to_memo_map(const spot::ltl::formula * node, trace_node trace_pt,
-            map<int, bool>);
+            map<int, statistic>);
     set<string> aps_of_form(const spot::ltl::formula * node);
     void clear_memo_map();
 
 };
 
-vector<map<string, string>> valid_instants_on_traces(
+// vector<finding> valid_instants_on_traces(TODO)
+
+vector<finding> valid_instants_on_traces(
         const spot::ltl::formula * prop_type,
         instants_pool_creator * instantiator, shared_ptr<prefix_tree> traces);
 

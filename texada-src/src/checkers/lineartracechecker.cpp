@@ -9,10 +9,12 @@
 #include "../instantiation-tools/apsubbingcloner.h"
 #include "../instantiation-tools/pregeninstantspool.h"
 #include "ltlvisit/tostring.hh"
+#include "statistic.h"
+#include "finding.h"
 namespace texada {
 
-
-bool linear_trace_checker::check_on_trace(const spot::ltl::formula * node, const string_event * trace){
+statistic linear_trace_checker::check_on_trace(const spot::ltl::formula * node,
+        const string_event * trace) {
     return this->check(node, trace);
 }
 
@@ -22,9 +24,13 @@ bool linear_trace_checker::check_on_trace(const spot::ltl::formula * node, const
  * @param trace: pointer to the start of the trace
  * @return whether node holds on trace
  */
-bool linear_trace_checker::ap_check(const spot::ltl::atomic_prop *node,
+statistic linear_trace_checker::ap_check(const spot::ltl::atomic_prop *node,
         const string_event *trace, std::set<int> trace_ids) {
-    return (trace->get_name() == node->name()) ? true : false;
+    statistic result;
+    result.is_satisfied = (trace->get_name() == node->name()) ? true : false;
+    // result.support = (result.is_satisfied) ? 1 : 0;
+    // result.support_potential = 1;
+    return result;
 }
 
 /**
@@ -35,61 +41,73 @@ bool linear_trace_checker::ap_check(const spot::ltl::atomic_prop *node,
  * @param trace_ids
  * @return
  */
-bool linear_trace_checker::until_check(const spot::ltl::binop* node,
+statistic linear_trace_checker::until_check(const spot::ltl::binop* node,
         const string_event* trace_pt, std::set<int> trace_ids) {
     const spot::ltl::formula * p = node->first();
     const spot::ltl::formula * q = node->second();
+    statistic result;
+    statistic result_p;
+    statistic result_q;
+    statistic result_next;
 
     //if we get here, we did not see q: thus, false
     if (trace_pt->is_terminal()) {
-        return false;
+        result = statistic(false, 0, 1); // {TODO} should there be support potential returned from a terminal event?
+        return result;
     }
     // if the q holds here, we have not yet seen q or !p, (these
     //  cause return) so true
-    else if (this->check(q, trace_pt)) {
-        return true;
+    else if ((result_q = this->check(q, trace_pt)).is_satisfied) {
+        return result_q;  // {TODO}
     }
     // we know q does not hold from above, so if p does not hold,
     // we have !p and !q, which violates p U q.
-    else if (!this->check(p, trace_pt)) {
-        return false;
-    }
     // if !q and p holds, check on the next suffix trace
     else {
-        return this->check(node, trace_pt + 1);
+        result_p = this->check(p, trace_pt);
+        result_next = this->check(node, trace_pt + 1);
+        result = statistic(result_p, result_next);
+        return result;
     }
 }
 
 /**
- * p R q will be true if !q does not occur before (inclusive) q
+ * p R q will be true if !p does not occur before (inclusive) q
  * @param node: the atomic proposition to check
  * @param trace: pointer to the start of the trace
  * @param trace_ids
  * @return
  */
-bool linear_trace_checker::release_check(const spot::ltl::binop* node,
+statistic linear_trace_checker::release_check(const spot::ltl::binop* node,
         const string_event* trace_pt, std::set<int> trace_ids) {
     const spot::ltl::formula * p = node->first();
     const spot::ltl::formula * q = node->second();
+    statistic result;
+    statistic result_p;
+    statistic result_q;
+    statistic result_next;
 
     //if we get here, q always held: true
     if (trace_pt->is_terminal()) {
-        return true;
-    }
-    // if !q occurs before p & q, false
-    else if (!this->check(q, trace_pt)) {
-        return false;
+        result = statistic(true, 0, 0); // Dennis: or should it be {true, 1, 1}?
+        return result;
     }
 
     // we know from the previous if that q holds and held up to here,
     // so if p also holds, return true
-    else if (this->check(p, trace_pt)) {
-        return true;
+    else if ((result_p = this->check(p, trace_pt)).is_satisfied) {
+        result_q = this->check(q, trace_pt);
+        result = statistic(result_q, result_p);
+        return result;
     }
 
-    // if the q holds, check on the next suffix trace
+    // we know from above that p has failed to be released, so we check
+    // if q holds here and check recursively down the trace
     else {
-        return this->check(node, trace_pt + 1);
+        result_q = this->check(q, trace_pt);
+        result_next = this->check(node, trace_pt + 1);
+        result = statistic(result_q, result_next);
+        return result;                 // Dennis: consider passing in the partial result into the check function to achieve tail recursion
     }
 
 }
@@ -101,29 +119,35 @@ bool linear_trace_checker::release_check(const spot::ltl::binop* node,
  * @param trace_ids
  * @return
  */
-bool linear_trace_checker::strongrelease_check(const spot::ltl::binop* node,
+statistic linear_trace_checker::strongrelease_check(const spot::ltl::binop* node,
         const string_event* trace_pt, std::set<int> trace_ids) {
     const spot::ltl::formula * p = node->first();
     const spot::ltl::formula * q = node->second();
+    statistic result;
+    statistic result_p;
+    statistic result_q;
+    statistic result_next;
 
     //if we get here, q always held, p never occurred: false
     if (trace_pt->is_terminal()) {
-        return false;
-    }
-    // if !q occurs before p & q, false
-    else if (!this->check(q, trace_pt)) {
-        return false;
+        result = statistic(false, 0, 1); // Dennis: or should it be {true, 0, 0}?
+        return result;
     }
 
     // we know from the previous if that q holds and held up to here,
     // so if p also holds, return true
-    else if (this->check(p, trace_pt)) {
-        return true;
+    else if ((result_p = this->check(p, trace_pt)).is_satisfied) {
+        result_q = this->check(q, trace_pt);
+        result = statistic(result_q, result_p);
+        return result;
     }
 
     // if the q holds, check on the next suffix trace
     else {
-        return this->check(node, trace_pt + 1);
+        result_q = this->check(q, trace_pt);
+        result_next = this->check(node, trace_pt + 1);
+        result = statistic(result_q, result_next);
+        return result;                 // Dennis: consider passing in the partial result into the check function to achieve tail recursion
     }
 
 }
@@ -135,32 +159,36 @@ bool linear_trace_checker::strongrelease_check(const spot::ltl::binop* node,
  * @param trace_ids
  * @return
  */
-bool linear_trace_checker::weakuntil_check(const spot::ltl::binop* node,
+statistic linear_trace_checker::weakuntil_check(const spot::ltl::binop* node,
         const string_event* trace_pt, std::set<int> trace_ids) {
     const spot::ltl::formula * p = node->first();
     const spot::ltl::formula * q = node->second();
+    statistic result;
+    statistic result_p;
+    statistic result_q;
+    statistic result_next;
+
     //if we get here, we did not see q or !p, so true.
     if (trace_pt->is_terminal()) {
-        return true;
+        result = statistic(true, 0, 0);
+        return result;
     }
     // if the q holds here, we have not yet seen q or !p, (these
     //  cause return) so true
-    else if (this->check(q, trace_pt)) {
-        return true;
+    else if ((result_q = this->check(q, trace_pt)).is_satisfied) {
+        return result_q;
     }
     // we know q does not hold from above, so if p does not hold,
     // we have !p and !q, which violates p U q.
-    else if (!this->check(p, trace_pt)) {
-        return false;
-    }
     // if !q and p holds, check on the next suffix trace
     else {
-        return this->check(node, trace_pt + 1);
+        result_p = this->check(p, trace_pt);
+        result_next = this->check(node, trace_pt + 1);
+        result = statistic(result_p, result_next);
+        return result;
     }
 
-
 }
-
 
 /**
  * Gp will be true if Gp is true on every trace suffix of the given
@@ -170,19 +198,26 @@ bool linear_trace_checker::weakuntil_check(const spot::ltl::binop* node,
  * @param trace_ids
  * @return
  */
-bool linear_trace_checker::globally_check(const spot::ltl::unop* node,
+statistic linear_trace_checker::globally_check(const spot::ltl::unop* node,
         const string_event* trace_pt, std::set<int> trace_ids) {
     const spot::ltl::formula * p = node->child();
+    statistic result;
+    statistic result_p;
+    statistic result_next;
+
     // base case: if we're at END_VAR, return true to not effect &&
     if (trace_pt->is_terminal()) {
-        return true;
+        result = {true, 0, 0};
+        return result;
     } else {
         //Return whether subformula is true on this trace, recursive check on
         // all subsequent traces.
-        return this->check(p, trace_pt) && this->check(node, trace_pt + 1);
+        result_p = this->check(p, trace_pt);
+        result_next = this->check(node, trace_pt + 1);
+        result = statistic(result_p, result_next);
+        return result;
     }
 }
-
 
 /**
  * Fp will be true if Fp is true on some trace suffix of the given
@@ -192,20 +227,24 @@ bool linear_trace_checker::globally_check(const spot::ltl::unop* node,
  * @param trace_ids
  * @return
  */
-bool linear_trace_checker::finally_check(const spot::ltl::unop* node,
+statistic linear_trace_checker::finally_check(const spot::ltl::unop* node,
         const string_event* trace_pt, std::set<int> trace_ids) {
     const spot::ltl::formula * p = node->child();
+    statistic result;
+    statistic result_p;
 
     // base case: if we're at END_VAR, return false to not effect ||
     if (trace_pt->is_terminal()) {
-        return false;
+        result = statistic(false, 0, 1);         // Dennis: should it be {false, 0, 0}
+        return result;
+    } else if ((result_p = this->check(p, trace_pt)).is_satisfied) {
+        // if p has been satisfied, return the result of checking p
+        return result_p;
     } else {
-        //Return whether subformula is true on this trace, recursive check on
-        // all subsequent traces.
-        return this->check(p, trace_pt) || this->check(node, trace_pt + 1);
+        // if p has not been satisfied, recursively check on subsequent traces
+        return this->check(node, trace_pt + 1);
     }
 }
-
 
 /**
  * Xp will be true if p is true on the next suffix of the given
@@ -215,7 +254,7 @@ bool linear_trace_checker::finally_check(const spot::ltl::unop* node,
  * @param trace_ids
  * @return
  */
-bool linear_trace_checker::next_check(const spot::ltl::unop* node,
+statistic linear_trace_checker::next_check(const spot::ltl::unop* node,  // Dennis: compute and return sup and sup_pot;  change return type to return support and confidence (or support potential?)
         const string_event* trace_pt, std::set<int> trace_ids) {
     const spot::ltl::formula * p = node->child();
     // if we are at the terminal event, the next event is also a terminal
@@ -226,22 +265,38 @@ bool linear_trace_checker::next_check(const spot::ltl::unop* node,
     return this->check(p, trace_pt + 1);
 }
 
-
 /**
  * Check all instantiations of the property type given on the traces
- * and return the valid ones
+ * and return the ones which are valid (i.e. uses default confidence of 100)
  * @param prop_type property type to check.
  * @param instantiator instantiator to produce next instantiation
  * @param traces all the traces to check on
  * @return
  */
-vector<map<string, string>> valid_instants_on_traces(
+vector<finding> valid_instants_on_traces(
         const spot::ltl::formula * prop_type,
         instants_pool_creator * instantiator,
         shared_ptr<set<vector<string_event>>> traces) {
+    return valid_instants_on_traces(prop_type, instantiator, traces, 100);
+}
+
+/**
+ * Check all instantiations of the property type given on the traces
+ * and return the ones having confidence above the inputed threshold
+ * @param prop_type property type to check.
+ * @param instantiator instantiator to produce next instantiation
+ * @param traces all the traces to check on
+ * @param conf_threshold the confidence threshold used to filter findings
+ * @return
+ */
+vector<finding> valid_instants_on_traces(
+        const spot::ltl::formula * prop_type,
+        instants_pool_creator * instantiator,
+        shared_ptr<set<vector<string_event>>> traces,
+        int conf_threshold) {
             instantiator->reset_instantiations();
             // vector to return
-            vector<map<string, string>> return_vec;
+            vector<finding> return_vec;
             linear_trace_checker checker;
             while (true) {
                 shared_ptr<map<string,string>> current_instantiation = instantiator->get_next_instantiation();
@@ -250,19 +305,22 @@ vector<map<string, string>> valid_instants_on_traces(
                 }
                 const spot::ltl::formula * instantiated_prop_type = instantiate(prop_type,*current_instantiation,
                 instantiator->get_events_to_exclude());
-                // is the instantiation valid?
-                bool valid = true;
+                statistic result = statistic(true, 0, 0);
                 for (set<vector<string_event>>::iterator traces_it = traces->begin();
                 traces_it != traces->end(); traces_it++) {
-                    bool valid_on_trace = checker.check_on_trace(instantiated_prop_type,&(traces_it->at(0)));
-                    if (!valid_on_trace) {
-                        valid = false;
-                        break;
-                    }
+                    result = statistic(result, checker.check_on_trace(instantiated_prop_type,&(traces_it->at(0))));
+                    // if (!valid_on_trace) {                          // Dennis: get rid of this premature break; we need to run every property instance on every trace.
+                    //    valid = false;
+                    //    break;
+                    //}
                 }
                 instantiated_prop_type->destroy();
-                if (valid) {
-                    return_vec.push_back(*current_instantiation);
+                // calculate confidence of result
+                // int result_conf = (result.support_potential != 0) ? (result.support / result.support_potential) * 100 : 0;   // Dennis: by default, should we remove vacuously true findings? Should conf be measured out of 1 or 100?
+                //if (result_conf >= conf_threshold) {
+                if (result.is_satisfied) {
+                    finding f = {*current_instantiation, result};
+                    return_vec.push_back(f);
                 }
             }
             return return_vec;

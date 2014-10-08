@@ -39,7 +39,7 @@ void prefix_tree_checker::add_relevant_bindings(
  * @param instantiations_ instantiation function for the formula
  * @return
  */
-bool prefix_tree_checker::check_on_trace(const spot::ltl::formula* form_node,
+statistic prefix_tree_checker::check_on_trace(const spot::ltl::formula* form_node,
         shared_ptr<prefix_tree_node> trace_node,
         map<string, string> instantiations_) {
     use_memo = true;
@@ -53,17 +53,17 @@ bool prefix_tree_checker::check_on_trace(const spot::ltl::formula* form_node,
  * @param trace_pt beginning of trace/prefix tree
  * @return
  */
-bool prefix_tree_checker::check_on_trace(const spot::ltl::formula* node,
+statistic prefix_tree_checker::check_on_trace(const spot::ltl::formula* node,
         const trace_node trace_pt) {
     set<int> set = trace_pt->get_trace_ids();
-    map<int, bool> branch_results = this->check(node, trace_pt, set);
-    for (map<int, bool>::iterator result_it = branch_results.begin();
+    map<int, statistic> branch_results = this->check(node, trace_pt, set);
+    for (map<int, statistic>::iterator result_it = branch_results.begin();
             result_it != branch_results.end(); result_it++) {
-        if (!result_it->second) {
-            return false;
+        if (!(result_it->second).is_satisfied) {
+            return statistic(false, 0, 1);
         }
     }
-    return true;
+    return statistic(true, 1, 1);
 
 }
 
@@ -74,11 +74,11 @@ bool prefix_tree_checker::check_on_trace(const spot::ltl::formula* node,
  * @param trace_ids the branches to check
  * @return map of evaluation values.
  */
-map<int, bool> prefix_tree_checker::check_on_kids(
+map<int, statistic> prefix_tree_checker::check_on_kids(
         const spot::ltl::formula* node, map<set<int>, trace_node> kids,
         set<int> trace_ids) {
     // return map
-    map<int, bool> return_map;
+    map<int, statistic> return_map;
     // start iterating through the kids
     for (map<set<int>, trace_node>::iterator kids_it = kids.begin();
             kids_it != kids.end(); kids_it++) {
@@ -90,7 +90,7 @@ map<int, bool> prefix_tree_checker::check_on_kids(
         // if there's a branch we want to pursue in kid, go check down.
         // only check branches we want to check.
         if (intersect.size() != 0) {
-            map<int, bool> result_on_kid = this->check(node, kids_it->second,
+            map<int, statistic> result_on_kid = this->check(node, kids_it->second,
                     intersect);
             return_map.insert(result_on_kid.begin(), result_on_kid.end());
 
@@ -105,16 +105,16 @@ map<int, bool> prefix_tree_checker::check_on_kids(
  * @param trace_ids
  * @return
  */
-map<int, bool> prefix_tree_checker::false_check(std::set<int> trace_ids) {
-    return create_int_bool_map(trace_ids, false);
+map<int, statistic> prefix_tree_checker::false_check(std::set<int> trace_ids) {
+    return create_int_bool_map(trace_ids, statistic(false, 0, 1));
 }
 /**
  * Return a true map
  * @param trace_ids
  * @return
  */
-map<int, bool> prefix_tree_checker::true_check(std::set<int> trace_ids) {
-    return create_int_bool_map(trace_ids, true);
+map<int, statistic> prefix_tree_checker::true_check(std::set<int> trace_ids) {
+    return create_int_bool_map(trace_ids, statistic(true, 1, 1));
 }
 
 /**
@@ -124,21 +124,21 @@ map<int, bool> prefix_tree_checker::true_check(std::set<int> trace_ids) {
  * @param trace_ids: trace ids we're checking on
  * @return whether node holds on trace
  */
-map<int, bool> prefix_tree_checker::ap_check(const spot::ltl::atomic_prop* node,
+map<int, statistic> prefix_tree_checker::ap_check(const spot::ltl::atomic_prop* node,
         trace_node trace_pt, std::set<int> trace_ids) {
     if (use_memo) {
         if (instantiations.find(node->name()) != instantiations.end()) {
-            bool is_this_event = (instantiations.find(node->name()))->second
-                    == trace_pt->get_name();
+            statistic is_this_event = ((instantiations.find(node->name()))->second
+                    == trace_pt->get_name()) ? statistic(true, 1, 1) : statistic(false, 0, 1);
             return create_int_bool_map(trace_ids, is_this_event);
         } else {
             std::cerr << "Did not find mapping for " << node->name() <<". \n";
-            return create_int_bool_map(trace_ids, false);
+            return create_int_bool_map(trace_ids, statistic(false, 0, 1));
         }
     } else {
         // evaluate whether the AP holds
-        bool is_this_event =
-                (trace_pt->get_name() == node->name()) ? true : false;
+        statistic is_this_event =
+                (trace_pt->get_name() == node->name()) ? statistic(true, 1, 1) : statistic(false, 0, 1);
         // return in trace_id -> bool map
         return create_int_bool_map(trace_ids, is_this_event);
     }
@@ -152,15 +152,15 @@ map<int, bool> prefix_tree_checker::ap_check(const spot::ltl::atomic_prop* node,
  * @param trace_ids which branches to pursue
  * @return map of trace_id -> node holds on trace starting from trace_pt
  */
-map<int, bool> prefix_tree_checker::xor_check(const spot::ltl::binop* node,
+map<int, statistic> prefix_tree_checker::xor_check(const spot::ltl::binop* node,
         trace_node trace_pt, std::set<int> trace_ids) {
     const spot::ltl::formula * p = node->first();
     const spot::ltl::formula * q = node->second();
-    map<int, bool> return_map;
+    map<int, statistic> return_map;
     //retrieve memoized values.
     if (use_memo) {
         //get memoized values
-        map<int, bool> memoed_values = retrieve_memo(node, trace_pt, trace_ids);
+        map<int, statistic> memoed_values = retrieve_memo(node, trace_pt, trace_ids);
         // if all the trace evals are memoized, return
         if (memoed_values.size() == trace_ids.size()) {
             return memoed_values;
@@ -168,7 +168,7 @@ map<int, bool> prefix_tree_checker::xor_check(const spot::ltl::binop* node,
         // else add those that were memoized to return_map, and remove
         // them from trace_ids, so we only evaluate the missing ones.
         else {
-            for (std::map<int, bool>::iterator memoed_values_it =
+            for (std::map<int, statistic>::iterator memoed_values_it =
                     memoed_values.begin();
                     memoed_values_it != memoed_values.end();
                     memoed_values_it++) {
@@ -178,13 +178,13 @@ map<int, bool> prefix_tree_checker::xor_check(const spot::ltl::binop* node,
         }
     }
     // xor requires checking both p and q, no shortcuts here
-    map<int, bool> qholds = this->check(q, trace_pt, trace_ids);
-    map<int, bool> pholds = this->check(p, trace_pt, trace_ids);
-    for (map<int, bool>::iterator pholds_it = pholds.begin();
+    map<int, statistic> qholds = this->check(q, trace_pt, trace_ids);
+    map<int, statistic> pholds = this->check(p, trace_pt, trace_ids);
+    for (map<int, statistic>::iterator pholds_it = pholds.begin();
             pholds_it != pholds.end(); pholds_it++) {
-        bool qholds_on_trace = qholds.find(pholds_it->first)->second;
+        statistic qholds_on_trace = qholds.find(pholds_it->first)->second;
         pholds_it->second =
-                (pholds_it->second) ? !qholds_on_trace : qholds_on_trace;
+                ((pholds_it->second).is_satisfied) ? qholds_on_trace : qholds_on_trace;        // Dennis: originially (pholds_it->second) ? !qholds_on_trace : qholds_on_trace;
 
     }
     if (use_memo) {
@@ -202,14 +202,14 @@ map<int, bool> prefix_tree_checker::xor_check(const spot::ltl::binop* node,
  * @param trace_ids which branches to pursue
  * @return map of trace_id -> node holds on trace starting from trace_pt
  */
-map<int, bool> prefix_tree_checker::equiv_check(const spot::ltl::binop* node,
+map<int, statistic> prefix_tree_checker::equiv_check(const spot::ltl::binop* node,
         trace_node trace_pt, std::set<int> trace_ids) {
     const spot::ltl::formula * p = node->first();
     const spot::ltl::formula * q = node->second();
-    map<int, bool> return_map;
+    map<int, statistic> return_map;
     //retrieve memoized values.
     if (use_memo) {
-        map<int, bool> memoed_values = retrieve_memo(node, trace_pt, trace_ids);
+        map<int, statistic> memoed_values = retrieve_memo(node, trace_pt, trace_ids);
         // if all the trace evals are memoized, return
         if (memoed_values.size() == trace_ids.size()) {
             return memoed_values;
@@ -217,7 +217,7 @@ map<int, bool> prefix_tree_checker::equiv_check(const spot::ltl::binop* node,
         // else add those that were memoized to return_map, and remove
         // them from trace_ids, so we only evaluate the missing ones.
         else {
-            for (std::map<int, bool>::iterator memoed_values_it =
+            for (std::map<int, statistic>::iterator memoed_values_it =
                     memoed_values.begin();
                     memoed_values_it != memoed_values.end();
                     memoed_values_it++) {
@@ -227,13 +227,13 @@ map<int, bool> prefix_tree_checker::equiv_check(const spot::ltl::binop* node,
         }
     }
     // <-> requires checking both p and q, no shortcuts here
-    map<int, bool> qholds = this->check(q, trace_pt, trace_ids);
-    map<int, bool> pholds = this->check(p, trace_pt, trace_ids);
-    for (map<int, bool>::iterator pholds_it = pholds.begin();
+    map<int, statistic> qholds = this->check(q, trace_pt, trace_ids);
+    map<int, statistic> pholds = this->check(p, trace_pt, trace_ids);
+    for (map<int, statistic>::iterator pholds_it = pholds.begin();
             pholds_it != pholds.end(); pholds_it++) {
-        bool qholds_on_trace = qholds.find(pholds_it->first)->second;
+        statistic qholds_on_trace = qholds.find(pholds_it->first)->second;
         pholds_it->second =
-                (pholds_it->second) ? qholds_on_trace : !qholds_on_trace;
+                ((pholds_it->second).is_satisfied) ? qholds_on_trace : qholds_on_trace;   // Dennis: originially (pholds_it->second) ? qholds_on_trace : !qholds_on_trace;
 
     }
     if (use_memo) {
@@ -251,14 +251,14 @@ map<int, bool> prefix_tree_checker::equiv_check(const spot::ltl::binop* node,
  * @param trace_ids which branches to pursue
  * @return map of trace_id -> node holds on trace starting from trace_pt
  */
-map<int, bool> prefix_tree_checker::implies_check(const spot::ltl::binop* node,
+map<int, statistic> prefix_tree_checker::implies_check(const spot::ltl::binop* node,
         trace_node trace_pt, std::set<int> trace_ids) {
     const spot::ltl::formula * p = node->first();
     const spot::ltl::formula * q = node->second();
-    map<int, bool> return_map;
+    map<int, statistic> return_map;
     //retrieve memoized values.
     if (use_memo) {
-        map<int, bool> memoed_values = retrieve_memo(node, trace_pt, trace_ids);
+        map<int, statistic> memoed_values = retrieve_memo(node, trace_pt, trace_ids);
         // if all the trace evals are memoized, return
         if (memoed_values.size() == trace_ids.size()) {
             return memoed_values;
@@ -266,7 +266,7 @@ map<int, bool> prefix_tree_checker::implies_check(const spot::ltl::binop* node,
         // else add those that were memoized to return_map, and remove
         // them from trace_ids, so we only evaluate the missing ones.
         else {
-            for (std::map<int, bool>::iterator memoed_values_it =
+            for (std::map<int, statistic>::iterator memoed_values_it =
                     memoed_values.begin();
                     memoed_values_it != memoed_values.end();
                     memoed_values_it++) {
@@ -276,7 +276,7 @@ map<int, bool> prefix_tree_checker::implies_check(const spot::ltl::binop* node,
         }
     }
 
-    map<int, bool> pholds = this->check(p, trace_pt, trace_ids);
+    map<int, statistic> pholds = this->check(p, trace_pt, trace_ids);
     // where p is false we don't need to recurse. Add those
     // pairs and remove trace_ids where !p. By doing the not map
     // we add where !p holds as true, as it should be.
@@ -285,7 +285,7 @@ map<int, bool> prefix_tree_checker::implies_check(const spot::ltl::binop* node,
     // if some traces return p, then the value of p -> q is
     // the value of q on this point.
     if (trace_ids.size() != 0) {
-        map<int, bool> qholds = this->check(q, trace_pt, trace_ids);
+        map<int, statistic> qholds = this->check(q, trace_pt, trace_ids);
         return_map.insert(qholds.begin(), qholds.end());
     }
 
@@ -303,14 +303,14 @@ map<int, bool> prefix_tree_checker::implies_check(const spot::ltl::binop* node,
  * @param trace_ids which branches to pursue
  * @return map of trace_id -> node holds on trace starting from trace_pt
  */
-map<int, bool> prefix_tree_checker::until_check(const spot::ltl::binop* node,
+map<int, statistic> prefix_tree_checker::until_check(const spot::ltl::binop* node,
         trace_node trace_pt, std::set<int> trace_ids) {
     const spot::ltl::formula * p = node->first();
     const spot::ltl::formula * q = node->second();
-    map<int, bool> return_map;
+    map<int, statistic> return_map;
     //retrieve memoized values.
     if (use_memo) {
-        map<int, bool> memoed_values = retrieve_memo(node, trace_pt, trace_ids);
+        map<int, statistic> memoed_values = retrieve_memo(node, trace_pt, trace_ids);
         // if all the trace evals are memoized, return
         if (memoed_values.size() == trace_ids.size()) {
             return memoed_values;
@@ -318,7 +318,7 @@ map<int, bool> prefix_tree_checker::until_check(const spot::ltl::binop* node,
         // else add those that were memoized to return_map, and remove
         // them from trace_ids, so we only evaluate the missing ones.
         else {
-            for (std::map<int, bool>::iterator memoed_values_it =
+            for (std::map<int, statistic>::iterator memoed_values_it =
                     memoed_values.begin();
                     memoed_values_it != memoed_values.end();
                     memoed_values_it++) {
@@ -329,13 +329,13 @@ map<int, bool> prefix_tree_checker::until_check(const spot::ltl::binop* node,
     }
     //if we get here, we did not see q: thus, false
     if (trace_pt->is_terminal()) {
-        return create_int_bool_map(trace_ids, false);
+        return create_int_bool_map(trace_ids, statistic(false, 0, 1));
     }
     // if the q holds here, we have not yet seen q or !p, (these
     //  cause return) so true values are true overall. retain
     // the true values and remove the trace ids with true values
     // from trace_ids
-    map<int, bool> q_holds = this->check(q, trace_pt, trace_ids);
+    map<int, statistic> q_holds = this->check(q, trace_pt, trace_ids);
     add_satisfying_values(q_holds, true, return_map, trace_ids);
     // if q held on all traces, return
     if (trace_ids.size() == 0) {
@@ -347,7 +347,7 @@ map<int, bool> prefix_tree_checker::until_check(const spot::ltl::binop* node,
 
     // we know q does not hold from above, so if p does not hold,
     // we have !p before q, which violates p U q.
-    map<int, bool> p_holds = this->check(p, trace_pt, trace_ids);
+    map<int, statistic> p_holds = this->check(p, trace_pt, trace_ids);
     // where !p, !(p U q), so insert as false:
     add_satisfying_values(p_holds, false, return_map, trace_ids);
     // if we've determined values on all traces, return
@@ -359,7 +359,7 @@ map<int, bool> prefix_tree_checker::until_check(const spot::ltl::binop* node,
     }
 
     // if !q and p holds, check on the next suffix trace
-    map<int, bool> pUq_on_kids = check_on_kids(node, trace_pt->get_children(),
+    map<int, statistic> pUq_on_kids = check_on_kids(node, trace_pt->get_children(),
             trace_ids);
     // those values are the value of pUq on here
     return_map.insert(pUq_on_kids.begin(), pUq_on_kids.end());
@@ -377,14 +377,14 @@ map<int, bool> prefix_tree_checker::until_check(const spot::ltl::binop* node,
  * @param trace_ids which branches to pursue
  * @return map of trace_id -> node holds on trace starting from trace_pt
  */
-map<int, bool> prefix_tree_checker::release_check(const spot::ltl::binop* node,
+map<int, statistic> prefix_tree_checker::release_check(const spot::ltl::binop* node,
         trace_node trace_pt, std::set<int> trace_ids) {
     const spot::ltl::formula * p = node->first();
     const spot::ltl::formula * q = node->second();
-    map<int, bool> return_map;
+    map<int, statistic> return_map;
     //retrieve memoized values.
     if (use_memo) {
-        map<int, bool> memoed_values = retrieve_memo(node, trace_pt, trace_ids);
+        map<int, statistic> memoed_values = retrieve_memo(node, trace_pt, trace_ids);
         // if all the trace evals are memoized, return
         if (memoed_values.size() == trace_ids.size()) {
             return memoed_values;
@@ -392,7 +392,7 @@ map<int, bool> prefix_tree_checker::release_check(const spot::ltl::binop* node,
         // else add those that were memoized to return_map, and remove
         // them from trace_ids, so we only evaluate the missing ones.
         else {
-            for (std::map<int, bool>::iterator memoed_values_it =
+            for (std::map<int, statistic>::iterator memoed_values_it =
                     memoed_values.begin();
                     memoed_values_it != memoed_values.end();
                     memoed_values_it++) {
@@ -403,11 +403,11 @@ map<int, bool> prefix_tree_checker::release_check(const spot::ltl::binop* node,
     }
     //if we get here, q was always true, so true
     if (trace_pt->is_terminal()) {
-        return create_int_bool_map(trace_ids, true);
+        return create_int_bool_map(trace_ids, statistic(true, 1, 1));
     }
     // if the !q holds here, since we haven't yet seen p,
     // p R q is false (!q occurred before p)
-    map<int, bool> q_holds = this->check(q, trace_pt, trace_ids);
+    map<int, statistic> q_holds = this->check(q, trace_pt, trace_ids);
     add_satisfying_values(q_holds, false, return_map, trace_ids);
     // if !q held on all traces, return
     if (trace_ids.size() == 0) {
@@ -419,7 +419,7 @@ map<int, bool> prefix_tree_checker::release_check(const spot::ltl::binop* node,
 
     // traces remaining in trace_ids where ones where q held, so
     // if p holds, p & q holds:
-    map<int, bool> p_holds = this->check(p, trace_pt, trace_ids);
+    map<int, statistic> p_holds = this->check(p, trace_pt, trace_ids);
     // where p, p & q, so p R q, so insert as true:
     add_satisfying_values(p_holds, true, return_map, trace_ids);
     // if we've determined values on all traces, return
@@ -431,7 +431,7 @@ map<int, bool> prefix_tree_checker::release_check(const spot::ltl::binop* node,
     }
 
     // if !p and q, check on next suffix trace
-    map<int, bool> pRq_on_kids = check_on_kids(node, trace_pt->get_children(),
+    map<int, statistic> pRq_on_kids = check_on_kids(node, trace_pt->get_children(),
             trace_ids);
     // those values are the value of pRq on here
     return_map.insert(pRq_on_kids.begin(), pRq_on_kids.end());
@@ -448,15 +448,15 @@ map<int, bool> prefix_tree_checker::release_check(const spot::ltl::binop* node,
  * @param trace_ids which branches to pursue
  * @return map of trace_id -> node holds on trace starting from trace_pt
  */
-map<int, bool> prefix_tree_checker::weakuntil_check(
+map<int, statistic> prefix_tree_checker::weakuntil_check(
         const spot::ltl::binop* node, trace_node trace_pt,
         std::set<int> trace_ids) {
     const spot::ltl::formula * p = node->first();
     const spot::ltl::formula * q = node->second();
-    map<int, bool> return_map;
+    map<int, statistic> return_map;
     //retrieve memoized values.
     if (use_memo) {
-        map<int, bool> memoed_values = retrieve_memo(node, trace_pt, trace_ids);
+        map<int, statistic> memoed_values = retrieve_memo(node, trace_pt, trace_ids);
         // if all the trace evals are memoized, return
         if (memoed_values.size() == trace_ids.size()) {
             return memoed_values;
@@ -464,7 +464,7 @@ map<int, bool> prefix_tree_checker::weakuntil_check(
         // else add those that were memoized to return_map, and remove
         // them from trace_ids, so we only evaluate the missing ones.
         else {
-            for (std::map<int, bool>::iterator memoed_values_it =
+            for (std::map<int, statistic>::iterator memoed_values_it =
                     memoed_values.begin();
                     memoed_values_it != memoed_values.end();
                     memoed_values_it++) {
@@ -478,13 +478,13 @@ map<int, bool> prefix_tree_checker::weakuntil_check(
         if (use_memo) {
             add_to_memo_map(node, trace_pt, return_map);
         }
-        return create_int_bool_map(trace_ids, true);
+        return create_int_bool_map(trace_ids, statistic(true, 1, 1));
     }
     // if the q holds here, we have not yet seen q or !p, (these
     //  cause return) so true values are true overall. retain
     // the true values and remove the trace ids with true values
     // from trace_ids
-    map<int, bool> q_holds = this->check(q, trace_pt, trace_ids);
+    map<int, statistic> q_holds = this->check(q, trace_pt, trace_ids);
     add_satisfying_values(q_holds, true, return_map, trace_ids);
     // if q held on all traces, return
     if (trace_ids.size() == 0) {
@@ -496,7 +496,7 @@ map<int, bool> prefix_tree_checker::weakuntil_check(
 
     // we know q does not hold from above, so if p does not hold,
     // we have !p before q, which violates p W q.
-    map<int, bool> p_holds = this->check(p, trace_pt, trace_ids);
+    map<int, statistic> p_holds = this->check(p, trace_pt, trace_ids);
     // where !p, !(p W q), so insert as false:
     add_satisfying_values(p_holds, false, return_map, trace_ids);
     // if we've determined values on all traces, return
@@ -508,7 +508,7 @@ map<int, bool> prefix_tree_checker::weakuntil_check(
     }
 
     // if !q and p holds, check on the next suffix trace
-    map<int, bool> pWq_on_kids = check_on_kids(node, trace_pt->get_children(),
+    map<int, statistic> pWq_on_kids = check_on_kids(node, trace_pt->get_children(),
             trace_ids);
     // those values are the value of pWq on here
     return_map.insert(pWq_on_kids.begin(), pWq_on_kids.end());
@@ -527,15 +527,15 @@ map<int, bool> prefix_tree_checker::weakuntil_check(
  * @param trace_ids which branches to pursue
  * @return map of trace_id -> node holds on trace starting from trace_pt
  */
-map<int, bool> prefix_tree_checker::strongrelease_check(
+map<int, statistic> prefix_tree_checker::strongrelease_check(
         const spot::ltl::binop* node, trace_node trace_pt,
         std::set<int> trace_ids) {
     const spot::ltl::formula * p = node->first();
     const spot::ltl::formula * q = node->second();
-    map<int, bool> return_map;
+    map<int, statistic> return_map;
     //retrieve memoized values.
     if (use_memo) {
-        map<int, bool> memoed_values = retrieve_memo(node, trace_pt, trace_ids);
+        map<int, statistic> memoed_values = retrieve_memo(node, trace_pt, trace_ids);
         // if all the trace evals are memoized, return
         if (memoed_values.size() == trace_ids.size()) {
             return memoed_values;
@@ -543,7 +543,7 @@ map<int, bool> prefix_tree_checker::strongrelease_check(
         // else add those that were memoized to return_map, and remove
         // them from trace_ids, so we only evaluate the missing ones.
         else {
-            for (std::map<int, bool>::iterator memoed_values_it =
+            for (std::map<int, statistic>::iterator memoed_values_it =
                     memoed_values.begin();
                     memoed_values_it != memoed_values.end();
                     memoed_values_it++) {
@@ -554,11 +554,11 @@ map<int, bool> prefix_tree_checker::strongrelease_check(
     }
     //if we get here, q was always true, so false
     if (trace_pt->is_terminal()) {
-        return create_int_bool_map(trace_ids, false);
+        return create_int_bool_map(trace_ids, statistic(false, 0, 1));
     }
     // if the !q holds here, since we haven't yet seen p,
     // p R q is false (!q occurred before p)
-    map<int, bool> q_holds = this->check(q, trace_pt, trace_ids);
+    map<int, statistic> q_holds = this->check(q, trace_pt, trace_ids);
     add_satisfying_values(q_holds, false, return_map, trace_ids);
     // if !q held on all traces, return
     if (trace_ids.size() == 0) {
@@ -570,7 +570,7 @@ map<int, bool> prefix_tree_checker::strongrelease_check(
 
     // traces remaining in trace_ids where ones where q held, so
     // if p holds, p & q holds:
-    map<int, bool> p_holds = this->check(p, trace_pt, trace_ids);
+    map<int, statistic> p_holds = this->check(p, trace_pt, trace_ids);
     // where p, p & q, so p M q, so insert as true:
     add_satisfying_values(p_holds, true, return_map, trace_ids);
     // if we've determined values on all traces, return
@@ -582,7 +582,7 @@ map<int, bool> prefix_tree_checker::strongrelease_check(
     }
 
     // if !p and q, check on next suffix trace
-    map<int, bool> pMq_on_kids = check_on_kids(node, trace_pt->get_children(),
+    map<int, statistic> pMq_on_kids = check_on_kids(node, trace_pt->get_children(),
             trace_ids);
     // those values are the value of pRq on here
     return_map.insert(pMq_on_kids.begin(), pMq_on_kids.end());
@@ -599,20 +599,20 @@ map<int, bool> prefix_tree_checker::strongrelease_check(
  * @param trace_ids which branches to pursue
  * @return map of trace_id -> node holds on trace starting from trace_pt
  */
-map<int, bool> prefix_tree_checker::globally_check(const spot::ltl::unop* node,
+map<int, statistic> prefix_tree_checker::globally_check(const spot::ltl::unop* node,
         trace_node trace_pt, std::set<int> trace_ids) {
     //renaming the child p
     const spot::ltl::formula * p = node->child();
     // create return map:
-    map<int, bool> return_map;
+    map<int, statistic> return_map;
     //retrieve memoized values.
     if (use_memo) {
-        map<int, bool> memoed_values = retrieve_memo(node, trace_pt, trace_ids);
+        map<int, statistic> memoed_values = retrieve_memo(node, trace_pt, trace_ids);
         // if all the trace evals are memoized, return
         if (memoed_values.size() == trace_ids.size()) {
             return memoed_values;
         } else {
-            for (std::map<int, bool>::iterator memoed_values_it =
+            for (std::map<int, statistic>::iterator memoed_values_it =
                     memoed_values.begin();
                     memoed_values_it != memoed_values.end();
                     memoed_values_it++) {
@@ -623,19 +623,19 @@ map<int, bool> prefix_tree_checker::globally_check(const spot::ltl::unop* node,
     }
     // base case: if we're at terminal, return true to not effect and behaviour
     if (trace_pt->is_terminal()) {
-        return create_int_bool_map(trace_ids, true);
+        return create_int_bool_map(trace_ids, statistic(true, 1, 1));
     }
     // else add those that were memoized to return_map, and remove
     // them from trace_ids, so we only evaluate the missing ones.
     else {
         // check whether p is true
-        map<int, bool> p_holds_here = this->check(p, trace_pt, trace_ids);
+        map<int, statistic> p_holds_here = this->check(p, trace_pt, trace_ids);
         // for those where p is false, add to return map and remove
         // from trace_ids to prevent recursion
         add_satisfying_values(p_holds_here, false, return_map, trace_ids);
         // add the values that were not truncated
         if (trace_ids.size() != 0) {
-            map<int, bool> Fp_holds_on_rest = check_on_kids(node,
+            map<int, statistic> Fp_holds_on_rest = check_on_kids(node,
                     trace_pt->get_children(), trace_ids);
             return_map.insert(Fp_holds_on_rest.begin(), Fp_holds_on_rest.end());
         }
@@ -653,15 +653,15 @@ map<int, bool> prefix_tree_checker::globally_check(const spot::ltl::unop* node,
  * @param trace_ids which branches to pursue
  * @return map of trace_id -> node holds on trace starting from trace_pt
  */
-map<int, bool> prefix_tree_checker::finally_check(const spot::ltl::unop* node,
+map<int, statistic> prefix_tree_checker::finally_check(const spot::ltl::unop* node,
         trace_node trace_pt, std::set<int> trace_ids) {
     //renaming the child p
     const spot::ltl::formula * p = node->child();
     // create return map:
-    map<int, bool> return_map;
+    map<int, statistic> return_map;
     //retrieve memoized values.
     if (use_memo) {
-        map<int, bool> memoed_values = retrieve_memo(node, trace_pt, trace_ids);
+        map<int, statistic> memoed_values = retrieve_memo(node, trace_pt, trace_ids);
         // if all the trace evals are memoized, return
         if (memoed_values.size() == trace_ids.size()) {
             return memoed_values;
@@ -669,7 +669,7 @@ map<int, bool> prefix_tree_checker::finally_check(const spot::ltl::unop* node,
         // else add those that were memoized to return_map, and remove
         // them from trace_ids, so we only evaluate the missing ones.
         else {
-            for (std::map<int, bool>::iterator memoed_values_it =
+            for (std::map<int, statistic>::iterator memoed_values_it =
                     memoed_values.begin();
                     memoed_values_it != memoed_values.end();
                     memoed_values_it++) {
@@ -680,16 +680,16 @@ map<int, bool> prefix_tree_checker::finally_check(const spot::ltl::unop* node,
     }
     // base case: if we're at terminal, return false to not effect or behavior
     if (trace_pt->is_terminal()) {
-        return create_int_bool_map(trace_ids, false);
+        return create_int_bool_map(trace_ids, statistic(false, 0, 1));
     } else {
         // check whether p is true
-        map<int, bool> p_holds_here = this->check(p, trace_pt, trace_ids);
+        map<int, statistic> p_holds_here = this->check(p, trace_pt, trace_ids);
         // for those where p is true, add to return map and remove
         // from trace_ids to prevent recursion
         add_satisfying_values(p_holds_here, true, return_map, trace_ids);
         // add the values that were not truncated
         if (trace_ids.size() != 0) {
-            map<int, bool> Fp_holds_on_rest = check_on_kids(node,
+            map<int, statistic> Fp_holds_on_rest = check_on_kids(node,
                     trace_pt->get_children(), trace_ids);
             return_map.insert(Fp_holds_on_rest.begin(), Fp_holds_on_rest.end());
         }
@@ -708,7 +708,7 @@ map<int, bool> prefix_tree_checker::finally_check(const spot::ltl::unop* node,
  * @param trace_ids which branches to pursue
  * @return map of trace_id -> node holds on trace starting from trace_pt
  */
-map<int, bool> prefix_tree_checker::next_check(const spot::ltl::unop* node,
+map<int, statistic> prefix_tree_checker::next_check(const spot::ltl::unop* node,
         trace_node trace_pt, std::set<int> trace_ids) {
     //renaming the child p
     const spot::ltl::formula * p = node->child();
@@ -718,10 +718,10 @@ map<int, bool> prefix_tree_checker::next_check(const spot::ltl::unop* node,
     if (trace_pt->is_terminal()) {
         return this->check(p, trace_pt, trace_ids);
     }
-    map<int, bool> return_map;
+    map<int, statistic> return_map;
     //retrieve memoized values.
     if (use_memo) {
-        map<int, bool> memoed_values = retrieve_memo(node, trace_pt, trace_ids);
+        map<int, statistic> memoed_values = retrieve_memo(node, trace_pt, trace_ids);
         // if all the trace evals are memoized, return
         if (memoed_values.size() == trace_ids.size()) {
             return memoed_values;
@@ -729,7 +729,7 @@ map<int, bool> prefix_tree_checker::next_check(const spot::ltl::unop* node,
         // else add those that were memoized to return_map, and remove
         // them from trace_ids, so we only evaluate the missing ones.
         else {
-            for (std::map<int, bool>::iterator memoed_values_it =
+            for (std::map<int, statistic>::iterator memoed_values_it =
                     memoed_values.begin();
                     memoed_values_it != memoed_values.end();
                     memoed_values_it++) {
@@ -739,7 +739,7 @@ map<int, bool> prefix_tree_checker::next_check(const spot::ltl::unop* node,
         }
     }
 
-    map<int, bool> kids_result = check_on_kids(p, trace_pt->get_children(),
+    map<int, statistic> kids_result = check_on_kids(p, trace_pt->get_children(),
             trace_ids);
     if (use_memo) {
         add_to_memo_map(node, trace_pt, kids_result);
@@ -758,14 +758,14 @@ map<int, bool> prefix_tree_checker::next_check(const spot::ltl::unop* node,
  * @param trace_ids which branches to pursue
  * @return map of trace_id -> node holds on trace starting from trace_pt
  */
-map<int, bool> prefix_tree_checker::not_check(const spot::ltl::unop* node,
+map<int, statistic> prefix_tree_checker::not_check(const spot::ltl::unop* node,
         trace_node trace_pt, std::set<int> trace_ids) {
     //renaming the child p
     const spot::ltl::formula * p = node->child();
-    map<int, bool> return_map;
+    map<int, statistic> return_map;
     //retrieve memoized values.
     if (use_memo) {
-        map<int, bool> memoed_values = retrieve_memo(node, trace_pt, trace_ids);
+        map<int, statistic> memoed_values = retrieve_memo(node, trace_pt, trace_ids);
         // if all the trace evals are memoized, return
         if (memoed_values.size() == trace_ids.size()) {
             return memoed_values;
@@ -773,7 +773,7 @@ map<int, bool> prefix_tree_checker::not_check(const spot::ltl::unop* node,
         // else add those that were memoized to return_map, and remove
         // them from trace_ids, so we only evaluate the missing ones.
         else {
-            for (std::map<int, bool>::iterator memoed_values_it =
+            for (std::map<int, statistic>::iterator memoed_values_it =
                     memoed_values.begin();
                     memoed_values_it != memoed_values.end();
                     memoed_values_it++) {
@@ -782,7 +782,7 @@ map<int, bool> prefix_tree_checker::not_check(const spot::ltl::unop* node,
             }
         }
     }
-    map<int, bool> kids_result = not_map(this->check(p, trace_pt, trace_ids));
+    map<int, statistic> kids_result = not_map(this->check(p, trace_pt, trace_ids));
     if (use_memo) {
         add_to_memo_map(node, trace_pt, kids_result);
         return_map.insert(kids_result.begin(), kids_result.end());
@@ -801,12 +801,12 @@ map<int, bool> prefix_tree_checker::not_check(const spot::ltl::unop* node,
  * @param trace_ids which branches to pursue
  * @return map of trace_id -> node holds on trace starting from trace_pt
  */
-map<int, bool> prefix_tree_checker::or_check(const spot::ltl::multop* node,
+map<int, statistic> prefix_tree_checker::or_check(const spot::ltl::multop* node,
         trace_node trace_pt, std::set<int> trace_ids) {
     // the return map;
-    map<int, bool> return_map;
+    map<int, statistic> return_map;
     if (use_memo) {
-        map<int, bool> memoed_values = retrieve_memo(node, trace_pt, trace_ids);
+        map<int, statistic> memoed_values = retrieve_memo(node, trace_pt, trace_ids);
         // if all the trace evals are memoized, return
         if (memoed_values.size() == trace_ids.size()) {
             return memoed_values;
@@ -814,7 +814,7 @@ map<int, bool> prefix_tree_checker::or_check(const spot::ltl::multop* node,
         // else add those that were memoized to return_map, and remove
         // them from trace_ids, so we only evaluate the missing ones.
         else {
-            for (std::map<int, bool>::iterator memoed_values_it =
+            for (std::map<int, statistic>::iterator memoed_values_it =
                     memoed_values.begin();
                     memoed_values_it != memoed_values.end();
                     memoed_values_it++) {
@@ -829,7 +829,7 @@ map<int, bool> prefix_tree_checker::or_check(const spot::ltl::multop* node,
     // end of the loop, then none of the children were true and we return
     // false.
     for (int i = 0; i < numkids; i++) {
-        map<int, bool> kid_valids = this->check(node->nth(i), trace_pt,
+        map<int, statistic> kid_valids = this->check(node->nth(i), trace_pt,
                 trace_ids);
         // add the children who are true, remove trace_ids we no longer need to check
         add_satisfying_values(kid_valids, true, return_map, trace_ids);
@@ -842,7 +842,7 @@ map<int, bool> prefix_tree_checker::or_check(const spot::ltl::multop* node,
     // and we will add false to the map
     for (set<int>::iterator it = trace_ids.begin(); it != trace_ids.end();
             it++) {
-        return_map.emplace(*it, false);
+        return_map.emplace(*it, statistic(false, 0, 1));
 
     }
     if (use_memo) {
@@ -859,13 +859,13 @@ map<int, bool> prefix_tree_checker::or_check(const spot::ltl::multop* node,
  * @param trace_ids which branches to pursue
  * @return map of trace_id -> node holds on trace starting from trace_pt
  */
-map<int, bool> prefix_tree_checker::and_check(const spot::ltl::multop* node,
+map<int, statistic> prefix_tree_checker::and_check(const spot::ltl::multop* node,
         trace_node trace_pt, std::set<int> trace_ids) {
     // the return map;
-    map<int, bool> return_map;
+    map<int, statistic> return_map;
     //retrieve memoized values.
     if (use_memo) {
-        map<int, bool> memoed_values = retrieve_memo(node, trace_pt, trace_ids);
+        map<int, statistic> memoed_values = retrieve_memo(node, trace_pt, trace_ids);
         // if all the trace evals are memoized, return
         if (memoed_values.size() == trace_ids.size()) {
             return memoed_values;
@@ -873,7 +873,7 @@ map<int, bool> prefix_tree_checker::and_check(const spot::ltl::multop* node,
         // else add those that were memoized to return_map, and remove
         // them from trace_ids, so we only evaluate the missing ones.
         else {
-            for (std::map<int, bool>::iterator memoed_values_it =
+            for (std::map<int, statistic>::iterator memoed_values_it =
                     memoed_values.begin();
                     memoed_values_it != memoed_values.end();
                     memoed_values_it++) {
@@ -889,7 +889,7 @@ map<int, bool> prefix_tree_checker::and_check(const spot::ltl::multop* node,
     // end of the loop, then none of the children were false and we return
     // true.
     for (int i = 0; i < numkids; i++) {
-        map<int, bool> kid_valids = this->check(node->nth(i), trace_pt,
+        map<int, statistic> kid_valids = this->check(node->nth(i), trace_pt,
                 trace_ids);
         // add false children to return_map and remove those trace ids
         // from trace ids, thereby truncating evaluation.
@@ -903,7 +903,7 @@ map<int, bool> prefix_tree_checker::and_check(const spot::ltl::multop* node,
     // put it in as true.
     for (set<int>::iterator it = trace_ids.begin(); it != trace_ids.end();
             it++) {
-        return_map.emplace(*it, true);
+        return_map.emplace(*it, statistic(true, 1, 1));
 
     }
     if (use_memo) {
@@ -919,9 +919,9 @@ map<int, bool> prefix_tree_checker::and_check(const spot::ltl::multop* node,
  * @param valid value of map
  * @return
  */
-map<int, bool> prefix_tree_checker::create_int_bool_map(set<int> ids,
-        bool valid) {
-    map<int, bool> return_map;
+map<int, statistic> prefix_tree_checker::create_int_bool_map(set<int> ids,
+        statistic valid) {
+    map<int, statistic> return_map;
     for (set<int>::iterator it = ids.begin(); it != ids.end(); it++) {
         return_map.emplace(*it, valid);
     }
@@ -933,10 +933,10 @@ map<int, bool> prefix_tree_checker::create_int_bool_map(set<int> ids,
  * @param map to not
  * @return
  */
-map<int, bool> prefix_tree_checker::not_map(map<int, bool> map) {
-    for (std::map<int, bool>::iterator it = map.begin(); it != map.end();
+map<int, statistic> prefix_tree_checker::not_map(map<int, statistic> map) {
+    for (std::map<int, statistic>::iterator it = map.begin(); it != map.end();
             it++) {
-        it->second = !it->second;
+        it->second.is_satisfied = !it->second.is_satisfied;               // Dennis: this doesn't look right
     }
     return map;
 }
@@ -950,11 +950,11 @@ map<int, bool> prefix_tree_checker::not_map(map<int, bool> map) {
  * @param to_check the remaining traces to check; remove those for which
  * a truncating value has been found.
  */
-void prefix_tree_checker::add_satisfying_values(map<int, bool>& returned_vals,
-        bool to_satisfy, map<int, bool>& map_to_return, set<int>& to_check) {
-    for (map<int, bool>::iterator it = returned_vals.begin();
+void prefix_tree_checker::add_satisfying_values(map<int, statistic>& returned_vals,
+        bool to_satisfy, map<int, statistic>& map_to_return, set<int>& to_check) {
+    for (map<int, statistic>::iterator it = returned_vals.begin();
             it != returned_vals.end(); it++) {
-        if (it->second == to_satisfy) {
+        if (it->second.is_satisfied == to_satisfy) {
             map_to_return.insert(*it);
             to_check.erase(it->first);
         }
@@ -968,7 +968,7 @@ void prefix_tree_checker::add_satisfying_values(map<int, bool>& returned_vals,
  * @param return_val
  */
 void prefix_tree_checker::add_to_memo_map(const spot::ltl::formula* node,
-        trace_node trace_pt, map<int, bool> return_val) {
+        trace_node trace_pt, map<int, statistic> return_val) {
     memo_key insert_key;
     insert_key.node = node;
     insert_key.trace_pt = trace_pt;
@@ -986,13 +986,13 @@ void prefix_tree_checker::add_to_memo_map(const spot::ltl::formula* node,
     }
     insert_key.relevant_mappings = relevant_map;
 
-    boost::unordered_map<memo_key, map<int, bool>, hash_memo_key>::iterator find_this =
+    boost::unordered_map<memo_key, map<int, statistic>, hash_memo_key>::iterator find_this =
             memo_map.find(insert_key);
     if (find_this == memo_map.end()) {
         //todo: what can we infer about the value on unchecked traces???
         memo_map.emplace(insert_key, return_val);
     } else {
-        for (map<int, bool>::iterator it = return_val.begin();
+        for (map<int, statistic>::iterator it = return_val.begin();
                 it != return_val.end(); it++) {
             find_this->second.insert(*it);
         }
@@ -1006,7 +1006,7 @@ void prefix_tree_checker::add_to_memo_map(const spot::ltl::formula* node,
  * @param trace_ids
  * @return
  */
-map<int, bool> prefix_tree_checker::retrieve_memo(
+map<int, statistic> prefix_tree_checker::retrieve_memo(
         const spot::ltl::formula* node, trace_node trace_pt,
         std::set<int> trace_ids) {
     // create the retrival key
@@ -1029,15 +1029,15 @@ map<int, bool> prefix_tree_checker::retrieve_memo(
     retrieve_key.relevant_mappings = relevant_map;
 
     // check if the values we want are in the memo map
-    boost::unordered_map<memo_key, map<int, bool>, hash_memo_key>::iterator find_this =
+    boost::unordered_map<memo_key, map<int, statistic>, hash_memo_key>::iterator find_this =
             memo_map.find(retrieve_key);
     if (find_this == memo_map.end()) {
         // if there's none, return blank.
-        return map<int, bool>();
+        return map<int, statistic>();
     } else {
         // just return the results that are relevant to the trace ids we
         // are checking on.
-        map<int, bool> return_map;
+        map<int, statistic> return_map;
         for (set<int>::iterator trace_it = trace_ids.begin();
                 trace_it != trace_ids.end(); trace_it++) {
             // if we have the result for this trace, store it.
@@ -1082,12 +1082,12 @@ void prefix_tree_checker::clear_memo_map(){
  * @param traces all the traces to check on
  * @return
  */
-vector<map<string, string>> valid_instants_on_traces(
+vector<finding> valid_instants_on_traces(
         const spot::ltl::formula * prop_type,
         instants_pool_creator * instantiator, shared_ptr<prefix_tree> traces) {
     instantiator->reset_instantiations();
     // vector to return
-    vector<map<string, string>> return_vec;
+    vector<finding> return_vec;
     prefix_tree_checker checker;
 
     // create the ap collector for memoization
@@ -1116,19 +1116,21 @@ vector<map<string, string>> valid_instants_on_traces(
         }
 
         // is the instantiation valid?
-        bool valid = true;
+        //bool valid = true;
+        statistic result = statistic(true, 0, 0);
         for (set<shared_ptr<prefix_tree_node>>::iterator it =
                 iterable_traces.begin(); it != iterable_traces.end(); it++) {
-            bool valid_on_trace = checker.check_on_trace(prop_type, *it,
-                    instantiation_to_pass);
-            if (!valid_on_trace) {
-                valid = false;
-                break;
-            }
+            result = statistic(result, checker.check_on_trace(prop_type, *it,
+                    instantiation_to_pass));
+            //if (!valid_on_trace) {
+            //    valid = false;
+            //    break;
+            //}
         }
         //instantiated_prop_type->destroy();
-        if (valid) {
-            return_vec.push_back(*current_instantiation);
+        if (result.is_satisfied) {
+            finding f = {*current_instantiation, result};
+            return_vec.push_back(f);
         }
     }
     return return_vec;
