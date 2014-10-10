@@ -149,7 +149,7 @@ protected:
         statistic result_p;
         for (int i = 0; i < numkids; i++) {
             result_p = this->check(node->nth(i), trace_pt);
-            result.is_satisfied = result.is_satisfied && result_p.is_satisfied;
+            result.is_satisfied = (result.is_satisfied && result_p.is_satisfied);
             // result.support = ?;
             // result.support_potential = ?;
         }
@@ -170,11 +170,11 @@ protected:
         // we short circuit and return true. If we have not returned by the
         // end of the loop, then none of the children were true and we return
         // false.
-        statistic result = statistic(true, 0, 0);
+        statistic result = statistic(false, 0, 0);
         statistic result_p;
         for (int i = 0; i < numkids; i++) {
             result_p = this->check(node->nth(i), trace_pt);
-            result.is_satisfied = result.is_satisfied || result_p.is_satisfied;
+            result.is_satisfied = (result.is_satisfied || result_p.is_satisfied);
             // result.support = ?;
             // result.support_potential = ?;
         }
