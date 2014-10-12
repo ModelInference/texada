@@ -40,9 +40,13 @@ boost::program_options::options_description get_options_description() {
             ("separator_regex,s", boost::program_options::value<std::string>(), 
             "regular expression matching execution separator lines in the log [default: --]")
             ("ignore_nm_lines,i", "ignore non-matching lines [default: false]")
-            ("support", "show the support for each finding") // TODO: add hotkey for sup
-            ("confidence", boost::program_options::value<int>(), // TODO: add hotkey for confidence
-            "find all instances above the given confidence threshold. Must be between 0 to 100 [default: 100]");
+            ("no-vacuous-findings", "filter out findings which are only vacuously true (i.e. sup-threshold = 1)") // Dennis: consider renaming
+            ("sup-threshold", boost::program_options::value<int>(), "only find instances above the given support threshold [default: 0")
+            ("sup-pot-threshold", boost::program_options::value<int>(), "only find instances above the given support potential threshold [default: 0]")
+            ("conf-threshold", boost::program_options::value<float>(),
+            "only find instances above the given confidence threshold. Must be between 0 and 1 [default: 1]")
+            ("print-stats", "print the support and confidence of each finding")
+            ("global-thresholds", "make all inputed thresholds global [default: false]");    // Dennis: need to be more clear
     return desc;
 
 }

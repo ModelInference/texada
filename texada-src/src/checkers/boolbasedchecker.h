@@ -103,14 +103,11 @@ protected:
             T trace_pt, std::set<int> trace_ids) {
         const spot::ltl::formula * p = node->first();
         const spot::ltl::formula * q = node->second();
-        statistic result_p = this->check(p, trace_pt);
-        statistic result_q = this->check(q, trace_pt);
-        statistic result;
-        result.is_satisfied = !result_p.is_satisfied || result_q.is_satisfied;
-        // result.support = (result_p.is_satisfied) ? result_q.support : 0;
-        // result.support_potential = (result_p.is_satisfied) ? result_q.support_potential : 0;
-        return result;
-
+        if (!this->check(p, trace_pt).is_satisfied) {
+            return statistic(true, 0, 0);
+        } else {
+            return this->check(q, trace_pt);
+        }
     }
 
     /**
@@ -146,12 +143,17 @@ protected:
         // end of the loop, then none of the children were false and we return
         // true.
         statistic result = statistic(true, 0, 0);
-        statistic result_p;
         for (int i = 0; i < numkids; i++) {
-            result_p = this->check(node->nth(i), trace_pt);
-            result.is_satisfied = (result.is_satisfied && result_p.is_satisfied);
+            statistic result_i = this->check(node->nth(i), trace_pt);
+            result.is_satisfied = (result.is_satisfied && result_i.is_satisfied);
             // result.support = ?;
             // result.support_potential = ?;
+
+            // in vanilla setting, return on first instance of unsatisfiability
+            if (this->conf_threshold == 1.0 && !this->print_stats) {
+                if (!result_i.is_satisfied)
+                    break;
+            }
         }
         return result;
     }
@@ -171,12 +173,17 @@ protected:
         // end of the loop, then none of the children were true and we return
         // false.
         statistic result = statistic(false, 0, 0);
-        statistic result_p;
         for (int i = 0; i < numkids; i++) {
-            result_p = this->check(node->nth(i), trace_pt);
-            result.is_satisfied = (result.is_satisfied || result_p.is_satisfied);
+            statistic result_i = this->check(node->nth(i), trace_pt);
+            result.is_satisfied = (result.is_satisfied || result_i.is_satisfied);
             // result.support = ?;
             // result.support_potential = ?;
+
+            // in vanilla setting, return on first instance of satisfiability
+            if (this->conf_threshold == 1.0 && !this->print_stats) {
+                if (result_i.is_satisfied)
+                    break;
+            }
         }
         return result;
 

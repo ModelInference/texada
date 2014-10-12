@@ -28,6 +28,13 @@ public:
     // top level check on trace
     virtual statistic check_on_trace(const spot::ltl::formula * node,        // Dennis: change return type to (sup, conf)
             trace_type trace_pt)= 0;
+    // set checker thresholds
+    void configure(int sup_t, int sup_pot_t, float conf_t, bool print) {
+        sup_threshold = sup_t;
+        sup_pot_threshold = sup_pot_t;
+        conf_threshold = conf_t;
+        print_stats = print;
+    }
 protected:
 
     /**
@@ -195,6 +202,14 @@ protected:
 
         }
 
+        // Threshold related-stuff:
+        int sup_threshold = 0;
+        int sup_pot_threshold = 0;
+        float conf_threshold = 1.0;
+        bool global_thresholds = false;
+        bool one_conf = true;
+        bool zero_conf = false;
+
     }
 
     /**
@@ -271,6 +286,12 @@ protected:
             trace_type trace_pt, std::set<int> trace_ids = std::set<int>())= 0;
     virtual return_type and_check(const spot::ltl::multop* node,
             trace_type trace_pt, std::set<int> trace_ids = std::set<int>())= 0;
+
+    // Threshold related-stuff:
+    int sup_threshold = 0;
+    int sup_pot_threshold = 0;
+    float conf_threshold = 1.0;
+    bool print_stats = false;
 
 };
 
