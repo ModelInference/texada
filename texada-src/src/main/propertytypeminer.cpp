@@ -82,20 +82,37 @@ set<std::pair<const spot::ltl::formula*, statistic>> mine_property_type(        
     bool allow_reps = opts.count("allow-same-bindings");
     // whether to pregenerate instantiations
     bool pregen_instants = opts.count("pregen-instants");
-    // whether to output finding support
-    bool show_sup = opts.count("support");
-    // the confidence threshold
-    int conf_threshold;
-    if (opts.count("confidence")) {
-        conf_threshold = opts["confidence"].as<int>();
-    } else {
-        conf_threshold = 100;
-    }
-    // check that confidence threshold is within range
-    if (conf_threshold < 0 || conf_threshold > 100) {
-        std::cerr << "conf_threshold must be between 0 to 100 \n";
+    // whether to print finding statistics
+    bool print_stats = opts.count("print-stats");
+    // whether inputed thresholds are global
+    bool global = opts.count("global-thresholds");
+    /*
+     * Setting support, support-potential, and confidence thresholds.
+     * By default: sup_threshold = 0; sup_pot_threshold = 0; conf_threshold = 1.00
+     */
+    int sup_threshold = 0;
+    int sup_pot_threshold = 0;
+    float conf_threshold = 1.00;
+    if (opts.count("no-vacuous-findings")) sup_threshold = 1;
+    if (opts.count("sup-threshold")) sup_threshold = opts["sup-threshold"].as<int>();
+    if (opts.count("sup-pot-threshold")) sup_pot_threshold = opts["sup-pot-threshold"].as<int>();
+    if (opts.count("conf-threshold")) conf_threshold = opts["conf-threshold"].as<float>();
+    // check that support threshold is within range
+    if (sup_threshold < 0) {
+        std::cerr << "sup_threshold cannot be negative\n";
         exit(1);
     }
+    // check that support potential threshold is within range
+    if (sup_pot_threshold < 0) {
+        std::cerr << "sup_pot_threshold cannot be negative\n";
+        exit(1);
+    }
+    // check that confidence threshold is within range
+    if (conf_threshold < 0.0 || conf_threshold > 1.0) {
+        std::cerr << "conf_threshold must be between 0 and 1 \n";
+        exit(1);
+    }
+
     // the property type
     string prop_type = opts["property-type"].as<std::string>();
     // trace source
@@ -195,7 +212,7 @@ set<std::pair<const spot::ltl::formula*, statistic>> mine_property_type(        
         shared_ptr<set<vector<string_event> >> vector_trace_set =
                 dynamic_cast<linear_parser*>(parser)->return_vec_trace();
         valid_instants = valid_instants_on_traces(formula, instantiator,        // Dennis: need to change signature to input conf threshold
-                vector_trace_set, conf_threshold);
+                vector_trace_set, sup_threshold, sup_pot_threshold, conf_threshold, global, print_stats);
     } else if (use_map) {
         shared_ptr<set<map<string_event, vector<long>>> > map_trace_set = dynamic_cast<map_parser*>(parser)->return_map_trace();
         valid_instants = valid_instants_on_traces(formula, instantiator,        // Dennis: need to change signature to input conf threshold

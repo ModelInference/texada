@@ -6,6 +6,7 @@
  */
 
 #include "lineartracechecker.h"
+#include "boolbasedchecker.h"
 #include "../instantiation-tools/apsubbingcloner.h"
 #include "../instantiation-tools/pregeninstantspool.h"
 #include "ltlvisit/tostring.hh"
@@ -277,7 +278,7 @@ vector<finding> valid_instants_on_traces(
         const spot::ltl::formula * prop_type,
         instants_pool_creator * instantiator,
         shared_ptr<set<vector<string_event>>> traces) {
-    return valid_instants_on_traces(prop_type, instantiator, traces, 100);
+    return valid_instants_on_traces(prop_type, instantiator, traces, 0, 0, 1.0, false, false);
 }
 
 /**
@@ -293,11 +294,17 @@ vector<finding> valid_instants_on_traces(
         const spot::ltl::formula * prop_type,
         instants_pool_creator * instantiator,
         shared_ptr<set<vector<string_event>>> traces,
-        int conf_threshold) {
+        int sup_t,
+        int sup_pot_t,
+        float conf_t,
+        bool global,
+        bool print_stats) {
             instantiator->reset_instantiations();
             // vector to return
             vector<finding> return_vec;
             linear_trace_checker checker;
+            // set checker thresholds
+            checker.configure(sup_t, sup_pot_t, conf_t, print_stats);
             while (true) {
                 shared_ptr<map<string,string>> current_instantiation = instantiator->get_next_instantiation();
                 if (current_instantiation == NULL) {
@@ -305,20 +312,34 @@ vector<finding> valid_instants_on_traces(
                 }
                 const spot::ltl::formula * instantiated_prop_type = instantiate(prop_type,*current_instantiation,
                 instantiator->get_events_to_exclude());
+                bool valid = true;
                 statistic result = statistic(true, 0, 0);
                 for (set<vector<string_event>>::iterator traces_it = traces->begin();
                 traces_it != traces->end(); traces_it++) {
-                    result = statistic(result, checker.check_on_trace(instantiated_prop_type,&(traces_it->at(0))));
-                    // if (!valid_on_trace) {                          // Dennis: get rid of this premature break; we need to run every property instance on every trace.
-                    //    valid = false;
-                    //    break;
-                    //}
+                    statistic result_i = checker.check_on_trace(instantiated_prop_type,&(traces_it->at(0)));
+                    result = statistic(result, result_i);
+                    // in vanilla option, short-circuit on first unsatisfied trace
+                    if (conf_t == 1.0 && !result_i.is_satisfied) {
+                        valid = false;
+                        break;
+                    }
+                    // in !!! option, short-circuit on first trace where threshold is unsatisfied
+                    if (!global && (result_i.support < sup_t || result_i.support_potential < sup_pot_t)) {
+                        valid = false;
+                        break;
+                    }
+                    // in !!! option, short-circuit once thresholds are satisfied
+                    if (global && conf_t == 0.0 && !print_stats && (result.support >= sup_t && result.support_potential >= sup_pot_t)) {
+                        valid = true;
+                        break;
+                    }
                 }
                 instantiated_prop_type->destroy();
                 // calculate confidence of result
                 // int result_conf = (result.support_potential != 0) ? (result.support / result.support_potential) * 100 : 0;   // Dennis: by default, should we remove vacuously true findings? Should conf be measured out of 1 or 100?
                 //if (result_conf >= conf_threshold) {
-                if (result.is_satisfied) {
+                //if (result.support >= sup_t && result.support_potential >= sup_pot_t) {
+                if (valid) {
                     finding f = {*current_instantiation, result};
                     return_vec.push_back(f);
                 }

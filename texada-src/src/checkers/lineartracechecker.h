@@ -62,7 +62,11 @@ vector<finding> valid_instants_on_traces(
         const spot::ltl::formula * prop_type,
         instants_pool_creator * instantiator,
         shared_ptr<set<vector<string_event>>> traces,
-        int conf_threshold);
+        int sup_threshold,
+        int sup_pot_threshold,
+        float conf_threshold,
+        bool global_thresholds,
+        bool print_stats);
 
 } /* namespace texada */
 
