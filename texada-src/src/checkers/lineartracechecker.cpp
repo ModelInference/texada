@@ -27,11 +27,7 @@ statistic linear_trace_checker::check_on_trace(const spot::ltl::formula * node,
  */
 statistic linear_trace_checker::ap_check(const spot::ltl::atomic_prop *node,
         const string_event *trace, std::set<int> trace_ids) {
-    statistic result;
-    result.is_satisfied = (trace->get_name() == node->name()) ? true : false;
-    // result.support = (result.is_satisfied) ? 1 : 0;
-    // result.support_potential = 1;
-    return result;
+    return (trace->get_name() == node->name()) ? statistic(true, 1, 1) : statistic(false, 0, 1);
 }
 
 /**
@@ -46,34 +42,32 @@ statistic linear_trace_checker::until_check(const spot::ltl::binop* node,
         const string_event* trace_pt, std::set<int> trace_ids) {
     const spot::ltl::formula * p = node->first();
     const spot::ltl::formula * q = node->second();
-    statistic result;
+
     statistic result_p;
     statistic result_q;
-    statistic result_next;
 
     //if we get here, we did not see q: thus, false
     if (trace_pt->is_terminal()) {
-        result = statistic(false, 0, 1); // {TODO} should there be support potential returned from a terminal event?
-        return result;
+        return statistic(false, 0, 1);  // Dennis: not entirely sure about this
     }
     // if the q holds here, we have not yet seen q or !p, (these
     //  cause return) so true
     else if ((result_q = this->check(q, trace_pt)).is_satisfied) {
-        return result_q;  // {TODO}
+        return result_q;
     }
     // we know q does not hold from above, so if p does not hold,
     // we have !p and !q, which violates p U q.
+    else if (is_short_circuiting(result_p = this->check(p, trace_pt))) {
+        return result_p;
+    }
     // if !q and p holds, check on the next suffix trace
     else {
-        result_p = this->check(p, trace_pt);
-        result_next = this->check(node, trace_pt + 1);
-        result = statistic(result_p, result_next);
-        return result;
+        return statistic(result_p, this->check(node, trace_pt + 1));
     }
 }
 
 /**
- * p R q will be true if !p does not occur before (inclusive) q
+ * p R q will be true if !q does not occur before (inclusive) q
  * @param node: the atomic proposition to check
  * @param trace: pointer to the start of the trace
  * @param trace_ids
@@ -83,32 +77,29 @@ statistic linear_trace_checker::release_check(const spot::ltl::binop* node,
         const string_event* trace_pt, std::set<int> trace_ids) {
     const spot::ltl::formula * p = node->first();
     const spot::ltl::formula * q = node->second();
-    statistic result;
+
     statistic result_p;
     statistic result_q;
-    statistic result_next;
 
     //if we get here, q always held: true
     if (trace_pt->is_terminal()) {
-        result = statistic(true, 0, 0); // Dennis: or should it be {true, 1, 1}?
-        return result;
+        return statistic(true, 0, 0);   // Dennis: not entirely sure about this
+    }
+
+    // if !q occurs before p & q, false
+    else if (is_short_circuiting(result_q = this->check(q, trace_pt))) {
+        return result_q;
     }
 
     // we know from the previous if that q holds and held up to here,
     // so if p also holds, return true
     else if ((result_p = this->check(p, trace_pt)).is_satisfied) {
-        result_q = this->check(q, trace_pt);
-        result = statistic(result_q, result_p);
-        return result;
+        return statistic(result_q, result_p);
     }
 
-    // we know from above that p has failed to be released, so we check
-    // if q holds here and check recursively down the trace
+    // if the q holds, check on the next suffix trace
     else {
-        result_q = this->check(q, trace_pt);
-        result_next = this->check(node, trace_pt + 1);
-        result = statistic(result_q, result_next);
-        return result;                 // Dennis: consider passing in the partial result into the check function to achieve tail recursion
+        return statistic(result_q, this->check(node, trace_pt + 1));
     }
 
 }
@@ -124,31 +115,28 @@ statistic linear_trace_checker::strongrelease_check(const spot::ltl::binop* node
         const string_event* trace_pt, std::set<int> trace_ids) {
     const spot::ltl::formula * p = node->first();
     const spot::ltl::formula * q = node->second();
-    statistic result;
+
     statistic result_p;
     statistic result_q;
-    statistic result_next;
 
     //if we get here, q always held, p never occurred: false
     if (trace_pt->is_terminal()) {
-        result = statistic(false, 0, 1); // Dennis: or should it be {true, 0, 0}?
-        return result;
+        return statistic(false, 0, 1);
+    }
+    // if !q occurs before p & q, false
+    else if (is_short_circuiting(result_q = this->check(q, trace_pt))) {
+        return result_q;
     }
 
     // we know from the previous if that q holds and held up to here,
     // so if p also holds, return true
     else if ((result_p = this->check(p, trace_pt)).is_satisfied) {
-        result_q = this->check(q, trace_pt);
-        result = statistic(result_q, result_p);
-        return result;
+        return statistic(result_q, result_p);
     }
 
     // if the q holds, check on the next suffix trace
     else {
-        result_q = this->check(q, trace_pt);
-        result_next = this->check(node, trace_pt + 1);
-        result = statistic(result_q, result_next);
-        return result;                 // Dennis: consider passing in the partial result into the check function to achieve tail recursion
+        return statistic(result_q, this->check(node, trace_pt + 1));
     }
 
 }
@@ -164,15 +152,13 @@ statistic linear_trace_checker::weakuntil_check(const spot::ltl::binop* node,
         const string_event* trace_pt, std::set<int> trace_ids) {
     const spot::ltl::formula * p = node->first();
     const spot::ltl::formula * q = node->second();
-    statistic result;
+
     statistic result_p;
     statistic result_q;
-    statistic result_next;
 
     //if we get here, we did not see q or !p, so true.
     if (trace_pt->is_terminal()) {
-        result = statistic(true, 0, 0);
-        return result;
+        return statistic(true, 0, 0);
     }
     // if the q holds here, we have not yet seen q or !p, (these
     //  cause return) so true
@@ -181,15 +167,17 @@ statistic linear_trace_checker::weakuntil_check(const spot::ltl::binop* node,
     }
     // we know q does not hold from above, so if p does not hold,
     // we have !p and !q, which violates p U q.
+    else if (is_short_circuiting(result_p = this->check(p, trace_pt))) {
+        return result_p;
+    }
     // if !q and p holds, check on the next suffix trace
     else {
-        result_p = this->check(p, trace_pt);
-        result_next = this->check(node, trace_pt + 1);
-        result = statistic(result_p, result_next);
-        return result;
+        return statistic(result_p, this->check(node, trace_pt + 1));
     }
 
+
 }
+
 
 /**
  * Gp will be true if Gp is true on every trace suffix of the given
@@ -202,23 +190,21 @@ statistic linear_trace_checker::weakuntil_check(const spot::ltl::binop* node,
 statistic linear_trace_checker::globally_check(const spot::ltl::unop* node,
         const string_event* trace_pt, std::set<int> trace_ids) {
     const spot::ltl::formula * p = node->child();
-    statistic result;
+
     statistic result_p;
-    statistic result_next;
 
     // base case: if we're at END_VAR, return true to not effect &&
     if (trace_pt->is_terminal()) {
-        result = {true, 0, 0};
-        return result;
+        return statistic(true, 0, 0);
+    } else if (is_short_circuiting(result_p = this->check(p, trace_pt))) {
+        return result_p;
     } else {
         //Return whether subformula is true on this trace, recursive check on
         // all subsequent traces.
-        result_p = this->check(p, trace_pt);
-        result_next = this->check(node, trace_pt + 1);
-        result = statistic(result_p, result_next);
-        return result;
+        return statistic(result_p, this->check(node, trace_pt + 1));
     }
 }
+
 
 /**
  * Fp will be true if Fp is true on some trace suffix of the given
@@ -231,21 +217,21 @@ statistic linear_trace_checker::globally_check(const spot::ltl::unop* node,
 statistic linear_trace_checker::finally_check(const spot::ltl::unop* node,
         const string_event* trace_pt, std::set<int> trace_ids) {
     const spot::ltl::formula * p = node->child();
-    statistic result;
+
     statistic result_p;
 
     // base case: if we're at END_VAR, return false to not effect ||
     if (trace_pt->is_terminal()) {
-        result = statistic(false, 0, 1);         // Dennis: should it be {false, 0, 0}
-        return result;
+        return statistic(false, 0, 1);
     } else if ((result_p = this->check(p, trace_pt)).is_satisfied) {
-        // if p has been satisfied, return the result of checking p
         return result_p;
     } else {
-        // if p has not been satisfied, recursively check on subsequent traces
+        //Return whether subformula is true on this trace, recursive check on
+        // all subsequent traces.
         return this->check(node, trace_pt + 1);
     }
 }
+
 
 /**
  * Xp will be true if p is true on the next suffix of the given
@@ -255,7 +241,7 @@ statistic linear_trace_checker::finally_check(const spot::ltl::unop* node,
  * @param trace_ids
  * @return
  */
-statistic linear_trace_checker::next_check(const spot::ltl::unop* node,  // Dennis: compute and return sup and sup_pot;  change return type to return support and confidence (or support potential?)
+statistic linear_trace_checker::next_check(const spot::ltl::unop* node,
         const string_event* trace_pt, std::set<int> trace_ids) {
     const spot::ltl::formula * p = node->child();
     // if we are at the terminal event, the next event is also a terminal
@@ -264,6 +250,31 @@ statistic linear_trace_checker::next_check(const spot::ltl::unop* node,  // Denn
         return this->check(p, trace_pt);
     }
     return this->check(p, trace_pt + 1);
+}
+
+
+/**
+ * A finding will be short circuiting if the checker is currently
+ * configured to allow short circuiting and either the finding is
+ * negative with a conf_threshold of 1.0, or all sup and sup-pot
+ * thresholds have been exceeded with a conf_threshold of 0.0
+ * @param finding: the statistic of a finding
+ * @return whether to short-circuit
+ */
+bool linear_trace_checker::is_short_circuiting(statistic finding) {
+    if (this->conf_threshold == 1.0 && !this->print_stats) {
+    // short circuit for vanilla setting
+        return (finding.support >= this->sup_threshold
+                && finding.support_potential >= this->sup_pot_threshold
+                && !finding.is_satisfied);
+    } else if (this->conf_threshold == 0.0 && !this->print_stats) {
+    // short circuit for 0-conf threshold setting
+        return (finding.support >= this->sup_threshold
+                && finding.support_potential >= this->sup_pot_threshold);
+    } else {
+    // otherwise, no short circuiting
+        return false;
+    }
 }
 
 /**
@@ -318,17 +329,17 @@ vector<finding> valid_instants_on_traces(
                 traces_it != traces->end(); traces_it++) {
                     statistic result_i = checker.check_on_trace(instantiated_prop_type,&(traces_it->at(0)));
                     result = statistic(result, result_i);
-                    // in vanilla option, short-circuit on first unsatisfied trace
+                    // in vanilla setting, short-circuit on first unsatisfied trace
                     if (conf_t == 1.0 && !result_i.is_satisfied) {
                         valid = false;
                         break;
                     }
-                    // in !!! option, short-circuit on first trace where threshold is unsatisfied
-                    if (!global && (result_i.support < sup_t || result_i.support_potential < sup_pot_t)) {
+                    // in non-global setting, short-circuit on first trace where a threshold is unsatisfied
+                    if (!global && (result_i.support < sup_t || result_i.support_potential < sup_pot_t)) {  // should confidence also be checked non-globally?
                         valid = false;
                         break;
                     }
-                    // in !!! option, short-circuit once thresholds are satisfied
+                    // in global 0-conf threshold setting, short-circuit once thresholds are satisfied
                     if (global && conf_t == 0.0 && !print_stats && (result.support >= sup_t && result.support_potential >= sup_pot_t)) {
                         valid = true;
                         break;
@@ -336,10 +347,9 @@ vector<finding> valid_instants_on_traces(
                 }
                 instantiated_prop_type->destroy();
                 // calculate confidence of result
-                // int result_conf = (result.support_potential != 0) ? (result.support / result.support_potential) * 100 : 0;   // Dennis: by default, should we remove vacuously true findings? Should conf be measured out of 1 or 100?
-                //if (result_conf >= conf_threshold) {
-                //if (result.support >= sup_t && result.support_potential >= sup_pot_t) {
-                if (valid) {
+                int result_conf = (result.support_potential != 0) ? ((float) result.support / (float) result.support_potential) : 1.0;   // Dennis: by default, should we remove vacuously true findings?
+                // return finding if it is valid (the meaning of which depends on checker's configuration) and its statistics meets all thresholds
+                if (valid && result_conf >= conf_t && result.support >= sup_t && result.support_potential >= sup_pot_t) {
                     finding f = {*current_instantiation, result};
                     return_vec.push_back(f);
                 }

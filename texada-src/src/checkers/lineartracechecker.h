@@ -50,6 +50,7 @@ private:
             const string_event* trace_pt, std::set<int> trace_ids = std::set<int>());
     virtual statistic next_check(const spot::ltl::unop* node,
             const string_event* trace_pt, std::set<int> trace_ids = std::set<int>());
+    virtual bool is_short_circuiting(statistic result);
 
 };
 
