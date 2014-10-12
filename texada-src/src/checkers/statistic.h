@@ -36,7 +36,7 @@ typedef struct statistic {
 
     bool operator==(statistic other) const
     {
-        return (is_satisfied == other.is_satisfied && support == other.support && support_potential == other.support_potential);
+        return (is_satisfied == other.is_satisfied);    // Dennis: consider changing
     }
 
 } statistic;

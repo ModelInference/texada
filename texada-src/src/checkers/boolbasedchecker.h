@@ -31,11 +31,7 @@ protected:
      * @return
      */
     virtual statistic false_check(std::set<int> trace_ids) { // Dennis: compute and return sup and sup_pot;  change return type to return support and confidence (or support potential?)
-        statistic result;
-        result.is_satisfied = false;
-        // result.support = 0;
-        // result.support_potential = 0;
-        return result;
+        return statistic(false, 0, 0);
     }
 
     /**
@@ -44,11 +40,7 @@ protected:
      * @return
      */
     virtual statistic true_check(std::set<int> trace_ids) { // Dennis: compute and return sup and sup_pot;  change return type to return support and confidence (or support potential?)
-        statistic result;
-        result.is_satisfied = true;
-        // result.support = 0;
-        // result.support_potential = 0;
-        return result;
+        return statistic(true, 0, 0);
     }
 
     /**
