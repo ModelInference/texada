@@ -178,6 +178,128 @@ TEST(LinearTraceCheckerTest,Until) {
 }
 
 // checking support and support potential of property instances are computed properly
-//TEST(LinearTraceCheckerTest, SupAndSupPot) {
-    // TODO
-//}
+TEST(LinearTraceCheckerTest, SupAndSupPot) {
+
+    // create trace a b a b a c
+    std::vector<texada::string_event> trace_vec;
+    trace_vec.push_back(texada::string_event("a"));
+    trace_vec.push_back(texada::string_event("a"));
+    trace_vec.push_back(texada::string_event("c"));
+    trace_vec.push_back(texada::string_event("a"));
+    trace_vec.push_back(texada::string_event("b"));
+    trace_vec.push_back(texada::string_event("a"));
+    trace_vec.push_back(texada::string_event());
+    texada::string_event* trace = &trace_vec[0];
+
+    texada::linear_trace_checker* checker = new texada::linear_trace_checker();
+    checker->configure(0, 0, 1.0, true);
+
+    // Tests to try and cover the support and support-potential measurements of findings
+
+    std::string input = "G(a->Fb)";
+    spot::ltl::parse_error_list pel;
+    const spot::ltl::formula* f = spot::ltl::parse(input, pel);
+    ASSERT_EQ(3, checker->check_on_trace(f, trace).support);
+    ASSERT_EQ(4, checker->check_on_trace(f, trace).support_potential);
+    f->destroy();
+
+    //until
+    input = "a U b";
+    f = spot::ltl::parse(input,pel);
+    ASSERT_EQ(4, (checker->check_on_trace(f, trace)).support);
+    ASSERT_EQ(5, (checker->check_on_trace(f, trace)).support_potential);
+    f->destroy();
+
+    //weak until
+    input = "a W b";
+    f = spot::ltl::parse(input,pel);
+    ASSERT_EQ(3, (checker->check_on_trace(f, trace)).support);
+    ASSERT_EQ(4, (checker->check_on_trace(f, trace)).support_potential);
+    f->destroy();
+
+    //release
+    input = "b R a";
+    f = spot::ltl::parse(input,pel);
+    ASSERT_EQ(3, (checker->check_on_trace(f, trace)).support);
+    ASSERT_EQ(5, (checker->check_on_trace(f, trace)).support_potential);
+    f->destroy();
+
+    //strong release
+    input = "b M a";
+    f = spot::ltl::parse(input,pel);
+    ASSERT_EQ(4, (checker->check_on_trace(f, trace)).support);
+    ASSERT_EQ(6, (checker->check_on_trace(f, trace)).support_potential);
+    f->destroy();
+/*
+    //xor
+    input = "b xor a";
+    f = spot::ltl::parse(input,pel);
+    ASSERT_EQ((checker->check_on_trace(f, trace)).support);
+    ASSERT_EQ((checker->check_on_trace(f, trace)).support_potential);
+    f->destroy();
+
+    //equiv, iff
+    input = "b <-> a";
+    f = spot::ltl::parse(input,pel);
+    ASSERT_EQ((checker->check_on_trace(f, trace)).support);
+    ASSERT_EQ((checker->check_on_trace(f, trace)).support_potential);
+    f->destroy();
+*/
+    //implies
+    input = "a -> b";
+    f = spot::ltl::parse(input,pel);
+    ASSERT_EQ(0, (checker->check_on_trace(f, trace)).support);
+    ASSERT_EQ(1, (checker->check_on_trace(f, trace)).support_potential);
+    f->destroy();
+
+    input = "a -> Fb";
+    f = spot::ltl::parse(input,pel);
+    ASSERT_EQ(1, (checker->check_on_trace(f, trace)).support);
+    ASSERT_EQ(1, (checker->check_on_trace(f, trace)).support_potential);
+    f->destroy();
+/*
+    //or
+    input = "a | b";
+    f = spot::ltl::parse(input,pel);
+    ASSERT_EQ((checker->check_on_trace(f, trace)).support);
+    ASSERT_EQ((checker->check_on_trace(f, trace)).support_potential);
+    f->destroy();
+*/
+    //and
+    input = "a & b";
+    f = spot::ltl::parse(input,pel);
+    ASSERT_EQ(1, (checker->check_on_trace(f, trace)).support);
+    ASSERT_EQ(2, (checker->check_on_trace(f, trace)).support_potential);
+    f->destroy();
+
+    //finally
+    input = "Fa";
+    f = spot::ltl::parse(input,pel);
+    ASSERT_EQ(1, (checker->check_on_trace(f, trace)).support);
+    ASSERT_EQ(1, (checker->check_on_trace(f, trace)).support_potential);
+    f->destroy();
+
+    //globally
+    input = "Ga";
+    f = spot::ltl::parse(input,pel);
+    ASSERT_EQ(4, (checker->check_on_trace(f, trace)).support);
+    ASSERT_EQ(6, (checker->check_on_trace(f, trace)).support_potential);
+    f->destroy();
+
+    // next
+    input = "Xa";
+    f = spot::ltl::parse(input,pel);
+    ASSERT_EQ(1, (checker->check_on_trace(f, trace)).support);
+    ASSERT_EQ(1, (checker->check_on_trace(f, trace)).support_potential);
+    f->destroy();
+/*
+    // not
+    input = "!b";
+    f = spot::ltl::parse(input,pel);
+    ASSERT_EQ((checker->check_on_trace(f, trace)).support);
+    ASSERT_EQ((checker->check_on_trace(f, trace)).support_potential);
+    f->destroy();
+*/
+    //clean up
+    delete checker;
+}
