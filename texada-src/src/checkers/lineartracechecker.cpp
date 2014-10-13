@@ -94,7 +94,7 @@ statistic linear_trace_checker::release_check(const spot::ltl::binop* node,
     // we know from the previous if that q holds and held up to here,
     // so if p also holds, return true
     else if ((result_p = this->check(p, trace_pt)).is_satisfied) {
-        return statistic(result_q, result_p);
+        return result_q;
     }
 
     // if the q holds, check on the next suffix trace
@@ -163,7 +163,7 @@ statistic linear_trace_checker::weakuntil_check(const spot::ltl::binop* node,
     // if the q holds here, we have not yet seen q or !p, (these
     //  cause return) so true
     else if ((result_q = this->check(q, trace_pt)).is_satisfied) {
-        return result_q;
+        return statistic(true, 0, 0);
     }
     // we know q does not hold from above, so if p does not hold,
     // we have !p and !q, which violates p U q.

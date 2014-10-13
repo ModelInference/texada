@@ -127,27 +127,24 @@ protected:
      * @param trace_ids
      * @return
      */
-    virtual statistic and_check(const spot::ltl::multop* node, T trace_pt, // Dennis: compute and return sup and sup_pot;  change return type to return support and confidence (or support potential?)
+    virtual statistic and_check(const spot::ltl::multop* node, T trace_pt,
             std::set<int> trace_ids) {
         int numkids = node->size();
         // for each of the and's children, we check if it is false: if it is,
         // we short circuit and return false. If we have not returned by the
         // end of the loop, then none of the children were false and we return
         // true.
-        statistic result = statistic(true, 0, 0);
-        for (int i = 0; i < numkids; i++) {
-            statistic result_i = this->check(node->nth(i), trace_pt);
-            result.is_satisfied = (result.is_satisfied && result_i.is_satisfied);
-            // result.support = ?;
-            // result.support_potential = ?;
 
-            // in vanilla setting, return on first instance of unsatisfiability
-            if (this->conf_threshold == 1.0 && !this->print_stats) {
-                if (!result_i.is_satisfied)
-                    break;
+        statistic result = statistic(true, 0, 0);
+
+        for (int i = 0; i < numkids; i++) {
+            result = statistic(result, this->check(node->nth(i), trace_pt));
+            if (this->conf_threshold == 1.0 && !this->print_stats && !result.is_satisfied) {
+                return result;
             }
         }
         return result;
+
     }
 
     /**
