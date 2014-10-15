@@ -154,28 +154,32 @@ protected:
      * @param trace_ids
      * @return
      */
-    virtual statistic or_check(const spot::ltl::multop* node, T trace_pt, // Dennis: compute and return sup and sup_pot;  change return type to return support and confidence (or support potential?)
+    virtual statistic or_check(const spot::ltl::multop* node, T trace_pt,
             std::set<int> trace_ids) {
         int numkids = node->size();
         // for each of the or's children, we check if it is true: if it is,
         // we short circuit and return true. If we have not returned by the
         // end of the loop, then none of the children were true and we return
         // false.
-        statistic result = statistic(false, 0, 0);
-        for (int i = 0; i < numkids; i++) {
-            statistic result_i = this->check(node->nth(i), trace_pt);
-            result.is_satisfied = (result.is_satisfied || result_i.is_satisfied);
-            // result.support = ?;
-            // result.support_potential = ?;
 
-            // in vanilla setting, return on first instance of satisfiability
-            if (this->conf_threshold == 1.0 && !this->print_stats) {
-                if (result_i.is_satisfied)
-                    break;
+        statistic result = statistic(false, 0, 0);
+        statistic result_i;
+
+        for (int i = 0; i < numkids; i++) {
+            result_i = this->check(node->nth(i), trace_pt);
+
+            if (result.is_satisfied && result_i.is_satisfied) {
+                result = (result.support < result_i.support) ? result : result_i;
+            } else if (!result.is_satisfied && !result_i.is_satisfied) {
+                result = (result.confidence() > result_i.confidence()) ? result : result_i;   // Dennis: not entirely sure about this
+            } else {
+                result = (result_i.is_satisfied) ? result_i : result;
+                if (this->conf_threshold == 1.0 && !this->print_stats && this->sup_threshold == 0 && this->sup_pot_threshold) {
+                    return result;
+                }
             }
         }
         return result;
-
     }
 
 };

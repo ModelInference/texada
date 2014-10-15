@@ -347,8 +347,8 @@ vector<finding> valid_instants_on_traces(
                 }
                 instantiated_prop_type->destroy();
                 // calculate confidence of result
-                int result_conf = (result.support_potential != 0) ? ((float) result.support / (float) result.support_potential) : 1.0;   // Dennis: by default, should we remove vacuously true findings?
-                // return finding if it is valid (the meaning of which depends on checker's configuration) and its statistics meets all thresholds
+                float result_conf = (result.support_potential != 0) ? ((float) result.support / (float) result.support_potential) : 1.0;   // Dennis: by default, should we remove vacuously true findings?
+                // return finding if it is valid (the meaning of which depends on checker's configuration) and its statistics meets all specified thresholds
                 if (valid && result_conf >= conf_t && result.support >= sup_t && result.support_potential >= sup_pot_t) {
                     finding f = {*current_instantiation, result};
                     return_vec.push_back(f);
