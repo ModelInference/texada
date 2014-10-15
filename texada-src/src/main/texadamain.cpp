@@ -92,7 +92,9 @@ int main(int ac, char* av[]) {
         for (std::set<std::pair<const spot::ltl::formula*, texada::statistic>>::iterator it =
                 found_instants.begin(); it != found_instants.end(); it++) {
             std::cout << spot::ltl::to_string((*it).first) << "\n";
-            // Dennis: need to output support and confidence !!!!!!!!!!!!!!!!!!!!!!!!!!
+            if (opts_map.count("print-stats")) {
+                // TODO: print stats
+            }
         }
 
         // exception catching

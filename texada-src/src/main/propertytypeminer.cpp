@@ -93,7 +93,10 @@ set<std::pair<const spot::ltl::formula*, statistic>> mine_property_type(        
     int sup_threshold = 0;
     int sup_pot_threshold = 0;
     float conf_threshold = 1.00;
-    if (opts.count("no-vacuous-findings")) sup_threshold = 1;
+    if (opts.count("no-vacuous-findings")) {
+        sup_threshold = 1;
+        global = true;
+    }
     if (opts.count("sup-threshold")) sup_threshold = opts["sup-threshold"].as<int>();
     if (opts.count("sup-pot-threshold")) sup_pot_threshold = opts["sup-pot-threshold"].as<int>();
     if (opts.count("conf-threshold")) conf_threshold = opts["conf-threshold"].as<float>();
@@ -206,33 +209,33 @@ set<std::pair<const spot::ltl::formula*, statistic>> mine_property_type(        
                 specified_formula_events);
     }
 
-    vector<finding> valid_instants;                                 // Dennis: need to change type to accept sup and conf info
+    vector<finding> valid_instants;
     // check all valid instantiations on each trace
     if (use_lin) {
         shared_ptr<set<vector<string_event> >> vector_trace_set =
                 dynamic_cast<linear_parser*>(parser)->return_vec_trace();
-        valid_instants = valid_instants_on_traces(formula, instantiator,        // Dennis: need to change signature to input conf threshold
+        valid_instants = valid_instants_on_traces(formula, instantiator,
                 vector_trace_set, sup_threshold, sup_pot_threshold, conf_threshold, global, print_stats);
     } else if (use_map) {
         shared_ptr<set<map<string_event, vector<long>>> > map_trace_set = dynamic_cast<map_parser*>(parser)->return_map_trace();
-        valid_instants = valid_instants_on_traces(formula, instantiator,        // Dennis: need to change signature to input conf threshold
+        valid_instants = valid_instants_on_traces(formula, instantiator,
                 map_trace_set);
     } else if (use_pretree) {
         shared_ptr<prefix_tree> prefix_tree_traces = dynamic_cast<prefix_tree_parser*>(parser)->return_prefix_trees();
-        valid_instants = valid_instants_on_traces(formula, instantiator,        // Dennis: need to change signature to input conf threshold
+        valid_instants = valid_instants_on_traces(formula, instantiator,
                 prefix_tree_traces);
     }
 
-    set<std::pair<const spot::ltl::formula*, statistic>> return_set;                                  // Dennis: need to change type to carry sup and conf info
+    set<std::pair<const spot::ltl::formula*, statistic>> return_set;
     int valid_instants_size = valid_instants.size();
     for (int i = 0; i < valid_instants_size; i++) {
         map<string, string> binding_i = valid_instants.at(i).binding;
         statistic stat_i = valid_instants.at(i).stat;
-        for (map<string, string>::iterator it = binding_i.begin();   // Dennis: need to change type
+        for (map<string, string>::iterator it = binding_i.begin();
                 it != binding_i.end(); it++) {
         }
         const spot::ltl::formula * valid_form_i = instantiate(formula,
-                binding_i, specified_formula_events);                // Dennis: need to also take out sup and conf info
+                binding_i, specified_formula_events);
         return_set.insert(std::make_pair(valid_form_i, stat_i));
     }
 
