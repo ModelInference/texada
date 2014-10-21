@@ -85,6 +85,12 @@ set<std::pair<const spot::ltl::formula*, statistic>> mine_property_type(
     bool print_stats = opts.count("print-stats");
     // whether inputed thresholds are global
     bool global = opts.count("use-global-thresholds");
+
+    /*
+     * Begin: Focus for code review Oct 22, 2014
+     */
+
+
     /*
      * Setting support, support-potential, and confidence thresholds.
      * By default: sup_threshold = 0; sup_pot_threshold = 0; conf_threshold = 1.00
@@ -114,6 +120,12 @@ set<std::pair<const spot::ltl::formula*, statistic>> mine_property_type(
         std::cerr << "conf_threshold must be between 0 and 1 \n";
         exit(1);
     }
+
+
+    /*
+     * End: Focus for code review Oct 22, 2014
+     */
+
 
     // the property type
     string prop_type = opts["property-type"].as<std::string>();
@@ -225,6 +237,12 @@ set<std::pair<const spot::ltl::formula*, statistic>> mine_property_type(
                 prefix_tree_traces);
     }
 
+
+    /*
+     * Begin: Focus for code review Oct 22, 2014
+     */
+
+
     set<std::pair<const spot::ltl::formula*, statistic>> return_set;
     int valid_instants_size = valid_instants.size();
     for (int i = 0; i < valid_instants_size; i++) {
@@ -237,6 +255,12 @@ set<std::pair<const spot::ltl::formula*, statistic>> mine_property_type(
                 binding_i, specified_formula_events);
         return_set.insert(std::make_pair(valid_form_i, stat_i));
     }
+
+
+    /*
+     * End: Focus for code review Oct 22, 2014
+     */
+
 
     delete instantiator;
     delete parser;

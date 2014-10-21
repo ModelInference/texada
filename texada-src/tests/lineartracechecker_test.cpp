@@ -285,9 +285,14 @@ TEST(LinearTraceCheckerTest, SupAndSupPot) {
     ASSERT_EQ(4, (checker->check_on_trace(f, trace)).support);
     ASSERT_EQ(6, (checker->check_on_trace(f, trace)).support_potential);
     f->destroy();
-
+/*
     //never
-
+    input = "!Ga";
+    f = spot::ltl::parse(input,pel);
+    ASSERT_EQ((checker->check_on_trace(f, trace)).support);
+    ASSERT_EQ((checker->check_on_trace(f, trace)).support_potential);
+    f->destroy();
+*/
     // next
     input = "Xa";
     f = spot::ltl::parse(input,pel);

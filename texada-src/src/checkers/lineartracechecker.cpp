@@ -315,9 +315,10 @@ vector<std::pair<map<string, string>, statistic>> valid_instants_on_traces(
             // vector to return
             vector<std::pair<map<string, string>, statistic>> return_vec;
             linear_trace_checker checker;
-            // set checker thresholds
+            // set checker configurations
             checker.configure(sup_t, sup_pot_t, conf_t, print_stats);
-            // simplifier for turning formulas into negative normal form so that statistics can be computed
+            // simplifier for turning formulas into negative normal form so that
+            // statistics of formulae involving not, xor, <-> can be computed.
             std::unique_ptr<spot::ltl::ltl_simplifier> simplifier(new spot::ltl::ltl_simplifier());
             while (true) {
                 shared_ptr<map<string,string>> current_instantiation = instantiator->get_next_instantiation();
@@ -327,14 +328,14 @@ vector<std::pair<map<string, string>, statistic>> valid_instants_on_traces(
                 const spot::ltl::formula * instantiated_prop_type = instantiate(prop_type,*current_instantiation,
                 instantiator->get_events_to_exclude());
                 // unless checker is configured for the vanilla setting, turn formula into negative normal form
-                // so that sup and sup-pot of negations can be computed.
                 if (sup_t != 0 || sup_pot_t != 0 || conf_t != 1.0 || print_stats) {
                     // move original formula to a temp ptr to be destroyed
                     const spot::ltl::formula * to_delete = instantiated_prop_type;
                     instantiated_prop_type = simplifier->negative_normal_form(instantiated_prop_type);
                     to_delete->destroy();
                 }
-                bool valid = true;          // Dennis: consider renaming
+                // the meaning of validity will depend on the user inputed settings
+                bool valid = true;
                 statistic result = statistic(true, 0, 0);
                 for (set<vector<string_event>>::iterator traces_it = traces->begin();
                 traces_it != traces->end(); traces_it++) {
@@ -346,7 +347,7 @@ vector<std::pair<map<string, string>, statistic>> valid_instants_on_traces(
                         break;
                     }
                     // in non-global setting, short-circuit on first trace where a threshold is unsatisfied
-                    if (!global && (result_i.support < sup_t || result_i.support_potential < sup_pot_t)) {  // should confidence also be checked non-globally?
+                    if (!global && (result_i.support < sup_t || result_i.support_potential < sup_pot_t || result_i.confidence() < conf_t)) {
                         valid = false;
                         break;
                     }
@@ -357,10 +358,8 @@ vector<std::pair<map<string, string>, statistic>> valid_instants_on_traces(
                     }
                 }
                 instantiated_prop_type->destroy();
-                // calculate confidence of result
-                float result_conf = (result.support_potential != 0) ? ((float) result.support / (float) result.support_potential) : 1.0;   // Dennis: by default, should we remove vacuously true findings?
-                // return finding if it is valid (the meaning of which depends on checker's configuration) and its statistics meets all specified thresholds
-                if (valid && result_conf >= conf_t && result.support >= sup_t && result.support_potential >= sup_pot_t) {
+                // return finding if it is valid and its statistics meets all specified thresholds
+                if (valid && result.confidence() >= conf_t && result.support >= sup_t && result.support_potential >= sup_pot_t) {
                     std::pair<map<string, string>, statistic> finding(*current_instantiation, result);
                     return_vec.push_back(finding);
                 }
