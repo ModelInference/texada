@@ -16,7 +16,6 @@
 #include <ltlast/allnodes.hh>
 #include <vector>
 #include "statistic.h"
-#include "finding.h"
 
 namespace texada {
 using std::vector;
@@ -141,9 +140,7 @@ private:
 
 };
 
-// vector<finding> valid_instants_on_traces(TODO)
-
-vector<finding> valid_instants_on_traces(
+vector<std::pair<map<string, string>, statistic>> valid_instants_on_traces(
         const spot::ltl::formula * prop_type,
         instants_pool_creator * instantiator, shared_ptr<prefix_tree> traces);
 

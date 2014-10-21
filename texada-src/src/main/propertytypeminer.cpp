@@ -28,7 +28,6 @@
 #include "../checkers/lineartracechecker.h"
 #include "../checkers/prefixtreechecker.h"
 #include "../checkers/statistic.h"
-#include "../checkers/finding.h"
 #include "../instantiation-tools/apsubbingcloner.h"
 #include "opts.h"
 
@@ -71,7 +70,7 @@ set<std::pair<const spot::ltl::formula*, statistic>> mine_map_property_type(stri
  * @param use_map use map miner if true, linear miner otherwise
  * @return valid instantiations of the inputted formula on inputted trace set
  */
-set<std::pair<const spot::ltl::formula*, statistic>> mine_property_type(                                  // Dennis: need to change return type to return support and confidence information
+set<std::pair<const spot::ltl::formula*, statistic>> mine_property_type(
         boost::program_options::variables_map opts) {
     // collect all relevant information from options
     // what trace type to use. TODO: update for pre_tree when added
@@ -85,7 +84,7 @@ set<std::pair<const spot::ltl::formula*, statistic>> mine_property_type(        
     // whether to print finding statistics
     bool print_stats = opts.count("print-stats");
     // whether inputed thresholds are global
-    bool global = opts.count("global-thresholds");
+    bool global = opts.count("use-global-thresholds");
     /*
      * Setting support, support-potential, and confidence thresholds.
      * By default: sup_threshold = 0; sup_pot_threshold = 0; conf_threshold = 1.00
@@ -209,7 +208,7 @@ set<std::pair<const spot::ltl::formula*, statistic>> mine_property_type(        
                 specified_formula_events);
     }
 
-    vector<finding> valid_instants;
+    vector<std::pair<std::map<std::string, std::string>, texada::statistic>> valid_instants;
     // check all valid instantiations on each trace
     if (use_lin) {
         shared_ptr<set<vector<string_event> >> vector_trace_set =
@@ -229,8 +228,8 @@ set<std::pair<const spot::ltl::formula*, statistic>> mine_property_type(        
     set<std::pair<const spot::ltl::formula*, statistic>> return_set;
     int valid_instants_size = valid_instants.size();
     for (int i = 0; i < valid_instants_size; i++) {
-        map<string, string> binding_i = valid_instants.at(i).binding;
-        statistic stat_i = valid_instants.at(i).stat;
+        map<string, string> binding_i = valid_instants.at(i).first;
+        statistic stat_i = valid_instants.at(i).second;
         for (map<string, string>::iterator it = binding_i.begin();
                 it != binding_i.end(); it++) {
         }

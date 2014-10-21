@@ -1082,12 +1082,12 @@ void prefix_tree_checker::clear_memo_map(){
  * @param traces all the traces to check on
  * @return
  */
-vector<finding> valid_instants_on_traces(
+vector<std::pair<map<string, string>, statistic>> valid_instants_on_traces(
         const spot::ltl::formula * prop_type,
         instants_pool_creator * instantiator, shared_ptr<prefix_tree> traces) {
     instantiator->reset_instantiations();
     // vector to return
-    vector<finding> return_vec;
+    vector<std::pair<map<string, string>, statistic>> return_vec;
     prefix_tree_checker checker;
 
     // create the ap collector for memoization
@@ -1116,21 +1116,19 @@ vector<finding> valid_instants_on_traces(
         }
 
         // is the instantiation valid?
-        //bool valid = true;
         statistic result = statistic(true, 0, 0);
         for (set<shared_ptr<prefix_tree_node>>::iterator it =
                 iterable_traces.begin(); it != iterable_traces.end(); it++) {
             result = statistic(result, checker.check_on_trace(prop_type, *it,
                     instantiation_to_pass));
-            //if (!valid_on_trace) {
-            //    valid = false;
-            //    break;
-            //}
+            if (!result.is_satisfied) {
+                break;
+            }
         }
         //instantiated_prop_type->destroy();
         if (result.is_satisfied) {
-            finding f = {*current_instantiation, result};
-            return_vec.push_back(f);
+            std::pair<map<string, string>, statistic> finding(*current_instantiation, result);
+            return_vec.push_back(finding);
         }
     }
     return return_vec;

@@ -133,11 +133,11 @@ std::array<bool, 8> set_up_perracotta_tests(std::string formula, bool use_map) {
     // mine the property type in response source, and check
     // that the valid instantiation (instanted_form) is found
     std::set<std::pair<const spot::ltl::formula*, texada::statistic>> response_set =
-            texada::mine_property_type(                                             // Dennis: modify to account for changed return type (repeat for each test below)
+            texada::mine_property_type(
                     texada::set_options(
                             "-f '" + formula + trace_type + response_source));
     bool containsab = false;
-    for (std::set<std::pair<const spot::ltl::formula*, texada::statistic>>::iterator it =                         // Dennis: modify to account for changed return type (repeat for each test below)
+    for (std::set<std::pair<const spot::ltl::formula*, texada::statistic>>::iterator it =
             response_set.begin(); it != response_set.end(); it++) {
         if ((*it).first == instanted_form) {
             containsab = true;
@@ -601,7 +601,7 @@ TEST(PropertyTypeMinerMapTest, OneEffect) {
     ASSERT_FALSE(eval_array[6]);
     ASSERT_TRUE(eval_array[7]);
 }
-/*
+
 TEST(CheckerEquivalencyTest, STprecedesPafterQ) {
     if (getenv("TEXADA_HOME") == NULL) {
         std::cerr << "Error: TEXADA_HOME is undefined. \n";
@@ -610,7 +610,7 @@ TEST(CheckerEquivalencyTest, STprecedesPafterQ) {
     std::string texada_base = std::string(getenv("TEXADA_HOME"));
 
     // find all valid instantiations of the property type
-    std::set<std::pair<const spot::ltl::formula*, texada::statistic>> set1 =                                                      // Dennis: modify to account for changed return type
+    std::set<std::pair<const spot::ltl::formula*, texada::statistic>> set1 =
             texada::mine_property_type(
                     texada::set_options(
                             "-f '(G!y) | (!y U (y & Fx -> (!x U (a & !x & X(!x U z)))))' -l "
@@ -631,7 +631,7 @@ TEST(CheckerEquivalencyTest, STprecedesPafterQ) {
                                     + texada_base
                                     + "/traces/resource-allocation/abb4cad.txt"));
 
-    ASSERT_EQ(set1, set2);                                                                          // Dennis: maybe need to be modified, but maybe not
+    ASSERT_EQ(set1, set2);
     ASSERT_EQ(set1, set3);
 
     // create the correct instantiation map and the instantiated formula corresponding to it
@@ -648,7 +648,7 @@ TEST(CheckerEquivalencyTest, STprecedesPafterQ) {
 
     // check that the valid instantiations contain the one created above
     bool contains_instated_form = false;
-    for (std::set<std::pair<const spot::ltl::formula*, texada::statistic>>::iterator i = set1.begin();                            // Dennis: either modify or extract set1 from the original output somewhere above
+    for (std::set<std::pair<const spot::ltl::formula*, texada::statistic>>::iterator i = set1.begin();
             i != set1.end(); i++) {
         if ((*i).first == instanted_form) {
             contains_instated_form = true;
@@ -667,7 +667,7 @@ TEST(CheckerEquivalencyTest, STprecedesPafterQ) {
     }
 
 }
-*/
+
 // checking that the property type miner return correct statistics of findings
 TEST(PropertyTypeMinerTest, StatPrint) {
     if (getenv("TEXADA_HOME") == NULL) {
@@ -677,7 +677,7 @@ TEST(PropertyTypeMinerTest, StatPrint) {
         std::string texada_base = std::string(getenv("TEXADA_HOME"));
 
         // find all valid instantiations along with their full statistics
-        std::set<std::pair<const spot::ltl::formula*, texada::statistic>> set =                                                      // Dennis: modify to account for changed return type
+        std::set<std::pair<const spot::ltl::formula*, texada::statistic>> set =
                 texada::mine_property_type(
                         texada::set_options(
                                 "-f 'G(a -> XFb)' -l -e 'a' -e 'b' --print-stats "
@@ -733,7 +733,7 @@ TEST(ConfidenceFilteringTest, ConfidenceFilter) {
     ASSERT_EQ(2, set.size());
     bool contains_instantiation1 = false;
     bool contains_instantiation2 = false;
-    for (std::set<std::pair<const spot::ltl::formula*, texada::statistic>>::iterator i = set.begin();                            // Dennis: either modify or extract set1 from the original output somewhere above
+    for (std::set<std::pair<const spot::ltl::formula*, texada::statistic>>::iterator i = set.begin();
             i != set.end(); i++) {
         if ((*i).first == instantiation1) {
             contains_instantiation1 = true;

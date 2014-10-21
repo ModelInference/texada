@@ -13,7 +13,6 @@
 #include "ltlvisit/simplify.hh"
 #include "tgba/bdddict.hh"
 #include "statistic.h"
-#include "finding.h"
 namespace texada {
 
 statistic linear_trace_checker::check_on_trace(const spot::ltl::formula * node,
@@ -287,7 +286,7 @@ bool linear_trace_checker::is_short_circuiting(statistic finding) {
  * @param traces all the traces to check on
  * @return
  */
-vector<finding> valid_instants_on_traces(
+vector<std::pair<map<string, string>, statistic>> valid_instants_on_traces(
         const spot::ltl::formula * prop_type,
         instants_pool_creator * instantiator,
         shared_ptr<set<vector<string_event>>> traces) {
@@ -303,7 +302,7 @@ vector<finding> valid_instants_on_traces(
  * @param conf_threshold the confidence threshold used to filter findings
  * @return
  */
-vector<finding> valid_instants_on_traces(
+vector<std::pair<map<string, string>, statistic>> valid_instants_on_traces(
         const spot::ltl::formula * prop_type,
         instants_pool_creator * instantiator,
         shared_ptr<set<vector<string_event>>> traces,
@@ -314,7 +313,7 @@ vector<finding> valid_instants_on_traces(
         bool print_stats) {
             instantiator->reset_instantiations();
             // vector to return
-            vector<finding> return_vec;
+            vector<std::pair<map<string, string>, statistic>> return_vec;
             linear_trace_checker checker;
             // set checker thresholds
             checker.configure(sup_t, sup_pot_t, conf_t, print_stats);
@@ -362,8 +361,8 @@ vector<finding> valid_instants_on_traces(
                 float result_conf = (result.support_potential != 0) ? ((float) result.support / (float) result.support_potential) : 1.0;   // Dennis: by default, should we remove vacuously true findings?
                 // return finding if it is valid (the meaning of which depends on checker's configuration) and its statistics meets all specified thresholds
                 if (valid && result_conf >= conf_t && result.support >= sup_t && result.support_potential >= sup_pot_t) {
-                    finding f = {*current_instantiation, result};
-                    return_vec.push_back(f);
+                    std::pair<map<string, string>, statistic> finding(*current_instantiation, result);
+                    return_vec.push_back(finding);
                 }
             }
             return return_vec;

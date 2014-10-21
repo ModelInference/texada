@@ -234,9 +234,3 @@ TEST(MapCheckerTest,ResourceAllocation){
 }
 
 
-// checking support and support potential of property instances are computed properly
-TEST(MapCheckerTest, SupAndSupPot) {
-    // TODO
-}
-
-

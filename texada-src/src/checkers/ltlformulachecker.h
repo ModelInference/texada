@@ -19,16 +19,16 @@ namespace texada {
  * Superclass for all property type checkers based on ltl
  * formulae trees
  */
-template<typename return_type, typename trace_type>                     // Dennis: not sure what this means
+template<typename return_type, typename trace_type>
 class ltl_formula_checker {
 
 public:
     ltl_formula_checker() {}
     virtual ~ltl_formula_checker() {}
     // top level check on trace
-    virtual statistic check_on_trace(const spot::ltl::formula * node,        // Dennis: change return type to (sup, conf)
+    virtual statistic check_on_trace(const spot::ltl::formula * node,
             trace_type trace_pt)= 0;
-    // set checker thresholds
+    // set checker configuration
     void configure(int sup_t, int sup_pot_t, float conf_t, bool print) {
         sup_threshold = sup_t;
         sup_pot_threshold = sup_pot_t;
