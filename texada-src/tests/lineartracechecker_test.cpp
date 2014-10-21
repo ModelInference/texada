@@ -286,20 +286,22 @@ TEST(LinearTraceCheckerTest, SupAndSupPot) {
     ASSERT_EQ(6, (checker->check_on_trace(f, trace)).support_potential);
     f->destroy();
 
+    //never
+
     // next
     input = "Xa";
     f = spot::ltl::parse(input,pel);
     ASSERT_EQ(1, (checker->check_on_trace(f, trace)).support);
     ASSERT_EQ(1, (checker->check_on_trace(f, trace)).support_potential);
     f->destroy();
-/*
+
     // not
     input = "!b";
     f = spot::ltl::parse(input,pel);
-    ASSERT_EQ((checker->check_on_trace(f, trace)).support);
-    ASSERT_EQ((checker->check_on_trace(f, trace)).support_potential);
+    ASSERT_EQ(1, (checker->check_on_trace(f, trace)).support);
+    ASSERT_EQ(1, (checker->check_on_trace(f, trace)).support_potential);
     f->destroy();
-*/
+
     //clean up
     delete checker;
 }

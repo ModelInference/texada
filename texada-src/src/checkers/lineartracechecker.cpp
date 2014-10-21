@@ -10,6 +10,8 @@
 #include "../instantiation-tools/apsubbingcloner.h"
 #include "../instantiation-tools/pregeninstantspool.h"
 #include "ltlvisit/tostring.hh"
+#include "ltlvisit/simplify.hh"
+#include "tgba/bdddict.hh"
 #include "statistic.h"
 #include "finding.h"
 namespace texada {
@@ -316,6 +318,8 @@ vector<finding> valid_instants_on_traces(
             linear_trace_checker checker;
             // set checker thresholds
             checker.configure(sup_t, sup_pot_t, conf_t, print_stats);
+            // simplifier for turning formulas into negative normal form so that statistics can be computed
+            std::unique_ptr<spot::ltl::ltl_simplifier> simplifier(new spot::ltl::ltl_simplifier());
             while (true) {
                 shared_ptr<map<string,string>> current_instantiation = instantiator->get_next_instantiation();
                 if (current_instantiation == NULL) {
@@ -323,7 +327,15 @@ vector<finding> valid_instants_on_traces(
                 }
                 const spot::ltl::formula * instantiated_prop_type = instantiate(prop_type,*current_instantiation,
                 instantiator->get_events_to_exclude());
-                bool valid = true;
+                // unless checker is configured for the vanilla setting, turn formula into negative normal form
+                // so that sup and sup-pot of negations can be computed.
+                if (sup_t != 0 || sup_pot_t != 0 || conf_t != 1.0 || print_stats) {
+                    // move original formula to a temp ptr to be destroyed
+                    const spot::ltl::formula * to_delete = instantiated_prop_type;
+                    instantiated_prop_type = simplifier->negative_normal_form(instantiated_prop_type);
+                    to_delete->destroy();
+                }
+                bool valid = true;          // Dennis: consider renaming
                 statistic result = statistic(true, 0, 0);
                 for (set<vector<string_event>>::iterator traces_it = traces->begin();
                 traces_it != traces->end(); traces_it++) {
