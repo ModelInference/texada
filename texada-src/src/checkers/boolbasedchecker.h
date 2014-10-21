@@ -115,8 +115,9 @@ protected:
         statistic result_p = this->check(p, trace_pt);
         statistic result;
         result.is_satisfied = !result_p.is_satisfied;
-        // result.support = ?;
-        // result.support_potential = ?;
+        // Assumes that the given formula is in negative normal form (i.e. p is an atomic proposition)
+        result.support = (result_p.support == result_p.support_potential) ? 0 : result_p.support_potential; // this needs to be changed
+        result.support_potential = result_p.support_potential;
         return result;
     }
 
@@ -164,12 +165,10 @@ protected:
 
         statistic result = statistic(false, 0, 0);
         statistic result_i;
-
         for (int i = 0; i < numkids; i++) {
             result_i = this->check(node->nth(i), trace_pt);
-
             if (result.is_satisfied && result_i.is_satisfied) {
-                result = (result.support < result_i.support) ? result : result_i;
+                result = statistic(true, 0, 0);
             } else if (!result.is_satisfied && !result_i.is_satisfied) {
                 result = (result.confidence() > result_i.confidence()) ? result : result_i;   // Dennis: not entirely sure about this
             } else {
@@ -181,7 +180,6 @@ protected:
         }
         return result;
     }
-
 };
 
 } /* namespace texada */
