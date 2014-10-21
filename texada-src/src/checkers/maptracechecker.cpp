@@ -42,7 +42,7 @@ map_trace_checker::~map_trace_checker() {
  * @param node formula to check
  * @return true if node holds on the trace, false otherwise
  */
-statistic map_trace_checker::check_on_trace(const spot::ltl::formula* node,          // Dennis: change return value to (sup, conf)
+statistic map_trace_checker::check_on_trace(const spot::ltl::formula* node,
         interval intvl) {
     intvl.end = terminal_pos - 1;
     return this->check(node, intvl);
@@ -55,13 +55,13 @@ statistic map_trace_checker::check_on_trace(const spot::ltl::formula* node,     
  * @param trace_ids
  * @return true if node holds over intvl, false otherwise
  */
-statistic map_trace_checker::ap_check(const spot::ltl::atomic_prop* node,            // Dennis: compute and return sup and sup_pot;  change return type to return support and confidence (or support potential?)
+statistic map_trace_checker::ap_check(const spot::ltl::atomic_prop* node,
         interval intvl, std::set<int> trace_ids) {
     try {
         std::vector<long> to_search = trace_map->at(string_event(node->name()));
         if (std::binary_search(to_search.begin(), to_search.end(),
                 intvl.start)) {
-            return statistic(true, 1, 1);                                           // Dennis: these functions are currently returning default values for sup and sup_pot
+            return statistic(true, 1, 1);
         } else
             return statistic(false, 0, 1);
     } catch (std::out_of_range &e) {
@@ -77,7 +77,7 @@ statistic map_trace_checker::ap_check(const spot::ltl::atomic_prop* node,       
  * @param trace_ids
  * @return
  */
-statistic map_trace_checker::until_check(const spot::ltl::binop* node,               // Dennis: compute and return sup and sup_pot;  change return type to return support and confidence (or support potential?)
+statistic map_trace_checker::until_check(const spot::ltl::binop* node,
         interval intvl, std::set<int> trace_ids) {
     const spot::ltl::formula* p = node->first();
     const spot::ltl::formula* q = node->second();
@@ -118,7 +118,7 @@ statistic map_trace_checker::until_check(const spot::ltl::binop* node,          
  * @param trace_ids
  * @return
  */
-statistic map_trace_checker::release_check(const spot::ltl::binop* node,             // Dennis: compute and return sup and sup_pot;  change return type to return support and confidence (or support potential?)
+statistic map_trace_checker::release_check(const spot::ltl::binop* node,
         interval intvl, std::set<int> trace_ids) {
     const spot::ltl::formula* p = node->first();
     const spot::ltl::formula* q = node->second();
@@ -158,7 +158,7 @@ statistic map_trace_checker::release_check(const spot::ltl::binop* node,        
  * @param trace_ids
  * @return
  */
-statistic map_trace_checker::weakuntil_check(const spot::ltl::binop* node,           // Dennis: compute and return sup and sup_pot;  change return type to return support and confidence (or support potential?)
+statistic map_trace_checker::weakuntil_check(const spot::ltl::binop* node,
         interval intvl, std::set<int> trace_ids) {
     const spot::ltl::formula* p = node->first();
     const spot::ltl::formula* q = node->second();
@@ -197,7 +197,7 @@ statistic map_trace_checker::weakuntil_check(const spot::ltl::binop* node,      
  * @param trace_ids
  * @return
  */
-statistic map_trace_checker::strongrelease_check(const spot::ltl::binop* node,       // Dennis: compute and return sup and sup_pot;  change return type to return support and confidence (or support potential?)
+statistic map_trace_checker::strongrelease_check(const spot::ltl::binop* node,
         interval intvl, std::set<int> trace_ids) {
     const spot::ltl::formula* p = node->first();
     const spot::ltl::formula* q = node->second();
@@ -239,7 +239,7 @@ statistic map_trace_checker::strongrelease_check(const spot::ltl::binop* node,  
  * @param trace_ids
  * @return
  */
-statistic map_trace_checker::globally_check(const spot::ltl::unop* node,             // Dennis: compute and return sup and sup_pot;  change return type to return support and confidence (or support potential?)
+statistic map_trace_checker::globally_check(const spot::ltl::unop* node,
         interval intvl, std::set<int> trace_ids) {
     const spot::ltl::formula* p = node->child();
     // Globally operator holds on all future events, so
@@ -262,7 +262,7 @@ statistic map_trace_checker::globally_check(const spot::ltl::unop* node,        
  * @param trace_ids
  * @return
  */
-statistic map_trace_checker::finally_check(const spot::ltl::unop* node,              // Dennis: compute and return sup and sup_pot;  change return type to return support and confidence (or support potential?)
+statistic map_trace_checker::finally_check(const spot::ltl::unop* node,
         interval intvl, std::set<int> trace_ids) {
     const spot::ltl::formula* p = node->child();
     // Finally operator holds on all future events, so
@@ -282,7 +282,7 @@ statistic map_trace_checker::finally_check(const spot::ltl::unop* node,         
  * @param trace_ids
  * @return
  */
-statistic map_trace_checker::next_check(const spot::ltl::unop* node, interval intvl, // Dennis: compute and return sup and sup_pot;  change return type to return support and confidence (or support potential?)
+statistic map_trace_checker::next_check(const spot::ltl::unop* node, interval intvl,
         std::set<int> trace_ids) {
     const spot::ltl::formula* p = node->child();
     // if the start and end of the interval are at the same place,
@@ -1604,22 +1604,13 @@ long map_trace_checker::find_last_occurrence(const spot::ltl::binop* node,
  * @param traces all the traces
  * @return all valid instantiations
  */
-//vector<finding> valid_isntants_on_traces() TODO
-
-/**
- * Check all instantiations of the formula on the traces given
- * @param prop_type the property type to check instantiations of
- * @param instantiator to generate all instatiation functions
- * @param traces all the traces
- * @return all valid instantiations
- */
-vector<finding> valid_instants_on_traces(
+vector<std::pair<map<string, string>, statistic>> valid_instants_on_traces(
         const spot::ltl::formula * prop_type,
         instants_pool_creator * instantiator,
         shared_ptr<set<map<string_event, vector<long>>> > traces) {
             instantiator->reset_instantiations();
             // vector to return
-            vector<finding> return_vec;
+            vector<std::pair<map<string, string>, statistic>> return_vec;
             // create a vector of checkers to retain memoization across instantiation
             // checking.
             vector<map_trace_checker> all_checkers;
@@ -1638,14 +1629,14 @@ vector<finding> valid_instants_on_traces(
                 statistic result = statistic(true, 0, 0);
                 for (int i = 0; i < num_traces; i++) {
                     result = statistic(result, all_checkers[i].check_on_trace(instantiated_prop_type));
+                    if (!result.is_satisfied) {
+                        break;
+                    }
                 }
                 instantiated_prop_type->destroy();
-                // calculate confidence of result
-                // int result_conf = (result.support_potential != 0) ? (result.support / result.support_potential) * 100 : 0;   // Dennis: by default, should we remove vacuously true findings? Should conf be measured out of 1 or 100?
-                // if (result_conf >= conf_threshold) {
                 if (result.is_satisfied) {
-                    finding f = {*current_instantiation, result};
-                    return_vec.push_back(f);
+                    std::pair<map<string, string>, statistic> finding(*current_instantiation, result);
+                    return_vec.push_back(finding);
                 }
             }
             return return_vec;

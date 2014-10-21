@@ -190,7 +190,7 @@ TEST(PrefixTreeCheckerTest, TestSimpleTree) {
     texada::prefix_tree_checker checker;
 
     ASSERT_FALSE(
-            (checker.check_on_trace(afby_form,                                   // Dennis: modify to account for changed return type
+            (checker.check_on_trace(afby_form,
                     all_traces->get_trace_start("a"))).is_satisfied);
 
     afby_form->destroy();
@@ -217,8 +217,7 @@ TEST(PrefixTreeCheckerTest, TestOnTrace) {
             pe_list);
     texada::prefix_tree_checker checker;
     ASSERT_TRUE(
-            (checker.check_on_trace(afby_form, trace_set->get_trace_start("a"))).is_satisfied);            // Dennis: modify to account for changed return type
-    afby_form->destroy();
+            (checker.check_on_trace(afby_form, trace_set->get_trace_start("a"))).is_satisfied);
 
     afby_form = spot::ltl::parse("G(x->XFy)", pe_list);
     std::map<std::string, std::string> inst_map;
@@ -229,7 +228,7 @@ TEST(PrefixTreeCheckerTest, TestOnTrace) {
     afby_form->accept(*collector);
     checker.add_relevant_bindings(&collector->subform_ap_set);
     ASSERT_TRUE(
-            (checker.check_on_trace(afby_form, trace_set->get_trace_start("a"),              // Dennis: modify to account for changed return type
+            (checker.check_on_trace(afby_form, trace_set->get_trace_start("a"),
                     inst_map)).is_satisfied);
     delete collector;
     afby_form->destroy();
@@ -262,12 +261,7 @@ TEST(PrefixTreeCheckerTest, RessourceAlloc) {
     std::shared_ptr<texada::prefix_tree_node> beginning =
             trace_set->get_trace_start(1);
 
-    ASSERT_TRUE((checker.check_on_trace(resalloc_form, beginning)).is_satisfied);                          // Dennis: modify to account for changed return type
+    ASSERT_TRUE((checker.check_on_trace(resalloc_form, beginning)).is_satisfied);
     resalloc_form->destroy();
 
-}
-
-// checking support and support potential of property instances are computed properly
-TEST(PrefixTreeCheckerTest, SupAndSupPot) {
-    // TODO
 }

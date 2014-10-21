@@ -18,7 +18,6 @@
 #include "../instantiation-tools/pregeninstantspool.h"
 #include "boolbasedchecker.h"
 #include "statistic.h"
-#include "finding.h"
 
 namespace texada {
 
@@ -140,16 +139,10 @@ private:
 
 };
 
-vector<finding> valid_instants_on_traces(
+vector<std::pair<map<string, string>, statistic>> valid_instants_on_traces(
         const spot::ltl::formula * prop_type,
         instants_pool_creator * instantiator,
         shared_ptr<set<map<string_event, vector<long>>>>);
-
-/*vector<finding> valid_instants_on_traces(
-        const spot::ltl::formula * prop_type,
-        instants_pool_creator * instantiator,
-        shared_ptr<set<map<string_event, vector<long>>>>,
-        int conf_threshold);*/
 } /* namespace texada */
 
 #endif /* MAPTRACECHECKER_H_ */

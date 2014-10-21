@@ -9,7 +9,6 @@
 #include "../src/checkers/lineartracechecker.h"
 #include "../src/checkers/maptracechecker.h"
 #include "../src/checkers/prefixtreechecker.h"
-#include "../src/checkers/finding.h"
 #include "../src/checkers/statistic.h"
 #include "../src/trace/prefixtree.h"
 #include "../src/trace/stringevent.h"
@@ -62,12 +61,12 @@ TEST(ConstInstantsPoolTest,UsableByLinearChecker) {
     l_traces->insert(l_trace1);
     l_traces->insert(l_trace2);
 
-    std::vector<texada::finding> l_valid_instants = texada::valid_instants_on_traces(f, instantiator,
+    std::vector<std::pair<std::map<std::string, std::string>, texada::statistic>> l_valid_instants = texada::valid_instants_on_traces(f, instantiator,
             l_traces);
 
-    ASSERT_EQ(l_valid_instants.size(), 1);                          // Dennis: need to account for changed return type
-    ASSERT_EQ(l_valid_instants.at(0).binding.at("a"), "a");
-    ASSERT_EQ(l_valid_instants.at(0).binding.at("c"), "c");
+    ASSERT_EQ(l_valid_instants.size(), 1);
+    ASSERT_EQ(l_valid_instants.at(0).first.at("a"), "a");
+    ASSERT_EQ(l_valid_instants.at(0).first.at("c"), "c");
 
     f->destroy();
     delete instantiator;
@@ -108,11 +107,11 @@ TEST(ConstInstantsPoolTest,UsableByMapChecker) {
     m_traces->insert(m_trace1);
     m_traces->insert(m_trace2);
 
-    std::vector<texada::finding> m_valid_instants = texada::valid_instants_on_traces(f, instantiator, m_traces);     // Dennis: need to change return type
+    std::vector<std::pair<std::map<std::string, std::string>, texada::statistic>> m_valid_instants = texada::valid_instants_on_traces(f, instantiator, m_traces);
 
-    ASSERT_EQ(m_valid_instants.size(), 1);                  // Dennis: need to account for changed return type
-    ASSERT_EQ(m_valid_instants.at(0).binding.at("a"), "a");
-    ASSERT_EQ(m_valid_instants.at(0).binding.at("c"), "c");
+    ASSERT_EQ(m_valid_instants.size(), 1);
+    ASSERT_EQ(m_valid_instants.at(0).first.at("a"), "a");
+    ASSERT_EQ(m_valid_instants.at(0).first.at("c"), "c");
 
     f->destroy();
     delete instantiator;
@@ -166,12 +165,12 @@ TEST(ConstInstantsPoolTest,UsableByPrefixChecker) {
     std::shared_ptr<texada::prefix_tree> p_traces = std::make_shared<texada::prefix_tree>();
     p_traces->add_trace(set01, top);
 
-    std::vector<texada::finding> p_valid_instants = texada::valid_instants_on_traces(f, instantiator,    // Dennis: need to change return value to account for sup and conf
+    std::vector<std::pair<std::map<std::string, std::string>, texada::statistic>> p_valid_instants = texada::valid_instants_on_traces(f, instantiator,
             p_traces);
 
-    ASSERT_EQ(p_valid_instants.size(), 1);                              // Dennis: need to account for new type of p_valid_instants...
-    ASSERT_EQ(p_valid_instants.at(0).binding.at("a"), "a");
-    ASSERT_EQ(p_valid_instants.at(0).binding.at("c"), "c");
+    ASSERT_EQ(p_valid_instants.size(), 1);
+    ASSERT_EQ(p_valid_instants.at(0).first.at("a"), "a");
+    ASSERT_EQ(p_valid_instants.at(0).first.at("c"), "c");
 
     f->destroy();
     delete instantiator;

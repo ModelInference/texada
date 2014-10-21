@@ -41,7 +41,7 @@ TEST(LinearTraceCheckerTest, AFby) {
     texada::linear_trace_checker* checker = new texada::linear_trace_checker();
 
     // G(a->Fb) should hold on the trace
-    ASSERT_TRUE((checker->check_on_trace(f,trace)).is_satisfied);                  // Dennis: modify to account for changed return type (repeat for all tests below)
+    ASSERT_TRUE((checker->check_on_trace(f,trace)).is_satisfied);
     f->destroy();
 
     // G(a->Fa) also holds because F includes the present as well as the future
