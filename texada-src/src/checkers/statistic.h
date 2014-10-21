@@ -30,17 +30,17 @@ typedef struct statistic {
         support_potential(sup_pot) {}
 
     float confidence() {
-        return (float) support / (float) support_potential;
+        return (support == support_potential) ? 1.0 : (float) support / (float) support_potential;
     }
 
     bool operator<(statistic other) const
     {
-        return is_satisfied < other.is_satisfied;       // Dennis: consider changing
+        return is_satisfied < other.is_satisfied;
     }
 
     bool operator==(statistic other) const
     {
-        return (is_satisfied == other.is_satisfied);    // Dennis: consider changing
+        return (is_satisfied == other.is_satisfied);
     }
 
 } statistic;
