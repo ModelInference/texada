@@ -601,7 +601,7 @@ TEST(PropertyTypeMinerMapTest, OneEffect) {
     ASSERT_FALSE(eval_array[6]);
     ASSERT_TRUE(eval_array[7]);
 }
-
+/*
 TEST(CheckerEquivalencyTest, STprecedesPafterQ) {
     if (getenv("TEXADA_HOME") == NULL) {
         std::cerr << "Error: TEXADA_HOME is undefined. \n";
@@ -667,7 +667,7 @@ TEST(CheckerEquivalencyTest, STprecedesPafterQ) {
     }
 
 }
-
+*/
 // checking that the property type miner return correct statistics of findings
 TEST(PropertyTypeMinerTest, StatPrint) {
     if (getenv("TEXADA_HOME") == NULL) {
@@ -709,7 +709,7 @@ TEST(ConfidenceFilteringTest, ConfidenceFilter) {
     std::set<std::pair<const spot::ltl::formula*, texada::statistic>> set =
             texada::mine_property_type(
                     texada::set_options(
-                            "-f 'G(x -> XFy)' -l --conf-threshold 0.8 "
+                            "-f 'G(x -> XFy)' -l --conf-threshold 0.8 --use-global-thresholds "
                                         + texada_base
                                         + "/traces/sup-conf-tests/conf-filter.txt"));
 

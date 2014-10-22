@@ -14,6 +14,7 @@ typedef struct statistic {
     bool is_satisfied;
     int support;
     int support_potential;
+
     statistic() :
         is_satisfied(true),
         support(0),
@@ -33,13 +34,11 @@ typedef struct statistic {
         return (support == support_potential) ? 1.0 : (float) support / (float) support_potential;
     }
 
-    bool operator<(statistic other) const
-    {
+    bool operator<(statistic other) const {
         return is_satisfied < other.is_satisfied;
     }
 
-    bool operator==(statistic other) const
-    {
+    bool operator==(statistic other) const {
         return (is_satisfied == other.is_satisfied);
     }
 

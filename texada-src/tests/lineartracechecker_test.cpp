@@ -12,6 +12,7 @@
 
 #include <ltlparse/public.hh>
 #include <ltlvisit/tostring.hh>
+#include "ltlvisit/simplify.hh"
 
 #include <gtest/gtest.h>
 
@@ -193,6 +194,7 @@ TEST(LinearTraceCheckerTest, SupAndSupPot) {
 
     texada::linear_trace_checker* checker = new texada::linear_trace_checker();
     checker->configure(0, 0, 1.0, true);
+    std::unique_ptr<spot::ltl::ltl_simplifier> simplifier(new spot::ltl::ltl_simplifier());
 
     // Tests to try and cover the support and support-potential measurements of findings
 
@@ -230,41 +232,53 @@ TEST(LinearTraceCheckerTest, SupAndSupPot) {
     ASSERT_EQ(4, (checker->check_on_trace(f, trace)).support);
     ASSERT_EQ(6, (checker->check_on_trace(f, trace)).support_potential);
     f->destroy();
-/*
+
     //xor
     input = "b xor a";
     f = spot::ltl::parse(input,pel);
-    ASSERT_EQ((checker->check_on_trace(f, trace)).support);
-    ASSERT_EQ((checker->check_on_trace(f, trace)).support_potential);
+    const spot::ltl::formula * to_delete = f;
+    f = simplifier->negative_normal_form(f);
+    to_delete->destroy();
+    ASSERT_EQ(2, (checker->check_on_trace(f, trace)).support);
+    ASSERT_EQ(2, (checker->check_on_trace(f, trace)).support_potential);
     f->destroy();
 
     //equiv, iff
     input = "b <-> a";
     f = spot::ltl::parse(input,pel);
-    ASSERT_EQ((checker->check_on_trace(f, trace)).support);
-    ASSERT_EQ((checker->check_on_trace(f, trace)).support_potential);
+    to_delete = f;
+    f = simplifier->negative_normal_form(f);
+    to_delete->destroy();
+    ASSERT_EQ(1, (checker->check_on_trace(f, trace)).support);
+    ASSERT_EQ(2, (checker->check_on_trace(f, trace)).support_potential);
     f->destroy();
-*/
+
     //implies
     input = "a -> b";
     f = spot::ltl::parse(input,pel);
+    to_delete = f;
+    f = simplifier->negative_normal_form(f);
+    to_delete->destroy();
     ASSERT_EQ(0, (checker->check_on_trace(f, trace)).support);
     ASSERT_EQ(1, (checker->check_on_trace(f, trace)).support_potential);
     f->destroy();
 
     input = "a -> Fb";
     f = spot::ltl::parse(input,pel);
+    to_delete = f;
+    f = simplifier->negative_normal_form(f);
+    to_delete->destroy();
     ASSERT_EQ(1, (checker->check_on_trace(f, trace)).support);
     ASSERT_EQ(1, (checker->check_on_trace(f, trace)).support_potential);
     f->destroy();
-/*
+
     //or
     input = "a | b";
     f = spot::ltl::parse(input,pel);
-    ASSERT_EQ((checker->check_on_trace(f, trace)).support);
-    ASSERT_EQ((checker->check_on_trace(f, trace)).support_potential);
+    ASSERT_EQ(1, (checker->check_on_trace(f, trace)).support);
+    ASSERT_EQ(1, (checker->check_on_trace(f, trace)).support_potential);
     f->destroy();
-*/
+
     //and
     input = "a & b";
     f = spot::ltl::parse(input,pel);
@@ -285,14 +299,17 @@ TEST(LinearTraceCheckerTest, SupAndSupPot) {
     ASSERT_EQ(4, (checker->check_on_trace(f, trace)).support);
     ASSERT_EQ(6, (checker->check_on_trace(f, trace)).support_potential);
     f->destroy();
-/*
+
     //never
     input = "!Ga";
     f = spot::ltl::parse(input,pel);
-    ASSERT_EQ((checker->check_on_trace(f, trace)).support);
-    ASSERT_EQ((checker->check_on_trace(f, trace)).support_potential);
+    to_delete = f;
+    f = simplifier->negative_normal_form(f);
+    to_delete->destroy();
+    ASSERT_EQ(1, (checker->check_on_trace(f, trace)).support);
+    ASSERT_EQ(1, (checker->check_on_trace(f, trace)).support_potential);
     f->destroy();
-*/
+
     // next
     input = "Xa";
     f = spot::ltl::parse(input,pel);

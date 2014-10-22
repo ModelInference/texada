@@ -12,22 +12,14 @@
 #include <unordered_map>
 #include <vector>
 #include <ltlast/allnodes.hh>
-#include <climits>
 #include <boost/functional/hash.hpp>
 #include <boost/unordered_map.hpp>
 #include "../instantiation-tools/pregeninstantspool.h"
 #include "boolbasedchecker.h"
 #include "statistic.h"
+#include "interval.h"
 
 namespace texada {
-
-struct interval {
-    long start = 0;
-    long end = LONG_MAX;
-    bool operator==(const interval other) const {
-        return (start == other.start && end == other.end);
-    }
-};
 
 /**
  * Class to check whether an LTL formula holds on a trace in the form of a map.
