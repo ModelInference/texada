@@ -274,11 +274,16 @@ protected:
         case spot::ltl::formula::MultOp: {
             const spot::ltl::multop* mnode = static_cast<const spot::ltl::multop*>(node);
             switch (mnode->op()) {
-            // return the
-            case spot::ltl::multop::Or: {
-                return interval(0,0);
-            }
+            // interval(Or{p_i}) = interval(And{p_i}) = [a,b], where a = min{p_i.start} and b = max{p_i.end}
+            case spot::ltl::multop::Or:
             case spot::ltl::multop::And: {
+                interval intvl(LONG_MAX,-LONG_MAX);
+                interval intvl_i;
+                for (int i = 0; i < mnode->size(); i++) {
+                    intvl_i = get_interval(mnode->nth(i));
+                    intvl.start = (intvl.start < intvl_i.start) ? intvl.start : intvl_i.start;
+                    intvl.end = (intvl.end > intvl_i.end) ? intvl.end : intvl_i.end;
+                }
                 return interval(0,0);
             }
             default:
