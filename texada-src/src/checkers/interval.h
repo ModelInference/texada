@@ -30,7 +30,8 @@ typedef struct interval {
     }
 
     /**
-     * TODO
+     * An interval [a,b] is greater than an interval [c,d] if
+     * b is greater than c
      */
     bool operator<(const interval other) const {
         return (end < other.start);
