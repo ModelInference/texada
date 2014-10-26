@@ -48,8 +48,8 @@ TEST(ConstInstantsPoolTest,UsableByLinearChecker) {
     texada::const_instants_pool* instantiator = new texada::const_instants_pool(f);
 
     // Create traces to pass into checkers
-    std::shared_ptr<std::set<std::vector<texada::string_event>>> l_traces =
-    std::make_shared<std::set<std::vector<texada::string_event>>>();
+    std::shared_ptr<std::multiset<std::vector<texada::string_event>>> l_traces =
+    std::make_shared<std::multiset<std::vector<texada::string_event>>>();
     // Traces represent the log: {"a,b,c","b,a,c"}
     texada::string_event a = texada::string_event("a");
     texada::string_event b = texada::string_event("b");

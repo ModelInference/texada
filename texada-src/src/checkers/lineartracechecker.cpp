@@ -269,7 +269,7 @@ statistic linear_trace_checker::next_check(const spot::ltl::unop* node,
 vector<std::pair<map<string, string>, statistic>> valid_instants_on_traces(
         const spot::ltl::formula * prop_type,
         instants_pool_creator * instantiator,
-        shared_ptr<set<vector<string_event>>> traces) {
+        shared_ptr<std::multiset<vector<string_event>>> traces) {
     return valid_instants_on_traces(prop_type, instantiator, traces, settings());
 }
 
@@ -286,7 +286,7 @@ vector<std::pair<map<string, string>, statistic>> valid_instants_on_traces(
 vector<std::pair<map<string, string>, statistic>> valid_instants_on_traces(
         const spot::ltl::formula * prop_type,
         instants_pool_creator * instantiator,
-        shared_ptr<set<vector<string_event>>> traces,
+        shared_ptr<std::multiset<vector<string_event>>> traces,
         settings c_settings) {
             instantiator->reset_instantiations();
             // vector to return
@@ -322,9 +322,14 @@ vector<std::pair<map<string, string>, statistic>> valid_instants_on_traces(
                 // the meaning of validity will depend on the user inputed settings
                 bool valid = true;
                 statistic global_stat = statistic(true, 0, 0);
-                for (set<vector<string_event>>::iterator traces_it = traces->begin();
-                traces_it != traces->end(); traces_it++) {
-                    statistic trace_stat = checker.check_on_trace(instantiated_prop_type,&(traces_it->at(0)));
+                for (auto each = traces->begin(); each != traces->end(); each=traces->upper_bound(*each)) {
+                    statistic trace_stat = checker.check_on_trace(instantiated_prop_type,&(each->at(0)));
+                    // when there are multiple equivalent traces, the instantiation is only checked over one
+                    // of them. To compute the correct statistics, multiply the statistics for each trace by
+                    // the number of "occurrences" of said trace in the log.
+                    int trace_count = traces->count(*each);
+                    trace_stat.support = trace_stat.support * trace_count;
+                    trace_stat.support_potential = trace_stat.support_potential * trace_count;
                     global_stat = statistic(global_stat, trace_stat);
                     // if confidence threshold is 1.0, short circuit on first unsatisfied trace
                     if (c_settings.conf_t == 1.0 && !trace_stat.is_satisfied) {
