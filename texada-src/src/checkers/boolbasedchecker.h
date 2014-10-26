@@ -10,6 +10,7 @@
 
 #include "ltlformulachecker.h"
 #include "statistic.h"
+#include "settings.h"
 #include "interval.h"
 
 namespace texada {
@@ -20,9 +21,22 @@ namespace texada {
 template<typename T>
 class bool_based_checker: public ltl_formula_checker<statistic, T> {
 public:
+    /**
+     * Constructs a vanilla checker,
+     * setting all checker settings to default.
+     */
     bool_based_checker() {
+        configure(settings());
     }
     virtual ~bool_based_checker() {
+    }
+
+    /**
+     * Configure checker thresholds and other settings.
+     * @param c_settings the set of configuration settings for the checker
+     */
+    void configure(settings c_settings) {
+        this->c_settings = c_settings;
     }
 
 protected:
@@ -60,11 +74,15 @@ protected:
             std::set<int> trace_ids) {
         const spot::ltl::formula * p = node->first();
         const spot::ltl::formula * q = node->second();
-        statistic result_p = this->check(p, trace_pt);
-        statistic result_q = this->check(q, trace_pt);
-        statistic result = statistic(true, 0, 0);
-        result.is_satisfied = (result_p.is_satisfied) ? !result_q.is_satisfied : result_q.is_satisfied;
-        return result;
+        statistic stat_p = this->check(p, trace_pt);
+        statistic stat_q = this->check(q, trace_pt);
+        statistic stat = statistic(true, 0, 0);
+        if (stat_p.is_satisfied) {
+            stat.is_satisfied = !stat_q.is_satisfied;
+        } else {
+            stat.is_satisfied = stat_q.is_satisfied;
+        }
+        return stat;
     }
 
     /**
@@ -81,11 +99,11 @@ protected:
             T trace_pt, std::set<int> trace_ids) {
         const spot::ltl::formula * p = node->first();
         const spot::ltl::formula * q = node->second();
-        statistic result_p = this->check(p, trace_pt);
-        statistic result_q = this->check(q, trace_pt);
-        statistic result = statistic(true, 0, 0);
-        result.is_satisfied = (result_p.is_satisfied == result_q.is_satisfied);
-        return result;
+        statistic stat_p = this->check(p, trace_pt);
+        statistic stat_q = this->check(q, trace_pt);
+        statistic stat = statistic(true, 0, 0);
+        stat.is_satisfied = (stat_p.is_satisfied == stat_q.is_satisfied);
+        return stat;
     }
 
     /**
@@ -122,8 +140,12 @@ protected:
     virtual statistic not_check(const spot::ltl::unop* node, T trace_pt,
             std::set<int> trace_ids) {
         const spot::ltl::formula * p = node->child();
-        statistic result_p = this->check(p, trace_pt);
-        return (result_p.is_satisfied) ? statistic(false, 0, 1) : statistic(true, 1, 1);
+        statistic stat_p = this->check(p, trace_pt);
+        if (stat_p.is_satisfied) {
+            return statistic(false, 0, 1);
+        } else {
+            return statistic(true, 1, 1);
+        }
     }
 
     /**
@@ -144,15 +166,15 @@ protected:
         // end of the loop, then none of the children were false and we return
         // true. If the produced statistics matter, must check each child.
 
-        statistic result = statistic(true, 0, 0);
+        statistic stat = statistic(true, 0, 0);
 
         for (int i = 0; i < numkids; i++) {
-            result = statistic(result, this->check(node->nth(i), trace_pt));
-            if (this->conf_threshold == 1.0 && !this->print_stats && !result.is_satisfied) {
-                return result;
+            stat = statistic(stat, this->check(node->nth(i), trace_pt));
+            if (is_short_circuiting(stat)) {
+                return stat;
             }
         }
-        return result;
+        return stat;
 
     }
 
@@ -174,36 +196,34 @@ protected:
         // end of the loop, then none of the children were true and we return
         // false.
 
-        statistic result = statistic(false, 0, 0);
-        statistic result_i;
+        statistic stat = statistic(false, 0, 0);
+        statistic stat_i;
         interval intvl(-1, -1);
         interval intvl_i;
         for (int i = 0; i < numkids; i++) {
-            result_i = this->check(node->nth(i), trace_pt);
+            stat_i = this->check(node->nth(i), trace_pt);
             intvl_i = get_interval(node->nth(i));
             // if the checker is configured to the vanilla setting, short circuit on the first true child
-            if (result_i.is_satisfied &&
-                    this->conf_threshold == 1.0 && !this->print_stats &&
-                    this->sup_threshold == 0 && this->sup_pot_threshold) {
-                return result;
+            if (stat_i.is_satisfied && c_settings.is_vanilla()) {
+                return statistic(true, 1, 1);
             }
 
             // if a child having an interval earlier than another child's interval
             // is satisfied, the entire property is defined to be vacuously true
             if (intvl_i < intvl) {
-                if (result_i.is_satisfied) {
+                if (stat_i.is_satisfied) {
                     return statistic(true, 0, 0);
                 }
             }
             // if a child having an interval earlier than another child's interval
             // is satisfied, the entire property is defined to be vacuously true.
-            // if it is not satisfied, update the result and intvl by the child with
+            // if it is not satisfied, update the stat and intvl by the child with
             // the latest interval
             else if (intvl < intvl_i) {
-                if (result.is_satisfied) {
+                if (stat.is_satisfied) {
                     return statistic(true, 0, 0);
                 } else {
-                    result = result_i;
+                    stat = stat_i;
                     intvl = intvl_i;
                 }
             }
@@ -211,18 +231,22 @@ protected:
             // according to a different scheme taking into account the child with the
             // greatest confidence and support
             else {
-                if (result.is_satisfied && result_i.is_satisfied) {
+                if (stat.is_satisfied && stat_i.is_satisfied) {
                     return statistic(true, 0, 0);
                 } else {
-                    if (result.confidence() == result_i.confidence()) {
-                        result = (result.support > result_i.support) ? result : result_i;
+                    if (stat.confidence() == stat_i.confidence()) {
+                        if (stat.support < stat_i.support) {
+                            stat = stat_i;
+                        }
                     } else {
-                        result = (result.confidence() > result_i.confidence()) ? result : result_i;
+                        if (stat.confidence() < stat_i.confidence()) {
+                            stat = stat_i;
+                        }
                     }
                 }
             }
         }
-        return result;
+        return stat;
     }
 
     /**
@@ -281,8 +305,12 @@ protected:
                 interval intvl_i;
                 for (int i = 0; i < mnode->size(); i++) {
                     intvl_i = get_interval(mnode->nth(i));
-                    intvl.start = (intvl.start < intvl_i.start) ? intvl.start : intvl_i.start;
-                    intvl.end = (intvl.end > intvl_i.end) ? intvl.end : intvl_i.end;
+                    if (intvl.start > intvl_i.start) {
+                        intvl.start = intvl_i.start;
+                    }
+                    if (intvl.end < intvl_i.end) {
+                        intvl.end = intvl_i.end;
+                    }
                 }
                 return interval(0,0);
             }
@@ -298,6 +326,32 @@ protected:
             return interval(-1,-1);
         }
     }
+
+    /**
+     * Determine whether the given statistics allows the checker to
+     * short circuit. Depending on the situation and the current
+     * configuration of the checker, short circuiting can occur because
+     * an instantiation has been found to be valid or invalid early on
+     * in the trace and no further checking can change the result.
+     */
+    bool is_short_circuiting(statistic stat) {
+        if (c_settings.conf_t == 1.0 && !c_settings.print_full_stats) {
+        // short circuit for vanilla setting
+            return (stat.support >= c_settings.sup_t &&
+                    stat.support_potential >= c_settings.sup_pot_t &&
+                    !stat.is_satisfied);
+        } else if (c_settings.conf_t == 0.0 && !c_settings.print_full_stats) {
+        // short circuit for 0-conf threshold setting
+            return (stat.support >= c_settings.sup_t &&
+                    stat.support_potential >= c_settings.sup_pot_t);
+        } else {
+        // otherwise, no short circuiting
+            return false;
+        }
+    }
+
+    // Checker thresholds and other settings. Determines what it means for an LTL instantiation to be "valid"
+    settings c_settings;
 };
 
 } /* namespace texada */

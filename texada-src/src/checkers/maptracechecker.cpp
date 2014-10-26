@@ -1492,8 +1492,11 @@ long map_trace_checker::find_last_occurrence(const spot::ltl::binop* node,
         temp.start = intvl.end;
         //usually we put temp end at terminal - 1 , but make sure not to make
         // temp.start > temp.end
-        (intvl.end == terminal_pos) ?
-                temp.end = terminal_pos : temp.end = terminal_pos - 1;
+        if (intvl.end == terminal_pos) {
+            temp.end = terminal_pos;
+        } else {
+            temp.end = terminal_pos - 1;
+        }
         //finding the first q
         long next_first_first = find_first_occurrence(node->first(), temp);
         // if there is no q in the "after" interval
@@ -1552,8 +1555,11 @@ long map_trace_checker::find_last_occurrence(const spot::ltl::binop* node,
         temp.start = intvl.end;
         //usually we put temp at one before terminal, but if we're at terminal,
         // don't push the end back
-        (intvl.end == terminal_pos) ?
-                temp.end = terminal_pos : temp.end = terminal_pos - 1;
+        if (intvl.end == terminal_pos) {
+            temp.end = terminal_pos;
+        } else {
+            temp.end = terminal_pos - 1;
+        }
 
         // finding the first q in the extended interval
         long next_first_first = find_first_occurrence(node->first(), temp);
@@ -1626,16 +1632,16 @@ vector<std::pair<map<string, string>, statistic>> valid_instants_on_traces(
                 }
                 const spot::ltl::formula * instantiated_prop_type = instantiate(prop_type,*current_instantiation, instantiator->get_events_to_exclude());
                 // is the instantiation valid?
-                statistic result = statistic(true, 0, 0);
+                statistic global_stat = statistic(true, 0, 0);
                 for (int i = 0; i < num_traces; i++) {
-                    result = statistic(result, all_checkers[i].check_on_trace(instantiated_prop_type));
-                    if (!result.is_satisfied) {
+                    global_stat = statistic(global_stat, all_checkers[i].check_on_trace(instantiated_prop_type));
+                    if (!global_stat.is_satisfied) {
                         break;
                     }
                 }
                 instantiated_prop_type->destroy();
-                if (result.is_satisfied) {
-                    std::pair<map<string, string>, statistic> finding(*current_instantiation, result);
+                if (global_stat.is_satisfied) {
+                    std::pair<map<string, string>, statistic> finding(*current_instantiation, global_stat);
                     return_vec.push_back(finding);
                 }
             }

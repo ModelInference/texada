@@ -13,6 +13,7 @@
 #include "boolbasedchecker.h"
 #include <iostream>
 #include "statistic.h"
+#include "settings.h"
 
 #include "../instantiation-tools/pregeninstantspool.h"
 
@@ -50,7 +51,6 @@ private:
             const string_event* trace_pt, std::set<int> trace_ids = std::set<int>());
     virtual statistic next_check(const spot::ltl::unop* node,
             const string_event* trace_pt, std::set<int> trace_ids = std::set<int>());
-    virtual bool is_short_circuiting(statistic result);
 
 };
 
@@ -75,11 +75,7 @@ vector<std::pair<map<string, string>, statistic>> valid_instants_on_traces(
         const spot::ltl::formula * prop_type,
         instants_pool_creator * instantiator,
         shared_ptr<set<vector<string_event>>> traces,
-        int sup_threshold,
-        int sup_pot_threshold,
-        float conf_threshold,
-        bool global_thresholds,
-        bool print_stats);
+        settings c_settings);
 
 } /* namespace texada */
 

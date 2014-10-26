@@ -8,6 +8,7 @@
 
 #include "../src/checkers/lineartracechecker.h"
 #include "../src/checkers/statistic.h"
+#include "../src/checkers/settings.h"
 #include "../src/trace/stringevent.h"
 
 #include <ltlparse/public.hh>
@@ -193,7 +194,7 @@ TEST(LinearTraceCheckerTest, SupAndSupPot) {
     texada::string_event* trace = &trace_vec[0];
 
     texada::linear_trace_checker* checker = new texada::linear_trace_checker();
-    checker->configure(0, 0, 1.0, true);
+    checker->configure(texada::settings(0,0,1.0,false,true));
     std::unique_ptr<spot::ltl::ltl_simplifier> simplifier(new spot::ltl::ltl_simplifier());
 
     // Tests to try and cover the support and support-potential measurements of findings

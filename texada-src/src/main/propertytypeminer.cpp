@@ -28,6 +28,7 @@
 #include "../checkers/lineartracechecker.h"
 #include "../checkers/prefixtreechecker.h"
 #include "../checkers/statistic.h"
+#include "../checkers/settings.h"
 #include "../instantiation-tools/apsubbingcloner.h"
 #include "opts.h"
 
@@ -81,10 +82,6 @@ set<std::pair<const spot::ltl::formula*, statistic>> mine_property_type(
     bool allow_reps = opts.count("allow-same-bindings");
     // whether to pregenerate instantiations
     bool pregen_instants = opts.count("pregen-instants");
-    // whether to print finding statistics
-    bool print_stats = opts.count("print-stats");
-    // whether inputed thresholds are global
-    bool global = opts.count("use-global-thresholds");
 
     /*
      * Begin: Focus for code review Oct 22, 2014
@@ -95,29 +92,34 @@ set<std::pair<const spot::ltl::formula*, statistic>> mine_property_type(
      * Setting support, support-potential, and confidence thresholds.
      * By default: sup_threshold = 0; sup_pot_threshold = 0; conf_threshold = 1.00
      */
-    int sup_threshold = 0;
-    int sup_pot_threshold = 0;
-    float conf_threshold = 1.00;
+    settings c_settings;
+
+    // whether to print statistics
+    c_settings.print_full_stats = opts.count("print-stats");
+
+    // whether inputed thresholds are global
+    c_settings.use_global_t = opts.count("use-global-thresholds");
+
     if (opts.count("no-vacuous-findings")) {
-        sup_threshold = 1;
-        global = true;
+        c_settings.set_sup_t(1);
+        c_settings.use_global_t = true;
     }
-    if (opts.count("sup-threshold")) sup_threshold = opts["sup-threshold"].as<int>();
-    if (opts.count("sup-pot-threshold")) sup_pot_threshold = opts["sup-pot-threshold"].as<int>();
-    if (opts.count("conf-threshold")) conf_threshold = opts["conf-threshold"].as<float>();
-    // check that support threshold is within range
-    if (sup_threshold < 0) {
-        std::cerr << "sup_threshold cannot be negative\n";
-        exit(1);
+    if (opts.count("sup-threshold")) {
+        c_settings.set_sup_t(opts["sup-threshold"].as<int>());
     }
-    // check that support potential threshold is within range
-    if (sup_pot_threshold < 0) {
-        std::cerr << "sup_pot_threshold cannot be negative\n";
-        exit(1);
+    if (opts.count("sup-pot-threshold")) {
+        c_settings.set_sup_pot_t(opts["sup-pot-threshold"].as<int>());
     }
-    // check that confidence threshold is within range
-    if (conf_threshold < 0.0 || conf_threshold > 1.0) {
-        std::cerr << "conf_threshold must be between 0 and 1 \n";
+    if (opts.count("conf-threshold")) {
+        c_settings.set_conf_t(opts["conf-threshold"].as<float>());
+    }
+
+    // currently, only the vanilla configuration is supported for
+    // the map and prefix checkers. So, stop program if a non-vanilla
+    // configuration is called with a non-linear checker
+    if (!use_lin && !c_settings.is_vanilla()) {
+        std::cerr << "Statistics-related options were called for a non-linear checker. "
+                "Currently, the map and prefix checkers do not support statistic-related options."<< "\n";
         exit(1);
     }
 
@@ -226,7 +228,7 @@ set<std::pair<const spot::ltl::formula*, statistic>> mine_property_type(
         shared_ptr<set<vector<string_event> >> vector_trace_set =
                 dynamic_cast<linear_parser*>(parser)->return_vec_trace();
         valid_instants = valid_instants_on_traces(formula, instantiator,
-                vector_trace_set, sup_threshold, sup_pot_threshold, conf_threshold, global, print_stats);
+                vector_trace_set, c_settings);
     } else if (use_map) {
         shared_ptr<set<map<string_event, vector<long>>> > map_trace_set = dynamic_cast<map_parser*>(parser)->return_map_trace();
         valid_instants = valid_instants_on_traces(formula, instantiator,

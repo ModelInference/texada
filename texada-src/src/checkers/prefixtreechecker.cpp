@@ -128,19 +128,22 @@ map<int, statistic> prefix_tree_checker::ap_check(const spot::ltl::atomic_prop* 
         trace_node trace_pt, std::set<int> trace_ids) {
     if (use_memo) {
         if (instantiations.find(node->name()) != instantiations.end()) {
-            statistic is_this_event = ((instantiations.find(node->name()))->second
-                    == trace_pt->get_name()) ? statistic(true, 1, 1) : statistic(false, 0, 1);
-            return create_int_bool_map(trace_ids, is_this_event);
+            if ((instantiations.find(node->name()))->second == trace_pt->get_name()) {
+                return create_int_bool_map(trace_ids, statistic(true, 1, 1));
+            } else {
+                return create_int_bool_map(trace_ids, statistic(false, 0, 1));
+            }
         } else {
             std::cerr << "Did not find mapping for " << node->name() <<". \n";
             return create_int_bool_map(trace_ids, statistic(false, 0, 1));
         }
     } else {
         // evaluate whether the AP holds
-        statistic is_this_event =
-                (trace_pt->get_name() == node->name()) ? statistic(true, 1, 1) : statistic(false, 0, 1);
-        // return in trace_id -> bool map
-        return create_int_bool_map(trace_ids, is_this_event);
+        if (trace_pt->get_name() == node->name()) {
+            return create_int_bool_map(trace_ids, statistic(true, 1, 1));
+        } else {
+            return create_int_bool_map(trace_ids, statistic(false, 0, 1));
+        }
     }
 }
 
@@ -183,8 +186,11 @@ map<int, statistic> prefix_tree_checker::xor_check(const spot::ltl::binop* node,
     for (map<int, statistic>::iterator pholds_it = pholds.begin();
             pholds_it != pholds.end(); pholds_it++) {
         statistic qholds_on_trace = qholds.find(pholds_it->first)->second;
-        pholds_it->second =
-                ((pholds_it->second).is_satisfied) ? qholds_on_trace : qholds_on_trace;        // Dennis: originially (pholds_it->second) ? !qholds_on_trace : qholds_on_trace;
+        if ((pholds_it->second).is_satisfied != qholds_on_trace.is_satisfied) {
+            pholds_it->second = statistic(true, 1, 1);
+        } else {
+            pholds_it->second = statistic(false, 0, 1);
+        }
 
     }
     if (use_memo) {
@@ -232,9 +238,11 @@ map<int, statistic> prefix_tree_checker::equiv_check(const spot::ltl::binop* nod
     for (map<int, statistic>::iterator pholds_it = pholds.begin();
             pholds_it != pholds.end(); pholds_it++) {
         statistic qholds_on_trace = qholds.find(pholds_it->first)->second;
-        pholds_it->second =
-                ((pholds_it->second).is_satisfied) ? qholds_on_trace : qholds_on_trace;   // Dennis: originially (pholds_it->second) ? qholds_on_trace : !qholds_on_trace;
-
+        if ((pholds_it->second).is_satisfied == qholds_on_trace.is_satisfied) {
+            pholds_it->second = statistic(true, 1, 1);
+        } else {
+            pholds_it->second = statistic(false, 0, 1);
+        }
     }
     if (use_memo) {
         add_to_memo_map(node, trace_pt, pholds);
@@ -1116,18 +1124,18 @@ vector<std::pair<map<string, string>, statistic>> valid_instants_on_traces(
         }
 
         // is the instantiation valid?
-        statistic result = statistic(true, 0, 0);
+        statistic global_stat = statistic(true, 0, 0);
         for (set<shared_ptr<prefix_tree_node>>::iterator it =
                 iterable_traces.begin(); it != iterable_traces.end(); it++) {
-            result = statistic(result, checker.check_on_trace(prop_type, *it,
+            global_stat = statistic(global_stat, checker.check_on_trace(prop_type, *it,
                     instantiation_to_pass));
-            if (!result.is_satisfied) {
+            if (!global_stat.is_satisfied) {
                 break;
             }
         }
         //instantiated_prop_type->destroy();
-        if (result.is_satisfied) {
-            std::pair<map<string, string>, statistic> finding(*current_instantiation, result);
+        if (global_stat.is_satisfied) {
+            std::pair<map<string, string>, statistic> finding(*current_instantiation, global_stat);
             return_vec.push_back(finding);
         }
     }
