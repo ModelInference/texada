@@ -66,7 +66,7 @@ private:
 vector<std::pair<map<string, string>, statistic>> valid_instants_on_traces(
         const spot::ltl::formula * prop_type,
         instants_pool_creator * instantiator,
-        shared_ptr<set<vector<string_event>>> traces);
+        shared_ptr<std::multiset<vector<string_event>>> traces);
 
 /**
  * Finds valid instants on traces based on given configuration
@@ -74,7 +74,7 @@ vector<std::pair<map<string, string>, statistic>> valid_instants_on_traces(
 vector<std::pair<map<string, string>, statistic>> valid_instants_on_traces(
         const spot::ltl::formula * prop_type,
         instants_pool_creator * instantiator,
-        shared_ptr<set<vector<string_event>>> traces,
+        shared_ptr<std::multiset<vector<string_event>>> traces,
         settings c_settings);
 
 } /* namespace texada */

@@ -225,7 +225,7 @@ set<std::pair<const spot::ltl::formula*, statistic>> mine_property_type(
     vector<std::pair<std::map<std::string, std::string>, texada::statistic>> valid_instants;
     // check all valid instantiations on each trace
     if (use_lin) {
-        shared_ptr<set<vector<string_event> >> vector_trace_set =
+        shared_ptr<std::multiset<vector<string_event> >> vector_trace_set =
                 dynamic_cast<linear_parser*>(parser)->return_vec_trace();
         valid_instants = valid_instants_on_traces(formula, instantiator,
                 vector_trace_set, c_settings);

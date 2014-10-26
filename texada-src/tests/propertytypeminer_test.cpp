@@ -668,7 +668,8 @@ TEST(CheckerEquivalencyTest, STprecedesPafterQ) {
 
 }
 */
-// checking that the property type miner return correct statistics of findings
+// checking that the property type miner return correct statistics of findings.
+// checks the case when there exist multiple equivalent traces in the log.
 TEST(PropertyTypeMinerTest, StatPrint) {
     if (getenv("TEXADA_HOME") == NULL) {
             std::cerr << "Error: TEXADA_HOME is undefined. \n";
