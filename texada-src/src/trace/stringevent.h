@@ -9,30 +9,27 @@
 #define STRINGEVENT_H_
 
 #include <string>
-#include <set>
 
 namespace texada {
 
 /**
  * Represents a string event that is parsed from an input log.
  */
-class string_event {        // to be renamed
+class string_event {
 public:
     string_event();
     string_event(std::string);
     virtual ~string_event();
     bool operator<(const string_event&) const;
     bool operator==(const string_event& other) const;
-    std::string get_name() const;       // to be deleted
-    bool is_satisfied(std::string) const;
+    std::string get_name() const;
     bool is_terminal() const;
-    void add_prop(std::string);
-    void set_name(std::string);         // to be deleted
+    void set_name(std::string);
     void set_terminal(bool);
 
 private:
     // The string representation of the event.
-    std::set<std::string> props;
+    std::string name;
 
     // Whether or not this is the last event for a trace.
     bool isTerminal;
