@@ -14,17 +14,15 @@ namespace texada {
  * Construct a non-terminal event string event with name name_.
  * @param name_ name
  */
-string_event::string_event(std::string name_) {
-    props.insert(name_);
-    isTerminal = false;
+string_event::string_event(std::string name_) :
+        name(name_), isTerminal(false) {
 }
 
 /**
  * Basic constructor which creates a terminal event.
  */
-string_event::string_event() {
-    props.insert("EndOfTraceVar");
-    isTerminal = true;
+string_event::string_event() :
+        name("EndOfTraceVar"), isTerminal(true) {
 }
 
 string_event::~string_event() {
@@ -36,7 +34,7 @@ string_event::~string_event() {
  * @return
  */
 bool string_event::operator<(const string_event& other) const {
-    return get_name() < other.get_name();
+    return name < other.get_name();
 }
 
 /**
@@ -45,7 +43,7 @@ bool string_event::operator<(const string_event& other) const {
  * @return
  */
 bool string_event::operator==(const string_event& other) const {
-    return (get_name() == other.get_name() && isTerminal == other.is_terminal());
+    return (name == other.get_name() && isTerminal == other.is_terminal());
 }
 
 /**
@@ -53,16 +51,7 @@ bool string_event::operator==(const string_event& other) const {
  * @return name of event
  */
 std::string string_event::get_name() const {
-    return *props.begin();
-}
-
-/**
- * Returns whether a given atomic proposition holds at this event.
- * @param prop the proposition to check
- * @return true if the proposition holds
- */
-bool string_event::is_satisfied(std::string prop) const {
-    return props.find(prop) != props.end();
+    return name;
 }
 
 /**
@@ -74,20 +63,12 @@ bool string_event::is_terminal() const {
 }
 
 /**
- * Adds a proposition to the collection of atomic props holding at this event.
- */
-void string_event::add_prop(std::string prop) {
-    props.insert(prop);
-}
-
-/**
  * Sets event name to inputted name_.
  * @param name_
  * @return
  */
 void string_event::set_name(std::string name_) {
-    props.clear();
-    props.insert(name_);
+    name = name_;
 }
 
 /**
