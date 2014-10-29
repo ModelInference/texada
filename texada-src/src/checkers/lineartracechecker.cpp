@@ -24,7 +24,7 @@ bool linear_trace_checker::check_on_trace(const spot::ltl::formula * node, const
  */
 bool linear_trace_checker::ap_check(const spot::ltl::atomic_prop *node,
         const string_event *trace, std::set<int> trace_ids) {
-    return (trace->get_name() == node->name()) ? true : false;
+    return (trace->is_satisfied(node->name())) ? true : false;
 }
 
 /**
