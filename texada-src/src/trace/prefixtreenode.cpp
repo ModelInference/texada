@@ -23,13 +23,13 @@ prefix_tree_node::prefix_tree_node(set<int> input_ids) {
 }
 
 /**
- * Constructs an event node with name name and belonging
+ * Constructs an event node with event event and belonging
  * to the traces given in input_ids
- * @param name name of this event
+ * @param event the event corresponding to this node
  * @param input_ids traces this event belongs to
  */
-prefix_tree_node::prefix_tree_node(string name, set<int> input_ids) {
-    event = string_event(name);
+prefix_tree_node::prefix_tree_node(string_event event, set<int> input_ids) {
+    this->event = event;
     trace_ids = input_ids;
 }
 
@@ -117,7 +117,7 @@ shared_ptr<prefix_tree_node> prefix_tree_node::get_child(int trace_id) {
 shared_ptr<prefix_tree_node> prefix_tree_node::get_child(string_event event) {
     for (map<set<int>,shared_ptr<prefix_tree_node>>::iterator kids_it= children.begin();
             kids_it != children.end(); kids_it++) {
-        if (kids_it->second == event) {
+        if ((kids_it->second)->get_event() == event) {
             return kids_it->second;
         }
     }

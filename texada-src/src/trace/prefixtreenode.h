@@ -30,7 +30,7 @@ public:
     // terminal constructor
     prefix_tree_node(set<int>);
     // regular constructor
-    prefix_tree_node(string,set<int>);
+    prefix_tree_node(string_event,set<int>);
     // destructor
     virtual ~prefix_tree_node();
     // adds a child

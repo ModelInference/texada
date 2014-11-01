@@ -40,13 +40,11 @@ shared_ptr<prefix_tree> prefix_tree_parser::return_prefix_trees() {
  * @param event name
  */
 void prefix_tree_parser::add_event(string_event event) {
-    if (event.is_terminal) {
-        shared_ptr<prefix_tree_node> twin = temp_trace->get_child(
-                string_event().get_name());
+    if (event.is_terminal()) {
+        shared_ptr<prefix_tree_node> twin = temp_trace->get_child(event);
         if (twin != NULL) {
             temp_trace->add_id_to_child(trace_id, twin);
             temp_trace = NULL;
-
         } else {
             //std::cout << "Ending trace " << trace_id << ". \n";
             set<int> trace_ids;

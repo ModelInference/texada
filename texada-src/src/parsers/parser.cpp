@@ -116,7 +116,7 @@ bool parser::get_event(std::ifstream &infile, string_event &event) {
                 break;
             } else if ((prop = parse_line(line)) != NULL) {
                 event.add_prop(*prop);
-            } else if (ignore_nm_lines) {
+            } else if (ignores_nm_lines) {
                 // if ignoring a non-matching line, we need to recurse in order
                 // to force another line read. Note that a continue statement would
                 // simply exit the loop without reading another line in the case that
