@@ -34,21 +34,15 @@ shared_ptr<set<vector<string_event> >> linear_parser::return_vec_trace() {
 
 /**
  * Helper function called from within parser::parse(std::ifstream &infile)
- * Ends the current trace being built
- */
-void linear_parser::end_trace() {
-    temp_trace.push_back(string_event());
-    vector_trace_set->insert(temp_trace);
-    temp_trace.clear();
-}
-
-/**
- * Helper function called from within parser::parse(std::ifstream &infile)
  * Adds event to the current trace being built
- * @param event name
+ * @param event new event
  */
-void linear_parser::add_event(std::string event) {
-    temp_trace.push_back(string_event(event));
+void linear_parser::add_event(string_event event) {
+    temp_trace.push_back(event);
+    if (event.is_terminal()) {
+        vector_trace_set->insert(temp_trace);
+        temp_trace.clear();
+    }
 }
 
 } /* namespace texada */
