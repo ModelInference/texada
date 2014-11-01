@@ -21,6 +21,7 @@ parser::parser() {
     trace_separator = "--";
     event_separator = "++";
     ignores_nm_lines = false;
+    parse_mult_prop = false;
 }
 
 parser::~parser() {

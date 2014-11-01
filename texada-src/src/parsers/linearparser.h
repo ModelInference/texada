@@ -24,8 +24,7 @@ public:
     shared_ptr<std::set<std::vector<string_event> >> return_vec_trace();
 
 private:
-    virtual void end_trace();
-    virtual void add_event(std::string event);
+    virtual void add_event(string_event event);
 
     vector<string_event> temp_trace;
     shared_ptr<set<vector<string_event> >> vector_trace_set;
