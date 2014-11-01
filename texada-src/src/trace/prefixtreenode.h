@@ -41,10 +41,10 @@ public:
     void add_id_to_child(int, shared_ptr<prefix_tree_node>);
     // getter for trace_ids
     set<int> get_trace_ids();
-    // getter for name
-    string get_name();
+    // getter for event corresponding to node
+    string_event get_event();
     shared_ptr<prefix_tree_node> get_child(int);
-    shared_ptr<prefix_tree_node> get_child(string);
+    shared_ptr<prefix_tree_node> get_child(string_event);
     shared_ptr<prefix_tree_node> get_nth_child(int);
     map<set<int>,shared_ptr<prefix_tree_node>> get_children();
     int num_children();
