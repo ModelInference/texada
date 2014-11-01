@@ -120,7 +120,7 @@ set<const spot::ltl::formula*> mine_property_type(
         parser->set_event_types(opts["regex"].as<vector<string>>());
     }
     if (opts.count("separator_regex")) {
-        parser->set_separator(opts["separator_regex"].as<std::string>());
+        parser->set_trace_separator(opts["separator_regex"].as<std::string>());
     }
     if (opts.count("ignore_nm_lines")) {
         parser->ignore_nm_lines();

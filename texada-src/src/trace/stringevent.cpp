@@ -57,6 +57,14 @@ std::string string_event::get_name() const {
 }
 
 /**
+ * Returns the set of propositions holding at this event
+ * @return set of satisfied propositions
+ */
+std::set<std::string> string_event::get_props() const {
+    return props;
+}
+
+/**
  * Returns whether a given atomic proposition holds at this event.
  * @param prop the proposition to check
  * @return true if the proposition holds

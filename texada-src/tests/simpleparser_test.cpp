@@ -197,7 +197,7 @@ TEST(SimpleParserTest, CustomSeparator) {
             std::string(getenv("TEXADA_HOME"))
                     + "/traces/regex-parsing-tests/custom-separator.txt");
     texada::linear_parser * parser = new texada::linear_parser;
-    parser->set_separator("break");
+    parser->set_trace_separator("break");
 
     parser->parse(infile);
     std::shared_ptr<std::set<std::vector<texada::string_event>>>trace_set =
