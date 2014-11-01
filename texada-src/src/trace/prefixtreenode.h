@@ -29,7 +29,9 @@ class prefix_tree_node {
 public:
     // terminal constructor
     prefix_tree_node(set<int>);
-    // regular constructor
+    // simple constructor by atomic proposition
+    prefix_tree_node(std::string,set<int>);
+    // regular constructor by event
     prefix_tree_node(string_event,set<int>);
     // destructor
     virtual ~prefix_tree_node();
@@ -48,6 +50,7 @@ public:
     shared_ptr<prefix_tree_node> get_nth_child(int);
     map<set<int>,shared_ptr<prefix_tree_node>> get_children();
     int num_children();
+    bool is_satisfied(std::string);
     bool is_terminal();
 private:
     // event this node represents

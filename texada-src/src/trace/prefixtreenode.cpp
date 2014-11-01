@@ -19,7 +19,17 @@ namespace texada {
 prefix_tree_node::prefix_tree_node(set<int> input_ids) {
     event = string_event();
     trace_ids = input_ids;
+}
 
+/**
+ * Constructs a single propositional event node with an
+ * event having the proposition prop
+ * @param prop the proposition corresponding to the node's event
+ * @param input_ids traces this event belongs to
+ */
+prefix_tree_node::prefix_tree_node(std::string prop, set<int> input_ids) {
+    this->event = string_event(prop);
+    trace_ids = input_ids;
 }
 
 /**
@@ -160,6 +170,15 @@ map<set<int>,shared_ptr<prefix_tree_node>> prefix_tree_node::get_children(){
  */
 int prefix_tree_node::num_children() {
     return children.size();
+}
+
+/**
+ * Return whether a given atomic proposition holds at the event corresponding to this node
+ * @param prop the proposition to check
+ * @return whether the ap holds
+ */
+bool prefix_tree_node::is_satisfied(std::string prop) {
+    return event.is_satisfied(prop);
 }
 
 /**
