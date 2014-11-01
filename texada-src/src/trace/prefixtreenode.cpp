@@ -87,8 +87,8 @@ set<int> prefix_tree_node::get_trace_ids() {
  * Get the name of the event this node represents
  * @return name of node
  */
-string prefix_tree_node::get_name() {
-    return event.get_name();
+string_event prefix_tree_node::get_event() {
+    return event;
 }
 
 /**
@@ -114,10 +114,10 @@ shared_ptr<prefix_tree_node> prefix_tree_node::get_child(int trace_id) {
  * @param name name of event to find
  * @return event with name name, NULL if no such event exists
  */
-shared_ptr<prefix_tree_node> prefix_tree_node::get_child(string name) {
+shared_ptr<prefix_tree_node> prefix_tree_node::get_child(string_event event) {
     for (map<set<int>,shared_ptr<prefix_tree_node>>::iterator kids_it= children.begin();
             kids_it != children.end(); kids_it++) {
-        if (kids_it->second->get_name() == name) {
+        if (kids_it->second == event) {
             return kids_it->second;
         }
     }
