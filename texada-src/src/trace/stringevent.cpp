@@ -107,4 +107,12 @@ void string_event::set_terminal(bool is_term) {
     isTerminal = is_term;
 }
 
+/**
+ * Clear away the propositions associated with this event, and set the event to be non-terminal.
+ */
+void string_event::clear() {
+    props.clear();
+    isTerminal = false;
+}
+
 } /* namespace texada */

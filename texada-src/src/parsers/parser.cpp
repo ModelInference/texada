@@ -19,7 +19,7 @@ parser::parser() {
     boost::regex expression("(?<ETYPE>.*)");
     event_types.push_back(expression);
     trace_separator = "--";
-    event_separator = "++";
+    event_separator = "TODO";   // TODO: come up with appropriate event separator
     ignores_nm_lines = false;
     parse_mult_prop = false;
 }
@@ -106,30 +106,25 @@ shared_ptr<set<string>> parser::return_events() {
 bool parser::get_event(std::ifstream &infile, string_event &event) {
     std::string line;
     std::shared_ptr<std::string> prop;
+    event.clear();
     do {
         if (std::getline(infile, line)) {
             if (boost::regex_match(line, trace_separator)) {
                 // TODO: handle case when a trace termination is also an event termination
-                event.is_terminal();
+                event = string_event();
                 break;
             } else if (boost::regex_match(line, event_separator)) {
                 break;
             } else if ((prop = parse_line(line)) != NULL) {
                 event.add_prop(*prop);
-            } else if (ignores_nm_lines) {
-                // if ignoring a non-matching line, we need to recurse in order
-                // to force another line read. Note that a continue statement would
-                // simply exit the loop without reading another line in the case that
-                // parse_mult_prop is turned off.
-                return get_event(infile, event);
-            } else {
+            } else if (!ignores_nm_lines) {
                 std::cerr << "Error: the line '" + line + "' did not match any of the provided regular expressions. \n";
                 exit(1);
             }
         } else {
             return false;
         }
-    } while (parse_mult_prop);
+    } while (parse_mult_prop || (ignores_nm_lines && prop == NULL));
     return true;
 }
 
