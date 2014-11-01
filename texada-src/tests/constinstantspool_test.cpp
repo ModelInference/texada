@@ -135,19 +135,19 @@ TEST(ConstInstantsPoolTest,UsableByPrefixChecker) {
     set1.insert(1);
     // root
     std::shared_ptr<texada::prefix_tree_node> top = std::make_shared<
-            texada::prefix_tree_node>("a", set01);
+            texada::prefix_tree_node>(texada::string_event("a"), set01);
     // left branch
     std::shared_ptr<texada::prefix_tree_node> middle_left = std::make_shared<
-            texada::prefix_tree_node>("b", set0);
+            texada::prefix_tree_node>(texada::string_event("b"), set0);
     std::shared_ptr<texada::prefix_tree_node> bottom_left = std::make_shared<
-            texada::prefix_tree_node>("c", set0);
+            texada::prefix_tree_node>(texada::string_event("c"), set0);
     std::shared_ptr<texada::prefix_tree_node> terminal_left = std::make_shared<
             texada::prefix_tree_node>(set0);
     // right branch
     std::shared_ptr<texada::prefix_tree_node> middle_right = std::make_shared<
-            texada::prefix_tree_node>("a", set1);
+            texada::prefix_tree_node>(texada::string_event("a"), set1);
     std::shared_ptr<texada::prefix_tree_node> bottom_right = std::make_shared<
-            texada::prefix_tree_node>("c", set1);
+            texada::prefix_tree_node>(texada::string_event("c"), set1);
     std::shared_ptr<texada::prefix_tree_node> terminal_right = std::make_shared<
             texada::prefix_tree_node>(set0);
 

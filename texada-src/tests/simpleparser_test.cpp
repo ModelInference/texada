@@ -136,52 +136,42 @@ TEST(SimpleParserTest, PreTreeTrace) {
     std::shared_ptr<texada::prefix_tree> trace_set =
             parser.return_prefix_trees();
 
-    ASSERT_TRUE(trace_set->get_trace_start("a") != NULL);
-    ASSERT_TRUE(trace_set->get_trace_start("a")->get_child("b") != NULL);
+    ASSERT_TRUE(trace_set->get_trace_start(texada::string_event("a")) != NULL);
+    ASSERT_TRUE(trace_set->get_trace_start(texada::string_event("a"))->get_child(texada::string_event("b")) != NULL);
 
     //trace1
-    ASSERT_EQ("a", trace_set->get_trace_start(1)->get_name());
+    ASSERT_TRUE(trace_set->get_trace_start(1)->is_satisfied("a"));
 
-    ASSERT_EQ("b", trace_set->get_trace_start(1)->get_child(1)->get_name());
-    ASSERT_EQ("c",
-            trace_set->get_trace_start(1)->get_child(1)->get_child(1)->get_name());
-    ASSERT_EQ("d",
-            trace_set->get_trace_start(1)->get_child(1)->get_child(1)->get_child(
-                    1)->get_name());
+    ASSERT_TRUE(trace_set->get_trace_start(1)->get_child(1)->is_satisfied("b"));
+    ASSERT_TRUE(trace_set->get_trace_start(1)->get_child(1)->get_child(1)->is_satisfied("c"));
+    ASSERT_TRUE(trace_set->get_trace_start(1)->get_child(1)->get_child(1)->get_child(
+                    1)->is_satisfied("d"));
 
     //trace 2
-    ASSERT_EQ("a", trace_set->get_trace_start(2)->get_name());
-    ASSERT_EQ("b", trace_set->get_trace_start(2)->get_child(2)->get_name());
+    ASSERT_TRUE(trace_set->get_trace_start(2)->is_satisfied("a"));
+    ASSERT_TRUE(trace_set->get_trace_start(2)->get_child(2)->is_satisfied("b"));
 
-    ASSERT_EQ("d",
-            trace_set->get_trace_start(2)->get_child(2)->get_child(2)->get_name());
-    ASSERT_EQ("e",
-            trace_set->get_trace_start(2)->get_child(2)->get_child(2)->get_child(
-                    2)->get_name());
+    ASSERT_TRUE(trace_set->get_trace_start(2)->get_child(2)->get_child(2)->is_satisfied("d"));
+    ASSERT_TRUE(trace_set->get_trace_start(2)->get_child(2)->get_child(2)->get_child(
+                    2)->is_satisfied("e"));
     //trace 3
 
-    ASSERT_EQ("a", trace_set->get_trace_start(3)->get_name());
-    ASSERT_EQ("c", trace_set->get_trace_start(3)->get_child(3)->get_name());
-    ASSERT_EQ("e",
-            trace_set->get_trace_start(3)->get_child(3)->get_child(3)->get_name());
-    ASSERT_EQ("e",
-            trace_set->get_trace_start(3)->get_child(3)->get_child(3)->get_child(
-                    3)->get_name());
-    ASSERT_EQ("f",
-            trace_set->get_trace_start(3)->get_child(3)->get_child(3)->get_child(
-                    3)->get_child(3)->get_name());
+    ASSERT_TRUE(trace_set->get_trace_start(3)->is_satisfied("a"));
+    ASSERT_TRUE(trace_set->get_trace_start(3)->get_child(3)->is_satisfied("c"));
+    ASSERT_TRUE(trace_set->get_trace_start(3)->get_child(3)->get_child(3)->is_satisfied("e"));
+    ASSERT_TRUE(trace_set->get_trace_start(3)->get_child(3)->get_child(3)->get_child(
+                    3)->is_satisfied("e"));
+    ASSERT_TRUE(trace_set->get_trace_start(3)->get_child(3)->get_child(3)->get_child(
+                    3)->get_child(3)->is_satisfied("f"));
 
     //trace 4
-    ASSERT_EQ("a", trace_set->get_trace_start(4)->get_name());
-    ASSERT_EQ("c", trace_set->get_trace_start(4)->get_child(4)->get_name());
-    ASSERT_EQ("e",
-            trace_set->get_trace_start(4)->get_child(4)->get_child(4)->get_name());
-    ASSERT_EQ("d",
-            trace_set->get_trace_start(4)->get_child(4)->get_child(4)->get_child(
-                    4)->get_name());
-    ASSERT_EQ("EndOfTraceVar",
-            trace_set->get_trace_start(4)->get_child(4)->get_child(4)->get_child(
-                    4)->get_child(4)->get_name());
+    ASSERT_TRUE(trace_set->get_trace_start(4)->is_satisfied("a"));
+    ASSERT_TRUE(trace_set->get_trace_start(4)->get_child(4)->is_satisfied("c"));
+    ASSERT_TRUE(trace_set->get_trace_start(4)->get_child(4)->get_child(4)->is_satisfied("e"));
+    ASSERT_TRUE(trace_set->get_trace_start(4)->get_child(4)->get_child(4)->get_child(
+                    4)->is_satisfied("d"));
+    ASSERT_TRUE(trace_set->get_trace_start(4)->get_child(4)->get_child(4)->get_child(
+                    4)->get_child(4)->is_satisfied("EndOfTraceVar"));
 
 
 }

@@ -128,8 +128,8 @@ map<int, bool> prefix_tree_checker::ap_check(const spot::ltl::atomic_prop* node,
         trace_node trace_pt, std::set<int> trace_ids) {
     if (use_memo) {
         if (instantiations.find(node->name()) != instantiations.end()) {
-            bool is_this_event = (instantiations.find(node->name()))->second
-                    == trace_pt->get_name();
+            std::string ap = (instantiations.find(node->name()))->second;
+            bool is_this_event = (trace_pt->get_event()).is_satisfied(ap);
             return create_int_bool_map(trace_ids, is_this_event);
         } else {
             std::cerr << "Did not find mapping for " << node->name() <<". \n";
@@ -137,10 +137,9 @@ map<int, bool> prefix_tree_checker::ap_check(const spot::ltl::atomic_prop* node,
         }
     } else {
         // evaluate whether the AP holds
-        bool is_this_event =
-                (trace_pt->get_name() == node->name()) ? true : false;
+        bool prop_holds = trace_pt->is_satisfied(node->name());
         // return in trace_id -> bool map
-        return create_int_bool_map(trace_ids, is_this_event);
+        return create_int_bool_map(trace_ids, prop_holds);
     }
 }
 
