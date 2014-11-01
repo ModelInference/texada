@@ -26,8 +26,7 @@ public:
     shared_ptr<std::set<std::map<string_event, std::vector<long>> >> return_map_trace();
 
 private:
-    virtual void end_trace();
-    virtual void add_event(std::string event);
+    virtual void add_event(string_event event);
 
     long pos_count;
     map<string_event, std::vector<long>> temp_trace;
