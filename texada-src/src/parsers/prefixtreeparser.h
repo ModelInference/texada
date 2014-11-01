@@ -23,8 +23,7 @@ public:
     shared_ptr<prefix_tree> return_prefix_trees();
 
 private:
-    virtual void end_trace();
-    virtual void add_event(std::string event);
+    virtual void add_event(string_event event);
 
     int trace_id;
     shared_ptr<prefix_tree_node> temp_trace;

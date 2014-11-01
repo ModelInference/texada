@@ -37,10 +37,11 @@ class parser {
 public:
     parser();
     virtual ~parser();
-    virtual void parse(std::ifstream &infile);
+    virtual void parse(std::ifstream&);
 
-    void set_event_types(std::vector<std::string> event_types);
-    void set_separator(std::string separator_regex);
+    void set_event_types(std::vector<std::string>);
+    void set_trace_separator(std::string);
+    void set_event_separator(std::string);
     void ignore_nm_lines();
 
     shared_ptr<set<string>> return_events();
@@ -49,15 +50,17 @@ protected:
     bool has_been_parsed = false;
 
 private:
-    shared_ptr<std::string> get_event_type(std::string log_line);
+    shared_ptr<std::string> parse_line(std::string log_line);
 
-    virtual void end_trace();
-    virtual void add_event(std::string event);
+    bool get_event(std::ifstream &,string_event &);
+    virtual void add_event(string_event event);
 
     shared_ptr<set<string>>  unique_events;
     std::vector<boost::regex> event_types;
-    boost::regex separator_regex;
+    boost::regex trace_separator;
+    boost::regex event_separator;
     bool ignores_nm_lines;
+    bool parse_mult_prop;
 
 };
 }

@@ -24,6 +24,7 @@ public:
     bool operator<(const string_event&) const;
     bool operator==(const string_event& other) const;
     std::string get_name() const;       // to be deleted
+    std::set<std::string> get_props() const;
     bool is_satisfied(std::string) const;
     bool is_terminal() const;
     void add_prop(std::string);
