@@ -181,7 +181,7 @@ TEST(PrefixTreeCheckerTest, TestSimpleTree) {
 
     ASSERT_FALSE(
             checker.check_on_trace(afby_form,
-                    all_traces->get_trace_start(texada::string_event("a"))));
+                    all_traces->get_trace_start(texada::event("a"))));
 
     afby_form->destroy();
 
@@ -207,7 +207,7 @@ TEST(PrefixTreeCheckerTest, TestOnTrace) {
             pe_list);
     texada::prefix_tree_checker checker;
     ASSERT_TRUE(
-            checker.check_on_trace(afby_form, trace_set->get_trace_start(texada::string_event("a"))));
+            checker.check_on_trace(afby_form, trace_set->get_trace_start(texada::event("a"))));
     afby_form->destroy();
 
     afby_form = spot::ltl::parse("G(x->XFy)", pe_list);
@@ -219,7 +219,7 @@ TEST(PrefixTreeCheckerTest, TestOnTrace) {
     afby_form->accept(*collector);
     checker.add_relevant_bindings(&collector->subform_ap_set);
     ASSERT_TRUE(
-            checker.check_on_trace(afby_form, trace_set->get_trace_start(texada::string_event("a")),
+            checker.check_on_trace(afby_form, trace_set->get_trace_start(texada::event("a")),
                     inst_map));
     delete collector;
     afby_form->destroy();

@@ -68,7 +68,7 @@ void parser::ignore_nm_lines() {
  */
 void parser::parse(std::ifstream &infile) {
     unique_events->clear();
-    string_event event;
+    event event;
     while (parser::get_event(infile,event)) {
         add_event(event);
         if (!event.is_terminal()) {
@@ -103,7 +103,7 @@ shared_ptr<set<string>> parser::return_events() {
  * @param event reference for event parsed from file
  * @return whether an event was parsed; return false if end of file has been reached.
  */
-bool parser::get_event(std::ifstream &infile, string_event &event) {
+bool parser::get_event(std::ifstream &infile, event &event) {
     std::string line;
     std::shared_ptr<std::string> prop;
     event.clear();
@@ -111,7 +111,7 @@ bool parser::get_event(std::ifstream &infile, string_event &event) {
         if (std::getline(infile, line)) {
             if (boost::regex_match(line, trace_separator)) {
                 // TODO: handle case when a trace termination is also an event termination
-                event = string_event();
+                event = texada::event();
                 break;
             } else if (boost::regex_match(line, event_separator)) {
                 break;
@@ -152,6 +152,6 @@ shared_ptr<std::string> parser::parse_line(std::string log_line) {
  * current trace beign built.
  * @param event name
  */
-void parser::add_event(string_event event) {}
+void parser::add_event(event event) {}
 
 } /* namespace texada */

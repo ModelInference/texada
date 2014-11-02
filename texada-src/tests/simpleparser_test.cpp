@@ -17,17 +17,17 @@ TEST(SimpleParserTest, SmallFile) {
 
     texada::linear_parser * parser = new texada::linear_parser;
     parser->parse(infile);
-    std::shared_ptr<std::set<std::vector<texada::string_event>>>trace_set =
+    std::shared_ptr<std::set<std::vector<texada::event>>>trace_set =
     parser->return_vec_trace();
     std::shared_ptr<std::set<std::string>> events = parser->return_events();
     delete parser;
     parser = NULL;
 
-    std::vector<texada::string_event> trace_vec = *trace_set->begin();
-    ASSERT_EQ("e1", trace_vec[0].get_name());
-    ASSERT_EQ("e2", trace_vec[1].get_name());
-    ASSERT_EQ("e3", trace_vec[2].get_name());
-    ASSERT_EQ("e2", trace_vec[3].get_name());
+    std::vector<texada::event> trace_vec = *trace_set->begin();
+    ASSERT_TRUE(trace_vec[0].is_satisfied("e1"));
+    ASSERT_TRUE(trace_vec[1].is_satisfied("e2"));
+    ASSERT_TRUE(trace_vec[2].is_satisfied("e3"));
+    ASSERT_TRUE(trace_vec[3].is_satisfied("e2"));
     ASSERT_TRUE(trace_vec[4].is_terminal());
 
     ASSERT_EQ(events->size(), 3);
@@ -50,16 +50,16 @@ TEST(SimpleParserTest, MultipleTracesOneFile) {
     texada::linear_parser * parser = new texada::linear_parser;
 
     parser->parse(infile);
-    std::shared_ptr<std::set<std::vector<texada::string_event>>>trace_set =
+    std::shared_ptr<std::set<std::vector<texada::event>>>trace_set =
     parser->return_vec_trace();
 
     delete parser;
     parser = NULL;
 
     ASSERT_EQ(trace_set->size(),20)<< "Unexpected number of traces parsed";
-    for (std::set<std::vector<texada::string_event> >::iterator it =
+    for (std::set<std::vector<texada::event> >::iterator it =
             trace_set->begin(); it != trace_set->end(); it++) {
-        std::vector<texada::string_event> current_vector = *it;
+        std::vector<texada::event> current_vector = *it;
         ASSERT_EQ(current_vector.size(), 251);
     }
 }
@@ -77,19 +77,19 @@ TEST(SimpleParserTest, MapTraceSmallFile) {
     texada::map_parser * parser = new texada::map_parser;
     parser->parse(infile);
     std::shared_ptr<
-            std::set<std::map<texada::string_event, std::vector<long>>> >trace_set =
+            std::set<std::map<texada::event, std::vector<long>>> >trace_set =
     parser->return_map_trace();
     delete parser;
     parser = NULL;
 
     ASSERT_EQ(trace_set->size(), 1);
-    std::map<texada::string_event, std::vector<long>> trace =
+    std::map<texada::event, std::vector<long>> trace =
             *trace_set->begin();
     ASSERT_EQ(trace.size(), 4);
-    ASSERT_EQ(trace.at(texada::string_event("e1")).size(), 1);
-    ASSERT_EQ(trace.at(texada::string_event("e2")).size(), 2);
-    ASSERT_EQ(trace.at(texada::string_event("e3")).size(), 1);
-    ASSERT_EQ(trace.at(texada::string_event()).size(), 1);
+    ASSERT_EQ(trace.at(texada::event("e1")).size(), 1);
+    ASSERT_EQ(trace.at(texada::event("e2")).size(), 2);
+    ASSERT_EQ(trace.at(texada::event("e3")).size(), 1);
+    ASSERT_EQ(trace.at(texada::event()).size(), 1);
 }
 
 // checks that the map parser divides the traces properly, and
@@ -107,15 +107,15 @@ TEST(SimpleParserTest, MapTraceLargeFile) {
     texada::map_parser * parser = new texada::map_parser;
     parser->parse(infile);
     std::shared_ptr<
-            std::set<std::map<texada::string_event, std::vector<long>>> >trace_set =
+            std::set<std::map<texada::event, std::vector<long>>> >trace_set =
     parser->return_map_trace();
     delete parser;
     parser = NULL;
 
     ASSERT_EQ(trace_set->size(),20)<< "Unexpected number of traces parsed";
-    for (std::set<std::map<texada::string_event, std::vector<long>> >::iterator it =
+    for (std::set<std::map<texada::event, std::vector<long>> >::iterator it =
             trace_set->begin(); it != trace_set->end(); it++) {
-        std::vector<long> end_vector = it->at(texada::string_event());
+        std::vector<long> end_vector = it->at(texada::event());
         ASSERT_EQ(end_vector[0], 250);
     }
 
@@ -136,8 +136,8 @@ TEST(SimpleParserTest, PreTreeTrace) {
     std::shared_ptr<texada::prefix_tree> trace_set =
             parser.return_prefix_trees();
 
-    ASSERT_TRUE(trace_set->get_trace_start(texada::string_event("a")) != NULL);
-    ASSERT_TRUE(trace_set->get_trace_start(texada::string_event("a"))->get_child(texada::string_event("b")) != NULL);
+    ASSERT_TRUE(trace_set->get_trace_start(texada::event("a")) != NULL);
+    ASSERT_TRUE(trace_set->get_trace_start(texada::event("a"))->get_child(texada::event("b")) != NULL);
 
     //trace1
     ASSERT_TRUE(trace_set->get_trace_start(1)->is_satisfied("a"));
@@ -190,16 +190,16 @@ TEST(SimpleParserTest, CustomSeparator) {
     parser->set_trace_separator("break");
 
     parser->parse(infile);
-    std::shared_ptr<std::set<std::vector<texada::string_event>>>trace_set =
+    std::shared_ptr<std::set<std::vector<texada::event>>>trace_set =
     parser->return_vec_trace();
 
     delete parser;
     parser = NULL;
 
     ASSERT_EQ(trace_set->size(),20)<< "Unexpected number of traces parsed";
-    for (std::set<std::vector<texada::string_event> >::iterator it =
+    for (std::set<std::vector<texada::event> >::iterator it =
             trace_set->begin(); it != trace_set->end(); it++) {
-        std::vector<texada::string_event> current_vector = *it;
+        std::vector<texada::event> current_vector = *it;
         ASSERT_EQ(current_vector.size(), 251);
     }
 }
@@ -220,17 +220,17 @@ TEST(SimpleParserTest, RegexOption) {
     parser->set_event_types(etypes);
 
     parser->parse(infile);
-    std::shared_ptr<std::set<std::vector<texada::string_event>>>trace_set =
+    std::shared_ptr<std::set<std::vector<texada::event>>>trace_set =
     parser->return_vec_trace();
     std::shared_ptr<std::set<std::string>> events = parser->return_events();
     delete parser;
     parser = NULL;
 
-    std::vector<texada::string_event> trace_vec = *trace_set->begin();
-    ASSERT_EQ("e1", trace_vec[0].get_name());
-    ASSERT_EQ("e2", trace_vec[1].get_name());
-    ASSERT_EQ("e3", trace_vec[2].get_name());
-    ASSERT_EQ("e2", trace_vec[3].get_name());
+    std::vector<texada::event> trace_vec = *trace_set->begin();
+    ASSERT_TRUE(trace_vec[0].is_satisfied("e1"));
+    ASSERT_TRUE(trace_vec[1].is_satisfied("e2"));
+    ASSERT_TRUE(trace_vec[2].is_satisfied("e3"));
+    ASSERT_TRUE(trace_vec[3].is_satisfied("e2"));
     ASSERT_TRUE(trace_vec[4].is_terminal());
 
     ASSERT_EQ(events->size(), 3);
@@ -256,17 +256,17 @@ TEST(SimpleParserTest, MultipleRegexOptions) {
     parser->set_event_types(etypes);
 
     parser->parse(infile);
-    std::shared_ptr<std::set<std::vector<texada::string_event>>>trace_set =
+    std::shared_ptr<std::set<std::vector<texada::event>>>trace_set =
     parser->return_vec_trace();
     std::shared_ptr<std::set<std::string>> events = parser->return_events();
     delete parser;
     parser = NULL;
 
-    std::vector<texada::string_event> trace_vec = *trace_set->begin();
-    ASSERT_EQ("e1", trace_vec[0].get_name());
-    ASSERT_EQ("e2", trace_vec[1].get_name());
-    ASSERT_EQ("e3", trace_vec[2].get_name());
-    ASSERT_EQ("e2", trace_vec[3].get_name());
+    std::vector<texada::event> trace_vec = *trace_set->begin();
+    ASSERT_TRUE(trace_vec[0].is_satisfied("e1"));
+    ASSERT_TRUE(trace_vec[1].is_satisfied("e2"));
+    ASSERT_TRUE(trace_vec[2].is_satisfied("e3"));
+    ASSERT_TRUE(trace_vec[3].is_satisfied("e2"));
     ASSERT_TRUE(trace_vec[4].is_terminal());
 
     ASSERT_EQ(events->size(), 3);
@@ -292,17 +292,17 @@ TEST(SimpleParserTest, IgnoreNMLines) {
     parser->set_event_types(etypes);
 
     parser->parse(infile);
-    std::shared_ptr<std::set<std::vector<texada::string_event>>>trace_set =
+    std::shared_ptr<std::set<std::vector<texada::event>>>trace_set =
     parser->return_vec_trace();
     std::shared_ptr<std::set<std::string>> events = parser->return_events();
     delete parser;
     parser = NULL;
 
-    std::vector<texada::string_event> trace_vec = *trace_set->begin();
-    ASSERT_EQ("e1", trace_vec[0].get_name());
-    ASSERT_EQ("e2", trace_vec[1].get_name());
-    ASSERT_EQ("e3", trace_vec[2].get_name());
-    ASSERT_EQ("e2", trace_vec[3].get_name());
+    std::vector<texada::event> trace_vec = *trace_set->begin();
+    ASSERT_TRUE(trace_vec[0].is_satisfied("e1"));
+    ASSERT_TRUE(trace_vec[1].is_satisfied("e2"));
+    ASSERT_TRUE(trace_vec[2].is_satisfied("e3"));
+    ASSERT_TRUE(trace_vec[3].is_satisfied("e2"));
     ASSERT_TRUE(trace_vec[4].is_terminal());
 
     ASSERT_EQ(events->size(), 3);

@@ -12,7 +12,7 @@
 namespace texada {
 
 
-bool linear_trace_checker::check_on_trace(const spot::ltl::formula * node, const string_event * trace){
+bool linear_trace_checker::check_on_trace(const spot::ltl::formula * node, const event * trace){
     return this->check(node, trace);
 }
 
@@ -23,8 +23,8 @@ bool linear_trace_checker::check_on_trace(const spot::ltl::formula * node, const
  * @return whether node holds on trace
  */
 bool linear_trace_checker::ap_check(const spot::ltl::atomic_prop *node,
-        const string_event *trace, std::set<int> trace_ids) {
-    return (trace->get_name() == node->name()) ? true : false;
+        const event *trace, std::set<int> trace_ids) {
+    return (trace->is_satisfied(node->name()));
 }
 
 /**
@@ -36,7 +36,7 @@ bool linear_trace_checker::ap_check(const spot::ltl::atomic_prop *node,
  * @return
  */
 bool linear_trace_checker::until_check(const spot::ltl::binop* node,
-        const string_event* trace_pt, std::set<int> trace_ids) {
+        const event* trace_pt, std::set<int> trace_ids) {
     const spot::ltl::formula * p = node->first();
     const spot::ltl::formula * q = node->second();
 
@@ -68,7 +68,7 @@ bool linear_trace_checker::until_check(const spot::ltl::binop* node,
  * @return
  */
 bool linear_trace_checker::release_check(const spot::ltl::binop* node,
-        const string_event* trace_pt, std::set<int> trace_ids) {
+        const event* trace_pt, std::set<int> trace_ids) {
     const spot::ltl::formula * p = node->first();
     const spot::ltl::formula * q = node->second();
 
@@ -102,7 +102,7 @@ bool linear_trace_checker::release_check(const spot::ltl::binop* node,
  * @return
  */
 bool linear_trace_checker::strongrelease_check(const spot::ltl::binop* node,
-        const string_event* trace_pt, std::set<int> trace_ids) {
+        const event* trace_pt, std::set<int> trace_ids) {
     const spot::ltl::formula * p = node->first();
     const spot::ltl::formula * q = node->second();
 
@@ -136,7 +136,7 @@ bool linear_trace_checker::strongrelease_check(const spot::ltl::binop* node,
  * @return
  */
 bool linear_trace_checker::weakuntil_check(const spot::ltl::binop* node,
-        const string_event* trace_pt, std::set<int> trace_ids) {
+        const event* trace_pt, std::set<int> trace_ids) {
     const spot::ltl::formula * p = node->first();
     const spot::ltl::formula * q = node->second();
     //if we get here, we did not see q or !p, so true.
@@ -171,7 +171,7 @@ bool linear_trace_checker::weakuntil_check(const spot::ltl::binop* node,
  * @return
  */
 bool linear_trace_checker::globally_check(const spot::ltl::unop* node,
-        const string_event* trace_pt, std::set<int> trace_ids) {
+        const event* trace_pt, std::set<int> trace_ids) {
     const spot::ltl::formula * p = node->child();
     // base case: if we're at END_VAR, return true to not effect &&
     if (trace_pt->is_terminal()) {
@@ -193,7 +193,7 @@ bool linear_trace_checker::globally_check(const spot::ltl::unop* node,
  * @return
  */
 bool linear_trace_checker::finally_check(const spot::ltl::unop* node,
-        const string_event* trace_pt, std::set<int> trace_ids) {
+        const event* trace_pt, std::set<int> trace_ids) {
     const spot::ltl::formula * p = node->child();
 
     // base case: if we're at END_VAR, return false to not effect ||
@@ -216,7 +216,7 @@ bool linear_trace_checker::finally_check(const spot::ltl::unop* node,
  * @return
  */
 bool linear_trace_checker::next_check(const spot::ltl::unop* node,
-        const string_event* trace_pt, std::set<int> trace_ids) {
+        const event* trace_pt, std::set<int> trace_ids) {
     const spot::ltl::formula * p = node->child();
     // if we are at the terminal event, the next event is also a terminal
     // event. Since we are traversing a finite tree, this will terminate.
@@ -238,7 +238,7 @@ bool linear_trace_checker::next_check(const spot::ltl::unop* node,
 vector<map<string, string>> valid_instants_on_traces(
         const spot::ltl::formula * prop_type,
         instants_pool_creator * instantiator,
-        shared_ptr<set<vector<string_event>>> traces) {
+        shared_ptr<set<vector<event>>> traces) {
             instantiator->reset_instantiations();
             // vector to return
             vector<map<string, string>> return_vec;
@@ -252,7 +252,7 @@ vector<map<string, string>> valid_instants_on_traces(
                 instantiator->get_events_to_exclude());
                 // is the instantiation valid?
                 bool valid = true;
-                for (set<vector<string_event>>::iterator traces_it = traces->begin();
+                for (set<vector<event>>::iterator traces_it = traces->begin();
                 traces_it != traces->end(); traces_it++) {
                     bool valid_on_trace = checker.check_on_trace(instantiated_prop_type,&(traces_it->at(0)));
                     if (!valid_on_trace) {

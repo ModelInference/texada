@@ -12,7 +12,7 @@ namespace texada {
 map_parser::map_parser() {
     pos_count = 0;
     temp_trace.clear();
-    map_trace_set = std::make_shared<set<map<string_event, vector<long>>> >();
+    map_trace_set = std::make_shared<set<map<event, vector<long>>> >();
 }
 
 map_parser::~map_parser() {
@@ -22,7 +22,7 @@ map_parser::~map_parser() {
  * Returns the set of parsed map traces
  * @return
  */
-shared_ptr<set<map<string_event, vector<long>>> > map_parser::return_map_trace() {
+shared_ptr<set<map<event, vector<long>>> > map_parser::return_map_trace() {
     if (has_been_parsed) {
         return map_trace_set;
     } else {
@@ -36,7 +36,7 @@ shared_ptr<set<map<string_event, vector<long>>> > map_parser::return_map_trace()
  * Adds event to the current trace being built
  * @param event new event
  */
-void map_parser::add_event(string_event event) {
+void map_parser::add_event(event event) {
     if (event.is_terminal()) {
         std::vector<long> pos_vec;
         pos_vec.push_back(pos_count);

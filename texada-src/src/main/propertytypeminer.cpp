@@ -176,12 +176,12 @@ set<const spot::ltl::formula*> mine_property_type(
     vector<map<string, string>> valid_instants;
     // check all valid instantiations on each trace
     if (use_lin) {
-        shared_ptr<set<vector<string_event> >> vector_trace_set =
+        shared_ptr<set<vector<event> >> vector_trace_set =
                 dynamic_cast<linear_parser*>(parser)->return_vec_trace();
         valid_instants = valid_instants_on_traces(formula, instantiator,
                 vector_trace_set);
     } else if (use_map) {
-        shared_ptr<set<map<string_event, vector<long>>> > map_trace_set = dynamic_cast<map_parser*>(parser)->return_map_trace();
+        shared_ptr<set<map<event, vector<long>>> > map_trace_set = dynamic_cast<map_parser*>(parser)->return_map_trace();
         valid_instants = valid_instants_on_traces(formula, instantiator,
                 map_trace_set);
     } else if (use_pretree) {

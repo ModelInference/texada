@@ -7,7 +7,7 @@
 
 #ifndef MAPTRACECHECKER_H_
 #define MAPTRACECHECKER_H_
-#include "../trace/stringevent.h"
+#include "../trace/event.h"
 #include <map>
 #include <unordered_map>
 #include <vector>
@@ -35,7 +35,7 @@ struct interval {
 class map_trace_checker : public bool_based_checker<interval>{
 
 public:
-    map_trace_checker(const map<string_event, vector<long>>*);
+    map_trace_checker(const map<event, vector<long>>*);
     virtual ~map_trace_checker();
     bool check_on_trace(const spot::ltl::formula *, interval intvl = interval());
     /**
@@ -79,7 +79,7 @@ private:
     std::unordered_map<formula_interval, long, formula_interval_hash> first_occ_map;
     std::unordered_map<formula_interval, long, formula_interval_hash> last_occ_map;
     // the trace this map trace checker checks on
-    const map<string_event, vector<long>> * trace_map;
+    const map<event, vector<long>> * trace_map;
 
     virtual bool ap_check(const spot::ltl::atomic_prop* node,
             interval intvl, std::set<int> trace_ids = std::set<int>());
@@ -141,7 +141,7 @@ private:
 vector<map<string, string>> valid_instants_on_traces(
         const spot::ltl::formula * prop_type,
         instants_pool_creator * instantiator,
-        shared_ptr<set<map<string_event, vector<long>>>>);
+        shared_ptr<set<map<event, vector<long>>>>);
 } /* namespace texada */
 
 #endif /* MAPTRACECHECKER_H_ */

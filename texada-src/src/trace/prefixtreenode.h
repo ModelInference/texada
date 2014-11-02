@@ -8,7 +8,7 @@
 #ifndef PREFIXTREENODE_H_
 #define PREFIXTREENODE_H_
 
-#include "stringevent.h"
+#include "event.h"
 
 #include <set>
 #include <map>
@@ -32,7 +32,7 @@ public:
     // simple constructor by atomic proposition
     prefix_tree_node(std::string,set<int>);
     // regular constructor by event
-    prefix_tree_node(string_event,set<int>);
+    prefix_tree_node(event,set<int>);
     // destructor
     virtual ~prefix_tree_node();
     // adds a child
@@ -44,9 +44,9 @@ public:
     // getter for trace_ids
     set<int> get_trace_ids();
     // getter for event corresponding to node
-    string_event get_event();
+    event get_event();
     shared_ptr<prefix_tree_node> get_child(int);
-    shared_ptr<prefix_tree_node> get_child(string_event);
+    shared_ptr<prefix_tree_node> get_child(event);
     shared_ptr<prefix_tree_node> get_nth_child(int);
     map<set<int>,shared_ptr<prefix_tree_node>> get_children();
     int num_children();
@@ -54,7 +54,7 @@ public:
     bool is_terminal();
 private:
     // event this node represents
-    string_event event;
+    event event;
     // set of trace_ids this event belongs in
     set<int> trace_ids;
     // map containing the children corresponding

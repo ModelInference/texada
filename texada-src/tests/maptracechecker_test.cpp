@@ -26,25 +26,25 @@
 TEST(MapCheckerTest,SmallTrace){
 
     // create the trace map
-    std::map<texada::string_event, std::vector<long>> trace_map;
+    std::map<texada::event, std::vector<long>> trace_map;
 
     // create the position vector for a and insert into trace map
-    texada::string_event aevent = texada::string_event("a");
+    texada::event aevent = texada::event("a");
     long aposns[] = {0,1};
     std::vector<long> apos_vec (aposns, aposns + sizeof(aposns) / sizeof(long) );
-    trace_map.insert(std::pair<texada::string_event, std::vector<long>>(aevent,apos_vec));
+    trace_map.insert(std::pair<texada::event, std::vector<long>>(aevent,apos_vec));
 
     // create the position vector for b and insert into trace map
-    texada::string_event bevent = texada::string_event("b");
+    texada::event bevent = texada::event("b");
     long bposns[] = {2,3};
     std::vector<long> bpos_vec (bposns, bposns + sizeof(bposns) / sizeof(long) );
-    trace_map.insert(std::pair<texada::string_event, std::vector<long>>(bevent,bpos_vec));
+    trace_map.insert(std::pair<texada::event, std::vector<long>>(bevent,bpos_vec));
 
     // create the position vector for terminal event and insert into trace map
-    texada::string_event termvent = texada::string_event();
+    texada::event termvent = texada::event();
     std::vector<long> tpos_vec;
     tpos_vec.push_back(4);
-    trace_map.insert(std::pair<texada::string_event, std::vector<long>>(termvent,tpos_vec));
+    trace_map.insert(std::pair<texada::event, std::vector<long>>(termvent,tpos_vec));
 
     // create checker and parse error list to parse formula later on
     texada::map_trace_checker checker = texada::map_trace_checker(&trace_map);
@@ -223,7 +223,7 @@ TEST(MapCheckerTest,ResourceAllocation){
     std::ifstream infile(file_source);
     texada::map_parser * parser =  new texada::map_parser();
     parser->parse(infile);
-    std::shared_ptr<std::set<std::map<texada::string_event,std::vector<long>> >>  trace_set = parser->return_map_trace();
+    std::shared_ptr<std::set<std::map<texada::event,std::vector<long>> >>  trace_set = parser->return_map_trace();
     std::shared_ptr<std::set<std::string>>  event_set = parser->return_events();
     delete parser;
 

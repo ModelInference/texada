@@ -13,7 +13,7 @@
 #include <set>
 #include <boost/program_options.hpp>
 #include <vector>
-#include "../trace/stringevent.h"
+#include "../trace/event.h"
 
 /**
  * header file for property type mining functions.
