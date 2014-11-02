@@ -20,9 +20,9 @@ namespace texada {
  * @param trace_map_
  */
 map_trace_checker::map_trace_checker(
-        const std::map<string_event, std::vector<long>>* trace_map_) :
+        const std::map<event, std::vector<long>>* trace_map_) :
         trace_map(trace_map_) {
-    std::vector<long> end_vector = trace_map->at(texada::string_event());
+    std::vector<long> end_vector = trace_map->at(texada::event());
     terminal_pos = end_vector[0];
 
 }
@@ -57,7 +57,7 @@ bool map_trace_checker::check_on_trace(const spot::ltl::formula* node,
 bool map_trace_checker::ap_check(const spot::ltl::atomic_prop* node,
         interval intvl, std::set<int> trace_ids) {
     try {
-        std::vector<long> to_search = trace_map->at(string_event(node->name()));
+        std::vector<long> to_search = trace_map->at(event(node->name()));
         if (std::binary_search(to_search.begin(), to_search.end(),
                 intvl.start)) {
             return true;
@@ -420,7 +420,7 @@ long map_trace_checker::find_first_occurrence(
         return it->second;
     }
     try {
-        std::vector<long> to_search = trace_map->at(string_event(node->name()));
+        std::vector<long> to_search = trace_map->at(event(node->name()));
         long left = 0;
         long right = to_search.size();
         long newpos;
@@ -1054,7 +1054,7 @@ long map_trace_checker::find_last_occurrence(const spot::ltl::atomic_prop* node,
         return it->second;
     }
     try {
-        std::vector<long> to_search = trace_map->at(string_event(node->name()));
+        std::vector<long> to_search = trace_map->at(event(node->name()));
 
         long left = 0;
         long right = to_search.size() - 1;
@@ -1606,14 +1606,14 @@ long map_trace_checker::find_last_occurrence(const spot::ltl::binop* node,
 vector<map<string, string>> valid_instants_on_traces(
         const spot::ltl::formula * prop_type,
         instants_pool_creator * instantiator,
-        shared_ptr<set<map<string_event, vector<long>>> > traces) {
+        shared_ptr<set<map<event, vector<long>>> > traces) {
             instantiator->reset_instantiations();
             // vector to return
             vector<map<string, string>> return_vec;
             // create a vector of checkers to retain memoization across instantiation
             // checking.
             vector<map_trace_checker> all_checkers;
-            for (set<map<string_event,vector<long>>>::iterator traces_it = traces->begin();
+            for (set<map<event,vector<long>>>::iterator traces_it = traces->begin();
             traces_it != traces->end(); traces_it++) {
                 all_checkers.push_back(map_trace_checker(&(*traces_it)));
             }

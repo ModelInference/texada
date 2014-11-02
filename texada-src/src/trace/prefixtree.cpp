@@ -39,7 +39,7 @@ shared_ptr<prefix_tree_node> prefix_tree::get_trace_start(int trace_id) {
  * @param first_event name of desired start event
  * @return first event of the trace, NULL if no such trace
  */
-shared_ptr<prefix_tree_node> prefix_tree::get_trace_start(string_event first_event) {
+shared_ptr<prefix_tree_node> prefix_tree::get_trace_start(event first_event) {
     if (traces.empty()) {
         return NULL;
     }

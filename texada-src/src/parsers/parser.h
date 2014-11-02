@@ -8,7 +8,7 @@
 #ifndef PARSER_H_
 #define PARSER_H_
 
-#include "../trace/stringevent.h"
+#include "../trace/event.h"
 #include "../trace/prefixtree.h"
 #include <set>
 #include <map>
@@ -52,8 +52,8 @@ protected:
 private:
     shared_ptr<std::string> parse_line(std::string log_line);
 
-    bool get_event(std::ifstream &,string_event &);
-    virtual void add_event(string_event event);
+    bool get_event(std::ifstream &,event &);
+    virtual void add_event(event event);
 
     shared_ptr<set<string>>  unique_events;
     std::vector<boost::regex> event_types;

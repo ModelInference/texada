@@ -17,7 +17,7 @@ namespace texada {
  * @param input_ids traces this event belongs to
  */
 prefix_tree_node::prefix_tree_node(set<int> input_ids) {
-    event = string_event();
+    event = texada::event();
     trace_ids = input_ids;
 }
 
@@ -28,7 +28,7 @@ prefix_tree_node::prefix_tree_node(set<int> input_ids) {
  * @param input_ids traces this event belongs to
  */
 prefix_tree_node::prefix_tree_node(std::string prop, set<int> input_ids) {
-    this->event = string_event(prop);
+    this->event = texada::event(prop);
     trace_ids = input_ids;
 }
 
@@ -38,8 +38,8 @@ prefix_tree_node::prefix_tree_node(std::string prop, set<int> input_ids) {
  * @param event the event corresponding to this node
  * @param input_ids traces this event belongs to
  */
-prefix_tree_node::prefix_tree_node(string_event event, set<int> input_ids) {
-    this->event = event;
+prefix_tree_node::prefix_tree_node(texada::event e, set<int> input_ids) {
+    this->event = e;
     trace_ids = input_ids;
 }
 
@@ -97,7 +97,7 @@ set<int> prefix_tree_node::get_trace_ids() {
  * Get the name of the event this node represents
  * @return name of node
  */
-string_event prefix_tree_node::get_event() {
+event prefix_tree_node::get_event() {
     return event;
 }
 
@@ -124,10 +124,10 @@ shared_ptr<prefix_tree_node> prefix_tree_node::get_child(int trace_id) {
  * @param name name of event to find
  * @return event with name name, NULL if no such event exists
  */
-shared_ptr<prefix_tree_node> prefix_tree_node::get_child(string_event event) {
+shared_ptr<prefix_tree_node> prefix_tree_node::get_child(texada::event e) {
     for (map<set<int>,shared_ptr<prefix_tree_node>>::iterator kids_it= children.begin();
             kids_it != children.end(); kids_it++) {
-        if ((kids_it->second)->get_event() == event) {
+        if ((kids_it->second)->get_event() == e) {
             return kids_it->second;
         }
     }
