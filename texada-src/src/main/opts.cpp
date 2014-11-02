@@ -37,8 +37,10 @@ boost::program_options::options_description get_options_description() {
             "specify a variable in the formula to be interpreted as a constant event.")
             ("regex,r", boost::program_options::value<std::vector<std::string> >(),
             "regular expression to parse event types from log [default (?<ETYPE>.*)]")
-            ("separator_regex,s", boost::program_options::value<std::string>(), 
-            "regular expression matching execution separator lines in the log [default: --]")
+            ("trace_separator", boost::program_options::value<std::string>(),
+            "regular expression matching trace separator lines in the log [default: --]")
+            ("event_separator", boost::program_options::value<std::string>(),
+            "regular expression matching event separator lines in the log. The set of lines before an event separator are treated as the collection of propositions holding at that event. By default, each line is treated as its own event.")
             ("ignore_nm_lines,i", "ignore non-matching lines [default: false]");
     return desc;
 

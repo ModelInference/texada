@@ -1,11 +1,11 @@
 /*
- * stringevent.cpp
+ * event.cpp
  *
  *  Created on: Jun 2, 2014
  *      Author: clemieux
  */
 
-#include "stringevent.h"
+#include "event.h"
 
 namespace texada {
 
@@ -14,7 +14,7 @@ namespace texada {
  * Construct a non-terminal event string event with name name_.
  * @param name_ name
  */
-string_event::string_event(std::string name_) {
+event::event(std::string name_) {
     props.insert(name_);
     isTerminal = false;
 }
@@ -22,12 +22,12 @@ string_event::string_event(std::string name_) {
 /**
  * Basic constructor which creates a terminal event.
  */
-string_event::string_event() {
+event::event() {
     props.insert("EndOfTraceVar");
     isTerminal = true;
 }
 
-string_event::~string_event() {
+event::~event() {
 }
 
 /**
@@ -35,8 +35,8 @@ string_event::~string_event() {
  * @param other
  * @return
  */
-bool string_event::operator<(const string_event& other) const {
-    return get_name() < other.get_name();
+bool event::operator<(const event& other) const {
+    return get_props() < other.get_props();
 }
 
 /**
@@ -44,23 +44,15 @@ bool string_event::operator<(const string_event& other) const {
  * @param other
  * @return
  */
-bool string_event::operator==(const string_event& other) const {
-    return (get_name() == other.get_name() && isTerminal == other.is_terminal());
-}
-
-/**
- * Returns the name of the event
- * @return name of event
- */
-std::string string_event::get_name() const {
-    return *props.begin();
+bool event::operator==(const event& other) const {
+    return (get_props() == other.get_props() && isTerminal == other.is_terminal());
 }
 
 /**
  * Returns the set of propositions holding at this event
  * @return set of satisfied propositions
  */
-std::set<std::string> string_event::get_props() const {
+std::set<std::string> event::get_props() const {
     return props;
 }
 
@@ -69,7 +61,7 @@ std::set<std::string> string_event::get_props() const {
  * @param prop the proposition to check
  * @return true if the proposition holds
  */
-bool string_event::is_satisfied(std::string prop) const {
+bool event::is_satisfied(std::string prop) const {
     return props.find(prop) != props.end();
 }
 
@@ -77,25 +69,15 @@ bool string_event::is_satisfied(std::string prop) const {
  * Returns whether the event is terminal
  * @return true if event is terminal
  */
-bool string_event::is_terminal() const {
+bool event::is_terminal() const {
     return isTerminal;
 }
 
 /**
  * Adds a proposition to the collection of atomic props holding at this event.
  */
-void string_event::add_prop(std::string prop) {
+void event::add_prop(std::string prop) {
     props.insert(prop);
-}
-
-/**
- * Sets event name to inputted name_.
- * @param name_
- * @return
- */
-void string_event::set_name(std::string name_) {
-    props.clear();
-    props.insert(name_);
 }
 
 /**
@@ -103,14 +85,14 @@ void string_event::set_name(std::string name_) {
  * sets this to a non-terminal event if is_term is false.s
  * @param is_term
  */
-void string_event::set_terminal(bool is_term) {
+void event::set_terminal(bool is_term) {
     isTerminal = is_term;
 }
 
 /**
  * Clear away the propositions associated with this event, and set the event to be non-terminal.
  */
-void string_event::clear() {
+void event::clear() {
     props.clear();
     isTerminal = false;
 }
