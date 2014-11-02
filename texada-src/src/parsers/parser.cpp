@@ -52,6 +52,7 @@ void parser::set_trace_separator(std::string regex) {
  * @param regex: regular expression specifying separators between events
  */
 void parser::set_event_separator(std::string regex) {
+    this->parse_mult_prop = true;
     this->event_separator = regex;
 }
 

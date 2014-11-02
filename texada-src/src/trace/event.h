@@ -1,12 +1,12 @@
 /*
- * stringevent.h
+ * event.h
  *
  *  Created on: Jun 2, 2014
  *      Author: clemieux
  */
 
-#ifndef STRINGEVENT_H_
-#define STRINGEVENT_H_
+#ifndef EVENT_H_
+#define EVENT_H_
 
 #include <string>
 #include <set>
@@ -16,19 +16,17 @@ namespace texada {
 /**
  * Represents a string event that is parsed from an input log.
  */
-class string_event {        // to be renamed
+class event {
 public:
-    string_event();
-    string_event(std::string);
-    virtual ~string_event();
-    bool operator<(const string_event&) const;
-    bool operator==(const string_event& other) const;
-    std::string get_name() const;       // to be deleted
+    event();
+    event(std::string);
+    virtual ~event();
+    bool operator<(const event&) const;
+    bool operator==(const event& other) const;
     std::set<std::string> get_props() const;
     bool is_satisfied(std::string) const;
     bool is_terminal() const;
     void add_prop(std::string);
-    void set_name(std::string);         // to be deleted
     void set_terminal(bool);
     void clear();
 
@@ -42,4 +40,4 @@ private:
 
 } /* namespace texada */
 
-#endif /* STRINGEVENT_H_ */
+#endif /* EVENT_H_ */
