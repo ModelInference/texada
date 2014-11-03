@@ -20,6 +20,15 @@ event::event(std::string name_) {
 }
 
 /**
+ * Constructs a non-terminal multi-propositional event consisting of the given set of propositions.
+ * @param props propositions holding at this event
+ */
+event::event(std::set<std::string> props) {
+    this->props = props;
+    isTerminal = false;
+}
+
+/**
  * Basic constructor which creates a terminal event.
  */
 event::event() {
