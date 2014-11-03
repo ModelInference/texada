@@ -20,6 +20,7 @@ class event {
 public:
     event();
     event(std::string);
+    event(std::set<std::string>);
     virtual ~event();
     bool operator<(const event&) const;
     bool operator==(const event& other) const;
