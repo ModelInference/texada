@@ -20,9 +20,11 @@ typedef struct statistic {
 
     /**
      * Basic constructor which creates a set of default statistics
+     * describing a vacuously false result. Initially, an instantiation
+     * is assumed to be false until proven true.
      */
     statistic() {
-        is_satisfied = true;
+        is_satisfied = false;
         support = 0;
         support_potential = 0;
     }

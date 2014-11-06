@@ -1614,40 +1614,39 @@ vector<std::pair<map<string, string>, statistic>> valid_instants_on_traces(
         const spot::ltl::formula * prop_type,
         instants_pool_creator * instantiator,
         shared_ptr<set<map<string_event, vector<long>>> > traces) {
-            instantiator->reset_instantiations();
-            // vector to return
-            vector<std::pair<map<string, string>, statistic>> return_vec;
-            // create a vector of checkers to retain memoization across instantiation
-            // checking.
-            vector<map_trace_checker> all_checkers;
-            for (set<map<string_event,vector<long>>>::iterator traces_it = traces->begin();
+    instantiator->reset_instantiations();
+    // vector to return
+    vector<std::pair<map<string, string>, statistic>> return_vec;
+    // create a vector of checkers to retain memoization across instantiation
+    // checking.
+    vector<map_trace_checker> all_checkers;
+    for (set<map<string_event,vector<long>>>::iterator traces_it = traces->begin();
             traces_it != traces->end(); traces_it++) {
-                all_checkers.push_back(map_trace_checker(&(*traces_it)));
-            }
-            int num_traces = all_checkers.size();
-            while (true) {
-                shared_ptr<map<string,string>> current_instantiation = instantiator->get_next_instantiation();
-                if (current_instantiation == NULL) {
-                    break;
-                }
-                const spot::ltl::formula * instantiated_prop_type = instantiate(prop_type,*current_instantiation, instantiator->get_events_to_exclude());
-                // is the instantiation valid?
-                statistic global_stat = statistic(true, 0, 0);
-                for (int i = 0; i < num_traces; i++) {
-                    global_stat = statistic(global_stat, all_checkers[i].check_on_trace(instantiated_prop_type));
-                    if (!global_stat.is_satisfied) {
-                        break;
-                    }
-                }
-                instantiated_prop_type->destroy();
-                if (global_stat.is_satisfied) {
-                    std::pair<map<string, string>, statistic> finding(*current_instantiation, global_stat);
-                    return_vec.push_back(finding);
-                }
-            }
-            return return_vec;
-
-        }
-
+        all_checkers.push_back(map_trace_checker(&(*traces_it)));
     }
-    /* namespace texada */
+    int num_traces = all_checkers.size();
+    while (true) {
+        shared_ptr<map<string,string>> current_instantiation = instantiator->get_next_instantiation();
+        if (current_instantiation == NULL) {
+            break;
+        }
+        const spot::ltl::formula * instantiated_prop_type = instantiate(prop_type,*current_instantiation, instantiator->get_events_to_exclude());
+        // is the instantiation valid?
+        statistic global_stat = statistic(true, 0, 0);
+        for (int i = 0; i < num_traces; i++) {
+            global_stat = statistic(global_stat, all_checkers[i].check_on_trace(instantiated_prop_type));
+            if (!global_stat.is_satisfied) {
+                break;
+            }
+        }
+        instantiated_prop_type->destroy();
+        if (global_stat.is_satisfied) {
+            std::pair<map<string, string>, statistic> finding(*current_instantiation, global_stat);
+            return_vec.push_back(finding);
+        }
+    }
+    return return_vec;
+}
+
+}
+/* namespace texada */

@@ -275,7 +275,7 @@ vector<std::pair<map<string, string>, statistic>> valid_instants_on_traces(
 
 /**
  * Using custom configuration of the linear checker, check all
- * instantiations of the property type given on the tracesand return
+ * instantiations of the property type given on the traces and return
  * the ones which are valid (according to the specified checker settings).
  * @param prop_type property type to check.
  * @param instantiator instantiator to produce next instantiation
@@ -288,83 +288,87 @@ vector<std::pair<map<string, string>, statistic>> valid_instants_on_traces(
         instants_pool_creator * instantiator,
         shared_ptr<std::multiset<vector<string_event>>> traces,
         settings c_settings) {
-            instantiator->reset_instantiations();
-            // vector to return
-            vector<std::pair<map<string, string>, statistic>> return_vec;
-            linear_trace_checker checker;
-            // set checker configurations
-            checker.configure(c_settings);
-            // simplifier for turning formulas into negative normal form so that
-            // statistics of formulae involving not, xor, <-> can be computed.
-            std::unique_ptr<spot::ltl::ltl_simplifier> simplifier(new spot::ltl::ltl_simplifier());
+    instantiator->reset_instantiations();
+    // vector to return
+    vector<std::pair<map<string, string>, statistic>> return_vec;
+    linear_trace_checker checker;
+    // set checker configurations
+    checker.configure(c_settings);
+    // simplifier for turning formulas into negative normal form so that
+    // statistics of formulae involving not, xor, <-> can be computed.
+    std::unique_ptr<spot::ltl::ltl_simplifier> simplifier(new spot::ltl::ltl_simplifier());
 
-            // Loop through each instantiation, filtering out those which are invalid (the notion of invalidity
-            // depending on the given checker settings).
-            // Note that it would be nice to output the number of instantiations which were found to be true
-            // on the trace set but failed to satisfy given statistical thresholds and were subsequently filtered out.
-            // This however would require certain short-circuiting to be turned off, and so the current implementation
-            // does not support this feature.
-            while (true) {
-                shared_ptr<map<string,string>> current_instantiation = instantiator->get_next_instantiation();
-                if (current_instantiation == NULL) {
+    // Loop through each instantiation, filtering out those which are invalid (the notion of invalidity
+    // depending on the given checker settings).
+    // Note that it would be nice to output the number of instantiations which were found to be true
+    // on the trace set but failed to satisfy given statistical thresholds and were subsequently filtered out.
+    // This however would require certain short-circuiting to be turned off, and so the current implementation
+    // does not support this feature.
+    while (true) {
+        shared_ptr<map<string,string>> current_instantiation = instantiator->get_next_instantiation();
+        if (current_instantiation == NULL) {
+            break;
+        }
+        const spot::ltl::formula * instantiated_prop_type = instantiate(prop_type,*current_instantiation,
+                instantiator->get_events_to_exclude());
+        // unless checker is configured for the vanilla setting, turn formula into negative normal form.
+        // note that the the operators xor, <->, and -> will be reduced to basic operators by the below code.
+        if (!c_settings.is_vanilla()) {
+            // move original formula to a temp ptr to be destroyed
+            const spot::ltl::formula * to_delete = instantiated_prop_type;
+            instantiated_prop_type = simplifier->negative_normal_form(instantiated_prop_type);
+            to_delete->destroy();
+        }
+        // the meaning of validity will depend on the user inputed settings
+        bool valid = true;
+        statistic global_stat = statistic(true, 0, 0);
+        for (auto each = traces->begin(); each != traces->end(); each=traces->upper_bound(*each)) {
+            statistic trace_stat = checker.check_on_trace(instantiated_prop_type,&(each->at(0)));
+            // when there are multiple equivalent traces, the instantiation is only checked over one
+            // of them. To compute the correct statistics, multiply the statistics for each trace by
+            // the number of "occurrences" of said trace in the log.
+            int trace_count = traces->count(*each);
+            trace_stat.support = trace_stat.support * trace_count;
+            trace_stat.support_potential = trace_stat.support_potential * trace_count;
+            global_stat = statistic(global_stat, trace_stat);
+
+            // if confidence threshold is 1.0, an instantiation becomes invalid on the first unsatisfied trace,
+            // so we short-circuit after flagging the current instantiation as invalid.
+            if (c_settings.conf_t == 1.0 && !trace_stat.is_satisfied) {
+                valid = false;
+                break;
+            }
+            // in non-global setting, an instantiation becomes invalid on the first trace where a threshold is
+            // unsatisfied, so we short-circuit after flagging the current instantiation as invalid.
+            if (!c_settings.use_global_t && !c_settings.satisfies_thresholds(trace_stat)) {
+                valid = false;
+                break;
+            }
+            // in global 0-conf threshold setting, an instantiation becomes valid on the full trace set once
+            // every threshold have been satisfied, so we short-circuit after flagging the current instantiation as valid.
+            if (c_settings.use_global_t && c_settings.conf_t == 0.0) {
+                if (!c_settings.compute_full_stats && c_settings.satisfies_thresholds(global_stat)) {
+                    valid = true;
                     break;
                 }
-                const spot::ltl::formula * instantiated_prop_type = instantiate(prop_type,*current_instantiation,
-                instantiator->get_events_to_exclude());
-                // unless checker is configured for the vanilla setting, turn formula into negative normal form.
-                // note that the the operators xor, <->, and -> will be reduced to basic operators by the below code.
-                if (!c_settings.is_vanilla()) {
-                    // move original formula to a temp ptr to be destroyed
-                    const spot::ltl::formula * to_delete = instantiated_prop_type;
-                    instantiated_prop_type = simplifier->negative_normal_form(instantiated_prop_type);
-                    to_delete->destroy();
-                }
-                // the meaning of validity will depend on the user inputed settings
-                bool valid = true;
-                statistic global_stat = statistic(true, 0, 0);
-                for (auto each = traces->begin(); each != traces->end(); each=traces->upper_bound(*each)) {
-                    statistic trace_stat = checker.check_on_trace(instantiated_prop_type,&(each->at(0)));
-                    // when there are multiple equivalent traces, the instantiation is only checked over one
-                    // of them. To compute the correct statistics, multiply the statistics for each trace by
-                    // the number of "occurrences" of said trace in the log.
-                    int trace_count = traces->count(*each);
-                    trace_stat.support = trace_stat.support * trace_count;
-                    trace_stat.support_potential = trace_stat.support_potential * trace_count;
-                    global_stat = statistic(global_stat, trace_stat);
-                    // if confidence threshold is 1.0, short circuit on first unsatisfied trace
-                    if (c_settings.conf_t == 1.0 && !trace_stat.is_satisfied) {
-                        valid = false;
-                        break;
-                    }
-                    // in non-global setting, short-circuit on first trace where a threshold is unsatisfied
-                    if (!c_settings.use_global_t && !c_settings.satisfies_thresholds(trace_stat)) {
-                        valid = false;
-                        break;
-                    }
-                    // in global 0-conf threshold setting, short-circuit once all thresholds have been satisfied
-                    if (c_settings.use_global_t && c_settings.conf_t == 0.0) {
-                        if (!c_settings.print_full_stats && c_settings.satisfies_thresholds(global_stat)) {
-                            valid = true;
-                            break;
-                        }
 
-                    }
-                }
-                // in the global setting, need to check that the final stat satisfies given thresholds
-                if (c_settings.use_global_t) {
-                    valid = c_settings.satisfies_thresholds(global_stat);
-                }
-
-                instantiated_prop_type->destroy();
-                // return finding if it is valid and its statistics meets all specified thresholds
-                if (valid) {
-                    std::pair<map<string, string>, statistic> finding(*current_instantiation, global_stat);
-                    return_vec.push_back(finding);
-                }
             }
-            return return_vec;
-
+        }
+        // in the global setting, we need to check that the final statistics (i.e. the sum of statistics computed
+        // at each trace) satisfy the given thresholds.
+        if (c_settings.use_global_t) {
+            valid = c_settings.satisfies_thresholds(global_stat);
         }
 
+        instantiated_prop_type->destroy();
+        // return finding if it is valid and its statistics meets all specified thresholds
+        if (valid) {
+            std::pair<map<string, string>, statistic> finding(*current_instantiation, global_stat);
+            return_vec.push_back(finding);
+        }
     }
-    /* namespace texada */
+    return return_vec;
+}
+
+}
+/* namespace texada */
