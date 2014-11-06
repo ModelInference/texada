@@ -95,7 +95,7 @@ set<std::pair<const spot::ltl::formula*, statistic>> mine_property_type(
     settings c_settings;
 
     // whether to print statistics
-    c_settings.print_full_stats = opts.count("print-stats");
+    c_settings.compute_full_stats = opts.count("print-stats");
 
     // whether inputed thresholds are global
     c_settings.use_global_t = opts.count("use-global-thresholds");

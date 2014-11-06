@@ -335,12 +335,12 @@ protected:
      * in the trace and no further checking can change the result.
      */
     bool is_short_circuiting(statistic stat) {
-        if (c_settings.conf_t == 1.0 && !c_settings.print_full_stats) {
+        if (c_settings.conf_t == 1.0 && !c_settings.compute_full_stats) {
         // short circuit for vanilla setting
             return (stat.support >= c_settings.sup_t &&
                     stat.support_potential >= c_settings.sup_pot_t &&
                     !stat.is_satisfied);
-        } else if (c_settings.conf_t == 0.0 && !c_settings.print_full_stats) {
+        } else if (c_settings.conf_t == 0.0 && !c_settings.compute_full_stats) {
         // short circuit for 0-conf threshold setting
             return (stat.support >= c_settings.sup_t &&
                     stat.support_potential >= c_settings.sup_pot_t);

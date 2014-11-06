@@ -14,11 +14,18 @@ namespace texada {
  * Represents a set of settings used to configure a linear checker.
  */
 typedef struct settings {
+    // the support threshold
     int sup_t;
+    // the support potential threshold
     int sup_pot_t;
+    // the confidence threshold
     float conf_t;
+    // whether to apply above thresholds to the sum of statistics computed at each trace in the trace set.
+    // if false, apply thresholds to the statistics computed at each individual trace.
     bool use_global_t;
-    bool print_full_stats;
+    // whether to compute the full statistics of instantiations, bypassing all short circuit optimizations;
+    // turned on when the statistics of findings need to be printed out.
+    bool compute_full_stats;
 
     /**
      * Basic constructor which creates a set of default ("vanilla") settings
@@ -28,7 +35,7 @@ typedef struct settings {
         set_sup_pot_t(0);
         set_conf_t(1.0);
         this->use_global_t = false;
-        this->print_full_stats = false;
+        this->compute_full_stats = false;
     }
 
     /**
@@ -39,7 +46,7 @@ typedef struct settings {
         set_sup_pot_t(sup_pot_t);
         set_conf_t(conf_t);
         this->use_global_t = use_global_t;
-        this->print_full_stats = print_full_stats;
+        this->compute_full_stats = print_full_stats;
     }
 
     /**
@@ -89,7 +96,7 @@ typedef struct settings {
         return sup_t == 0 &&
                 sup_pot_t == 0 &&
                 conf_t == 1.0 &&
-                !print_full_stats;
+                !compute_full_stats;
     }
 
     /**
