@@ -239,12 +239,6 @@ set<std::pair<const spot::ltl::formula*, statistic>> mine_property_type(
                 prefix_tree_traces);
     }
 
-
-    /*
-     * Begin: Focus for code review Oct 22, 2014
-     */
-
-
     set<std::pair<const spot::ltl::formula*, statistic>> return_set;
     int valid_instants_size = valid_instants.size();
     for (int i = 0; i < valid_instants_size; i++) {
@@ -257,12 +251,6 @@ set<std::pair<const spot::ltl::formula*, statistic>> mine_property_type(
                 binding_i, specified_formula_events);
         return_set.insert(std::make_pair(valid_form_i, stat_i));
     }
-
-
-    /*
-     * End: Focus for code review Oct 22, 2014
-     */
-
 
     delete instantiator;
     delete parser;
