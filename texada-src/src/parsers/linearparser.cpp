@@ -12,7 +12,7 @@ namespace texada {
 
 linear_parser::linear_parser() {
     temp_trace.clear();
-    vector_trace_set = std::make_shared<set<vector<event>>>();
+    vector_trace_set = std::make_shared<std::multiset<vector<event>>>();
 }
 
 linear_parser::~linear_parser() {
@@ -22,7 +22,7 @@ linear_parser::~linear_parser() {
  * Returns the set of parsed vector traces
  * @return
  */
-shared_ptr<set<vector<event> >> linear_parser::return_vec_trace() {
+shared_ptr<std::multiset<vector<event> >> linear_parser::return_vec_trace() {
     if (has_been_parsed) {
         return vector_trace_set;
     } else {

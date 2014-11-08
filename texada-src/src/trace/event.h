@@ -14,7 +14,9 @@
 namespace texada {
 
 /**
- * Represents a string event that is parsed from an input log.
+ * Represents an event that is parsed from an input log.
+ * Essentially, an event consists of the atomic propositions which hold
+ * at the given point in time.
  */
 class event {
 public:
