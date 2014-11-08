@@ -27,6 +27,8 @@
 #include "../checkers/maptracechecker.h"
 #include "../checkers/lineartracechecker.h"
 #include "../checkers/prefixtreechecker.h"
+#include "../checkers/statistic.h"
+#include "../checkers/settings.h"
 #include "../instantiation-tools/apsubbingcloner.h"
 #include "opts.h"
 
@@ -40,7 +42,7 @@ namespace texada {
  * @param trace_source the input source of the trace
  * @return valid instantiations of the property type on the trace
  */
-set<const spot::ltl::formula*> mine_lin_property_type(string formula_string,
+set<std::pair<const spot::ltl::formula*, statistic>> mine_lin_property_type(string formula_string,
         string trace_source) {
     return mine_property_type(
             set_options("-f '" + formula_string + "' -l " + trace_source));
@@ -54,7 +56,7 @@ set<const spot::ltl::formula*> mine_lin_property_type(string formula_string,
  * @param trace_source the input source of the trace
  * @return valid instantiations of the property type on the trace
  */
-set<const spot::ltl::formula*> mine_map_property_type(string formula_string,
+set<std::pair<const spot::ltl::formula*, statistic>> mine_map_property_type(string formula_string,
         string trace_source) {
     return mine_property_type(
             set_options("-f '" + formula_string + "' -m " + trace_source));
@@ -69,7 +71,7 @@ set<const spot::ltl::formula*> mine_map_property_type(string formula_string,
  * @param use_map use map miner if true, linear miner otherwise
  * @return valid instantiations of the inputted formula on inputted trace set
  */
-set<const spot::ltl::formula*> mine_property_type(
+set<std::pair<const spot::ltl::formula*, statistic>> mine_property_type(
         boost::program_options::variables_map opts) {
     // collect all relevant information from options
     // what trace type to use. TODO: update for pre_tree when added
@@ -80,6 +82,53 @@ set<const spot::ltl::formula*> mine_property_type(
     bool allow_reps = opts.count("allow-same-bindings");
     // whether to pregenerate instantiations
     bool pregen_instants = opts.count("pregen-instants");
+
+    /*
+     * Begin: Focus for code review Oct 22, 2014
+     */
+
+
+    /*
+     * Setting support, support-potential, and confidence thresholds.
+     * By default: sup_threshold = 0; sup_pot_threshold = 0; conf_threshold = 1.00
+     */
+    settings c_settings;
+
+    // whether to print statistics
+    c_settings.compute_full_stats = opts.count("print-stats");
+
+    // whether inputed thresholds are global
+    c_settings.use_global_t = opts.count("use-global-thresholds");
+
+    if (opts.count("no-vacuous-findings")) {
+        c_settings.set_sup_t(1);
+        c_settings.use_global_t = true;
+    }
+    if (opts.count("sup-threshold")) {
+        c_settings.set_sup_t(opts["sup-threshold"].as<int>());
+    }
+    if (opts.count("sup-pot-threshold")) {
+        c_settings.set_sup_pot_t(opts["sup-pot-threshold"].as<int>());
+    }
+    if (opts.count("conf-threshold")) {
+        c_settings.set_conf_t(opts["conf-threshold"].as<float>());
+    }
+
+    // currently, only the vanilla configuration is supported for
+    // the map and prefix checkers. So, stop program if a non-vanilla
+    // configuration is called with a non-linear checker
+    if (!use_lin && !c_settings.is_vanilla()) {
+        std::cerr << "Statistics-related options were called for a non-linear checker. "
+                "Currently, the map and prefix checkers do not support statistic-related options."<< "\n";
+        exit(1);
+    }
+
+
+    /*
+     * End: Focus for code review Oct 22, 2014
+     */
+
+
     // the property type
     string prop_type = opts["property-type"].as<std::string>();
     // trace source
@@ -101,7 +150,7 @@ set<const spot::ltl::formula*> mine_property_type(
     std::ifstream infile(trace_source);
     if (infile.fail()) {
         std::cerr << "Error: could not open file \n";
-        return set<const spot::ltl::formula*>();
+        return set<std::pair<const spot::ltl::formula*, statistic>>();
     }
 
     parser * parser;
@@ -176,13 +225,13 @@ set<const spot::ltl::formula*> mine_property_type(
                 specified_formula_events);
     }
 
-    vector<map<string, string>> valid_instants;
+    vector<std::pair<std::map<std::string, std::string>, texada::statistic>> valid_instants;
     // check all valid instantiations on each trace
     if (use_lin) {
-        shared_ptr<set<vector<event> >> vector_trace_set =
+        shared_ptr<std::multiset<vector<event> >> vector_trace_set =
                 dynamic_cast<linear_parser*>(parser)->return_vec_trace();
         valid_instants = valid_instants_on_traces(formula, instantiator,
-                vector_trace_set);
+                vector_trace_set, c_settings);
     } else if (use_map) {
         shared_ptr<set<map<event, vector<long>>> > map_trace_set = dynamic_cast<map_parser*>(parser)->return_map_trace();
         valid_instants = valid_instants_on_traces(formula, instantiator,
@@ -193,15 +242,17 @@ set<const spot::ltl::formula*> mine_property_type(
                 prefix_tree_traces);
     }
 
-    set<const spot::ltl::formula*> return_set;
+    set<std::pair<const spot::ltl::formula*, statistic>> return_set;
     int valid_instants_size = valid_instants.size();
     for (int i = 0; i < valid_instants_size; i++) {
-        for (map<string, string>::iterator it = valid_instants.at(i).begin();
-                it != valid_instants.at(i).end(); it++) {
+        map<string, string> binding_i = valid_instants.at(i).first;
+        statistic stat_i = valid_instants.at(i).second;
+        for (map<string, string>::iterator it = binding_i.begin();
+                it != binding_i.end(); it++) {
         }
-        const spot::ltl::formula * valid_form = instantiate(formula,
-                valid_instants.at(i), specified_formula_events);
-        return_set.insert(valid_form);
+        const spot::ltl::formula * valid_form_i = instantiate(formula,
+                binding_i, specified_formula_events);
+        return_set.insert(std::make_pair(valid_form_i, stat_i));
     }
 
     delete instantiator;

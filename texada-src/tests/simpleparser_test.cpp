@@ -17,7 +17,7 @@ TEST(SimpleParserTest, SmallFile) {
 
     texada::linear_parser * parser = new texada::linear_parser;
     parser->parse(infile);
-    std::shared_ptr<std::set<std::vector<texada::event>>>trace_set =
+    std::shared_ptr<std::multiset<std::vector<texada::event>>>trace_set =
     parser->return_vec_trace();
     std::shared_ptr<std::set<std::string>> events = parser->return_events();
     delete parser;
@@ -50,14 +50,14 @@ TEST(SimpleParserTest, MultipleTracesOneFile) {
     texada::linear_parser * parser = new texada::linear_parser;
 
     parser->parse(infile);
-    std::shared_ptr<std::set<std::vector<texada::event>>>trace_set =
-    parser->return_vec_trace();
+    std::shared_ptr<std::multiset<std::vector<texada::event>>>trace_set =
+            parser->return_vec_trace();
 
     delete parser;
     parser = NULL;
 
     ASSERT_EQ(trace_set->size(),20)<< "Unexpected number of traces parsed";
-    for (std::set<std::vector<texada::event> >::iterator it =
+    for (std::multiset<std::vector<texada::event> >::iterator it =
             trace_set->begin(); it != trace_set->end(); it++) {
         std::vector<texada::event> current_vector = *it;
         ASSERT_EQ(current_vector.size(), 251);
@@ -190,14 +190,14 @@ TEST(SimpleParserTest, CustomSeparator) {
     parser->set_trace_separator("break");
 
     parser->parse(infile);
-    std::shared_ptr<std::set<std::vector<texada::event>>>trace_set =
-    parser->return_vec_trace();
+    std::shared_ptr<std::multiset<std::vector<texada::event>>>trace_set =
+            parser->return_vec_trace();
 
     delete parser;
     parser = NULL;
 
     ASSERT_EQ(trace_set->size(),20)<< "Unexpected number of traces parsed";
-    for (std::set<std::vector<texada::event> >::iterator it =
+    for (std::multiset<std::vector<texada::event> >::iterator it =
             trace_set->begin(); it != trace_set->end(); it++) {
         std::vector<texada::event> current_vector = *it;
         ASSERT_EQ(current_vector.size(), 251);
@@ -220,8 +220,8 @@ TEST(SimpleParserTest, RegexOption) {
     parser->set_event_types(etypes);
 
     parser->parse(infile);
-    std::shared_ptr<std::set<std::vector<texada::event>>>trace_set =
-    parser->return_vec_trace();
+    std::shared_ptr<std::multiset<std::vector<texada::event>>>trace_set =
+            parser->return_vec_trace();
     std::shared_ptr<std::set<std::string>> events = parser->return_events();
     delete parser;
     parser = NULL;
@@ -256,8 +256,8 @@ TEST(SimpleParserTest, MultipleRegexOptions) {
     parser->set_event_types(etypes);
 
     parser->parse(infile);
-    std::shared_ptr<std::set<std::vector<texada::event>>>trace_set =
-    parser->return_vec_trace();
+    std::shared_ptr<std::multiset<std::vector<texada::event>>>trace_set =
+            parser->return_vec_trace();
     std::shared_ptr<std::set<std::string>> events = parser->return_events();
     delete parser;
     parser = NULL;
@@ -292,8 +292,8 @@ TEST(SimpleParserTest, IgnoreNMLines) {
     parser->set_event_types(etypes);
 
     parser->parse(infile);
-    std::shared_ptr<std::set<std::vector<texada::event>>>trace_set =
-    parser->return_vec_trace();
+    std::shared_ptr<std::multiset<std::vector<texada::event>>>trace_set =
+            parser->return_vec_trace();
     std::shared_ptr<std::set<std::string>> events = parser->return_events();
     delete parser;
     parser = NULL;

@@ -26,7 +26,7 @@ TEST(MultiPropParserTest, LinearTest) {
     texada::linear_parser * parser = new texada::linear_parser;
     parser->set_event_separator("==");
     parser->parse(infile);
-    std::shared_ptr<std::set<std::vector<texada::event>>>trace_set =
+    std::shared_ptr<std::multiset<std::vector<texada::event>>>trace_set =
     parser->return_vec_trace();
     std::shared_ptr<std::set<std::string>> events = parser->return_events();
     delete parser;

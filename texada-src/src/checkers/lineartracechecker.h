@@ -12,6 +12,8 @@
 #include "../trace/event.h"
 #include "boolbasedchecker.h"
 #include <iostream>
+#include "statistic.h"
+#include "settings.h"
 
 #include "../instantiation-tools/pregeninstantspool.h"
 
@@ -20,7 +22,8 @@ namespace texada {
 
 /**
  * Class to check whether an LTL formula is true on a trace in the
- * form of a vector.
+ * form of a vector. Can also be configured to retrieve support and
+ * support potential statistics for an LTL formula on a trace.
  *
  */
 class linear_trace_checker : public bool_based_checker<const event*>{
@@ -28,35 +31,51 @@ public:
 	linear_trace_checker() {};
 	virtual ~linear_trace_checker() {};
 
-	bool check_on_trace(const spot::ltl::formula* node, const event *trace);
+	statistic check_on_trace(const spot::ltl::formula* node, const event *trace);
 
 private:
 
-	virtual bool ap_check(const spot::ltl::atomic_prop* node,
+	virtual statistic ap_check(const spot::ltl::atomic_prop* node,
 	            const event* trace_pt, std::set<int> trace_ids = std::set<int>());
-    virtual bool until_check(const spot::ltl::binop* node,
+    virtual statistic until_check(const spot::ltl::binop* node,
             const event* trace_pt, std::set<int> trace_ids = std::set<int>());
-    virtual bool release_check(const spot::ltl::binop* node,
+    virtual statistic release_check(const spot::ltl::binop* node,
             const event* trace_pt, std::set<int> trace_ids = std::set<int>());
-    virtual bool strongrelease_check(const spot::ltl::binop* node,
+    virtual statistic strongrelease_check(const spot::ltl::binop* node,
                 const event* trace_pt, std::set<int> trace_ids = std::set<int>());
-    virtual bool weakuntil_check(const spot::ltl::binop* node,
+    virtual statistic weakuntil_check(const spot::ltl::binop* node,
             const event* trace_pt, std::set<int> trace_ids = std::set<int>());
-    virtual bool globally_check(const spot::ltl::unop* node,
+    virtual statistic globally_check(const spot::ltl::unop* node,
             const event* trace_pt, std::set<int> trace_ids = std::set<int>());
-    virtual bool finally_check(const spot::ltl::unop* node,
+    virtual statistic finally_check(const spot::ltl::unop* node,
             const event* trace_pt, std::set<int> trace_ids = std::set<int>());
-    virtual bool next_check(const spot::ltl::unop* node,
+    virtual statistic next_check(const spot::ltl::unop* node,
             const event* trace_pt, std::set<int> trace_ids = std::set<int>());
-
-
 
 };
 
-vector<map<string, string>> valid_instants_on_traces(
+/**
+ * Finds valid instants on a given set of traces using a linear checker
+ * configured to the following default (i.e. "vanilla") setting:
+ * sup_threshold = 0
+ * sup_pot_threshold = 0
+ * conf_threshold = 1.0
+ * global_thresholds = false
+ * print_stats = false
+ */
+vector<std::pair<map<string, string>, statistic>> valid_instants_on_traces(
         const spot::ltl::formula * prop_type,
         instants_pool_creator * instantiator,
-        shared_ptr<set<vector<event>>> traces);
+        shared_ptr<std::multiset<vector<event>>> traces);
+
+/**
+ * Finds valid instants on traces based on given configuration
+ */
+vector<std::pair<map<string, string>, statistic>> valid_instants_on_traces(
+        const spot::ltl::formula * prop_type,
+        instants_pool_creator * instantiator,
+        shared_ptr<std::multiset<vector<event>>> traces,
+        settings c_settings);
 
 } /* namespace texada */
 

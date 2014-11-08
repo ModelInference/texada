@@ -11,6 +11,7 @@
 #include <set>
 #include <ltlast/allnodes.hh>
 #include <iostream>
+#include "statistic.h"
 
 namespace texada {
 
@@ -25,8 +26,9 @@ public:
     ltl_formula_checker() {}
     virtual ~ltl_formula_checker() {}
     // top level check on trace
-    virtual bool check_on_trace(const spot::ltl::formula * node,
+    virtual statistic check_on_trace(const spot::ltl::formula * node,
             trace_type trace_pt)= 0;
+
 protected:
 
     /**
@@ -193,7 +195,6 @@ protected:
             return false_check(trace_ids);
 
         }
-
     }
 
     /**

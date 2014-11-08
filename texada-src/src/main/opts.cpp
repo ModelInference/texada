@@ -41,7 +41,14 @@ boost::program_options::options_description get_options_description() {
             "regular expression matching trace separator lines in the log [default: --]")
             ("event_separator", boost::program_options::value<std::string>(),
             "regular expression matching event separator lines in the log. The set of lines before an event separator are treated as the collection of propositions holding at that event. By default, each line is treated as its own event.")
-            ("ignore_nm_lines,i", "ignore non-matching lines [default: false]");
+            ("ignore_nm_lines,i", "ignore non-matching lines [default: false]")
+            ("no-vacuous-findings", "filter out findings which are only vacuously true (i.e. sup-threshold = 1)")
+            ("sup-threshold", boost::program_options::value<int>(), "only find instances above the given support threshold [default: 0]")
+            ("sup-pot-threshold", boost::program_options::value<int>(), "only find instances above the given support potential threshold [default: 0]")
+            ("conf-threshold", boost::program_options::value<float>(),
+            "only find instances above the given confidence threshold. Must be between 0 and 1 [default: 1]")
+            ("print-stats", "print the support and confidence of each finding")
+            ("use-global-thresholds", "make all inputed thresholds global [default: false]");
     return desc;
 
 }

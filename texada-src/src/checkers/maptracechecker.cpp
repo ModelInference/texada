@@ -11,6 +11,7 @@
 #include <ltlvisit/tostring.hh>
 #include <algorithm>
 #include <deque>
+#include "statistic.h"
 
 namespace texada {
 
@@ -41,7 +42,7 @@ map_trace_checker::~map_trace_checker() {
  * @param node formula to check
  * @return true if node holds on the trace, false otherwise
  */
-bool map_trace_checker::check_on_trace(const spot::ltl::formula* node,
+statistic map_trace_checker::check_on_trace(const spot::ltl::formula* node,
         interval intvl) {
     intvl.end = terminal_pos - 1;
     return this->check(node, intvl);
@@ -54,17 +55,17 @@ bool map_trace_checker::check_on_trace(const spot::ltl::formula* node,
  * @param trace_ids
  * @return true if node holds over intvl, false otherwise
  */
-bool map_trace_checker::ap_check(const spot::ltl::atomic_prop* node,
+statistic map_trace_checker::ap_check(const spot::ltl::atomic_prop* node,
         interval intvl, std::set<int> trace_ids) {
     try {
         std::vector<long> to_search = trace_map->at(event(node->name()));
         if (std::binary_search(to_search.begin(), to_search.end(),
                 intvl.start)) {
-            return true;
+            return statistic(true, 1, 1);
         } else
-            return false;
+            return statistic(false, 0, 1);
     } catch (std::out_of_range &e) {
-        return false;
+        return statistic(false, 0, 1);
     }
 }
 
@@ -76,7 +77,7 @@ bool map_trace_checker::ap_check(const spot::ltl::atomic_prop* node,
  * @param trace_ids
  * @return
  */
-bool map_trace_checker::until_check(const spot::ltl::binop* node,
+statistic map_trace_checker::until_check(const spot::ltl::binop* node,
         interval intvl, std::set<int> trace_ids) {
     const spot::ltl::formula* p = node->first();
     const spot::ltl::formula* q = node->second();
@@ -86,7 +87,7 @@ bool map_trace_checker::until_check(const spot::ltl::binop* node,
     long first_occ_q = find_first_occurrence(q, intvl);
     // if q never occurs, until does not hold
     if (first_occ_q == -1) {
-        return false;
+        return statistic(false, 0, 1);
     }
 
     // construct !p
@@ -98,14 +99,14 @@ bool map_trace_checker::until_check(const spot::ltl::binop* node,
 
     // if !p never occurs and q occurs, until holds
     if (first_occ_not_p == -1){
-        return true;
+        return statistic(true, 1, 1);
     }
 
     // make sure !p did not occur before q
     if (first_occ_not_p < first_occ_q) {
-        return false;
+        return statistic(false, 0, 1);
     } else
-        return true;
+        return statistic(true, 1, 1);
 
 }
 
@@ -117,7 +118,7 @@ bool map_trace_checker::until_check(const spot::ltl::binop* node,
  * @param trace_ids
  * @return
  */
-bool map_trace_checker::release_check(const spot::ltl::binop* node,
+statistic map_trace_checker::release_check(const spot::ltl::binop* node,
         interval intvl, std::set<int> trace_ids) {
     const spot::ltl::formula* p = node->first();
     const spot::ltl::formula* q = node->second();
@@ -135,18 +136,18 @@ bool map_trace_checker::release_check(const spot::ltl::binop* node,
 
     // if !q never occurs, p R q holds
     if (first_occ_not_q == -1) {
-        return true;
+        return statistic(true, 1, 1);
     }
     // if p never occurs and !q occurred, false
     if (first_occ_p == -1) {
-        return false;
+        return statistic(false, 0, 1);
     }
     // at the first p, q must still hold so the first !q
     // must be strictly after the first p
     else if (first_occ_not_q <= first_occ_p) {
-        return false;
+        return statistic(false, 0, 1);
     } else
-        return true;
+        return statistic(true, 1, 1);
 }
 
 /**
@@ -157,7 +158,7 @@ bool map_trace_checker::release_check(const spot::ltl::binop* node,
  * @param trace_ids
  * @return
  */
-bool map_trace_checker::weakuntil_check(const spot::ltl::binop* node,
+statistic map_trace_checker::weakuntil_check(const spot::ltl::binop* node,
         interval intvl, std::set<int> trace_ids) {
     const spot::ltl::formula* p = node->first();
     const spot::ltl::formula* q = node->second();
@@ -173,19 +174,19 @@ bool map_trace_checker::weakuntil_check(const spot::ltl::binop* node,
 
     // if !p never occurs, p W q holds
     if (first_occ_not_p == -1){
-        return true;
+        return statistic(true, 1, 1);
     }
 
     // if q never occurs and !p occurs (from above), false
     if (first_occ_q == -1) {
-        return false;
+        return statistic(false, 0, 1);
     }
 
     // p W q holds if !p does not occur strictly before q
     else if (first_occ_not_p < first_occ_q) {
-        return false;
+        return statistic(false, 0, 1);
     } else
-        return true;
+        return statistic(true, 1, 1);
 }
 
 /**
@@ -196,7 +197,7 @@ bool map_trace_checker::weakuntil_check(const spot::ltl::binop* node,
  * @param trace_ids
  * @return
  */
-bool map_trace_checker::strongrelease_check(const spot::ltl::binop* node,
+statistic map_trace_checker::strongrelease_check(const spot::ltl::binop* node,
         interval intvl, std::set<int> trace_ids) {
     const spot::ltl::formula* p = node->first();
     const spot::ltl::formula* q = node->second();
@@ -214,20 +215,20 @@ bool map_trace_checker::strongrelease_check(const spot::ltl::binop* node,
 
     // if p never occurs, p M q does not hold
     if (first_occ_p == -1) {
-        return false;
+        return statistic(false, 0, 1);
     }
 
     // if !q never occurs and p does, p M q holds
     if (first_occ_not_q == -1){
-        return true;
+        return statistic(true, 1, 1);
     }
 
     // at the first p, q must still hold so the first !q
     // must be strictly after the first p
     else if (first_occ_not_q <= first_occ_p) {
-        return false;
+        return statistic(false, 0, 1);
     } else
-        return true;
+        return statistic(true, 1, 1);
 }
 
 /**
@@ -238,7 +239,7 @@ bool map_trace_checker::strongrelease_check(const spot::ltl::binop* node,
  * @param trace_ids
  * @return
  */
-bool map_trace_checker::globally_check(const spot::ltl::unop* node,
+statistic map_trace_checker::globally_check(const spot::ltl::unop* node,
         interval intvl, std::set<int> trace_ids) {
     const spot::ltl::formula* p = node->child();
     // Globally operator holds on all future events, so
@@ -249,9 +250,9 @@ bool map_trace_checker::globally_check(const spot::ltl::unop* node,
     long first_occ = find_first_occurrence(not_p, intvl);
     not_p->destroy();
     if (first_occ == -1)
-        return true;
+        return statistic(true, 1, 1);
     else
-        return false;
+        return statistic(false, 0, 1);
 }
 
 /**
@@ -261,7 +262,7 @@ bool map_trace_checker::globally_check(const spot::ltl::unop* node,
  * @param trace_ids
  * @return
  */
-bool map_trace_checker::finally_check(const spot::ltl::unop* node,
+statistic map_trace_checker::finally_check(const spot::ltl::unop* node,
         interval intvl, std::set<int> trace_ids) {
     const spot::ltl::formula* p = node->child();
     // Finally operator holds on all future events, so
@@ -269,9 +270,9 @@ bool map_trace_checker::finally_check(const spot::ltl::unop* node,
     intvl.end = terminal_pos - 1;
     long first_occ = find_first_occurrence(p, intvl);
     if (first_occ == -1)
-        return false;
+        return statistic(false, 0, 1);
     else
-        return true;
+        return statistic(true, 1, 1);
 }
 
 /**
@@ -281,7 +282,7 @@ bool map_trace_checker::finally_check(const spot::ltl::unop* node,
  * @param trace_ids
  * @return
  */
-bool map_trace_checker::next_check(const spot::ltl::unop* node, interval intvl,
+statistic map_trace_checker::next_check(const spot::ltl::unop* node, interval intvl,
         std::set<int> trace_ids) {
     const spot::ltl::formula* p = node->child();
     // if the start and end of the interval are at the same place,
@@ -577,7 +578,7 @@ long map_trace_checker::find_first_occurrence(const spot::ltl::multop* node,
         intvl.start = total_first_occ;
         for (int i = 0; i < numkids; i++) {
             // if any of them fail, this cannot be the first occurrence
-            if (!this->check(node->nth(i), intvl)) {
+            if (!(this->check(node->nth(i), intvl)).is_satisfied) {
                 // find the first occurrence starting after the point
                 // we just checked for first occurrence
                 if (intvl.start != intvl.end) {
@@ -1155,7 +1156,7 @@ long map_trace_checker::find_last_occurrence(const spot::ltl::multop* node,
         // check each child at the possible and location
         for (int i = 0; i < numkids; i++) {
             // if one fails
-            if (!this->check(node->nth(i), temp)) {
+            if (!(this->check(node->nth(i), temp)).is_satisfied) {
                 // if the interval is not one long, we can move
                 // it to try and find the last in the previous part
                 if (intvl.start < temp.start) {
@@ -1491,8 +1492,11 @@ long map_trace_checker::find_last_occurrence(const spot::ltl::binop* node,
         temp.start = intvl.end;
         //usually we put temp end at terminal - 1 , but make sure not to make
         // temp.start > temp.end
-        (intvl.end == terminal_pos) ?
-                temp.end = terminal_pos : temp.end = terminal_pos - 1;
+        if (intvl.end == terminal_pos) {
+            temp.end = terminal_pos;
+        } else {
+            temp.end = terminal_pos - 1;
+        }
         //finding the first q
         long next_first_first = find_first_occurrence(node->first(), temp);
         // if there is no q in the "after" interval
@@ -1525,7 +1529,7 @@ long map_trace_checker::find_last_occurrence(const spot::ltl::binop* node,
         }
         temp.start = last_first;
         // check to see if p holds at q; if it does, return that position
-        if (this->check(node->second(), temp)) {
+        if ((this->check(node->second(), temp)).is_satisfied) {
             return last_first;
         }
         // else if it doesn't hold and we don't have any other choices
@@ -1551,8 +1555,11 @@ long map_trace_checker::find_last_occurrence(const spot::ltl::binop* node,
         temp.start = intvl.end;
         //usually we put temp at one before terminal, but if we're at terminal,
         // don't push the end back
-        (intvl.end == terminal_pos) ?
-                temp.end = terminal_pos : temp.end = terminal_pos - 1;
+        if (intvl.end == terminal_pos) {
+            temp.end = terminal_pos;
+        } else {
+            temp.end = terminal_pos - 1;
+        }
 
         // finding the first q in the extended interval
         long next_first_first = find_first_occurrence(node->first(), temp);
@@ -1577,7 +1584,7 @@ long map_trace_checker::find_last_occurrence(const spot::ltl::binop* node,
 
         temp.start = intvl.start;
         // check to see if p holds at q; if it does, return that q
-        if (this->check(node->second(), temp)) {
+        if ((this->check(node->second(), temp)).is_satisfied) {
             return last_first;
         }
         // else if it doesn't hold and we don't have any other choices, -1
@@ -1603,44 +1610,43 @@ long map_trace_checker::find_last_occurrence(const spot::ltl::binop* node,
  * @param traces all the traces
  * @return all valid instantiations
  */
-vector<map<string, string>> valid_instants_on_traces(
+vector<std::pair<map<string, string>, statistic>> valid_instants_on_traces(
         const spot::ltl::formula * prop_type,
         instants_pool_creator * instantiator,
         shared_ptr<set<map<event, vector<long>>> > traces) {
-            instantiator->reset_instantiations();
-            // vector to return
-            vector<map<string, string>> return_vec;
-            // create a vector of checkers to retain memoization across instantiation
-            // checking.
-            vector<map_trace_checker> all_checkers;
-            for (set<map<event,vector<long>>>::iterator traces_it = traces->begin();
+    instantiator->reset_instantiations();
+    // vector to return
+    vector<std::pair<map<string, string>, statistic>> return_vec;
+    // create a vector of checkers to retain memoization across instantiation
+    // checking.
+    vector<map_trace_checker> all_checkers;
+    for (set<map<event,vector<long>>>::iterator traces_it = traces->begin();
             traces_it != traces->end(); traces_it++) {
-                all_checkers.push_back(map_trace_checker(&(*traces_it)));
-            }
-            int num_traces = all_checkers.size();
-            while (true) {
-                shared_ptr<map<string,string>> current_instantiation = instantiator->get_next_instantiation();
-                if (current_instantiation == NULL) {
-                    break;
-                }
-                const spot::ltl::formula * instantiated_prop_type = instantiate(prop_type,*current_instantiation, instantiator->get_events_to_exclude());
-                // is the instantiation valid?
-                bool valid = true;
-                for (int i = 0; i < num_traces; i++) {
-                    bool valid_on_trace = all_checkers[i].check_on_trace(instantiated_prop_type);
-                    if (!valid_on_trace) {
-                        valid = false;
-                        break;
-                    }
-                }
-                instantiated_prop_type->destroy();
-                if (valid) {
-                    return_vec.push_back(*current_instantiation);
-                }
-            }
-            return return_vec;
-
-        }
-
+        all_checkers.push_back(map_trace_checker(&(*traces_it)));
     }
-    /* namespace texada */
+    int num_traces = all_checkers.size();
+    while (true) {
+        shared_ptr<map<string,string>> current_instantiation = instantiator->get_next_instantiation();
+        if (current_instantiation == NULL) {
+            break;
+        }
+        const spot::ltl::formula * instantiated_prop_type = instantiate(prop_type,*current_instantiation, instantiator->get_events_to_exclude());
+        // is the instantiation valid?
+        statistic global_stat = statistic(true, 0, 0);
+        for (int i = 0; i < num_traces; i++) {
+            global_stat = statistic(global_stat, all_checkers[i].check_on_trace(instantiated_prop_type));
+            if (!global_stat.is_satisfied) {
+                break;
+            }
+        }
+        instantiated_prop_type->destroy();
+        if (global_stat.is_satisfied) {
+            std::pair<map<string, string>, statistic> finding(*current_instantiation, global_stat);
+            return_vec.push_back(finding);
+        }
+    }
+    return return_vec;
+}
+
+}
+/* namespace texada */
