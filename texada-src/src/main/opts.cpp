@@ -37,11 +37,11 @@ boost::program_options::options_description get_options_description() {
             "specify a variable in the formula to be interpreted as a constant event.")
             ("regex,r", boost::program_options::value<std::vector<std::string> >(),
             "regular expression to parse event types from log [default (?<ETYPE>.*)]")
-            ("trace_separator", boost::program_options::value<std::string>(),
+            ("trace-separator", boost::program_options::value<std::string>(),
             "regular expression matching trace separator lines in the log [default: --]")
-            ("event_separator", boost::program_options::value<std::string>(),
+            ("event-separator", boost::program_options::value<std::string>(),
             "regular expression matching event separator lines in the log. The set of lines before an event separator are treated as the collection of propositions holding at that event. By default, each line is treated as its own event.")
-            ("ignore_nm_lines,i", "ignore non-matching lines [default: false]")
+            ("ignore-nm-lines,i", "ignore non-matching lines [default: false]")
             ("no-vacuous-findings", "filter out findings which are only vacuously true (i.e. sup-threshold = 1)")
             ("sup-threshold", boost::program_options::value<int>(), "only find instances above the given support threshold [default: 0]")
             ("sup-pot-threshold", boost::program_options::value<int>(), "only find instances above the given support potential threshold [default: 0]")

@@ -168,13 +168,13 @@ set<std::pair<const spot::ltl::formula*, statistic>> mine_property_type(
     if (opts.count("regex")) {
         parser->set_event_types(opts["regex"].as<vector<string>>());
     }
-    if (opts.count("trace_separator")) {
-        parser->set_trace_separator(opts["trace_separator"].as<std::string>());
+    if (opts.count("trace-separator")) {
+        parser->set_trace_separator(opts["trace-separator"].as<std::string>());
     }
-    if (opts.count("event_separator")) {
-        parser->set_event_separator(opts["event_separator"].as<std::string>());
+    if (opts.count("event-separator")) {
+        parser->set_event_separator(opts["event-separator"].as<std::string>());
     }
-    if (opts.count("ignore_nm_lines")) {
+    if (opts.count("ignore-nm-lines")) {
         parser->ignore_nm_lines();
     }
     parser->parse(infile);
