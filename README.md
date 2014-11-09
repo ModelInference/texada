@@ -274,23 +274,24 @@ There are two command line options which require regular expression arguments:
  Required options: -f, log-file, one of [-l, -m, -p]
  
  Options:
-   -h [ --help ]                print help message
-   -f [ --property-type ] arg   property type to mine
-   --log-file arg               log file
-   -m [ --map-trace ]           use a map trace representation
-   -l [ --linear-trace ]        use a linear trace representation
-   -p [ --prefix-tree-trace ]   use a prefix tree trace representation
-   --pregen-instants            pre-generate all property type instantiations 
-                                [default: false, using on-fly-instantiation]
-   --allow-same-bindings        allow different formula variables to be bound to
-                                the same events [default: false]
-   -c [ --config-file ] arg     file containing command line options. Command 
-                                line options will override file options.
-   -e [ --event ] arg           formula variable name to be interpreted as a 
-                                constant event.
-   -r [ --regex ] arg           regular expression to parse event types from log
-                                [default (?<ETYPE>.*)]
-   -s [ --separator_regex ] arg regular expression matching execution separator 
-                                lines in the log [default: --]
-   -i [ --ignore_nm_lines ]     ignore non-matching lines [default: false]
+   -h [ --help ]               produce help message
+   -f [ --property-type ] arg  property type to mine
+   --log-file arg              log file to mine on
+   -m [ --map-trace ]          mine on a trace in the form of a map
+   -l [ --linear-trace ]       mine on a linear trace
+   -p [ --prefix-tree-trace ]  mine on traces in prefix tree form
+   --pregen-instants           pregenerate property type instantiations. By default, Texada instantiates them on-the-fly. 
+   --allow-same-bindings       allow different formula variables to be bound to the same events. By default, Texada does not check instantiations of this type.
+   -c [ --config-file ] arg    specify file containing command line options. Any options entered directly to command line will override file options.
+   -e [ --event ] arg          specify a variable in the formula to be interpreted as a constant event.
+   -r [ --regex ] arg          regular expression to parse event types from log [default (?<ETYPE>.*)]
+   --trace-separator arg       regular expression matching trace separator lines in the log [default: --]
+   --event-separator arg       regular expression matching event separator lines in the log. The set of lines before an event separator are treated as the collection of propositions holding at that event. By default, each line is treated as its own event.
+   -i [ --ignore-nm-lines ]    ignore non-matching lines [default: false]
+   --no-vacuous-findings       filter out findings which are only vacuously true (i.e. sup-threshold = 1)
+   --sup-threshold arg         only find instances above the given support threshold [default: 0]
+   --sup-pot-threshold arg     only find instances above the given support potential threshold [default: 0]
+   --conf-threshold arg        only find instances above the given confidence threshold. Must be between 0 and 1 [default: 1]
+   --print-stats               print the support and confidence of each finding
+   --use-global-thresholds     make all inputed thresholds global [default: false]
 ~~~~
