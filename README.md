@@ -252,6 +252,37 @@ This would produce the following output:
     'G(c -> X(F(d))'
 
 
+## Example 3
+
+Suppose we have a file ```stat_filter_log.txt``` with the following contents:
+
+    TODO: add log
+
+Note that with Texada's default configuration (referred to as the vanilla configuration), the following results would be returned:
+
+    TODO: add default results
+
+However, a few of these results, namely TODO, are only vacuously true. If we wanted to filter out such results we could specify the following option:
+
+    TODO: add vacuous option
+
+The TODO option in essence specifies Texada to filter out all results with support < 1. This option can be generalized to filter out results with support < x, for any positive integer x using the TODO option as follows:
+
+    TODO: add support threshold option
+
+In a similar way, we can relax the confidence threshold of results. By default, the confidence threshold is set to 1, meaning that instantiations must be fully satisfied over the log. We can change this threshold to find instantiations which may not be satisfied one hundred percent of the time, but which is satisfied "most of the time," using the following option:
+
+    TODO: add confidence threshold option
+
+It should be noted that by default, statistical thresholds are enforced over individual traces. This means that if an instantiation fails to satisfy a threshold at any single trace in the log, it will be filtered out. We can however configure Texada to enforce thresholds over the trace-set as a whole (i.e. globally), by specifying the TODO flag as follows:
+
+    TODO: add global thresholds option
+
+This will ensure that an instantiation which is vacuously true in five of six traces in the given log, but which has a support of 3 in the sixth trace will be returned.
+
+Lastly, specifying the --print-stats flag will make Texada print out the statistics of each result.
+
+
 ## Regular expression arguments
 
 Texada relies on user-supplied regular expressions ([Perl regular expressions](http://www.boost.org/doc/libs/1_55_0/libs/regex/doc/html/boost_regex/syntax/perl_syntax.html)) to parse structured log lines. By default, Texada will treat every line as an event and equivalent lines (i.e., lines whose strings match) as instances of the same event type, and "--" as partitions between traces. However, to parse more complex logs regular expressions must be provided to determine the event type of a log line.
