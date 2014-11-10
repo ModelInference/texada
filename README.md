@@ -30,7 +30,7 @@ Texada working from a freshly cloned repository. Texada has been
 tested on Linux and OSX. 
 
 If you are installing on Ubuntu, we have
-compiled all the commands you need to run to get started on [this wiki page](https://bitbucket.org/bestchai/texada/wiki/Home).
+compiled all the commands you need to run to get started on [this wiki page](https://bitbucket.org/bestchai/texada/wiki/Automating_Texada_installation_on_Ubuntu).
 
 ### Directory Structure
 
