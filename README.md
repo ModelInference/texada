@@ -256,31 +256,45 @@ This would produce the following output:
 
 Suppose we have a file ```stat_filter_log.txt``` with the following contents:
 
-    TODO: add log
+    a
+    a
+    b
+    --
+    c
+    c
+    b
 
-Note that with Texada's default configuration (referred to as the vanilla configuration), the following results would be returned:
+Suppose that we were to look for instances of the property type 'G(x -> Xx -> XXy),' read: whenever x occurs twice in a row, y occurs after. With Texada's default configuration (referred to as the vanilla configuration), the following results would be returned:
 
-    TODO: add default results
+    G(a -> Xa -> XXb)
+    G(c -> Xc -> XXb)
+    G(b -> Xb -> XXa)
+    G(b -> Xb -> XXc)
 
-However, a few of these results, namely TODO, are only vacuously true. If we wanted to filter out such results we could specify the following option:
+However, a few of these results, namely 'G(b -> Xb -> XXa)' and 'G(b -> Xb -> XXc)', are only vacuously true. If we wanted to filter out such results we could specify the following option:
 
-    TODO: add vacuous option
+    --no-vacuous-findings
 
-The TODO option in essence specifies Texada to filter out all results with support < 1. This option can be generalized to filter out results with support < x, for any positive integer x using the TODO option as follows:
+The '--no-vacuous-findings' option in essence specifies Texada to filter out all results with support less than 1. This option can be generalized to filter out results with support less than x, for any positive integer x by using the '--sup-threshold' option as follows:
 
-    TODO: add support threshold option
+    --sup-threshold 3
 
-In a similar way, we can relax the confidence threshold of results. By default, the confidence threshold is set to 1, meaning that instantiations must be fully satisfied over the log. We can change this threshold to find instantiations which may not be satisfied one hundred percent of the time, but which is satisfied "most of the time," using the following option:
+In a similar way, we can relax the confidence threshold of results. By default, the confidence threshold is set to 1, meaning that instantiations must be fully satisfied over the log to be considered valid. We can change this threshold to return instantiations which may not be satisfied one hundred percent of the time, but which is satisfied "most of the time," using the following option:
 
-    TODO: add confidence threshold option
+    --conf-threshold .95
 
-It should be noted that by default, statistical thresholds are enforced over individual traces. This means that if an instantiation fails to satisfy a threshold at any single trace in the log, it will be filtered out. We can however configure Texada to enforce thresholds over the trace-set as a whole (i.e. globally), by specifying the TODO flag as follows:
+It should be noted that by default, statistical thresholds are enforced over individual traces. This means that if an instantiation fails to satisfy a threshold at any single trace in the log, it will be filtered out. We can however configure Texada to enforce thresholds over the trace-set as a whole (i.e. globally), by specifying the '--use-global-thresholds' flag as follows:
 
-    TODO: add global thresholds option
+    --use-global-thresholds
 
-This will ensure that an instantiation which is vacuously true in five of six traces in the given log, but which has a support of 3 in the sixth trace will be returned.
+This will ensure that an instantiation which is vacuously true in five of six traces in the given log, but which has a support of 3 in the sixth trace will pass through a support threshold of 3.
 
 Lastly, specifying the --print-stats flag will make Texada print out the statistics of each result.
+
+
+## Example 4
+
+TODO
 
 
 ## Regular expression arguments
