@@ -39,8 +39,7 @@ boost::program_options::options_description get_options_description() {
             "regular expression to parse event types from log [default (?<ETYPE>.*)]")
             ("trace-separator", boost::program_options::value<std::string>(),
             "regular expression matching trace separator lines in the log [default: --]")
-            ("event-separator", boost::program_options::value<std::string>(),
-            "regular expression matching event separator lines in the log. The set of lines before an event separator are treated as the collection of propositions holding at that event. By default, each line is treated as its own event.")
+            ("parse-mult-prop", "process given log as multi-propositional. Lines before and after event-separators [by default: ..] are treated as propositions making up a single event.")
             ("ignore-nm-lines,i", "ignore non-matching lines [default: false]")
             ("no-vacuous-findings", "filter out findings which are only vacuously true (i.e. sup-threshold = 1)")
             ("sup-threshold", boost::program_options::value<int>(), "only find instances above the given support threshold [default: 0]")

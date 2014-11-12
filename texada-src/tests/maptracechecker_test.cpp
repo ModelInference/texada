@@ -224,7 +224,7 @@ TEST(MapCheckerTest,ResourceAllocation){
     texada::map_parser * parser =  new texada::map_parser();
     parser->parse(infile);
     std::shared_ptr<std::set<std::map<texada::event,std::vector<long>> >>  trace_set = parser->return_map_trace();
-    std::shared_ptr<std::set<std::string>>  event_set = parser->return_events();
+    std::shared_ptr<std::set<std::string>>  event_set = parser->return_props();
     delete parser;
 
     // check

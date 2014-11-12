@@ -83,6 +83,14 @@ bool event::is_terminal() const {
 }
 
 /**
+ * Returns whether the event is empty, or in other words, has not yet been initialized
+ * @return true if event is empty
+ */
+bool event::is_empty() const {
+    return props.empty();
+}
+
+/**
  * Adds a proposition to the collection of atomic props holding at this event.
  */
 void event::add_prop(std::string prop) {

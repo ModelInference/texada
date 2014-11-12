@@ -38,6 +38,7 @@ shared_ptr<std::multiset<vector<event> >> linear_parser::return_vec_trace() {
  * @param event new event
  */
 void linear_parser::add_event(event event) {
+    parser::add_event(event);
     temp_trace.push_back(event);
     if (event.is_terminal()) {
         vector_trace_set->insert(temp_trace);

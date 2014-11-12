@@ -40,6 +40,7 @@ shared_ptr<prefix_tree> prefix_tree_parser::return_prefix_trees() {
  * @param event name
  */
 void prefix_tree_parser::add_event(event event) {
+    parser::add_event(event);
     if (event.is_terminal()) {
         shared_ptr<prefix_tree_node> twin = temp_trace->get_child(event);
         if (twin != NULL) {

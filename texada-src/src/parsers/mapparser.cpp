@@ -37,6 +37,7 @@ shared_ptr<set<map<event, vector<long>>> > map_parser::return_map_trace() {
  * @param event new event
  */
 void map_parser::add_event(event event) {
+    parser::add_event(event);
     if (event.is_terminal()) {
         std::vector<long> pos_vec;
         pos_vec.push_back(pos_count);
