@@ -166,20 +166,20 @@ set<std::pair<const spot::ltl::formula*, statistic>> mine_property_type(
     }
     // configure parser based on user options
     if (opts.count("regex")) {
-        parser->set_event_types(opts["regex"].as<vector<string>>());
+        parser->set_prop_types(opts["regex"].as<vector<string>>());
     }
     if (opts.count("trace-separator")) {
         parser->set_trace_separator(opts["trace-separator"].as<std::string>());
     }
-    if (opts.count("event-separator")) {
-        parser->set_event_separator(opts["event-separator"].as<std::string>());
+    if (opts.count("parse-mult-prop")) {
+        parser->parse_mult_prop();
     }
     if (opts.count("ignore-nm-lines")) {
         parser->ignore_nm_lines();
     }
     parser->parse(infile);
 
-    shared_ptr<set<string>> event_set = parser->return_events();
+    shared_ptr<set<string>> event_set = parser->return_props();
     // if we don't want repetition and there are already events
     // in the formula, we can just exclude them from the event set
     // to start with

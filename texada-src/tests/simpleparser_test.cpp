@@ -19,7 +19,7 @@ TEST(SimpleParserTest, SmallFile) {
     parser->parse(infile);
     std::shared_ptr<std::multiset<std::vector<texada::event>>>trace_set =
     parser->return_vec_trace();
-    std::shared_ptr<std::set<std::string>> events = parser->return_events();
+    std::shared_ptr<std::set<std::string>> events = parser->return_props();
     delete parser;
     parser = NULL;
 
@@ -217,12 +217,12 @@ TEST(SimpleParserTest, RegexOption) {
     texada::linear_parser * parser = new texada::linear_parser;
     std::vector<std::string> etypes;
     etypes.push_back("(?<USER>.*)(?<ETYPE>e[0-9])");
-    parser->set_event_types(etypes);
+    parser->set_prop_types(etypes);
 
     parser->parse(infile);
     std::shared_ptr<std::multiset<std::vector<texada::event>>>trace_set =
             parser->return_vec_trace();
-    std::shared_ptr<std::set<std::string>> events = parser->return_events();
+    std::shared_ptr<std::set<std::string>> events = parser->return_props();
     delete parser;
     parser = NULL;
 
@@ -253,12 +253,12 @@ TEST(SimpleParserTest, MultipleRegexOptions) {
     std::vector<std::string> etypes;
     etypes.push_back("--> (?<ETYPE>e[0-9])");
     etypes.push_back("<-- (?<ETYPE>e[0-9])");
-    parser->set_event_types(etypes);
+    parser->set_prop_types(etypes);
 
     parser->parse(infile);
     std::shared_ptr<std::multiset<std::vector<texada::event>>>trace_set =
             parser->return_vec_trace();
-    std::shared_ptr<std::set<std::string>> events = parser->return_events();
+    std::shared_ptr<std::set<std::string>> events = parser->return_props();
     delete parser;
     parser = NULL;
 
@@ -289,12 +289,12 @@ TEST(SimpleParserTest, IgnoreNMLines) {
     parser->ignore_nm_lines();
     std::vector<std::string> etypes;
     etypes.push_back("--> (?<ETYPE>e[0-9])");
-    parser->set_event_types(etypes);
+    parser->set_prop_types(etypes);
 
     parser->parse(infile);
     std::shared_ptr<std::multiset<std::vector<texada::event>>>trace_set =
             parser->return_vec_trace();
-    std::shared_ptr<std::set<std::string>> events = parser->return_events();
+    std::shared_ptr<std::set<std::string>> events = parser->return_props();
     delete parser;
     parser = NULL;
 

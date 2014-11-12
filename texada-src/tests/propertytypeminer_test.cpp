@@ -768,7 +768,7 @@ TEST(PropertyTypeMinerTest, MultiProp) {
     std::set<std::pair<const spot::ltl::formula*, texada::statistic>> set =
             texada::mine_property_type(
                     texada::set_options(
-                            "-f 'G(x -> XFy)' -l --event-separator '==' "
+                            "-f 'G(x -> XFy)' -l --parse-mult-prop "
                                         + texada_base
                                         + "/traces/mult-prop-tests/response-pattern-mplog.txt"));
 

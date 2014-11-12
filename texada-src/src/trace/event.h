@@ -16,7 +16,11 @@ namespace texada {
 /**
  * Represents an event that is parsed from an input log.
  * Essentially, an event consists of the atomic propositions which hold
- * at the given point in time.
+ * at the given point in time. These propositions are internally stored
+ * as a set of strings.
+ * Single-propositional events are represented by a single element set,
+ * whereas multi-propositional events (i.e. events which are characterised
+ * by more than one proposition) are represented by multiple element set.
  */
 class event {
 public:
@@ -29,6 +33,7 @@ public:
     std::set<std::string> get_props() const;
     bool is_satisfied(std::string) const;
     bool is_terminal() const;
+    bool is_empty() const;
     void add_prop(std::string);
     void set_terminal(bool);
     void clear();
