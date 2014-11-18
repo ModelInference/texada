@@ -166,17 +166,20 @@ set<std::pair<const spot::ltl::formula*, statistic>> mine_property_type(
     }
     // configure parser based on user options
     if (opts.count("regex")) {
-        parser->set_event_types(opts["regex"].as<vector<string>>());
+        parser->set_prop_types(opts["regex"].as<vector<string>>());
     }
-    if (opts.count("separator_regex")) {
-        parser->set_separator(opts["separator_regex"].as<std::string>());
+    if (opts.count("trace-separator")) {
+        parser->set_trace_separator(opts["trace-separator"].as<std::string>());
     }
-    if (opts.count("ignore_nm_lines")) {
+    if (opts.count("parse-mult-prop")) {
+        parser->parse_mult_prop();
+    }
+    if (opts.count("ignore-nm-lines")) {
         parser->ignore_nm_lines();
     }
     parser->parse(infile);
 
-    shared_ptr<set<string>> event_set = parser->return_events();
+    shared_ptr<set<string>> event_set = parser->return_props();
     // if we don't want repetition and there are already events
     // in the formula, we can just exclude them from the event set
     // to start with
@@ -225,12 +228,12 @@ set<std::pair<const spot::ltl::formula*, statistic>> mine_property_type(
     vector<std::pair<std::map<std::string, std::string>, texada::statistic>> valid_instants;
     // check all valid instantiations on each trace
     if (use_lin) {
-        shared_ptr<std::multiset<vector<string_event> >> vector_trace_set =
+        shared_ptr<std::multiset<vector<event> >> vector_trace_set =
                 dynamic_cast<linear_parser*>(parser)->return_vec_trace();
         valid_instants = valid_instants_on_traces(formula, instantiator,
                 vector_trace_set, c_settings);
     } else if (use_map) {
-        shared_ptr<set<map<string_event, vector<long>>> > map_trace_set = dynamic_cast<map_parser*>(parser)->return_map_trace();
+        shared_ptr<set<map<event, vector<long>>> > map_trace_set = dynamic_cast<map_parser*>(parser)->return_map_trace();
         valid_instants = valid_instants_on_traces(formula, instantiator,
                 map_trace_set);
     } else if (use_pretree) {

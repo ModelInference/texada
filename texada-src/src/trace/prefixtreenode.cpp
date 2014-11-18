@@ -17,19 +17,29 @@ namespace texada {
  * @param input_ids traces this event belongs to
  */
 prefix_tree_node::prefix_tree_node(set<int> input_ids) {
-    event = string_event();
+    event = texada::event();
     trace_ids = input_ids;
-
 }
 
 /**
- * Constructs an event node with name name and belonging
- * to the traces given in input_ids
- * @param name name of this event
+ * Constructs a single propositional event node with an
+ * event having the proposition prop
+ * @param prop the proposition corresponding to the node's event
  * @param input_ids traces this event belongs to
  */
-prefix_tree_node::prefix_tree_node(string name, set<int> input_ids) {
-    event = string_event(name);
+prefix_tree_node::prefix_tree_node(std::string prop, set<int> input_ids) {
+    this->event = texada::event(prop);
+    trace_ids = input_ids;
+}
+
+/**
+ * Constructs an event node with event event and belonging
+ * to the traces given in input_ids
+ * @param event the event corresponding to this node
+ * @param input_ids traces this event belongs to
+ */
+prefix_tree_node::prefix_tree_node(texada::event e, set<int> input_ids) {
+    this->event = e;
     trace_ids = input_ids;
 }
 
@@ -87,8 +97,8 @@ set<int> prefix_tree_node::get_trace_ids() {
  * Get the name of the event this node represents
  * @return name of node
  */
-string prefix_tree_node::get_name() {
-    return event.get_name();
+event prefix_tree_node::get_event() {
+    return event;
 }
 
 /**
@@ -114,10 +124,10 @@ shared_ptr<prefix_tree_node> prefix_tree_node::get_child(int trace_id) {
  * @param name name of event to find
  * @return event with name name, NULL if no such event exists
  */
-shared_ptr<prefix_tree_node> prefix_tree_node::get_child(string name) {
+shared_ptr<prefix_tree_node> prefix_tree_node::get_child(texada::event e) {
     for (map<set<int>,shared_ptr<prefix_tree_node>>::iterator kids_it= children.begin();
             kids_it != children.end(); kids_it++) {
-        if (kids_it->second->get_name() == name) {
+        if ((kids_it->second)->get_event() == e) {
             return kids_it->second;
         }
     }
@@ -160,6 +170,15 @@ map<set<int>,shared_ptr<prefix_tree_node>> prefix_tree_node::get_children(){
  */
 int prefix_tree_node::num_children() {
     return children.size();
+}
+
+/**
+ * Return whether a given atomic proposition holds at the event corresponding to this node
+ * @param prop the proposition to check
+ * @return whether the ap holds
+ */
+bool prefix_tree_node::is_satisfied(std::string prop) {
+    return event.is_satisfied(prop);
 }
 
 /**

@@ -26,14 +26,13 @@ class linear_parser: public parser {
 public:
     linear_parser();
     virtual ~linear_parser();
-    shared_ptr<std::multiset<std::vector<string_event> >> return_vec_trace();
+    shared_ptr<std::multiset<std::vector<event> >> return_vec_trace();
 
 private:
-    virtual void end_trace();
-    virtual void add_event(std::string event);
+    virtual void add_event(event event);
 
-    vector<string_event> temp_trace;
-    shared_ptr<std::multiset<vector<string_event> >> vector_trace_set;
+    vector<event> temp_trace;
+    shared_ptr<std::multiset<vector<event> >> vector_trace_set;
 };
 
 } /* namespace texada */

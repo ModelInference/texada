@@ -132,46 +132,36 @@ TEST(PrefixTreeTest,CreateSimpleTree) {
      */
     // make sure we follow through properly.
     //trace 0
-    ASSERT_EQ("a", all_traces->get_trace_start(0)->get_name());
-    ASSERT_EQ("b", all_traces->get_trace_start(0)->get_child(0)->get_name());
-    ASSERT_EQ("c",
-            all_traces->get_trace_start(0)->get_child(0)->get_child(0)->get_name());
-    ASSERT_EQ("d",
-            all_traces->get_trace_start(0)->get_child(0)->get_child(0)->get_child(
-                    0)->get_name());
+    ASSERT_TRUE(all_traces->get_trace_start(0)->is_satisfied("a"));
+    ASSERT_TRUE(all_traces->get_trace_start(0)->get_child(0)->is_satisfied("b"));
+    ASSERT_TRUE(all_traces->get_trace_start(0)->get_child(0)->get_child(0)->is_satisfied("c"));
+    ASSERT_TRUE(all_traces->get_trace_start(0)->get_child(0)->get_child(0)->get_child(
+                    0)->is_satisfied("d"));
 
     //trace 1
-    ASSERT_EQ("a", all_traces->get_trace_start(1)->get_name());
-    ASSERT_EQ("b", all_traces->get_trace_start(1)->get_child(1)->get_name());
-    ASSERT_EQ("d",
-            all_traces->get_trace_start(1)->get_child(1)->get_child(1)->get_name());
-    ASSERT_EQ("e",
-            all_traces->get_trace_start(1)->get_child(1)->get_child(1)->get_child(
-                    1)->get_name());
+    ASSERT_TRUE(all_traces->get_trace_start(1)->is_satisfied("a"));
+    ASSERT_TRUE(all_traces->get_trace_start(1)->get_child(1)->is_satisfied("b"));
+    ASSERT_TRUE(all_traces->get_trace_start(1)->get_child(1)->get_child(1)->is_satisfied("d"));
+    ASSERT_TRUE(all_traces->get_trace_start(1)->get_child(1)->get_child(1)->get_child(
+                    1)->is_satisfied("e"));
 
     //trace 2
-    ASSERT_EQ("a", all_traces->get_trace_start(2)->get_name());
-    ASSERT_EQ("c", all_traces->get_trace_start(2)->get_child(2)->get_name());
-    ASSERT_EQ("e",
-            all_traces->get_trace_start(2)->get_child(2)->get_child(2)->get_name());
-    ASSERT_EQ("e",
-            all_traces->get_trace_start(2)->get_child(2)->get_child(2)->get_child(
-                    2)->get_name());
-    ASSERT_EQ("f",
-            all_traces->get_trace_start(2)->get_child(2)->get_child(2)->get_child(
-                    2)->get_child(2)->get_name());
+    ASSERT_TRUE(all_traces->get_trace_start(2)->is_satisfied("a"));
+    ASSERT_TRUE(all_traces->get_trace_start(2)->get_child(2)->is_satisfied("c"));
+    ASSERT_TRUE(all_traces->get_trace_start(2)->get_child(2)->get_child(2)->is_satisfied("e"));
+    ASSERT_TRUE(all_traces->get_trace_start(2)->get_child(2)->get_child(2)->get_child(
+                    2)->is_satisfied("e"));
+    ASSERT_TRUE(all_traces->get_trace_start(2)->get_child(2)->get_child(2)->get_child(
+                    2)->get_child(2)->is_satisfied("f"));
 
     //trace 3
-    ASSERT_EQ("a", all_traces->get_trace_start(3)->get_name());
-    ASSERT_EQ("c", all_traces->get_trace_start(3)->get_child(2)->get_name());
-    ASSERT_EQ("e",
-            all_traces->get_trace_start(3)->get_child(3)->get_child(3)->get_name());
-    ASSERT_EQ("d",
-            all_traces->get_trace_start(3)->get_child(3)->get_child(3)->get_child(
-                    3)->get_name());
-    ASSERT_EQ("EndOfTraceVar",
-            all_traces->get_trace_start(3)->get_child(3)->get_child(3)->get_child(
-                    3)->get_child(3)->get_name());
+    ASSERT_TRUE(all_traces->get_trace_start(3)->is_satisfied("a"));
+    ASSERT_TRUE(all_traces->get_trace_start(3)->get_child(2)->is_satisfied("c"));
+    ASSERT_TRUE(all_traces->get_trace_start(3)->get_child(3)->get_child(3)->is_satisfied("e"));
+    ASSERT_TRUE(all_traces->get_trace_start(3)->get_child(3)->get_child(3)->get_child(
+                    3)->is_satisfied("d"));
+    ASSERT_TRUE(all_traces->get_trace_start(3)->get_child(3)->get_child(3)->get_child(
+                    3)->get_child(3)->is_satisfied("EndOfTraceVar"));
 
     delete all_traces;
 
@@ -191,7 +181,7 @@ TEST(PrefixTreeCheckerTest, TestSimpleTree) {
 
     ASSERT_FALSE(
             (checker.check_on_trace(afby_form,
-                    all_traces->get_trace_start("a"))).is_satisfied);
+                    all_traces->get_trace_start(texada::event("a")))).is_satisfied);
 
     afby_form->destroy();
 
@@ -217,7 +207,8 @@ TEST(PrefixTreeCheckerTest, TestOnTrace) {
             pe_list);
     texada::prefix_tree_checker checker;
     ASSERT_TRUE(
-            (checker.check_on_trace(afby_form, trace_set->get_trace_start("a"))).is_satisfied);
+            (checker.check_on_trace(afby_form, trace_set->get_trace_start(texada::event("a")))).is_satisfied);
+    afby_form->destroy(); // not sure if this is needed
 
     afby_form = spot::ltl::parse("G(x->XFy)", pe_list);
     std::map<std::string, std::string> inst_map;
@@ -228,7 +219,7 @@ TEST(PrefixTreeCheckerTest, TestOnTrace) {
     afby_form->accept(*collector);
     checker.add_relevant_bindings(&collector->subform_ap_set);
     ASSERT_TRUE(
-            (checker.check_on_trace(afby_form, trace_set->get_trace_start("a"),
+            (checker.check_on_trace(afby_form, trace_set->get_trace_start(texada::event("a")),
                     inst_map)).is_satisfied);
     delete collector;
     afby_form->destroy();

@@ -39,13 +39,13 @@ shared_ptr<prefix_tree_node> prefix_tree::get_trace_start(int trace_id) {
  * @param first_event name of desired start event
  * @return first event of the trace, NULL if no such trace
  */
-shared_ptr<prefix_tree_node> prefix_tree::get_trace_start(string first_event) {
+shared_ptr<prefix_tree_node> prefix_tree::get_trace_start(event first_event) {
     if (traces.empty()) {
         return NULL;
     }
     for (map<set<int>, shared_ptr<prefix_tree_node>>::iterator traces_it =
             traces.begin(); traces_it != traces.end(); traces_it++) {
-        if (traces_it->second->get_name() == first_event) {
+        if ((traces_it->second)->get_event() == first_event) {
             return traces_it->second;
         }
     }

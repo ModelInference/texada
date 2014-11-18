@@ -128,7 +128,8 @@ map<int, statistic> prefix_tree_checker::ap_check(const spot::ltl::atomic_prop* 
         trace_node trace_pt, std::set<int> trace_ids) {
     if (use_memo) {
         if (instantiations.find(node->name()) != instantiations.end()) {
-            if ((instantiations.find(node->name()))->second == trace_pt->get_name()) {
+            std::string prop = (instantiations.find(node->name()))->second;
+            if (trace_pt->is_satisfied(prop)) {
                 return create_int_bool_map(trace_ids, statistic(true, 1, 1));
             } else {
                 return create_int_bool_map(trace_ids, statistic(false, 0, 1));
@@ -139,7 +140,7 @@ map<int, statistic> prefix_tree_checker::ap_check(const spot::ltl::atomic_prop* 
         }
     } else {
         // evaluate whether the AP holds
-        if (trace_pt->get_name() == node->name()) {
+        if (trace_pt->is_satisfied(node->name())) {
             return create_int_bool_map(trace_ids, statistic(true, 1, 1));
         } else {
             return create_int_bool_map(trace_ids, statistic(false, 0, 1));

@@ -7,9 +7,9 @@
  */
 
 #include "../src/checkers/lineartracechecker.h"
+#include "../src/trace/event.h"
 #include "../src/checkers/statistic.h"
 #include "../src/checkers/settings.h"
-#include "../src/trace/stringevent.h"
 
 #include <ltlparse/public.hh>
 #include <ltlvisit/tostring.hh>
@@ -25,13 +25,13 @@
 TEST(LinearTraceCheckerTest, AFby) {
 
     // create trace a a b b
-    std::vector<texada::string_event> trace_vec;
-    trace_vec.push_back(texada::string_event("a"));
-    trace_vec.push_back(texada::string_event("a"));
-    trace_vec.push_back(texada::string_event("b"));
-    trace_vec.push_back(texada::string_event("b"));
-    trace_vec.push_back(texada::string_event());
-    texada::string_event* trace = &trace_vec[0];
+    std::vector<texada::event> trace_vec;
+    trace_vec.push_back(texada::event("a"));
+    trace_vec.push_back(texada::event("a"));
+    trace_vec.push_back(texada::event("b"));
+    trace_vec.push_back(texada::event("b"));
+    trace_vec.push_back(texada::event());
+    texada::event* trace = &trace_vec[0];
 
     // parse the formula
     std::string input = "G(a->Fb)";
@@ -72,13 +72,13 @@ TEST(LinearTraceCheckerTest, AFby) {
 // checks if the next operator works properly on terminal events.
 TEST(LinearTraceCheckerTest, NextNext) {
     // create trace a a b b
-    std::vector<texada::string_event> trace_vec;
-    trace_vec.push_back(texada::string_event("a"));
-    trace_vec.push_back(texada::string_event("a"));
-    trace_vec.push_back(texada::string_event("b"));
-    trace_vec.push_back(texada::string_event("b"));
-    trace_vec.push_back(texada::string_event());
-    texada::string_event* trace = &trace_vec[0];
+    std::vector<texada::event> trace_vec;
+    trace_vec.push_back(texada::event("a"));
+    trace_vec.push_back(texada::event("a"));
+    trace_vec.push_back(texada::event("b"));
+    trace_vec.push_back(texada::event("b"));
+    trace_vec.push_back(texada::event());
+    texada::event* trace = &trace_vec[0];
 
     // set up checker and parse error list necessary for parsing and checking
     texada::linear_trace_checker* checker = new texada::linear_trace_checker();
@@ -107,23 +107,23 @@ TEST(LinearTraceCheckerTest, NextNext) {
 TEST(LinearTraceCheckerTest,Alternating) {
 
     // trace on which alternating holds : p s p s
-    std::vector<texada::string_event> trace_vec;
-    trace_vec.push_back(texada::string_event("p"));
-    trace_vec.push_back(texada::string_event("s"));
-    trace_vec.push_back(texada::string_event("p"));
-    trace_vec.push_back(texada::string_event("s"));
-    trace_vec.push_back(texada::string_event());
-    texada::string_event* psSucceed = &trace_vec[0];
+    std::vector<texada::event> trace_vec;
+    trace_vec.push_back(texada::event("p"));
+    trace_vec.push_back(texada::event("s"));
+    trace_vec.push_back(texada::event("p"));
+    trace_vec.push_back(texada::event("s"));
+    trace_vec.push_back(texada::event());
+    texada::event* psSucceed = &trace_vec[0];
 
     // trace on which alternating does not hold: p s p s p
-    std::vector<texada::string_event> trace_vec2;
-    trace_vec2.push_back(texada::string_event("p"));
-    trace_vec2.push_back(texada::string_event("s"));
-    trace_vec2.push_back(texada::string_event("p"));
-    trace_vec2.push_back(texada::string_event("s"));
-    trace_vec2.push_back(texada::string_event("p"));
-    trace_vec2.push_back(texada::string_event());
-    texada::string_event* psFail = &trace_vec2[0];
+    std::vector<texada::event> trace_vec2;
+    trace_vec2.push_back(texada::event("p"));
+    trace_vec2.push_back(texada::event("s"));
+    trace_vec2.push_back(texada::event("p"));
+    trace_vec2.push_back(texada::event("s"));
+    trace_vec2.push_back(texada::event("p"));
+    trace_vec2.push_back(texada::event());
+    texada::event* psFail = &trace_vec2[0];
 
     // alternating input in string form
     std::string alti = "((!s)W p)&G((p->X((!p)U s))&(s->X((!s)W p)))";
@@ -151,10 +151,10 @@ TEST(LinearTraceCheckerTest,Alternating) {
 // checking that p U q holds on the one-event trace q
 TEST(LinearTraceCheckerTest,Until) {
     // create trace
-    std::vector<texada::string_event> trace_vec;
-    trace_vec.push_back(texada::string_event("q"));
-    trace_vec.push_back(texada::string_event());
-    texada::string_event* trace = &trace_vec[0];
+    std::vector<texada::event> trace_vec;
+    trace_vec.push_back(texada::event("q"));
+    trace_vec.push_back(texada::event());
+    texada::event* trace = &trace_vec[0];
 
     //parse formula
     std::string input = "p U q";
@@ -183,15 +183,15 @@ TEST(LinearTraceCheckerTest,Until) {
 TEST(LinearTraceCheckerTest, SupAndSupPot) {
 
     // create trace a b a b a c
-    std::vector<texada::string_event> trace_vec;
-    trace_vec.push_back(texada::string_event("a"));
-    trace_vec.push_back(texada::string_event("a"));
-    trace_vec.push_back(texada::string_event("c"));
-    trace_vec.push_back(texada::string_event("a"));
-    trace_vec.push_back(texada::string_event("b"));
-    trace_vec.push_back(texada::string_event("a"));
-    trace_vec.push_back(texada::string_event());
-    texada::string_event* trace = &trace_vec[0];
+    std::vector<texada::event> trace_vec;
+    trace_vec.push_back(texada::event("a"));
+    trace_vec.push_back(texada::event("a"));
+    trace_vec.push_back(texada::event("c"));
+    trace_vec.push_back(texada::event("a"));
+    trace_vec.push_back(texada::event("b"));
+    trace_vec.push_back(texada::event("a"));
+    trace_vec.push_back(texada::event());
+    texada::event* trace = &trace_vec[0];
 
     texada::linear_trace_checker* checker = new texada::linear_trace_checker();
     checker->configure(texada::settings(0,0,1.0,false,true));

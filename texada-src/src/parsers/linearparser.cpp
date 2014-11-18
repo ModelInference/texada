@@ -12,7 +12,7 @@ namespace texada {
 
 linear_parser::linear_parser() {
     temp_trace.clear();
-    vector_trace_set = std::make_shared<std::multiset<vector<string_event>>>();
+    vector_trace_set = std::make_shared<std::multiset<vector<event>>>();
 }
 
 linear_parser::~linear_parser() {
@@ -22,7 +22,7 @@ linear_parser::~linear_parser() {
  * Returns the set of parsed vector traces
  * @return
  */
-shared_ptr<std::multiset<vector<string_event> >> linear_parser::return_vec_trace() {
+shared_ptr<std::multiset<vector<event> >> linear_parser::return_vec_trace() {
     if (has_been_parsed) {
         return vector_trace_set;
     } else {
@@ -34,21 +34,16 @@ shared_ptr<std::multiset<vector<string_event> >> linear_parser::return_vec_trace
 
 /**
  * Helper function called from within parser::parse(std::ifstream &infile)
- * Ends the current trace being built
- */
-void linear_parser::end_trace() {
-    temp_trace.push_back(string_event());
-    vector_trace_set->insert(temp_trace);
-    temp_trace.clear();
-}
-
-/**
- * Helper function called from within parser::parse(std::ifstream &infile)
  * Adds event to the current trace being built
- * @param event name
+ * @param event new event
  */
-void linear_parser::add_event(std::string event) {
-    temp_trace.push_back(string_event(event));
+void linear_parser::add_event(event event) {
+    parser::add_event(event);
+    temp_trace.push_back(event);
+    if (event.is_terminal()) {
+        vector_trace_set->insert(temp_trace);
+        temp_trace.clear();
+    }
 }
 
 } /* namespace texada */
