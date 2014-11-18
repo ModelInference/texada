@@ -699,7 +699,7 @@ TEST(PropertyTypeMinerTest, StatPrint) {
 }
 
 // checking that the property type miner properly filters findings based on confidence threshold
-TEST(ConfidenceFilteringTest, ConfidenceFilter) {
+TEST(PropertyTypeMinerTest, ConfidenceFilter) {
     if (getenv("TEXADA_HOME") == NULL) {
         std::cerr << "Error: TEXADA_HOME is undefined. \n";
         FAIL();
@@ -722,6 +722,65 @@ TEST(ConfidenceFilteringTest, ConfidenceFilter) {
     std::map<std::string, std::string> inst_map2;
     inst_map2.insert(std::pair<std::string, std::string>("x", "c"));
     inst_map2.insert(std::pair<std::string, std::string>("y", "d"));
+
+    spot::ltl::parse_error_list pel;
+    const spot::ltl::formula * property_type = spot::ltl::parse(
+            "G(x -> XFy)", pel);
+    const spot::ltl::formula * instantiation1 = texada::instantiate(property_type,
+            inst_map1, std::vector<std::string>());
+    const spot::ltl::formula * instantiation2 = texada::instantiate(property_type,
+            inst_map2, std::vector<std::string>());
+
+    // check that the only valid instantiations are those above
+    ASSERT_EQ(2, set.size());
+    bool contains_instantiation1 = false;
+    bool contains_instantiation2 = false;
+    for (std::set<std::pair<const spot::ltl::formula*, texada::statistic>>::iterator i = set.begin();
+            i != set.end(); i++) {
+        if ((*i).first == instantiation1) {
+            contains_instantiation1 = true;
+        } else if ((*i).first == instantiation2) {
+            contains_instantiation2 = true;
+        }
+    }
+
+    //clean up
+    property_type->destroy();
+    instantiation1->destroy();
+    instantiation2->destroy();
+    ASSERT_TRUE(contains_instantiation1);
+    ASSERT_TRUE(contains_instantiation2);
+    for (std::set<std::pair<const spot::ltl::formula*, texada::statistic>>::iterator it = set.begin();
+            it != set.end(); it++) {
+        ((*it).first)->destroy();
+    }
+}
+
+// checking that the property type miner is able to mine multi-propositional logs
+TEST(PropertyTypeMinerTest, MultiProp) {
+    if (getenv("TEXADA_HOME") == NULL) {
+        std::cerr << "Error: TEXADA_HOME is undefined. \n";
+        FAIL();
+    }
+    std::string texada_base = std::string(getenv("TEXADA_HOME"));
+
+    // find all valid instantiations of the property type
+    std::set<std::pair<const spot::ltl::formula*, texada::statistic>> set =
+            texada::mine_property_type(
+                    texada::set_options(
+                            "-f 'G(x -> XFy)' -l --parse-mult-prop "
+                                        + texada_base
+                                        + "/traces/mult-prop-tests/response-pattern-mplog.txt"));
+
+    // create the correct instantiation map and the instantiated formula corresponding to it
+    std::map<std::string, std::string> inst_map1;
+    inst_map1.insert(std::pair<std::string, std::string>("x", "a"));
+    inst_map1.insert(std::pair<std::string, std::string>("y", "b"));
+
+    std::map<std::string, std::string> inst_map2;
+    inst_map2.insert(std::pair<std::string, std::string>("x", "c"));
+    inst_map2.insert(std::pair<std::string, std::string>("y", "d"));
+
     spot::ltl::parse_error_list pel;
     const spot::ltl::formula * property_type = spot::ltl::parse(
             "G(x -> XFy)", pel);

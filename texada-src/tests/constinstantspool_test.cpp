@@ -11,7 +11,7 @@
 #include "../src/checkers/prefixtreechecker.h"
 #include "../src/checkers/statistic.h"
 #include "../src/trace/prefixtree.h"
-#include "../src/trace/stringevent.h"
+#include "../src/trace/event.h"
 #include <gtest/gtest.h>
 #include <ltlparse/public.hh>
 #include <ltlvisit/apcollect.hh>
@@ -48,16 +48,16 @@ TEST(ConstInstantsPoolTest,UsableByLinearChecker) {
     texada::const_instants_pool* instantiator = new texada::const_instants_pool(f);
 
     // Create traces to pass into checkers
-    std::shared_ptr<std::multiset<std::vector<texada::string_event>>> l_traces =
-    std::make_shared<std::multiset<std::vector<texada::string_event>>>();
+    std::shared_ptr<std::multiset<std::vector<texada::event>>> l_traces =
+    std::make_shared<std::multiset<std::vector<texada::event>>>();
     // Traces represent the log: {"a,b,c","b,a,c"}
-    texada::string_event a = texada::string_event("a");
-    texada::string_event b = texada::string_event("b");
-    texada::string_event c = texada::string_event("c");
-    texada::string_event t = texada::string_event();
+    texada::event a = texada::event("a");
+    texada::event b = texada::event("b");
+    texada::event c = texada::event("c");
+    texada::event t = texada::event();
     // Linear trace set
-    std::vector<texada::string_event> l_trace1 = {a,b,c,t};
-    std::vector<texada::string_event> l_trace2 = {b,a,c,t};
+    std::vector<texada::event> l_trace1 = {a,b,c,t};
+    std::vector<texada::event> l_trace2 = {b,a,c,t};
     l_traces->insert(l_trace1);
     l_traces->insert(l_trace2);
 
@@ -81,28 +81,28 @@ TEST(ConstInstantsPoolTest,UsableByMapChecker) {
     texada::const_instants_pool* instantiator = new texada::const_instants_pool(f);
 
     // Create traces to pass into checkers
-    std::shared_ptr<std::set<std::map<texada::string_event, std::vector<long>>>> m_traces =
-    std::make_shared<std::set<std::map<texada::string_event, std::vector<long>>>>();
+    std::shared_ptr<std::set<std::map<texada::event, std::vector<long>>>> m_traces =
+    std::make_shared<std::set<std::map<texada::event, std::vector<long>>>>();
     // Traces represent the log: {"a,b,c","b,a,c"}
-    texada::string_event a = texada::string_event("a");
-    texada::string_event b = texada::string_event("b");
-    texada::string_event c = texada::string_event("c");
-    texada::string_event t = texada::string_event();
+    texada::event a = texada::event("a");
+    texada::event b = texada::event("b");
+    texada::event c = texada::event("c");
+    texada::event t = texada::event();
     // Map trace set
-    std::map<texada::string_event, std::vector<long>> m_trace1;
-    std::map<texada::string_event, std::vector<long>> m_trace2;
+    std::map<texada::event, std::vector<long>> m_trace1;
+    std::map<texada::event, std::vector<long>> m_trace2;
     std::vector<long> pos_vec0 {0};
-    m_trace1.insert(std::pair<texada::string_event, std::vector<long>>(a,pos_vec0));
-    m_trace2.insert(std::pair<texada::string_event, std::vector<long>>(b,pos_vec0));
+    m_trace1.insert(std::pair<texada::event, std::vector<long>>(a,pos_vec0));
+    m_trace2.insert(std::pair<texada::event, std::vector<long>>(b,pos_vec0));
     std::vector<long> pos_vec1 {1};
-    m_trace1.insert(std::pair<texada::string_event, std::vector<long>>(b,pos_vec1));
-    m_trace2.insert(std::pair<texada::string_event, std::vector<long>>(a,pos_vec1));
+    m_trace1.insert(std::pair<texada::event, std::vector<long>>(b,pos_vec1));
+    m_trace2.insert(std::pair<texada::event, std::vector<long>>(a,pos_vec1));
     std::vector<long> pos_vec2 {2};
-    m_trace1.insert(std::pair<texada::string_event, std::vector<long>>(c,pos_vec2));
-    m_trace2.insert(std::pair<texada::string_event, std::vector<long>>(c,pos_vec2));
+    m_trace1.insert(std::pair<texada::event, std::vector<long>>(c,pos_vec2));
+    m_trace2.insert(std::pair<texada::event, std::vector<long>>(c,pos_vec2));
     std::vector<long> tpos_vec {3};
-    m_trace1.insert(std::pair<texada::string_event, std::vector<long>>(t,tpos_vec));
-    m_trace2.insert(std::pair<texada::string_event, std::vector<long>>(t,tpos_vec));
+    m_trace1.insert(std::pair<texada::event, std::vector<long>>(t,tpos_vec));
+    m_trace2.insert(std::pair<texada::event, std::vector<long>>(t,tpos_vec));
 
     m_traces->insert(m_trace1);
     m_traces->insert(m_trace2);
@@ -136,19 +136,19 @@ TEST(ConstInstantsPoolTest,UsableByPrefixChecker) {
     set1.insert(1);
     // root
     std::shared_ptr<texada::prefix_tree_node> top = std::make_shared<
-            texada::prefix_tree_node>("a", set01);
+            texada::prefix_tree_node>(texada::event("a"), set01);
     // left branch
     std::shared_ptr<texada::prefix_tree_node> middle_left = std::make_shared<
-            texada::prefix_tree_node>("b", set0);
+            texada::prefix_tree_node>(texada::event("b"), set0);
     std::shared_ptr<texada::prefix_tree_node> bottom_left = std::make_shared<
-            texada::prefix_tree_node>("c", set0);
+            texada::prefix_tree_node>(texada::event("c"), set0);
     std::shared_ptr<texada::prefix_tree_node> terminal_left = std::make_shared<
             texada::prefix_tree_node>(set0);
     // right branch
     std::shared_ptr<texada::prefix_tree_node> middle_right = std::make_shared<
-            texada::prefix_tree_node>("a", set1);
+            texada::prefix_tree_node>(texada::event("a"), set1);
     std::shared_ptr<texada::prefix_tree_node> bottom_right = std::make_shared<
-            texada::prefix_tree_node>("c", set1);
+            texada::prefix_tree_node>(texada::event("c"), set1);
     std::shared_ptr<texada::prefix_tree_node> terminal_right = std::make_shared<
             texada::prefix_tree_node>(set0);
 

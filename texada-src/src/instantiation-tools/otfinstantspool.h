@@ -10,7 +10,7 @@
 
 #include <ltlast/allnodes.hh>
 #include "instantspoolcreator.h"
-#include "../trace/stringevent.h"
+#include "../trace/event.h"
 #include <string>
 #include <set>
 #include <map>
@@ -51,7 +51,7 @@ public:
 	        shared_ptr<spot::ltl::atomic_prop_set> ltlevents, bool allow_reps, vector<string> exclude_events);
 	virtual ~otf_instants_pool();
 	vector<map<string, string>> return_valid_instants(const spot::ltl::formula * node,
-	        set<vector<string_event>>);
+	        set<vector<event>>);
 	shared_ptr<map<string,string>>  get_next_instantiation();
 
 };
