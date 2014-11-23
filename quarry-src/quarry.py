@@ -5,7 +5,7 @@ def main(argv):
    dtracefile = ''
    invarfile = ''
    outputfile = ''
-   usage_desc = 'Usage: dtt-generator.py -d <dtracefile> -i <invarfile> -o <outputfile>'
+   usage_desc = 'Usage: quarry.py -d <dtracefile> -i <invarfile> -o <outputfile>'
    try:
       opts, args = getopt.getopt(argv,"hd:i:o:",["dfile=","ifile=","ofile="])
    except getopt.GetoptError:
