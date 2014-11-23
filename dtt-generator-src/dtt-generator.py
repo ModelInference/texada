@@ -45,7 +45,9 @@ def parse_into_splog(dfile):
 
    # TODO: skip ppt declarations
 
-   # TODO: add each ppt to rtnlog
+   # TODO: read until a blank line
+
+      # TODO: add next line to rtnlog
 
    return rtnlog
 
@@ -53,33 +55,52 @@ def parse_into_splog(dfile):
 def parse_into_event_map(ifile):
    rtnmap = {}
 
-   # TODO: for each program point p in ifile, insert a mapping of
-   # p to its invariants into rtnmap.
+   # TODO: read until a separator line
+
+      # TODO: read next line into x
+
+      # TODO: if x is an entry point, then add a simple ppt/invariants mapping
+
+      # TODO: if x is an exit point, then combine its invariants with the corresponding aggregate invariants, and use this to create a ppt/invariants mapping.
+
+      # TODO: if x is an object point, then !!!
+
+      # TODO: if x is a class point, then !!!
+
+      # TODO: if x is a separator line, then break out of inner loop.
 
    return rtnmap
 
 
 def output_data_event_trace(dlog,emap,ofile):
 
-   # TODO: iterate over dlog, and for each string in dlog
-   # find its invariants [i0,...,ik] under emap. Then write
-   # each of i0,...,ik to the ofile, followed by the event
-   # termination line (i.e. '..'). 
+   # TODO: for i = 0 to size(dlog)-1
+
+      # TODO: x_i = dlog[i]
+
+      # TODO: invar_i = emap[x_i]
+
+      # TODO: if invar_i is a specific exit
+
+         # TODO: x_agg_i = x_i with the last numbers removed
+
+         # TODO: invar_agg_i = dlog[x_agg_i]
+
+         # TODO: invar_i.append(invar_agg_i)
+
+      # TODO: for j = 0 to size(invar_i)-1
+
+         # TODO: write invar_i[j] into ofile followed by line break
+
+      # TODO: write an event termination line into ofile followed by line break
+
+   # TODO: write a trace terminaion line into ofile
 
    return
 
 
 if __name__ == "__main__":
    main(sys.argv[1:])
-
-
-
-
-
-
-
-
-
 
 
 
