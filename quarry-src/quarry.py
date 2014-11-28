@@ -1,101 +1,114 @@
-import sys, getopt
+import sys, getopt, re
+
+ppt_separator = "==========================================================================="
+event_separator = ".."
+trace_separator = "--"
 
 def main(argv):
    # parse command line arguments
-   dtracefile = ''
-   invarfile = ''
-   outputfile = ''
+   dfile = ''
+   ifile = ''
+   ofile = ''
    usage_desc = 'Usage: quarry.py -d <dtracefile> -i <invarfile> -o <outputfile>'
+   
    try:
       opts, args = getopt.getopt(argv,"hd:i:o:",["dfile=","ifile=","ofile="])
    except getopt.GetoptError:
-      print usage_desc
+      print(usage_desc)
       sys.exit(2)
+      
    for opt, arg in opts:
       if opt == '-h':
-         print usage_desc
+         print(usage_desc)
          sys.exit()
       elif opt in ("-d", "--dfile"):
-         dtracefile = arg
+         dfile = arg
       elif opt in ("-i", "--ifile"):
-         invarfile = arg
+         ifile = arg
       elif opt in ("-o", "--ofile"):
-         outputfile = arg
+         ofile = arg
       else:
-         print usage_desc
+         print(usage_desc)
          sys.exit(2)
-
-   # open input and output files
-   dfile = open(dtracefile, 'r')
-   ifile = open(invarfile, 'r')
-   ofile = open(outputfile, 'w')
 
    dlog = parse_into_splog(dfile)
    emap = parse_into_event_map(ifile)
-   output_data_event_trace(dlog,emap,ofile)
-
-   # close all files
-   dfile.close()
-   ifile.close()
-   ofile.close()
+   generate_data_event_trace(dlog,emap,ofile)
 
 
 def parse_into_splog(dfile):
    rtnlog = []
+   
+   ppt = re.compile("^(\w+\.)+\w+\(.*?\):::(ENTER|EXIT)[0-9]*")
 
-   # TODO: skip ppt declarations
+   with open(dfile) as f:
+      for line in f:
+         match = ppt.match(line)
+         if match != None:
+            rtnlog.append(match.group(0))
 
-   # TODO: read until a blank line
-
-      # TODO: add next line to rtnlog
+#   with open(dfile) as f:
+#      for line in f:
+#         if line == '\n':
+#            try:
+#               tar_line = next(f)
+#               match = ppt.match(tar_line)
+#               if match != None:
+#                  rtnlog.append(match.group(0))
+#            except StopIteration:
+#               break
 
    return rtnlog
 
 
 def parse_into_event_map(ifile):
    rtnmap = {}
+   ppt = ""
+   invars = []
+   
+   with open(ifile) as f:
+      f.next()
+      for line in f:
+         line = line.replace('\n', '')
+         if (line == ppt_separator):
+            rtnmap[ppt] = invars
+            ppt = ""
+            invars = []
+         elif ppt == "":
+            ppt = line
+         else:
+            invars.append(line)
 
-   # TODO: read until a separator line
-
-      # TODO: read next line into x
-
-      # TODO: if x is an entry point, then add a simple ppt/invariants mapping
-
-      # TODO: if x is an exit point, then combine its invariants with the corresponding aggregate invariants, and use this to create a ppt/invariants mapping.
-
-      # TODO: if x is an object point, then !!!
-
-      # TODO: if x is a class point, then !!!
-
-      # TODO: if x is a separator line, then break out of inner loop.
+   if ppt != "":
+      rtnmap[ppt] = invars
 
    return rtnmap
 
 
-def output_data_event_trace(dlog,emap,ofile):
+def generate_data_event_trace(dlog,emap,ofile):
 
-   # TODO: for i = 0 to size(dlog)-1
+   f = open(ofile, "w")
+   ppt_type = re.compile(":::(ENTER|EXIT)[0-9]*$")
+   for ppt in dlog:
+      match = ppt_type.search(ppt)
+      invarlist = []
+      
+      if match.group(0) == ":::ENTER":
+         invarlist = emap[ppt]
+      else:
+         ppt_agg = re.sub(":::EXIT[0-9]*$", ":::EXIT", ppt)
+         if ppt in emap:
+            invarlist = emap[ppt] + emap[ppt_agg]
+         else:
+            invarlist = emap[ppt_agg]
+         
+      for invar in invarlist:
+         f.write("%s\n" % invar)
+      
+      f.write("%s\n" % event_separator)
 
-      # TODO: x_i = dlog[i]
-
-      # TODO: invar_i = emap[x_i]
-
-      # TODO: if invar_i is a specific exit
-
-         # TODO: x_agg_i = x_i with the last numbers removed
-
-         # TODO: invar_agg_i = dlog[x_agg_i]
-
-         # TODO: invar_i.append(invar_agg_i)
-
-      # TODO: for j = 0 to size(invar_i)-1
-
-         # TODO: write invar_i[j] into ofile followed by line break
-
-      # TODO: write an event termination line into ofile followed by line break
-
-   # TODO: write a trace terminaion line into ofile
-
+   f.write(trace_separator)
+   f.close()
    return
 
 
