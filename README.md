@@ -135,7 +135,7 @@ are able to execute `texadatest` and `texada` binaries.
 
 The basic command line to run Texada looks like this:
 
-    ./texada -m -f 'G(x -> X(F(y))' --log-file logfile.txt
+    ./texada -m -f 'G(x -> X(F(y)))' --log-file logfile.txt
 
 This line consists of four parts:
 
@@ -151,7 +151,7 @@ This line consists of four parts:
 
 3. An argument specifying the property type to mine:
 
-    ... -f 'G(x -> XF(y))' ...
+    ... -f 'G(x -> X(F(y)))' ...
    
     Use the standard LTL ascii notation for formulas.
 
@@ -180,11 +180,11 @@ By default, Texada interprets ```--``` as a trace separator; so the above log wo
 
 Now, suppose that we want to find out whether there are events x and y, such instances of x is always followed by an instance of y. In LTL this can be expressed as G(x -> XF(y)). To determine such pairs of events we run Texada as follows:
 
-    ./texada -m -f 'G(x -> XF(y))' --log-file basic_log.txt
+    ./texada -m -f 'G(x -> X(F(y)))' --log-file basic_log.txt
 
 This produces the following output:
 
-    G(c -> X(F(d))
+    G(c -> X(F(d)))
 
 which says that the event ```c``` is always followed by event ```d```. You can confirm that this is the case by looking at the two traces above.
 
@@ -193,7 +193,7 @@ which says that the event ```c``` is always followed by event ```d```. You can c
 
 A more advanced invocation of Texada, using additional options, looks like this (note that this example covers a subset of possible options; see [Command line usage screen](#markdown-header-command-line-usage-screen) below for a full listing):
 
-    ./texada -m -f 'G(x -> X(F(y))' --log-file logfile.txt -r 'SUCCESS: (?<ETYPE>.*)' 'FAIL: (?<ETYPE>.*)' -s 'end' -i
+    ./texada -m -f 'G(x -> X(F(y)))' --log-file logfile.txt -r 'SUCCESS: (?<ETYPE>.*)' 'FAIL: (?<ETYPE>.*)' -s 'end' -i
 
 Here, in addition to the 4 required arguments described previously, there are the following additional options:
 
@@ -245,11 +245,11 @@ says, in effect, that if a log line matches the regular expression 'SUCCESS: (?<
 
 In full, a command to find events x and y which satisfy the relationship 'x is always followed by y' (or in LTL: G(x -> XF(y))) would look like this:
 
-    ./texada -m -f 'G(x -> X(F(y))' --log-file structured_log.txt -r 'SUCCESS: (?<ETYPE>.*)' 'FAIL: (?<ETYPE>.*)' -s 'end' -i
+    ./texada -m -f 'G(x -> X(F(y)))' --log-file structured_log.txt -r 'SUCCESS: (?<ETYPE>.*)' 'FAIL: (?<ETYPE>.*)' -s 'end' -i
 
 This would produce the following output:
 
-    'G(c -> X(F(d))'
+    'G(c -> X(F(d)))'
 
 
 ## Example 3
