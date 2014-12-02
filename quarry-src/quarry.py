@@ -81,12 +81,14 @@ def parse_into_event_map(ifile):
          match = ltype.match(line)
          # if line is a ddt, read the following lines until a ppt separator,
          # and for each line, add it to the correponding list of invariants.
+         # note that a blank line may be used as a ppt separator at the end
+         # of a daikon invariants file.
          if match != None:
             ppt = match.group(0)
             invars = []
             for line_i in f:
                line_i = line_i.replace('\n', '')
-               if line_i == ppt_separator:
+               if line_i == ppt_separator or line_i == "":
                   break
                else:
                   invars.append(line_i)
