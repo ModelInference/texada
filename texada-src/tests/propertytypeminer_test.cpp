@@ -668,6 +668,33 @@ TEST(CheckerEquivalencyTest, STprecedesPafterQ) {
 
 }
 
+// checking that the property type miner works for very large (30,000+ events) traces.
+// note: the real purpose of this test is to verify that Texada does not segfault on very large traces
+TEST(PropertyTypeMinerTest, LargeTrace) {
+    if (getenv("TEXADA_HOME") == NULL) {
+            std::cerr << "Error: TEXADA_HOME is undefined. \n";
+            FAIL();
+        }
+        std::string texada_base = std::string(getenv("TEXADA_HOME"));
+
+        // find all valid instantiations along with their full statistics
+        std::set<std::pair<const spot::ltl::formula*, texada::statistic>> set =
+                texada::mine_property_type(
+                        texada::set_options(
+                                "-f 'G(x)' -l "
+                                        + texada_base
+                                        + "/traces/stress-tests/very-large-trace.txt"));
+
+        // check for correct number of findings
+        ASSERT_EQ(1, set.size());
+
+        // clean up
+        for (std::set<std::pair<const spot::ltl::formula*, texada::statistic>>::iterator it = set.begin();
+                it != set.end(); it++) {
+            ((*it).first)->destroy();
+        }
+}
+
 // checking that the property type miner return correct statistics of findings.
 // checks the case when there exist multiple equivalent traces in the log.
 TEST(PropertyTypeMinerTest, StatPrint) {
