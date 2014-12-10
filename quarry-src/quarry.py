@@ -11,7 +11,7 @@ trace_separator = "--"
 # - Option for including class invariants.
 # - Option for including object invariants.
 
-# Output texada usage:
+# Output texada usage [complete]:
 # - at the end of the main method, print out a texada usage description.
 
 # Separate each object into individual traces:
@@ -42,17 +42,18 @@ def main(argv):
    dfile = ''
    ifile = ''
    ofile = ''
-   usage_desc = 'Usage: quarry.py -d <dtracefile> -i <invarfile> -o <outputfile>'
+   quarry_usage = 'Usage: quarry.py -d <dtracefile> -i <invarfile> -o <outputfile>'
+   texada_usage = '\nHow to process Quarry output using Texada:\nIn order to mine temporal properties from the outputed data-temp log, run the file with Texada using it\'s mult-prop option.\nExample usage: ./texada -l -f \'G(x -> FXy)\' --log-file path/to/data-temp-log'
    
    try:
       opts, args = getopt.getopt(argv,"hd:i:o:",["dfile=","ifile=","ofile="])
    except getopt.GetoptError:
-      print(usage_desc)
+      print(quarry_usage)
       sys.exit(2)
       
    for opt, arg in opts:
       if opt == '-h':
-         print(usage_desc)
+         print(quarry_usage)
          sys.exit()
       elif opt in ("-d", "--dfile"):
          dfile = arg
@@ -61,12 +62,15 @@ def main(argv):
       elif opt in ("-o", "--ofile"):
          ofile = arg
       else:
-         print(usage_desc)
+         print(quarry_usage)
          sys.exit(2)
 
    dlog = parse_into_splog(dfile)
    emap = parse_into_event_map(ifile)
    generate_data_event_trace(dlog,emap,ofile)
+
+   # Print a description of how to use the generated data-event trace with Texada
+   print("%s\n" % texada_usage)
 
 
 # Parses a Daikon dtrace file into a sequence of its ppts.
