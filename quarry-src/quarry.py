@@ -5,25 +5,6 @@ ppt_separator   = "=============================================================
 event_separator = ".."
 trace_separator = "--"
 
-# Separate each object into individual traces:
-# - For each ppt, determine its "this" value.
-# - Create a dictionary of ppt sequences, mapping objects to their sequences.
-# - When printing the data/temp trace, iterate through the above dictionary and create a trace for each sequence.
-
-# Option for specifying the class to extract:
-# - Make an optional command line arg for specifying a specific class to extract [extract all by default].
-# - For each ppt, determine the calling class.
-# - If an arg was specified, when printing the data/temp trace, for each ppt sequence, check its calling class, and if it does not match the specified class, ignore.
-
-# Option for including class invariants:
-# - Make an optional command line flag for including class invariants [don't include by default].
-# - Change regex in parse_into_event_map to include :::CLASS and :::OBJECT.
-# - For each ppt, determine the calling class.
-# - If flag is set, when printing the data/temp trace, for each ppt, find and print the corresponding class invariants.
-# - Similarly for object invariants.
-
-
-
 # Usage: quarry.py <dtracefile> <invarfile> <outputfile>
 # Combines the ppt ordering in the dtrace file with the ppt to invariants
 # mapping in the invariance output to write a Texada-processable log into
@@ -31,17 +12,31 @@ trace_separator = "--"
 def main():
    # parse command line arguments
    parser = ArgumentParser()
+   # positional arguments
    parser.add_argument("dtracefile", help="name of file containing temporal information of program execution")
    parser.add_argument("invarsfile", help="name of file containing daikon-produced invariants of program")
    parser.add_argument("outputfile", help="name of file to write the generated data-event traces")
+   # optional arguments
+   parser.add_argument("-o", "--obj_invars", help="include object invariances",  action="store_true")
+   parser.add_argument("-c", "--cls_invars", help="include class invariances",   action="store_true")
+   parser.add_argument("-e", "--extract",    help="specify a specific class to extract [by default: extract all]")
    
+   # organize command-line arguments
    args = parser.parse_args()
+   dtrace = args.dtracefile
+   invars = args.invarsfile
+   ofile = args.outputfile
+   incl_obj = args.obj_invars
+   incl_cls = args.cls_invars
+   class_to_extract = args.extract
 
-   dlog = parse_into_splog(args.dtracefile)
-   emap = parse_into_event_map(args.invarsfile)
-   generate_data_event_trace(dlog, emap, args.outputfile)
-
-   # Print a description of how to use the generated data-event trace with Texada
+   # generate a set of ppt sequences from the specified dtrace file.
+   dlog = parse_into_splog(dtrace)
+   # generate a mapping of ppts to invariances from the specified invariance file.
+   emap = parse_into_event_map(invars)
+   # combine the generated ppt sequence set and event map into a set of data-temporal traces, and write this into the specified output file.
+   generate_data_event_trace(dlog, emap, ofile, incl_obj, incl_cls)
+   # Print a description of how to use the generated data-event trace with Texada.
    texada_usage = '\nHow to process Quarry output using Texada:\nIn order to mine temporal properties from the outputed data-temp log, run the file with Texada using it\'s mult-prop option.\nExample usage: ./texada -l -f \'G(x -> FXy)\' --log-file path/to/data-temp-log'
    print("%s\n" % texada_usage)
 
@@ -79,19 +74,6 @@ def parse_into_splog(dfile):
             else:
                rtnlog[calling_class] = [match.group(0)]
 
-   ### An alternative implementation (harder to read but may be a bit more efficient)
-
-   # with open(dfile) as f:
-   #    for line in f:
-   #       if line == '\n':
-   #          try:
-   #             tar_line = next(f)
-   #             match = ppt.match(tar_line)
-   #             if match != None:
-   #                rtnlog.append(match.group(0))
-   #          except StopIteration:
-   #             break
-
    return rtnlog
 
 
@@ -101,7 +83,7 @@ def parse_into_event_map(ifile):
    ppt = ""
    invars = []
    # regex used to match ppt lines.
-   ltype = re.compile("^(\w+\.)+\w+\(.*?\):::(ENTER|EXIT)[0-9]*")
+   ltype = re.compile("^(\w+\.)+\w+\(.*?\):::(ENTER|EXIT|OBJECT|CLASS)[0-9]*")
    # read the file line by line checking for ppt lines
    with open(ifile) as f:
       for line in f:
@@ -121,60 +103,30 @@ def parse_into_event_map(ifile):
                   invars.append(line_i)
             rtnmap[ppt] = invars
 
-   ### An alternative implementation (harder to read but may be a bit more efficient)
-
-   # with open(ifile) as f:
-   #    # skip the very first ppt separator.
-   #    f.next()
-   #    # read the file line by line and determine the type of the line.
-   #    for line in f:
-   #       # erase 
-   #       line = line.replace('\n', '')
-   #       # if the line is a ppt separator, then insert the current ppt and invars pair into 
-   #       # the map to be returned. And reset the ppt and invars variables to be used for the
-   #       # next ppt. 
-   #       if (line == ppt_separator):
-   #          rtnmap[ppt] = invars
-   #          ppt = ""
-   #          invars = []
-   #       # if the line is not a ppt separator, and 
-   #       elif ppt == "":
-   #          ppt = line
-   #       else:
-   #          invars.append(line)
-
-   # if ppt != "":
-   #    rtnmap[ppt] = invars
-
    return rtnmap
 
 # Given a sequence of ppts and a mapping of ppts to their invariants, print into a given output file
 # a Texada-processable log consisting of the set of invariants as events and the sequence of ppts as
 # the order in which these events occur.
-def generate_data_event_trace(dlog,emap,ofile):
+def generate_data_event_trace(dlog,emap,ofile,incl_obj,incl_cls):
 
    f = open(ofile, "w")
    # regex used to match the ppt to one of two types: 
    #     (i)   method entry            (e.g. method():::ENTER) 
    #     (ii)  specific method exit    (e.g. method():::EXIT42)
-   ppt_type = re.compile(":::(ENTER|EXIT)[0-9]*$")
+   regex = re.compile(":::(?P<ppt_type>ENTER|EXIT)[0-9]*$")
    for key in dlog:
       for ppt in dlog[key]:
-         match = ppt_type.search(ppt)
+         match = regex.search(ppt)
          invarlist = []
          # if the ppt was not mentioned in the invariants output, skip it.
          if ppt in emap:
-            # if the ppt is a method entry, retrive its invariants.
-            if match.group(0) == ":::ENTER":
-               invarlist = emap[ppt]
-            # otherwise the ppt is a specific method exit, so retrive both its invariants and the invariants of the corresponding aggregate exit.
+            invarlist = emap[ppt]
+            # if the ppt is an exit point, append the invariants of the corresponding aggregate exit.
             # e.g. given a ppt method()::EXIT42, its invariants consists of the union of[method()::EXIT42] and emap[method()::EXIT].
-            else:
+            if match.group('ppt_type') == "EXIT":
                ppt_agg = re.sub(":::EXIT[0-9]*$", ":::EXIT", ppt)
-               if ppt in emap:
-                  invarlist = emap[ppt] + emap[ppt_agg]
-               else:
-                 invarlist = emap[ppt_agg]
+               invarlist = emap[ppt] + emap[ppt_agg] # TODO: why is this different from invarlist += emap[ppt_agg]?
             # loop through the retrieved invariants and write them line by line into the outputfile followed by an event separator line.
             for invar in invarlist:
                f.write("%s\n" % invar)
