@@ -67,7 +67,7 @@ statistic linear_trace_checker::until_check(const spot::ltl::binop* node,
     }
     // if !q and p holds, check on the next suffix trace
     else {
-        return statistic(stat_p, this->check(node, trace_pt + 1));
+        return statistic(stat_p, this->until_check(node, trace_pt + 1));
     }
 }
 
@@ -104,7 +104,7 @@ statistic linear_trace_checker::release_check(const spot::ltl::binop* node,
 
     // if the q holds, check on the next suffix trace
     else {
-        return statistic(stat_q, this->check(node, trace_pt + 1));
+        return statistic(stat_q, this->release_check(node, trace_pt + 1));
     }
 
 }
@@ -141,7 +141,7 @@ statistic linear_trace_checker::strongrelease_check(const spot::ltl::binop* node
 
     // if the q holds, check on the next suffix trace
     else {
-        return statistic(stat_q, this->check(node, trace_pt + 1));
+        return statistic(stat_q, this->strongrelease_check(node, trace_pt + 1));
     }
 
 }
@@ -177,7 +177,7 @@ statistic linear_trace_checker::weakuntil_check(const spot::ltl::binop* node,
     }
     // if !q and p holds, check on the next suffix trace
     else {
-        return statistic(stat_p, this->check(node, trace_pt + 1));
+        return statistic(stat_p, this->weakuntil_check(node, trace_pt + 1, trace_ids));
     }
 
 
@@ -204,9 +204,9 @@ statistic linear_trace_checker::globally_check(const spot::ltl::unop* node,
     } else if (is_short_circuiting(stat_p = this->check(p, trace_pt))) {
         return stat_p;
     } else {
-        //Return whether subformula is true on this trace, recursive check on
+        // Return whether subformula is true on this trace, recursive check on
         // all subsequent traces.
-        return statistic(stat_p, this->check(node, trace_pt + 1));
+        return statistic(stat_p, this->globally_check(node, trace_pt + 1, trace_ids));
     }
 }
 
@@ -233,7 +233,7 @@ statistic linear_trace_checker::finally_check(const spot::ltl::unop* node,
     } else {
         //Return whether subformula is true on this trace, recursive check on
         // all subsequent traces.
-        return this->check(node, trace_pt + 1);
+        return this->finally_check(node, trace_pt+1, trace_ids);
     }
 }
 
