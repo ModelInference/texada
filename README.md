@@ -135,7 +135,7 @@ are able to execute `texadatest` and `texada` binaries.
 
 The basic command line to run Texada looks like this:
 
-    ./texada -m -f 'G(x -> X(F(y))' --log-file logfile.txt
+    ./texada -m -f 'G(x -> X(F(y)))' --log-file logfile.txt
 
 This line consists of four parts:
 
@@ -151,7 +151,7 @@ This line consists of four parts:
 
 3. An argument specifying the property type to mine:
 
-    ... -f 'G(x -> XF(y))' ...
+    ... -f 'G(x -> X(F(y)))' ...
    
     Use the standard LTL ascii notation for formulas.
 
@@ -180,11 +180,11 @@ By default, Texada interprets ```--``` as a trace separator; so the above log wo
 
 Now, suppose that we want to find out whether there are events x and y, such instances of x is always followed by an instance of y. In LTL this can be expressed as G(x -> XF(y)). To determine such pairs of events we run Texada as follows:
 
-    ./texada -m -f 'G(x -> XF(y))' --log-file basic_log.txt
+    ./texada -m -f 'G(x -> X(F(y)))' --log-file basic_log.txt
 
 This produces the following output:
 
-    G(c -> X(F(d))
+    G(c -> X(F(d)))
 
 which says that the event ```c``` is always followed by event ```d```. You can confirm that this is the case by looking at the two traces above.
 
@@ -193,7 +193,7 @@ which says that the event ```c``` is always followed by event ```d```. You can c
 
 A more advanced invocation of Texada, using additional options, looks like this (note that this example covers a subset of possible options; see [Command line usage screen](#markdown-header-command-line-usage-screen) below for a full listing):
 
-    ./texada -m -f 'G(x -> X(F(y))' --log-file logfile.txt -r 'SUCCESS: (?<ETYPE>.*)' 'FAIL: (?<ETYPE>.*)' -s 'end' -i
+    ./texada -m -f 'G(x -> X(F(y)))' --log-file logfile.txt -r 'SUCCESS: (?<ETYPE>.*)' 'FAIL: (?<ETYPE>.*)' -s 'end' -i
 
 Here, in addition to the 4 required arguments described previously, there are the following additional options:
 
@@ -245,11 +245,11 @@ says, in effect, that if a log line matches the regular expression 'SUCCESS: (?<
 
 In full, a command to find events x and y which satisfy the relationship 'x is always followed by y' (or in LTL: G(x -> XF(y))) would look like this:
 
-    ./texada -m -f 'G(x -> X(F(y))' --log-file structured_log.txt -r 'SUCCESS: (?<ETYPE>.*)' 'FAIL: (?<ETYPE>.*)' -s 'end' -i
+    ./texada -m -f 'G(x -> X(F(y)))' --log-file structured_log.txt -r 'SUCCESS: (?<ETYPE>.*)' 'FAIL: (?<ETYPE>.*)' -s 'end' -i
 
 This would produce the following output:
 
-    'G(c -> X(F(d))'
+    'G(c -> X(F(d)))'
 
 
 ## Example 3
@@ -294,8 +294,38 @@ Lastly, specifying the --print-stats flag will make Texada print out the statist
 
 ## Example 4
 
-TODO
+So far, we have seen how Texada is able to process logs of atomic propositional events. By this, we mean that at a given "point of time," there is a single proposition which holds true (i.e. the proposition specifying the event type). However, in certain situations we want to be able process logs in which multiple propositions are associated with each point in time.
 
+Consider for example that we were to trace the values of a program's variables as it executed over time, producing the following log (which we will call  ```mult_prop_log.txt```):
+
+    a = 5
+    b = true
+    c = "cat"
+    ..
+    a = 5
+    b = false
+    c = "dog"
+    ..
+    a = 100
+    b = true
+    c = "cat"
+    ..
+    a = 100
+    b = false
+    c = "cat"
+    --
+
+Here we use the format accepted by Texada, wherein lines of '..' separate individual events, and the collection of lines between a pair of these event separators make up the set of propositions holding at that point in time.
+
+Now, given the above multi-propositional log, we can use Texada to find valid property instantiations in the same way as for single-propositional logs, by appending the '--parse-mult-prop' flag.
+
+For example, the command:
+
+    ./texada -l -f 'G(x -> X(y))' --log-file basic_log.txt --parse-mult-prop
+
+would produce the following results:
+
+    G('b = true' -> X('c = "cat"'))
 
 ## Regular expression arguments
 
@@ -331,7 +361,7 @@ There are two command line options which require regular expression arguments:
    -e [ --event ] arg          specify a variable in the formula to be interpreted as a constant event.
    -r [ --regex ] arg          regular expression to parse event types from log [default (?<ETYPE>.*)]
    --trace-separator arg       regular expression matching trace separator lines in the log [default: --]
-   --event-separator arg       regular expression matching event separator lines in the log. The set of lines before an event separator are treated as the collection of propositions holding at that event. By default, each line is treated as its own event.
+   --parse-mult-prop       process given log as multi-propositional. Lines before and after event-separators [by default: ..] are treated as propositions making up a single event.
    -i [ --ignore-nm-lines ]    ignore non-matching lines [default: false]
    --no-vacuous-findings       filter out findings which are only vacuously true (i.e. sup-threshold = 1)
    --sup-threshold arg         only find instances above the given support threshold [default: 0]
