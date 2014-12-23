@@ -47,7 +47,7 @@ class DTraceParser:
       with open(self.filepath) as f:
          contents = f.read()
          records = re.split(self.separator_str, contents)
-         regex = re.compile("(?P<class_name>^(\w+\.)*\w+)\.(?P<method_name>\w+)\(.*?\):::(?P<ppt_type>ENTER|EXIT)(?P<ppt_id>[0-9]*)")
+         regex = re.compile("(?P<class_name>^(\w+\.)*\w+)\.(?P<method_name>\w+\(.*?\)):::(?P<ppt_type>ENTER|EXIT)(?P<ppt_id>[0-9]*)")
          for record in records:
             record = record.split("\n")
             match = regex.match(record[0])
