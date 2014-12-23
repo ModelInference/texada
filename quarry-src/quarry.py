@@ -48,9 +48,17 @@ def generate_data_temp_log(traces, invars, filepath, incl_cls, incl_obj):
             # e.g. given a ppt method()::EXIT42, its invariants consists of the union of[method()::EXIT42] and emap[method()::EXIT].
             if ppt[2] == "EXIT":
                agg_ppt_name = ppt[0]+"."+ppt[1]+":::"+ppt[2]
-               invarlist = invars[ppt_name] + invars[agg_ppt_name]
-            else:
-               invarlist = invars[ppt_name]
+               invarlist = invarlist + invars[agg_ppt_name]
+            # if configured to include class invariants, find and append onto invarlist the class invariants corresponding to this ppt.
+            if incl_cls:
+               cls_name = ppt[0]+":::"+"CLASS"
+               if cls_name in invars:
+                  invarlist = invarlist + invars[cls_name]
+            # if configured to include object invariants, find and append onto invarlist the object invariants corresponding to this ppt.
+            if incl_obj:
+               obj_name = ppt[0]+":::"+"OBJECT"
+               if obj_name in invars:
+                  invarlist = invarlist + invars[obj_name]
             # loop through the retrieved invariants and write them line by line into the ofile, followed by a event separator.
             for invar in invarlist:
                f.write("%s\n" % invar)
