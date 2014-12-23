@@ -1,3 +1,4 @@
+import sys
 class InvariantParser:
    '''The InvariantParser is used to parse a Daikon-generated invariants file into a dictionary 
    mapping program points (ppts) to their invariants.'''
@@ -11,7 +12,7 @@ class InvariantParser:
       self.set_separator("===========================================================================")
 
    def parse_invariants(self):
-      '''Return a dictionary mapping ppts to sets of invariants parsed from the parser's initialized invariants file.'''
+      '''Return a dictionary mapping ppts to sets of invariants parsed from the initialized invariants file.'''
       rtn_dict = {}
       with open(self.filepath) as f:
          contents = f.read()
