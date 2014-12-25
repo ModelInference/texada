@@ -19,8 +19,8 @@ def main():
 
    # parse dtrace file
    dtraceparser = DTraceParser(args.dfile)
-   # if args.extract:
-      # TODO: configure dtraceparser to extract only the specified class
+   if args.extract:
+      dtraceparser.set_target_class(args.extract)
    traces = dtraceparser.parse_dtrace()
 
    # parse invariants file
