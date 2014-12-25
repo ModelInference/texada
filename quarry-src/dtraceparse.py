@@ -8,6 +8,7 @@ class DTraceParser:
 
    filepath = ""
    separator_str = ""
+   target_cls = None
 
    def __init__(self, filepath):
       '''Return a DTraceParser object which is set to parse the file located at *filepath*.'''
@@ -39,6 +40,10 @@ class DTraceParser:
       '''Set the parser's separator regex. The separator regex is used to partition the dtrace file into a list of ppt records.'''
       self.separator_str = regex
 
+   def set_target_class(self, target):
+      '''Set the parser's target class. Only the records of the target class will be included in the output during parsing.'''
+      self.target_cls = target
+
    def get_records(self):
       '''Returns a list of ppt records extracted from the initialized dtrace file'''
       # a struct representing a ppt record
@@ -53,6 +58,9 @@ class DTraceParser:
             match = regex.match(record[0])
             # if did not match regex, was not a valid ppt record; ignore and continue iteration
             if match == None:
+               continue
+            # if target_cls has been set and current ppt record does not match the target class, ignore and continue iteration
+            elif self.target_cls is not None and match.group("class_name") != self.target_cls:
                continue
             else:
                i = iter(record[1:])
