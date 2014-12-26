@@ -1,12 +1,19 @@
+
+'''
+Returns a data-temporal log generated from combining a pair of Daikon-generated
+   dtrace and invariants files.
+Usage: quarry.py [-h] [-o] [-c] [-e EXTRACT] <dtracefile> <invarfile> <outputfile>
+'''
+
 import re
 from argparse     import ArgumentParser
 from invarparse   import InvariantParser
 from dtraceparse  import DTraceParser
 
 def main():
-   ''' Returns a data-temporal log generated from combining a pair of Daikon-generated dtrace and invariants files.
-   Usage: quarry.py [-h] [-o] [-c] [-e EXTRACT] <dtracefile> <invarfile> <outputfile>'''
-
+   '''
+   Method which orchestrates everything.
+   '''
    # process options
    argparser = ArgumentParser()
    argparser.add_argument("dfile", help="path to the Daikon-generated dtrace file.")
@@ -30,13 +37,17 @@ def main():
    # generate data-temp log
    generate_data_temp_log(traces, invars, args.ofile, args.incl_cls, args.incl_obj)
 
-   # Print a description of how to process the generated data-temp log using Texada.
-   texada_usage = 'How to process Quarry output using Texada:\nIn order to mine temporal properties from the outputed data-temp log, run the file with Texada using it\'s mult-prop option.\nExample usage: ./texada -l -f \'G(x -> FXy)\' --log-file path/to/data-temp-log'
+   # Print a description of how to process the generated data-temp log using
+   # Texada.
+   texada_usage = 'How to process Quarry output using Texada:\nIn order to mine temporal properties from the outputed data-temp log, run the file with Texada using it\'s mult-prop option.\nExample usage: ./texada -l -f \'G(x -> FXy)\' --log-file ' + args.ofile
    print("%s\n" % texada_usage)
 
+
 def generate_data_temp_log(traces, invars, filepath, incl_cls, incl_obj):
-   '''Prints a data-temporal log into the file located at *filepath*, generated from combining *dtset* and *invars*.'''
-   # TODO
+   '''
+   Prints a data-temporal log into the file located at *filepath*, generated from
+      combining *dtset* and *invars*.
+   '''
    with open(filepath, 'w') as f:
       for obj, trace in traces.iteritems():
          for ppt in trace:
@@ -44,19 +55,23 @@ def generate_data_temp_log(traces, invars, filepath, incl_cls, incl_obj):
             if ppt_name not in invars:
                continue
             invarlist = invars[ppt_name]
-            # if the ppt is an exit point, append the invariants of the corresponding aggregate exit.
-            # e.g. given a ppt method()::EXIT42, its invariants consists of the union of[method()::EXIT42] and emap[method()::EXIT].
+            # if the ppt is an exit point, append the invariants of the
+            # corresponding aggregate exit.
+            # e.g. given a ppt method()::EXIT42, its invariants consists of
+            # the union of[method()::EXIT42] and emap[method()::EXIT].
             if ppt[2] == "EXIT":
                agg_ppt_name = ppt[0]+"."+ppt[1]+":::"+ppt[2]
                invarlist = invars[ppt_name] + invars[agg_ppt_name]
             else:
                invarlist = invars[ppt_name]
-            # loop through the retrieved invariants and write them line by line into the ofile, followed by a event separator.
+            # loop through the retrieved invariants and write them line by
+            # line into the ofile, followed by a event separator.
             for invar in invarlist:
                f.write("%s\n" % invar)
             f.write("%s\n" % "..")
          # write a trace separator at the end of each trace
          f.write("%s\n" % "--")
+
 
 if __name__ == "__main__":
    main()
