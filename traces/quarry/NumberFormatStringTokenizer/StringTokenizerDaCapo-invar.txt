@@ -1,0 +1,112 @@
+===========================================================================
+org.apache.xalan.templates.ElemNumber$NumberFormatStringTokenizer:::OBJECT
+this.currentPosition >= 0
+this.maxPosition >= 2
+this.str != null
+this.currentPosition <= this.maxPosition
+===========================================================================
+org.apache.xalan.templates.ElemNumber$NumberFormatStringTokenizer.ElemNumber$NumberFormatStringTokenizer(org.apache.xalan.templates.ElemNumber, java.lang.String):::ENTER
+this$0 != null
+str != null
+===========================================================================
+org.apache.xalan.templates.ElemNumber$NumberFormatStringTokenizer.ElemNumber$NumberFormatStringTokenizer(org.apache.xalan.templates.ElemNumber, java.lang.String):::EXIT
+this.str == orig(str)
+this.currentPosition == 0
+this.currentPosition < this.maxPosition
+this.str.toString == str.toString
+str.toString == orig(str.toString)
+===========================================================================
+org.apache.xalan.templates.ElemNumber$NumberFormatStringTokenizer.hasMoreTokens():::ENTER
+===========================================================================
+org.apache.xalan.templates.ElemNumber$NumberFormatStringTokenizer.hasMoreTokens():::EXIT
+this.currentPosition == orig(this.currentPosition)
+this.maxPosition == orig(this.maxPosition)
+this.str == orig(this.str)
+(return == false)  <==>  (this.currentPosition == this.maxPosition)
+(return == false)  ==>  (this.currentPosition >= 2)
+(return == true)  <==>  (this.currentPosition < this.maxPosition)
+this.str.toString == orig(this.str.toString)
+===========================================================================
+org.apache.xalan.templates.ElemNumber$NumberFormatStringTokenizer.hasMoreTokens():::EXIT;condition="return == true"
+return == true
+this.currentPosition < this.maxPosition
+===========================================================================
+org.apache.xalan.templates.ElemNumber$NumberFormatStringTokenizer.hasMoreTokens():::EXIT;condition="not(return == true)"
+this.currentPosition == this.maxPosition
+this.currentPosition == orig(this.maxPosition)
+this.currentPosition >= 2
+return == false
+===========================================================================
+org.apache.xalan.templates.ElemNumber$NumberFormatStringTokenizer.isLetterOrDigitAhead():::ENTER
+this.currentPosition >= 1
+this.currentPosition < this.maxPosition
+===========================================================================
+org.apache.xalan.templates.ElemNumber$NumberFormatStringTokenizer.isLetterOrDigitAhead():::EXIT2149
+this.maxPosition one of { 4, 6, 8 }
+this.str.toString one of { "1.1 ", "1.1.1 ", "1.1.1.1 " }
+return == true
+===========================================================================
+org.apache.xalan.templates.ElemNumber$NumberFormatStringTokenizer.isLetterOrDigitAhead():::EXIT2149;condition="return == true"
+===========================================================================
+org.apache.xalan.templates.ElemNumber$NumberFormatStringTokenizer.isLetterOrDigitAhead():::EXIT2154
+return == false
+this.currentPosition - this.maxPosition + 1 == 0
+===========================================================================
+org.apache.xalan.templates.ElemNumber$NumberFormatStringTokenizer.isLetterOrDigitAhead():::EXIT2154;condition="not(return == true)"
+===========================================================================
+org.apache.xalan.templates.ElemNumber$NumberFormatStringTokenizer.isLetterOrDigitAhead():::EXIT
+this.currentPosition == orig(this.currentPosition)
+this.maxPosition == orig(this.maxPosition)
+this.str == orig(this.str)
+(return == false)  ==>  (this.currentPosition - this.maxPosition + 1 == 0)
+(return == false)  ==>  (this.maxPosition >= 2)
+(return == true)  ==>  (this.maxPosition one of { 4, 6, 8 })
+(return == true)  ==>  (this.str.toString one of { "1.1 ", "1.1.1 ", "1.1.1.1 " })
+this.currentPosition >= 1
+this.currentPosition < this.maxPosition
+this.str.toString == orig(this.str.toString)
+===========================================================================
+org.apache.xalan.templates.ElemNumber$NumberFormatStringTokenizer.isLetterOrDigitAhead():::EXIT;condition="return == true"
+this.maxPosition one of { 4, 6, 8 }
+this.str.toString one of { "1.1 ", "1.1.1 ", "1.1.1.1 " }
+return == true
+===========================================================================
+org.apache.xalan.templates.ElemNumber$NumberFormatStringTokenizer.isLetterOrDigitAhead():::EXIT;condition="not(return == true)"
+return == false
+this.currentPosition - this.maxPosition + 1 == 0
+===========================================================================
+org.apache.xalan.templates.ElemNumber$NumberFormatStringTokenizer.nextIsSep():::ENTER
+this.currentPosition one of { 2, 4, 6 }
+this.maxPosition one of { 4, 6, 8 }
+this.str.toString one of { "1.1 ", "1.1.1 ", "1.1.1.1 " }
+this.currentPosition < this.maxPosition
+===========================================================================
+org.apache.xalan.templates.ElemNumber$NumberFormatStringTokenizer.nextIsSep():::EXIT2166
+===========================================================================
+org.apache.xalan.templates.ElemNumber$NumberFormatStringTokenizer.nextIsSep():::EXIT2166;condition="not(return == true)"
+===========================================================================
+org.apache.xalan.templates.ElemNumber$NumberFormatStringTokenizer.nextIsSep():::EXIT
+this.currentPosition == orig(this.currentPosition)
+this.maxPosition == orig(this.maxPosition)
+this.str == orig(this.str)
+this.currentPosition one of { 2, 4, 6 }
+this.maxPosition one of { 4, 6, 8 }
+this.str.toString one of { "1.1 ", "1.1.1 ", "1.1.1.1 " }
+return == false
+this.currentPosition < this.maxPosition
+this.str.toString == orig(this.str.toString)
+===========================================================================
+org.apache.xalan.templates.ElemNumber$NumberFormatStringTokenizer.nextIsSep():::EXIT;condition="not(return == true)"
+===========================================================================
+org.apache.xalan.templates.ElemNumber$NumberFormatStringTokenizer.nextToken():::ENTER
+this.currentPosition < this.maxPosition
+===========================================================================
+org.apache.xalan.templates.ElemNumber$NumberFormatStringTokenizer.nextToken():::EXIT
+this.maxPosition == orig(this.maxPosition)
+this.str == orig(this.str)
+this.currentPosition >= 1
+return != null
+this.currentPosition - orig(this.currentPosition) - 1 == 0
+this.maxPosition > orig(this.currentPosition)
+this.str.toString > return.toString
+this.str.toString == orig(this.str.toString)

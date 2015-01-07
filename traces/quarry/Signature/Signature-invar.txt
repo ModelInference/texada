@@ -1,0 +1,532 @@
+===========================================================================
+java.security.Signature:::CLASS
+java.security.Signature.rsaIds[java.security.Signature.SIGN] == java.security.Signature.rsaIds[java.security.Signature.VERIFY-1]
+java.security.Signature.debug == null
+java.security.Signature.RSA_SIGNATURE != null
+java.security.Signature.RSA_SIGNATURE.toString == "NONEwithRSA"
+java.security.Signature.RSA_CIPHER != null
+java.security.Signature.RSA_CIPHER.toString == "RSA/ECB/PKCS1Padding"
+java.security.Signature.rsaIds != null
+java.security.Signature.rsaIds[] elements != null
+java.security.Signature.rsaIds[].getClass() == [sun.security.jca.ServiceId, sun.security.jca.ServiceId, sun.security.jca.ServiceId, sun.security.jca.ServiceId, sun.security.jca.ServiceId]
+java.security.Signature.rsaIds[].getClass() elements == sun.security.jca.ServiceId.class
+java.security.Signature.rsaIds.getClass() == java.util.Arrays$ArrayList.class
+java.security.Signature.signatureInfo != null
+java.security.Signature.signatureInfo.getClass() == java.util.concurrent.ConcurrentHashMap.class
+size(java.security.Signature.rsaIds[]) == 5
+java.security.Signature.RSA_SIGNATURE.toString < java.security.Signature.RSA_CIPHER.toString
+java.security.Signature.rsaIds.getClass() != java.security.Signature.signatureInfo.getClass()
+===========================================================================
+java.security.Signature:::OBJECT
+this.getClass() == java.security.Signature$Delegate.class
+this.algorithm != null
+this.state one of { 0, 3 }
+this.getClass() != this.provider.getClass()
+this.getClass() != java.security.Signature.rsaIds.getClass()
+this.getClass() != java.security.Signature.signatureInfo.getClass()
+this.algorithm.toString != java.security.Signature.RSA_SIGNATURE.toString
+this.algorithm.toString != java.security.Signature.RSA_CIPHER.toString
+this.provider.getClass() != java.security.Signature.rsaIds.getClass()
+this.provider.getClass() != java.security.Signature.signatureInfo.getClass()
+java.security.Signature.UNINITIALIZED <= this.state
+java.security.Signature.SIGN != this.state
+java.security.Signature.VERIFY >= this.state
+this.state < size(java.security.Signature.rsaIds[])-1
+===========================================================================
+java.security.Signature.Signature(java.lang.String):::ENTER
+arg0 != null
+===========================================================================
+java.security.Signature.Signature(java.lang.String):::EXIT
+this.algorithm == orig(arg0)
+java.security.Signature.UNINITIALIZED == this.state
+this.provider == null
+this.algorithm.toString == arg0.toString
+java.security.Signature.RSA_SIGNATURE.toString != arg0.toString
+java.security.Signature.RSA_CIPHER.toString != arg0.toString
+arg0.toString == orig(arg0.toString)
+===========================================================================
+java.security.Signature.getInstance(java.lang.String):::ENTER
+arg0 != null
+java.security.Signature.RSA_SIGNATURE.toString != arg0.toString
+java.security.Signature.RSA_CIPHER.toString != arg0.toString
+===========================================================================
+java.security.Signature.getInstance(java.lang.String):::EXIT201
+===========================================================================
+java.security.Signature.getInstance(java.lang.String):::EXIT
+java.security.Signature.debug == orig(java.security.Signature.debug)
+java.security.Signature.UNINITIALIZED == return.state
+java.security.Signature.RSA_SIGNATURE == orig(java.security.Signature.RSA_SIGNATURE)
+java.security.Signature.RSA_CIPHER == orig(java.security.Signature.RSA_CIPHER)
+java.security.Signature.rsaIds == orig(java.security.Signature.rsaIds)
+java.security.Signature.rsaIds[] == orig(java.security.Signature.rsaIds[])
+java.security.Signature.signatureInfo == orig(java.security.Signature.signatureInfo)
+return.algorithm == orig(arg0)
+java.security.Signature.rsaIds[java.security.Signature.SIGN] == orig(java.security.Signature.rsaIds[post(java.security.Signature.VERIFY)-1])
+return != null
+return.getClass() == java.security.Signature$Delegate.class
+return.algorithm != null
+return.provider == null
+java.security.Signature.RSA_SIGNATURE.toString != arg0.toString
+java.security.Signature.RSA_SIGNATURE.toString == orig(java.security.Signature.RSA_SIGNATURE.toString)
+java.security.Signature.RSA_CIPHER.toString != arg0.toString
+java.security.Signature.RSA_CIPHER.toString == orig(java.security.Signature.RSA_CIPHER.toString)
+java.security.Signature.rsaIds.getClass() != return.getClass()
+java.security.Signature.rsaIds.getClass() == orig(java.security.Signature.rsaIds.getClass())
+java.security.Signature.signatureInfo.getClass() != return.getClass()
+java.security.Signature.signatureInfo.getClass() == orig(java.security.Signature.signatureInfo.getClass())
+arg0.toString == return.algorithm.toString
+arg0.toString == orig(arg0.toString)
+===========================================================================
+java.security.Signature.initVerify(java.security.PublicKey):::ENTER
+java.security.Signature.UNINITIALIZED == this.state
+this.provider == null
+arg0 != null
+this.getClass() != arg0.getClass()
+java.security.Signature.rsaIds.getClass() != arg0.getClass()
+java.security.Signature.signatureInfo.getClass() != arg0.getClass()
+===========================================================================
+java.security.Signature.initVerify(java.security.PublicKey):::EXIT
+java.security.Signature.debug == orig(java.security.Signature.debug)
+this.algorithm == orig(this.algorithm)
+java.security.Signature.VERIFY == this.state
+java.security.Signature.RSA_SIGNATURE == orig(java.security.Signature.RSA_SIGNATURE)
+java.security.Signature.RSA_CIPHER == orig(java.security.Signature.RSA_CIPHER)
+java.security.Signature.rsaIds == orig(java.security.Signature.rsaIds)
+java.security.Signature.rsaIds[] == orig(java.security.Signature.rsaIds[])
+java.security.Signature.signatureInfo == orig(java.security.Signature.signatureInfo)
+java.security.Signature.rsaIds[java.security.Signature.SIGN] == orig(java.security.Signature.rsaIds[post(java.security.Signature.VERIFY)-1])
+java.security.Signature.rsaIds[java.security.Signature.SIGN] == java.security.Signature.rsaIds[this.state-1]
+java.security.Signature.rsaIds[java.security.Signature.SIGN] == orig(java.security.Signature.rsaIds[post(this.state)-1])
+this.provider != null
+this.algorithm.toString == orig(this.algorithm.toString)
+this.provider.getClass() != orig(this.getClass())
+this.provider.getClass() != orig(arg0.getClass())
+java.security.Signature.RSA_SIGNATURE.toString == orig(java.security.Signature.RSA_SIGNATURE.toString)
+java.security.Signature.RSA_CIPHER.toString == orig(java.security.Signature.RSA_CIPHER.toString)
+java.security.Signature.rsaIds.getClass() != orig(this.getClass())
+java.security.Signature.rsaIds.getClass() == orig(java.security.Signature.rsaIds.getClass())
+java.security.Signature.rsaIds.getClass() != orig(arg0.getClass())
+java.security.Signature.signatureInfo.getClass() != orig(this.getClass())
+java.security.Signature.signatureInfo.getClass() == orig(java.security.Signature.signatureInfo.getClass())
+java.security.Signature.signatureInfo.getClass() != orig(arg0.getClass())
+===========================================================================
+java.security.Signature.isSpi(java.security.Provider$Service):::ENTER
+arg0 != null
+===========================================================================
+java.security.Signature.isSpi(java.security.Provider$Service):::EXIT273
+===========================================================================
+java.security.Signature.isSpi(java.security.Provider$Service):::EXIT273;condition="return == true"
+===========================================================================
+java.security.Signature.isSpi(java.security.Provider$Service):::EXIT
+java.security.Signature.debug == orig(java.security.Signature.debug)
+java.security.Signature.RSA_SIGNATURE == orig(java.security.Signature.RSA_SIGNATURE)
+java.security.Signature.RSA_CIPHER == orig(java.security.Signature.RSA_CIPHER)
+java.security.Signature.rsaIds == orig(java.security.Signature.rsaIds)
+java.security.Signature.rsaIds[] == orig(java.security.Signature.rsaIds[])
+java.security.Signature.signatureInfo == orig(java.security.Signature.signatureInfo)
+java.security.Signature.rsaIds[java.security.Signature.SIGN] == orig(java.security.Signature.rsaIds[post(java.security.Signature.VERIFY)-1])
+return == true
+java.security.Signature.RSA_SIGNATURE.toString == orig(java.security.Signature.RSA_SIGNATURE.toString)
+java.security.Signature.RSA_CIPHER.toString == orig(java.security.Signature.RSA_CIPHER.toString)
+java.security.Signature.rsaIds.getClass() == orig(java.security.Signature.rsaIds.getClass())
+java.security.Signature.signatureInfo.getClass() == orig(java.security.Signature.signatureInfo.getClass())
+===========================================================================
+java.security.Signature.isSpi(java.security.Provider$Service):::EXIT;condition="return == true"
+===========================================================================
+java.security.Signature.update(byte[]):::ENTER
+java.security.Signature.VERIFY == this.state
+java.security.Signature.rsaIds[java.security.Signature.SIGN] == java.security.Signature.rsaIds[this.state-1]
+arg0[java.security.Signature.SIGN] == arg0[java.security.Signature.VERIFY-1]
+arg0[java.security.Signature.SIGN] == arg0[this.state-1]
+this.provider != null
+arg0 != null
+arg0[java.security.Signature.UNINITIALIZED] one of { 67, 83 }
+arg0[java.security.Signature.SIGN] one of { 61, 103 }
+arg0[java.security.Signature.SIGN-1] one of { 105, 117 }
+arg0[java.security.Signature.VERIFY] one of { 70, 110 }
+arg0[] elements > java.security.Signature.UNINITIALIZED
+java.security.Signature.UNINITIALIZED < size(arg0[])-1
+java.security.Signature.UNINITIALIZED < arg0[java.security.Signature.UNINITIALIZED]
+java.security.Signature.UNINITIALIZED < arg0[java.security.Signature.SIGN]
+java.security.Signature.UNINITIALIZED < arg0[java.security.Signature.SIGN-1]
+java.security.Signature.UNINITIALIZED < arg0[java.security.Signature.VERIFY]
+arg0[] elements > java.security.Signature.SIGN
+java.security.Signature.SIGN < size(arg0[])-1
+java.security.Signature.SIGN < arg0[java.security.Signature.UNINITIALIZED]
+java.security.Signature.SIGN < arg0[java.security.Signature.SIGN]
+java.security.Signature.SIGN < arg0[java.security.Signature.SIGN-1]
+java.security.Signature.SIGN < arg0[java.security.Signature.VERIFY]
+arg0[] elements > java.security.Signature.VERIFY
+java.security.Signature.VERIFY < size(arg0[])-1
+java.security.Signature.VERIFY < arg0[java.security.Signature.UNINITIALIZED]
+java.security.Signature.VERIFY < arg0[java.security.Signature.SIGN]
+java.security.Signature.VERIFY < arg0[java.security.Signature.SIGN-1]
+java.security.Signature.VERIFY < arg0[java.security.Signature.VERIFY]
+arg0[] elements > size(java.security.Signature.rsaIds[])
+size(java.security.Signature.rsaIds[]) < size(arg0[])-1
+size(java.security.Signature.rsaIds[]) < arg0[java.security.Signature.UNINITIALIZED]
+size(java.security.Signature.rsaIds[]) < arg0[java.security.Signature.SIGN]
+size(java.security.Signature.rsaIds[]) < arg0[java.security.Signature.SIGN-1]
+size(java.security.Signature.rsaIds[]) < arg0[java.security.Signature.VERIFY]
+size(arg0[]) != arg0[java.security.Signature.UNINITIALIZED]
+size(arg0[]) != arg0[java.security.Signature.SIGN]
+size(arg0[]) != arg0[java.security.Signature.SIGN-1]
+size(arg0[]) != arg0[java.security.Signature.VERIFY]
+size(arg0[])-1 != arg0[java.security.Signature.UNINITIALIZED]
+size(arg0[])-1 != arg0[java.security.Signature.SIGN]
+size(arg0[])-1 != arg0[java.security.Signature.SIGN-1]
+size(arg0[])-1 != arg0[java.security.Signature.VERIFY]
+arg0[java.security.Signature.UNINITIALIZED] != arg0[java.security.Signature.SIGN]
+arg0[java.security.Signature.UNINITIALIZED] < arg0[java.security.Signature.SIGN-1]
+arg0[java.security.Signature.UNINITIALIZED] < arg0[java.security.Signature.VERIFY]
+arg0[java.security.Signature.SIGN] < arg0[java.security.Signature.SIGN-1]
+arg0[java.security.Signature.SIGN] < arg0[java.security.Signature.VERIFY]
+arg0[java.security.Signature.SIGN-1] != arg0[java.security.Signature.VERIFY]
+===========================================================================
+java.security.Signature.update(byte[]):::EXIT
+java.security.Signature.debug == orig(java.security.Signature.debug)
+this.algorithm == orig(this.algorithm)
+this.provider == orig(this.provider)
+java.security.Signature.VERIFY == this.state
+java.security.Signature.RSA_SIGNATURE == orig(java.security.Signature.RSA_SIGNATURE)
+java.security.Signature.RSA_CIPHER == orig(java.security.Signature.RSA_CIPHER)
+java.security.Signature.rsaIds == orig(java.security.Signature.rsaIds)
+java.security.Signature.rsaIds[] == orig(java.security.Signature.rsaIds[])
+java.security.Signature.signatureInfo == orig(java.security.Signature.signatureInfo)
+arg0[] == orig(arg0[])
+java.security.Signature.rsaIds[java.security.Signature.SIGN] == orig(java.security.Signature.rsaIds[post(java.security.Signature.VERIFY)-1])
+java.security.Signature.rsaIds[java.security.Signature.SIGN] == java.security.Signature.rsaIds[this.state-1]
+java.security.Signature.rsaIds[java.security.Signature.SIGN] == orig(java.security.Signature.rsaIds[post(this.state)-1])
+java.security.Signature.rsaIds[java.security.Signature.SIGN] == java.security.Signature.rsaIds[orig(this.state)-1]
+java.security.Signature.rsaIds[java.security.Signature.SIGN] == orig(java.security.Signature.rsaIds[this.state-1])
+arg0[java.security.Signature.SIGN] == arg0[java.security.Signature.VERIFY-1]
+arg0[java.security.Signature.SIGN] == orig(arg0[post(java.security.Signature.VERIFY)-1])
+arg0[java.security.Signature.SIGN] == arg0[this.state-1]
+arg0[java.security.Signature.SIGN] == orig(arg0[post(this.state)-1])
+arg0[java.security.Signature.SIGN] == arg0[orig(this.state)-1]
+arg0[java.security.Signature.SIGN] == orig(arg0[this.state-1])
+this.provider != null
+arg0[java.security.Signature.UNINITIALIZED] one of { 67, 83 }
+arg0[java.security.Signature.SIGN] one of { 61, 103 }
+arg0[java.security.Signature.SIGN-1] one of { 105, 117 }
+arg0[java.security.Signature.VERIFY] one of { 70, 110 }
+this.algorithm.toString == orig(this.algorithm.toString)
+this.provider.getClass() != orig(this.getClass())
+this.provider.getClass() == orig(this.provider.getClass())
+arg0[] elements > java.security.Signature.UNINITIALIZED
+java.security.Signature.UNINITIALIZED < size(arg0[])-1
+java.security.Signature.UNINITIALIZED < arg0[java.security.Signature.UNINITIALIZED]
+java.security.Signature.UNINITIALIZED < arg0[java.security.Signature.SIGN]
+java.security.Signature.UNINITIALIZED < arg0[java.security.Signature.SIGN-1]
+java.security.Signature.UNINITIALIZED < arg0[java.security.Signature.VERIFY]
+arg0[] elements > java.security.Signature.SIGN
+java.security.Signature.SIGN < size(arg0[])-1
+java.security.Signature.SIGN < arg0[java.security.Signature.UNINITIALIZED]
+java.security.Signature.SIGN < arg0[java.security.Signature.SIGN]
+java.security.Signature.SIGN < arg0[java.security.Signature.SIGN-1]
+java.security.Signature.SIGN < arg0[java.security.Signature.VERIFY]
+arg0[] elements > java.security.Signature.VERIFY
+java.security.Signature.VERIFY < size(arg0[])-1
+java.security.Signature.VERIFY < arg0[java.security.Signature.UNINITIALIZED]
+java.security.Signature.VERIFY < arg0[java.security.Signature.SIGN]
+java.security.Signature.VERIFY < arg0[java.security.Signature.SIGN-1]
+java.security.Signature.VERIFY < arg0[java.security.Signature.VERIFY]
+java.security.Signature.RSA_SIGNATURE.toString == orig(java.security.Signature.RSA_SIGNATURE.toString)
+java.security.Signature.RSA_CIPHER.toString == orig(java.security.Signature.RSA_CIPHER.toString)
+java.security.Signature.rsaIds.getClass() != orig(this.getClass())
+java.security.Signature.rsaIds.getClass() == orig(java.security.Signature.rsaIds.getClass())
+java.security.Signature.signatureInfo.getClass() != orig(this.getClass())
+java.security.Signature.signatureInfo.getClass() == orig(java.security.Signature.signatureInfo.getClass())
+arg0[] elements > size(java.security.Signature.rsaIds[])
+size(java.security.Signature.rsaIds[]) < size(arg0[])-1
+size(java.security.Signature.rsaIds[]) < arg0[java.security.Signature.UNINITIALIZED]
+size(java.security.Signature.rsaIds[]) < arg0[java.security.Signature.SIGN]
+size(java.security.Signature.rsaIds[]) < arg0[java.security.Signature.SIGN-1]
+size(java.security.Signature.rsaIds[]) < arg0[java.security.Signature.VERIFY]
+size(arg0[])-1 != arg0[java.security.Signature.UNINITIALIZED]
+size(arg0[])-1 != arg0[java.security.Signature.SIGN]
+size(arg0[])-1 != arg0[java.security.Signature.SIGN-1]
+size(arg0[])-1 != arg0[java.security.Signature.VERIFY]
+orig(size(arg0[])) != arg0[java.security.Signature.UNINITIALIZED]
+orig(size(arg0[])) != arg0[java.security.Signature.SIGN]
+orig(size(arg0[])) != arg0[java.security.Signature.SIGN-1]
+orig(size(arg0[])) != arg0[java.security.Signature.VERIFY]
+arg0[java.security.Signature.UNINITIALIZED] != arg0[java.security.Signature.SIGN]
+arg0[java.security.Signature.UNINITIALIZED] < arg0[java.security.Signature.SIGN-1]
+arg0[java.security.Signature.UNINITIALIZED] < arg0[java.security.Signature.VERIFY]
+arg0[java.security.Signature.SIGN] < arg0[java.security.Signature.SIGN-1]
+arg0[java.security.Signature.SIGN] < arg0[java.security.Signature.VERIFY]
+arg0[java.security.Signature.SIGN-1] != arg0[java.security.Signature.VERIFY]
+===========================================================================
+java.security.Signature.update(byte[], int, int):::ENTER
+java.security.Signature.UNINITIALIZED == arg1
+java.security.Signature.VERIFY == this.state
+arg2 == size(arg0[])
+java.security.Signature.rsaIds[java.security.Signature.SIGN] == java.security.Signature.rsaIds[this.state-1]
+arg0[java.security.Signature.SIGN] == arg0[java.security.Signature.VERIFY-1]
+arg0[java.security.Signature.SIGN] == arg0[this.state-1]
+this.provider != null
+arg0 != null
+arg0[java.security.Signature.UNINITIALIZED] one of { 48, 67, 83 }
+arg0[java.security.Signature.SIGN] >= 1
+arg0[java.security.Signature.SIGN-1] one of { -126, 105, 117 }
+java.security.Signature.UNINITIALIZED < size(arg0[])-1
+java.security.Signature.UNINITIALIZED < arg0[java.security.Signature.UNINITIALIZED]
+java.security.Signature.UNINITIALIZED < arg0[java.security.Signature.SIGN]
+java.security.Signature.UNINITIALIZED != arg0[java.security.Signature.SIGN-1]
+java.security.Signature.UNINITIALIZED != arg0[java.security.Signature.VERIFY]
+java.security.Signature.UNINITIALIZED != arg0[arg2-1]
+java.security.Signature.SIGN < size(arg0[])-1
+java.security.Signature.SIGN < arg0[java.security.Signature.UNINITIALIZED]
+java.security.Signature.SIGN != arg0[java.security.Signature.SIGN-1]
+java.security.Signature.SIGN != arg0[java.security.Signature.VERIFY]
+java.security.Signature.SIGN != arg0[arg2-1]
+java.security.Signature.VERIFY < size(arg0[])-1
+java.security.Signature.VERIFY < arg0[java.security.Signature.UNINITIALIZED]
+java.security.Signature.VERIFY != arg0[java.security.Signature.SIGN-1]
+java.security.Signature.VERIFY != arg0[java.security.Signature.VERIFY]
+java.security.Signature.VERIFY != arg0[arg2-1]
+arg2 != arg0[java.security.Signature.UNINITIALIZED]
+arg2 != arg0[java.security.Signature.SIGN]
+arg2 != arg0[java.security.Signature.SIGN-1]
+arg2 != arg0[java.security.Signature.VERIFY]
+size(java.security.Signature.rsaIds[]) < size(arg0[])-1
+size(java.security.Signature.rsaIds[]) < arg0[java.security.Signature.UNINITIALIZED]
+size(java.security.Signature.rsaIds[]) != arg0[java.security.Signature.SIGN]
+size(java.security.Signature.rsaIds[]) != arg0[java.security.Signature.SIGN-1]
+size(java.security.Signature.rsaIds[]) != arg0[java.security.Signature.VERIFY]
+size(java.security.Signature.rsaIds[]) != arg0[arg2-1]
+size(java.security.Signature.rsaIds[])-1 != arg0[java.security.Signature.SIGN]
+size(java.security.Signature.rsaIds[])-1 != arg0[java.security.Signature.SIGN-1]
+size(java.security.Signature.rsaIds[])-1 != arg0[java.security.Signature.VERIFY]
+size(java.security.Signature.rsaIds[])-1 != arg0[arg2-1]
+size(arg0[])-1 != arg0[java.security.Signature.UNINITIALIZED]
+size(arg0[])-1 != arg0[java.security.Signature.SIGN]
+size(arg0[])-1 != arg0[java.security.Signature.SIGN-1]
+size(arg0[])-1 != arg0[java.security.Signature.VERIFY]
+size(arg0[])-1 > arg0[arg2-1]
+arg0[java.security.Signature.UNINITIALIZED] != arg0[java.security.Signature.SIGN]
+arg0[java.security.Signature.UNINITIALIZED] != arg0[java.security.Signature.SIGN-1]
+arg0[java.security.Signature.UNINITIALIZED] != arg0[java.security.Signature.VERIFY]
+arg0[java.security.Signature.UNINITIALIZED] > arg0[arg2-1]
+arg0[java.security.Signature.SIGN] != arg0[java.security.Signature.SIGN-1]
+arg0[java.security.Signature.SIGN] != arg0[java.security.Signature.VERIFY]
+arg0[java.security.Signature.SIGN] >= arg0[arg2-1]
+arg0[java.security.Signature.SIGN-1] != arg0[java.security.Signature.VERIFY]
+arg0[java.security.Signature.VERIFY] != arg0[arg2-1]
+===========================================================================
+java.security.Signature.update(byte[], int, int):::EXIT
+java.security.Signature.debug == orig(java.security.Signature.debug)
+this.algorithm == orig(this.algorithm)
+this.provider == orig(this.provider)
+java.security.Signature.VERIFY == this.state
+java.security.Signature.RSA_SIGNATURE == orig(java.security.Signature.RSA_SIGNATURE)
+java.security.Signature.RSA_CIPHER == orig(java.security.Signature.RSA_CIPHER)
+java.security.Signature.rsaIds == orig(java.security.Signature.rsaIds)
+java.security.Signature.rsaIds[] == orig(java.security.Signature.rsaIds[])
+java.security.Signature.signatureInfo == orig(java.security.Signature.signatureInfo)
+arg0[] == orig(arg0[])
+java.security.Signature.rsaIds[java.security.Signature.SIGN] == orig(java.security.Signature.rsaIds[post(java.security.Signature.VERIFY)-1])
+java.security.Signature.rsaIds[java.security.Signature.SIGN] == java.security.Signature.rsaIds[this.state-1]
+java.security.Signature.rsaIds[java.security.Signature.SIGN] == orig(java.security.Signature.rsaIds[post(this.state)-1])
+java.security.Signature.rsaIds[java.security.Signature.SIGN] == java.security.Signature.rsaIds[orig(this.state)-1]
+java.security.Signature.rsaIds[java.security.Signature.SIGN] == orig(java.security.Signature.rsaIds[this.state-1])
+arg0[java.security.Signature.SIGN] == arg0[java.security.Signature.VERIFY-1]
+arg0[java.security.Signature.SIGN] == orig(arg0[post(java.security.Signature.VERIFY)-1])
+arg0[java.security.Signature.SIGN] == arg0[this.state-1]
+arg0[java.security.Signature.SIGN] == orig(arg0[post(this.state)-1])
+arg0[java.security.Signature.SIGN] == arg0[orig(this.state)-1]
+arg0[java.security.Signature.SIGN] == orig(arg0[this.state-1])
+this.provider != null
+arg0[java.security.Signature.UNINITIALIZED] one of { 48, 67, 83 }
+arg0[java.security.Signature.SIGN] >= 1
+arg0[java.security.Signature.SIGN-1] one of { -126, 105, 117 }
+this.algorithm.toString == orig(this.algorithm.toString)
+this.provider.getClass() != orig(this.getClass())
+this.provider.getClass() == orig(this.provider.getClass())
+java.security.Signature.UNINITIALIZED < size(arg0[])-1
+java.security.Signature.UNINITIALIZED < arg0[java.security.Signature.UNINITIALIZED]
+java.security.Signature.UNINITIALIZED < arg0[java.security.Signature.SIGN]
+java.security.Signature.UNINITIALIZED != arg0[java.security.Signature.SIGN-1]
+java.security.Signature.UNINITIALIZED != arg0[java.security.Signature.VERIFY]
+java.security.Signature.UNINITIALIZED != arg0[orig(arg2)-1]
+java.security.Signature.SIGN < size(arg0[])-1
+java.security.Signature.SIGN < arg0[java.security.Signature.UNINITIALIZED]
+java.security.Signature.SIGN != arg0[java.security.Signature.SIGN-1]
+java.security.Signature.SIGN != arg0[java.security.Signature.VERIFY]
+java.security.Signature.SIGN != arg0[orig(arg2)-1]
+java.security.Signature.VERIFY < size(arg0[])-1
+java.security.Signature.VERIFY < arg0[java.security.Signature.UNINITIALIZED]
+java.security.Signature.VERIFY != arg0[java.security.Signature.SIGN-1]
+java.security.Signature.VERIFY != arg0[java.security.Signature.VERIFY]
+java.security.Signature.VERIFY != arg0[orig(arg2)-1]
+java.security.Signature.RSA_SIGNATURE.toString == orig(java.security.Signature.RSA_SIGNATURE.toString)
+java.security.Signature.RSA_CIPHER.toString == orig(java.security.Signature.RSA_CIPHER.toString)
+java.security.Signature.rsaIds.getClass() != orig(this.getClass())
+java.security.Signature.rsaIds.getClass() == orig(java.security.Signature.rsaIds.getClass())
+java.security.Signature.signatureInfo.getClass() != orig(this.getClass())
+java.security.Signature.signatureInfo.getClass() == orig(java.security.Signature.signatureInfo.getClass())
+orig(arg2) != arg0[java.security.Signature.UNINITIALIZED]
+orig(arg2) != arg0[java.security.Signature.SIGN]
+orig(arg2) != arg0[java.security.Signature.SIGN-1]
+orig(arg2) != arg0[java.security.Signature.VERIFY]
+size(java.security.Signature.rsaIds[]) < size(arg0[])-1
+size(java.security.Signature.rsaIds[]) < arg0[java.security.Signature.UNINITIALIZED]
+size(java.security.Signature.rsaIds[]) != arg0[java.security.Signature.SIGN]
+size(java.security.Signature.rsaIds[]) != arg0[java.security.Signature.SIGN-1]
+size(java.security.Signature.rsaIds[]) != arg0[java.security.Signature.VERIFY]
+size(java.security.Signature.rsaIds[]) != arg0[orig(arg2)-1]
+size(java.security.Signature.rsaIds[])-1 != arg0[java.security.Signature.SIGN]
+size(java.security.Signature.rsaIds[])-1 != arg0[java.security.Signature.SIGN-1]
+size(java.security.Signature.rsaIds[])-1 != arg0[java.security.Signature.VERIFY]
+size(java.security.Signature.rsaIds[])-1 != arg0[orig(arg2)-1]
+size(arg0[])-1 != arg0[java.security.Signature.UNINITIALIZED]
+size(arg0[])-1 != arg0[java.security.Signature.SIGN]
+size(arg0[])-1 != arg0[java.security.Signature.SIGN-1]
+size(arg0[])-1 != arg0[java.security.Signature.VERIFY]
+size(arg0[])-1 > arg0[orig(arg2)-1]
+arg0[java.security.Signature.UNINITIALIZED] != arg0[java.security.Signature.SIGN]
+arg0[java.security.Signature.UNINITIALIZED] != arg0[java.security.Signature.SIGN-1]
+arg0[java.security.Signature.UNINITIALIZED] != arg0[java.security.Signature.VERIFY]
+arg0[java.security.Signature.UNINITIALIZED] > arg0[orig(arg2)-1]
+arg0[java.security.Signature.SIGN] != arg0[java.security.Signature.SIGN-1]
+arg0[java.security.Signature.SIGN] != arg0[java.security.Signature.VERIFY]
+arg0[java.security.Signature.SIGN] >= arg0[orig(arg2)-1]
+arg0[java.security.Signature.SIGN-1] != arg0[java.security.Signature.VERIFY]
+arg0[java.security.Signature.VERIFY] != arg0[orig(arg2)-1]
+===========================================================================
+java.security.Signature.verify(byte[]):::ENTER
+java.security.Signature.VERIFY == this.state
+java.security.Signature.rsaIds[java.security.Signature.SIGN] == java.security.Signature.rsaIds[this.state-1]
+arg0[java.security.Signature.SIGN] == arg0[java.security.Signature.VERIFY-1]
+arg0[java.security.Signature.SIGN] == arg0[this.state-1]
+this.provider != null
+arg0 != null
+java.security.Signature.UNINITIALIZED < size(arg0[])-1
+java.security.Signature.UNINITIALIZED < arg0[java.security.Signature.UNINITIALIZED]
+java.security.Signature.UNINITIALIZED != arg0[java.security.Signature.SIGN]
+java.security.Signature.UNINITIALIZED != arg0[java.security.Signature.SIGN-1]
+java.security.Signature.UNINITIALIZED != arg0[java.security.Signature.VERIFY]
+size(arg0[]) % java.security.Signature.SIGN == 0
+java.security.Signature.SIGN < size(arg0[])-1
+java.security.Signature.SIGN < arg0[java.security.Signature.UNINITIALIZED]
+java.security.Signature.SIGN != arg0[java.security.Signature.SIGN-1]
+java.security.Signature.SIGN != arg0[java.security.Signature.VERIFY]
+java.security.Signature.VERIFY < size(arg0[])-1
+java.security.Signature.VERIFY < arg0[java.security.Signature.UNINITIALIZED]
+java.security.Signature.VERIFY != arg0[java.security.Signature.SIGN]
+java.security.Signature.VERIFY != arg0[java.security.Signature.SIGN-1]
+java.security.Signature.VERIFY != arg0[java.security.Signature.VERIFY]
+size(java.security.Signature.rsaIds[]) < size(arg0[])-1
+size(java.security.Signature.rsaIds[]) < arg0[java.security.Signature.UNINITIALIZED]
+size(java.security.Signature.rsaIds[]) != arg0[java.security.Signature.SIGN]
+size(java.security.Signature.rsaIds[]) != arg0[java.security.Signature.SIGN-1]
+size(java.security.Signature.rsaIds[]) != arg0[java.security.Signature.VERIFY]
+size(java.security.Signature.rsaIds[])-1 != arg0[java.security.Signature.SIGN]
+size(java.security.Signature.rsaIds[])-1 != arg0[java.security.Signature.SIGN-1]
+size(java.security.Signature.rsaIds[])-1 != arg0[java.security.Signature.VERIFY]
+size(arg0[]) != arg0[java.security.Signature.VERIFY]
+size(arg0[])-1 != arg0[java.security.Signature.UNINITIALIZED]
+size(arg0[])-1 > arg0[java.security.Signature.SIGN]
+size(arg0[])-1 > arg0[java.security.Signature.SIGN-1]
+size(arg0[])-1 != arg0[java.security.Signature.VERIFY]
+arg0[java.security.Signature.UNINITIALIZED] != arg0[java.security.Signature.SIGN]
+arg0[java.security.Signature.UNINITIALIZED] > arg0[java.security.Signature.SIGN-1]
+arg0[java.security.Signature.UNINITIALIZED] != arg0[java.security.Signature.VERIFY]
+arg0[java.security.Signature.SIGN] != arg0[java.security.Signature.SIGN-1]
+arg0[java.security.Signature.SIGN] != arg0[java.security.Signature.VERIFY]
+arg0[java.security.Signature.SIGN-1] != arg0[java.security.Signature.VERIFY]
+===========================================================================
+java.security.Signature.verify(byte[]):::EXIT
+java.security.Signature.debug == orig(java.security.Signature.debug)
+this.algorithm == orig(this.algorithm)
+this.provider == orig(this.provider)
+java.security.Signature.VERIFY == this.state
+java.security.Signature.RSA_SIGNATURE == orig(java.security.Signature.RSA_SIGNATURE)
+java.security.Signature.RSA_CIPHER == orig(java.security.Signature.RSA_CIPHER)
+java.security.Signature.rsaIds == orig(java.security.Signature.rsaIds)
+java.security.Signature.rsaIds[] == orig(java.security.Signature.rsaIds[])
+java.security.Signature.signatureInfo == orig(java.security.Signature.signatureInfo)
+arg0[] == orig(arg0[])
+java.security.Signature.rsaIds[java.security.Signature.SIGN] == orig(java.security.Signature.rsaIds[post(java.security.Signature.VERIFY)-1])
+java.security.Signature.rsaIds[java.security.Signature.SIGN] == java.security.Signature.rsaIds[this.state-1]
+java.security.Signature.rsaIds[java.security.Signature.SIGN] == orig(java.security.Signature.rsaIds[post(this.state)-1])
+java.security.Signature.rsaIds[java.security.Signature.SIGN] == java.security.Signature.rsaIds[orig(this.state)-1]
+java.security.Signature.rsaIds[java.security.Signature.SIGN] == orig(java.security.Signature.rsaIds[this.state-1])
+arg0[java.security.Signature.SIGN] == arg0[java.security.Signature.VERIFY-1]
+arg0[java.security.Signature.SIGN] == orig(arg0[post(java.security.Signature.VERIFY)-1])
+arg0[java.security.Signature.SIGN] == arg0[this.state-1]
+arg0[java.security.Signature.SIGN] == orig(arg0[post(this.state)-1])
+arg0[java.security.Signature.SIGN] == arg0[orig(this.state)-1]
+arg0[java.security.Signature.SIGN] == orig(arg0[this.state-1])
+(return == false)  <==>  (arg0[java.security.Signature.SIGN] == -100)
+(return == false)  <==>  (arg0[java.security.Signature.VERIFY] == 84)
+(return == false)  ==>  (arg0[] == [47, -27, -100, 84, 92, -93, -6, 37, -27, 17, 83, 85, 65, -77, 78, 57, 73, 86, -102, 89, -105, 26, 35, 74, 41, 121, -56, 116, -41, 28, -43, -107, 50, -117, -30, 86, -45, 57, -91, 125, -98, -30, 83, -9, -111, 98, 17, 4, 36, 28, 29, -83, 74, 50, -120, 99, -122, 46, -114, -23, -117, -94, 115, 0])
+(return == false)  ==>  (arg0[java.security.Signature.SIGN-1] == -27)
+(return == false)  ==>  (arg0[java.security.Signature.UNINITIALIZED] == 47)
+(return == false)  ==>  (java.security.Signature.UNINITIALIZED in arg0[])
+(return == false)  ==>  (orig(size(arg0[])) == 64)
+(return == false)  ==>  (size(java.security.Signature.rsaIds[])-1 in arg0[])
+(return == false)  ==>  (this.algorithm.toString == "MD5withRSA")
+(return == false)  ==>  (this.provider.getClass() == sun.security.rsa.SunRsaSign.class)
+(return == true)  <==>  (size(arg0[])-1 > arg0[java.security.Signature.VERIFY])
+this.provider != null
+this.algorithm.toString == orig(this.algorithm.toString)
+this.provider.getClass() != orig(this.getClass())
+this.provider.getClass() == orig(this.provider.getClass())
+java.security.Signature.UNINITIALIZED < size(arg0[])-1
+java.security.Signature.UNINITIALIZED < arg0[java.security.Signature.UNINITIALIZED]
+java.security.Signature.UNINITIALIZED != arg0[java.security.Signature.SIGN]
+java.security.Signature.UNINITIALIZED != arg0[java.security.Signature.SIGN-1]
+java.security.Signature.UNINITIALIZED != arg0[java.security.Signature.VERIFY]
+java.security.Signature.SIGN < size(arg0[])-1
+java.security.Signature.SIGN < arg0[java.security.Signature.UNINITIALIZED]
+java.security.Signature.SIGN != arg0[java.security.Signature.SIGN-1]
+java.security.Signature.SIGN != arg0[java.security.Signature.VERIFY]
+java.security.Signature.VERIFY < size(arg0[])-1
+java.security.Signature.VERIFY < arg0[java.security.Signature.UNINITIALIZED]
+java.security.Signature.VERIFY != arg0[java.security.Signature.SIGN]
+java.security.Signature.VERIFY != arg0[java.security.Signature.SIGN-1]
+java.security.Signature.VERIFY != arg0[java.security.Signature.VERIFY]
+java.security.Signature.RSA_SIGNATURE.toString == orig(java.security.Signature.RSA_SIGNATURE.toString)
+java.security.Signature.RSA_CIPHER.toString == orig(java.security.Signature.RSA_CIPHER.toString)
+java.security.Signature.rsaIds.getClass() != orig(this.getClass())
+java.security.Signature.rsaIds.getClass() == orig(java.security.Signature.rsaIds.getClass())
+java.security.Signature.signatureInfo.getClass() != orig(this.getClass())
+java.security.Signature.signatureInfo.getClass() == orig(java.security.Signature.signatureInfo.getClass())
+size(java.security.Signature.rsaIds[]) < size(arg0[])-1
+size(java.security.Signature.rsaIds[]) < arg0[java.security.Signature.UNINITIALIZED]
+size(java.security.Signature.rsaIds[]) != arg0[java.security.Signature.SIGN]
+size(java.security.Signature.rsaIds[]) != arg0[java.security.Signature.SIGN-1]
+size(java.security.Signature.rsaIds[]) != arg0[java.security.Signature.VERIFY]
+size(java.security.Signature.rsaIds[])-1 != arg0[java.security.Signature.SIGN]
+size(java.security.Signature.rsaIds[])-1 != arg0[java.security.Signature.SIGN-1]
+size(java.security.Signature.rsaIds[])-1 != arg0[java.security.Signature.VERIFY]
+size(arg0[])-1 != arg0[java.security.Signature.UNINITIALIZED]
+size(arg0[])-1 > arg0[java.security.Signature.SIGN]
+size(arg0[])-1 > arg0[java.security.Signature.SIGN-1]
+size(arg0[])-1 != arg0[java.security.Signature.VERIFY]
+orig(size(arg0[])) != arg0[java.security.Signature.VERIFY]
+arg0[java.security.Signature.UNINITIALIZED] != arg0[java.security.Signature.SIGN]
+arg0[java.security.Signature.UNINITIALIZED] > arg0[java.security.Signature.SIGN-1]
+arg0[java.security.Signature.UNINITIALIZED] != arg0[java.security.Signature.VERIFY]
+arg0[java.security.Signature.SIGN] != arg0[java.security.Signature.SIGN-1]
+arg0[java.security.Signature.SIGN] != arg0[java.security.Signature.VERIFY]
+arg0[java.security.Signature.SIGN-1] != arg0[java.security.Signature.VERIFY]
+===========================================================================
+java.security.Signature.verify(byte[]):::EXIT;condition="return == true"
+return == true
+size(arg0[])-1 > arg0[java.security.Signature.VERIFY]
+===========================================================================
+java.security.Signature.verify(byte[]):::EXIT;condition="not(return == true)"
+this.algorithm.toString == "MD5withRSA"
+this.provider.getClass() == sun.security.rsa.SunRsaSign.class
+arg0[] == [47, -27, -100, 84, 92, -93, -6, 37, -27, 17, 83, 85, 65, -77, 78, 57, 73, 86, -102, 89, -105, 26, 35, 74, 41, 121, -56, 116, -41, 28, -43, -107, 50, -117, -30, 86, -45, 57, -91, 125, -98, -30, 83, -9, -111, 98, 17, 4, 36, 28, 29, -83, 74, 50, -120, 99, -122, 46, -114, -23, -117, -94, 115, 0]
+return == false
+orig(size(arg0[])) == 64
+arg0[java.security.Signature.UNINITIALIZED] == 47
+arg0[java.security.Signature.SIGN] == -100
+arg0[java.security.Signature.SIGN-1] == -27
+arg0[java.security.Signature.VERIFY] == 84
+java.security.Signature.UNINITIALIZED in arg0[]
+size(java.security.Signature.rsaIds[])-1 in arg0[]
