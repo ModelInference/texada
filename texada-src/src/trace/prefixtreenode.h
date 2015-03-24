@@ -54,7 +54,7 @@ public:
     bool is_terminal();
 private:
     // event this node represents
-    event event;
+    event node_event;
     // set of trace_ids this event belongs in
     set<int> trace_ids;
     // map containing the children corresponding
