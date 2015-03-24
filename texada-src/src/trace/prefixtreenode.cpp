@@ -17,7 +17,7 @@ namespace texada {
  * @param input_ids traces this event belongs to
  */
 prefix_tree_node::prefix_tree_node(set<int> input_ids) {
-    event = texada::event();
+    node_event = texada::event();
     trace_ids = input_ids;
 }
 
@@ -28,7 +28,7 @@ prefix_tree_node::prefix_tree_node(set<int> input_ids) {
  * @param input_ids traces this event belongs to
  */
 prefix_tree_node::prefix_tree_node(std::string prop, set<int> input_ids) {
-    this->event = texada::event(prop);
+    this->node_event = texada::event(prop);
     trace_ids = input_ids;
 }
 
@@ -39,7 +39,7 @@ prefix_tree_node::prefix_tree_node(std::string prop, set<int> input_ids) {
  * @param input_ids traces this event belongs to
  */
 prefix_tree_node::prefix_tree_node(texada::event e, set<int> input_ids) {
-    this->event = e;
+    this->node_event = e;
     trace_ids = input_ids;
 }
 
@@ -98,7 +98,7 @@ set<int> prefix_tree_node::get_trace_ids() {
  * @return name of node
  */
 event prefix_tree_node::get_event() {
-    return event;
+    return node_event;
 }
 
 /**
@@ -178,7 +178,7 @@ int prefix_tree_node::num_children() {
  * @return whether the ap holds
  */
 bool prefix_tree_node::is_satisfied(std::string prop) {
-    return event.is_satisfied(prop);
+    return node_event.is_satisfied(prop);
 }
 
 /**
@@ -186,7 +186,7 @@ bool prefix_tree_node::is_satisfied(std::string prop) {
  */
 
 bool prefix_tree_node::is_terminal() {
-    return event.is_terminal();
+    return node_event.is_terminal();
 }
 
 } /* namespace texada */
