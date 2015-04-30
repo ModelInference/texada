@@ -44,6 +44,22 @@ map_trace_checker::~map_trace_checker() {
  */
 statistic map_trace_checker::check_on_trace(const spot::ltl::formula* node,
         interval intvl) {
+    use_instant_map = false;
+    intvl.end = terminal_pos - 1;
+    return this->check(node, intvl);
+
+}
+
+/**
+ * Checks whether a formula holds on the trace inputed to the map trace checker.
+ * @param node formula to check
+ * @return true if node holds on the trace, false otherwise
+ */
+statistic map_trace_checker::check_on_trace(const spot::ltl::formula* node,
+         map<string,string> instantiation_map_,
+        interval intvl) {
+    use_instant_map = true;
+    instantiation_map = instantiation_map_;
     intvl.end = terminal_pos - 1;
     return this->check(node, intvl);
 
@@ -58,7 +74,14 @@ statistic map_trace_checker::check_on_trace(const spot::ltl::formula* node,
 statistic map_trace_checker::ap_check(const spot::ltl::atomic_prop* node,
         interval intvl, std::set<int> trace_ids) {
     try {
-        std::vector<long> to_search = trace_map->at(event(node->name()));
+        std::vector<long> to_search;
+        if (use_instant_map){
+          // gets event mapping
+          to_search = trace_map->at(event(instantiation_map.find(node->name())->second));
+        }
+        else{
+        to_search = trace_map->at(event(node->name()));
+        }
         if (std::binary_search(to_search.begin(), to_search.end(),
                 intvl.start)) {
             return statistic(true, 1, 1);
@@ -411,7 +434,8 @@ long map_trace_checker::return_and_add_last(const spot::ltl::formula* node,
 long map_trace_checker::find_first_occurrence(
         const spot::ltl::atomic_prop* node, interval intvl) {
     // REQUIRES: to_search is sorted. this should be assured earlier on.
-    formula_interval storer;
+    // disabling memo for now
+    /*formula_interval storer;
     storer.intvl.start = intvl.start;
     storer.intvl.end = intvl.end;
     storer.formula = node;
@@ -419,9 +443,16 @@ long map_trace_checker::find_first_occurrence(
             first_occ_map.find(storer);
     if (it != first_occ_map.end()) {
         return it->second;
-    }
+    }*/
     try {
-        std::vector<long> to_search = trace_map->at(event(node->name()));
+        std::vector<long> to_search;
+        if (use_instant_map){
+          // gets event mapping
+          to_search = trace_map->at(event(instantiation_map.find(node->name())->second));
+        }
+        else{
+        to_search = trace_map->at(event(node->name()));
+        }
         long left = 0;
         long right = to_search.size();
         long newpos;
@@ -1045,7 +1076,8 @@ long map_trace_checker::find_last_occurrence(const spot::ltl::formula* node,
 long map_trace_checker::find_last_occurrence(const spot::ltl::atomic_prop* node,
         interval intvl) {
     // REQUIRES: to_search is sorted. this should be assured earlier on.
-    formula_interval storer;
+    //disabling for now
+    /*formula_interval storer;
     storer.intvl.start = intvl.start;
     storer.intvl.end = intvl.end;
     storer.formula = node;
@@ -1053,10 +1085,16 @@ long map_trace_checker::find_last_occurrence(const spot::ltl::atomic_prop* node,
             last_occ_map.find(storer);
     if (it != last_occ_map.end()) {
         return it->second;
-    }
+    }*/
     try {
-        std::vector<long> to_search = trace_map->at(event(node->name()));
-
+        std::vector<long> to_search;
+        if (use_instant_map){
+          // gets event mapping
+          to_search = trace_map->at(event(instantiation_map.find(node->name())->second));
+        }
+        else{
+        to_search = trace_map->at(event(node->name()));
+        }
         long left = 0;
         long right = to_search.size() - 1;
         long newpos;
@@ -1630,16 +1668,27 @@ vector<std::pair<map<string, string>, statistic>> valid_instants_on_traces(
         if (current_instantiation == NULL) {
             break;
         }
-        const spot::ltl::formula * instantiated_prop_type = instantiate(prop_type,*current_instantiation, instantiator->get_events_to_exclude());
+        
+        map<string,string> instantiation_to_pass = *current_instantiation;
+        // easy work around the possibility of events instead of
+        // variables: add to current_instantiation event->event
+        vector<string> exclude_events = instantiator->get_events_to_exclude();
+        if (exclude_events.size()!= 0){
+            for (vector<string>::iterator events_it = exclude_events.begin(); events_it !=
+                    exclude_events.end(); events_it++){
+                instantiation_to_pass.emplace(*events_it,*events_it);
+            }
+        }
+       // const spot::ltl::formula * instantiated_prop_type = instantiate(prop_type,*current_instantiation, instantiator->get_events_to_exclude());
         // is the instantiation valid?
         statistic global_stat = statistic(true, 0, 0);
         for (int i = 0; i < num_traces; i++) {
-            global_stat = statistic(global_stat, all_checkers[i].check_on_trace(instantiated_prop_type));
+            global_stat = statistic(global_stat, all_checkers[i].check_on_trace(prop_type));
             if (!global_stat.is_satisfied) {
                 break;
             }
         }
-        instantiated_prop_type->destroy();
+       // instantiated_prop_type->destroy();
         if (global_stat.is_satisfied) {
             std::pair<map<string, string>, statistic> finding(*current_instantiation, global_stat);
             return_vec.push_back(finding);
