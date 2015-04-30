@@ -31,6 +31,7 @@ public:
     map_trace_checker(const map<event, vector<long>>*);
     virtual ~map_trace_checker();
     statistic check_on_trace(const spot::ltl::formula *, interval intvl = interval());
+    statistic check_on_trace(const spot::ltl::formula *, map<string,string>, interval intvl = interval());
     /**
      * This class uses relative positions to check to occurrence of events. As
      * such, it has three extra groups of functions: find first, last and all
@@ -73,6 +74,11 @@ private:
     std::unordered_map<formula_interval, long, formula_interval_hash> last_occ_map;
     // the trace this map trace checker checks on
     const map<event, vector<long>> * trace_map;
+    // set to true to include memoization 
+    bool use_memo; 
+    // keeps track of instantiation bindings
+    bool use_instant_map;
+    map<string,string> instantiation_map;
 
     virtual statistic ap_check(const spot::ltl::atomic_prop* node,
             interval intvl, std::set<int> trace_ids = std::set<int>());
