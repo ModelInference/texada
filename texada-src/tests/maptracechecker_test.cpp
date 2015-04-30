@@ -55,6 +55,7 @@ TEST(MapCheckerTest,SmallTrace){
 
     std::string input = "G(a->Fb)";
     const spot::ltl::formula* f = spot::ltl::parse(input, pel);
+    //std::cout << "Failing?\n";
     ASSERT_TRUE((checker.check_on_trace(f)).is_satisfied);
     f->destroy();
 

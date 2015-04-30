@@ -34,6 +34,7 @@ map_trace_checker::map_trace_checker(
 map_trace_checker::~map_trace_checker() {
     first_occ_map.clear();
     last_occ_map.clear();
+    instantiation_map.clear();
     trace_map = NULL;
 }
 
@@ -607,9 +608,10 @@ long map_trace_checker::find_first_occurrence(const spot::ltl::multop* node,
         // check if that last first occurrence is the first occurrence
         // of the and by checking all the children there
         intvl.start = total_first_occ;
+        statistic stat;
         for (int i = 0; i < numkids; i++) {
             // if any of them fail, this cannot be the first occurrence
-            if (!(this->check(node->nth(i), intvl)).is_satisfied) {
+            if (!((statistic) this->check(node->nth(i), intvl)).is_satisfied) {
                 // find the first occurrence starting after the point
                 // we just checked for first occurrence
                 if (intvl.start != intvl.end) {
@@ -1194,7 +1196,7 @@ long map_trace_checker::find_last_occurrence(const spot::ltl::multop* node,
         // check each child at the possible and location
         for (int i = 0; i < numkids; i++) {
             // if one fails
-            if (!(this->check(node->nth(i), temp)).is_satisfied) {
+            if (!((statistic) this->check(node->nth(i), temp)).is_satisfied) {
                 // if the interval is not one long, we can move
                 // it to try and find the last in the previous part
                 if (intvl.start < temp.start) {
@@ -1567,7 +1569,7 @@ long map_trace_checker::find_last_occurrence(const spot::ltl::binop* node,
         }
         temp.start = last_first;
         // check to see if p holds at q; if it does, return that position
-        if ((this->check(node->second(), temp)).is_satisfied) {
+        if (((statistic) this->check(node->second(), temp)).is_satisfied) {
             return last_first;
         }
         // else if it doesn't hold and we don't have any other choices
@@ -1622,7 +1624,7 @@ long map_trace_checker::find_last_occurrence(const spot::ltl::binop* node,
 
         temp.start = intvl.start;
         // check to see if p holds at q; if it does, return that q
-        if ((this->check(node->second(), temp)).is_satisfied) {
+        if (((statistic) this->check(node->second(), temp)).is_satisfied) {
             return last_first;
         }
         // else if it doesn't hold and we don't have any other choices, -1
@@ -1683,7 +1685,7 @@ vector<std::pair<map<string, string>, statistic>> valid_instants_on_traces(
         // is the instantiation valid?
         statistic global_stat = statistic(true, 0, 0);
         for (int i = 0; i < num_traces; i++) {
-            global_stat = statistic(global_stat, all_checkers[i].check_on_trace(prop_type));
+            global_stat = statistic(global_stat, all_checkers[i].check_on_trace(prop_type, instantiation_to_pass));
             if (!global_stat.is_satisfied) {
                 break;
             }
