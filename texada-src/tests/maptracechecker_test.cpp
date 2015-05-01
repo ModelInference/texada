@@ -7,6 +7,7 @@
 
 #include "../src/checkers/maptracechecker.h"
 #include "../src/parsers/mapparser.h"
+#include "../src/instantiation-tools/subformulaapcollector.h"
 
 #include <gtest/gtest.h>
 
@@ -19,7 +20,6 @@
 #include <climits>
 #include <fstream>
 #include <stdlib.h>
-
 
 // Testing map_trace_checker on a small trace, and trying to get decent code coverage
 // for check and find first occ.
@@ -232,6 +232,51 @@ TEST(MapCheckerTest,ResourceAllocation){
     texada::map_trace_checker checker = texada::map_trace_checker(&(*trace_set->begin()));
     ASSERT_TRUE((checker.check_on_trace(formula)).is_satisfied);
     formula->destroy();
+}
+
+// small test for memoized version.
+TEST(MapCheckerTest, SmallMemoization){
+  
+      // create the trace map
+    std::map<texada::event, std::vector<long>> trace_map;
+
+    // create the position vector for a and insert into trace map
+    texada::event aevent = texada::event("a");
+    long aposns[] = {0,1};
+    std::vector<long> apos_vec (aposns, aposns + sizeof(aposns) / sizeof(long) );
+    trace_map.insert(std::pair<texada::event, std::vector<long>>(aevent,apos_vec));
+
+    // create the position vector for b and insert into trace map
+    texada::event bevent = texada::event("b");
+    long bposns[] = {2,3};
+    std::vector<long> bpos_vec (bposns, bposns + sizeof(bposns) / sizeof(long) );
+    trace_map.insert(std::pair<texada::event, std::vector<long>>(bevent,bpos_vec));
+
+    // create the position vector for terminal event and insert into trace map
+    texada::event termvent = texada::event();
+    std::vector<long> tpos_vec;
+    tpos_vec.push_back(4);
+    trace_map.insert(std::pair<texada::event, std::vector<long>>(termvent,tpos_vec));
+
+    // create checker and parse error list to parse formula later on
+    texada::map_trace_checker checker = texada::map_trace_checker(&trace_map);
+    spot::ltl::parse_error_list pel;
+    
+    
+    std::string input = "G(x->Fy)";
+    const spot::ltl::formula* f = spot::ltl::parse(input, pel);
+    
+    // collect subformulae aps for memoization
+    texada::subformula_ap_collector * collector = new texada::subformula_ap_collector();
+    f->accept(*collector);
+    checker.add_relevant_bindings(&collector->subform_ap_set);
+
+    std::map<std::string,std::string> bindings_map;
+    bindings_map.emplace("x","a");
+    bindings_map.emplace("y","b");
+    ASSERT_TRUE((checker.check_on_trace(f,bindings_map)).is_satisfied);
+    f->destroy();
+  
 }
 
 

@@ -92,6 +92,7 @@ private:
 
     //memoization things
     memoization_key setup_key(const spot::ltl::formula*, interval);
+    memoization_key setup_key_ap(const spot::ltl::atomic_prop*, interval);
     long return_and_add_first(const spot::ltl::formula*, interval, long);
     long return_and_add_last(const spot::ltl::formula*, interval, long);
     set<string> aps_of_form(const spot::ltl::formula*);
