@@ -7,6 +7,7 @@
 
 #include "subformulaapcollector.h"
 #include <ltlvisit/apcollect.hh>
+#include <iostream>
 
 namespace texada {
 
@@ -20,8 +21,8 @@ subformula_ap_collector::~subformula_ap_collector() {
 }
 
 void subformula_ap_collector::doit(const spot::ltl::atomic_prop* ap) {
-
 }
+
 void subformula_ap_collector::doit(const spot::ltl::constant* c) {
 
 }
