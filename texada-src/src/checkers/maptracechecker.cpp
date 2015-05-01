@@ -62,6 +62,7 @@ statistic map_trace_checker::check_on_trace(const spot::ltl::formula* node,
 statistic map_trace_checker::check_on_trace(const spot::ltl::formula* node,
          map<string,string> instantiation_map_,
         interval intvl) {
+    use_memo = true;
     use_instant_map = true;
     instantiation_map = instantiation_map_;
     intvl.end = terminal_pos - 1;
@@ -362,7 +363,7 @@ long map_trace_checker::find_first_occurrence(const spot::ltl::formula* node,
 
 /**
  * Adds info the first_occ_map and return first_occ. Adds several
- * intervals which will have the same first occurrence
+ * intervals which will have the same first occurrence //TODO
  * @param node formula we have first occ of
  * @param intvl interval on which we found node
  * @param first_occ the first occ of node on the interval intvl
@@ -370,8 +371,21 @@ long map_trace_checker::find_first_occurrence(const spot::ltl::formula* node,
  */
 long map_trace_checker::return_and_add_first(const spot::ltl::formula* node,
         interval intvl, long first_occ) {
+    if(use_memo){
+      memoization_key key;
+      switch (node->kind()) {
+      case spot::ltl::formula::AtomicProp:
+         key = setup_key_ap(static_cast<const spot::ltl::atomic_prop*> (node), intvl);
+         break;
+      default:
+         key = setup_key(node,intvl);
+         break;
+      }
+      first_occ_map.emplace(key,first_occ);
+    }
     // we can add intervals with one-off start of interval if
     // the first occurrence is not the first of the interval
+    /*
     if (first_occ != intvl.start) {
         memoization_key storer;
         storer.formula = node;
@@ -399,7 +413,7 @@ long map_trace_checker::return_and_add_first(const spot::ltl::formula* node,
         //first-last+1;
         first_occ_map.emplace(storer, first_occ);
 
-    }
+    }*/
 
     return first_occ;
 }
@@ -413,7 +427,20 @@ long map_trace_checker::return_and_add_first(const spot::ltl::formula* node,
  */
 long map_trace_checker::return_and_add_last(const spot::ltl::formula* node,
         interval intvl, long last_occ) {
-    memoization_key storer;
+    if(use_memo){
+      memoization_key key;
+      switch (node->kind()) {
+      case spot::ltl::formula::AtomicProp:
+         key = setup_key_ap(static_cast<const spot::ltl::atomic_prop*> (node), intvl);
+         break;
+      default:
+         key = setup_key(node,intvl);
+         break;
+      }
+      last_occ_map.emplace(key,last_occ);
+    }
+          //TODO: over multiple intervals
+   /* memoization_key storer;
     storer.formula = node;
     storer.intvl.start = intvl.start;
     storer.intvl.end = intvl.end;
@@ -424,7 +451,7 @@ long map_trace_checker::return_and_add_last(const spot::ltl::formula* node,
         //first-last-1
         last_occ_map.emplace(storer, last_occ);
 
-    }
+    }*/
 
     return last_occ;
 }
@@ -437,25 +464,13 @@ long map_trace_checker::return_and_add_last(const spot::ltl::formula* node,
  */
 long map_trace_checker::find_first_occurrence(
         const spot::ltl::atomic_prop* node, interval intvl) {
-    // REQUIRES: to_search is sorted. this should be assured earlier on.
-    // disabling memo for now
-    if (use_memo){
-    memoization_key key = setup_key(node,intvl);
+    // retrieve memoized value
+    memoization_key key = setup_key_ap(node,intvl);
     std::unordered_map<memoization_key, long, memoization_key_hash>::iterator it =
-               first_occ_map.find(key);
-       if (it != first_occ_map.end()) {
-           return it->second;
-       }
-    }
-    /*formula_interval storer;
-    storer.intvl.start = intvl.start;
-    storer.intvl.end = intvl.end;
-    storer.formula = node;
-    std::unordered_map<formula_interval, long, formula_interval_hash>::iterator it =
-            first_occ_map.find(storer);
+            first_occ_map.find(key);
     if (it != first_occ_map.end()) {
         return it->second;
-    }*/
+    }
     try {
         std::vector<long> to_search;
         if (use_instant_map){
@@ -1088,17 +1103,13 @@ long map_trace_checker::find_last_occurrence(const spot::ltl::formula* node,
  */
 long map_trace_checker::find_last_occurrence(const spot::ltl::atomic_prop* node,
         interval intvl) {
-    // REQUIRES: to_search is sorted. this should be assured earlier on.
-    //disabling for now
-    /*formula_interval storer;
-    storer.intvl.start = intvl.start;
-    storer.intvl.end = intvl.end;
-    storer.formula = node;
-    std::unordered_map<formula_interval, long, formula_interval_hash>::iterator it =
-            last_occ_map.find(storer);
+    // retrieve memoized value
+    memoization_key key = setup_key_ap(node,intvl);
+    std::unordered_map<memoization_key, long, memoization_key_hash>::iterator it =
+            last_occ_map.find(key);
     if (it != last_occ_map.end()) {
         return it->second;
-    }*/
+    }
     try {
         std::vector<long> to_search;
         if (use_instant_map){
@@ -1683,6 +1694,28 @@ map_trace_checker::memoization_key map_trace_checker::setup_key(const spot::ltl:
 
 
 /**
+ * Finds the memoization key for the given node and interval, given the current instantiation bindings.
+ * @param node
+ * @param intvl
+ * @return
+ */
+map_trace_checker::memoization_key map_trace_checker::setup_key_ap(const spot::ltl::atomic_prop* ap, interval intvl){
+    map_trace_checker::memoization_key memo_key;
+    memo_key.formula = ap;
+    memo_key.intvl = intvl;
+    map<string, string> relevant_map;
+    // get the correct mapping from the checker state.
+   std::map<string, string>::iterator current_mapping = instantiation_map.find(ap->name());
+        if (current_mapping != instantiation_map.end()) {
+            relevant_map.insert(*current_mapping);
+            //TODO what if the =/= doesn't hold?
+        }
+    memo_key.relevant_instants = relevant_map;
+    //TODO : Finish this
+    return memo_key;
+}
+
+/**
  * Find the atomic propositions belonging to node.
  * @param node
  * @return
@@ -1707,6 +1740,7 @@ set<string> map_trace_checker::aps_of_form(const spot::ltl::formula* node) {
  */
 void map_trace_checker::add_relevant_bindings(map<const spot::ltl::formula*, set<string>> * bindings_map){
     relevant_bindings_map = bindings_map;
+
 }
 
 /**
@@ -1730,6 +1764,7 @@ vector<std::pair<map<string, string>, statistic>> valid_instants_on_traces(
             traces_it != traces->end(); traces_it++) {
         all_checkers.push_back(map_trace_checker(&(*traces_it)));
     }
+
     int num_traces = all_checkers.size();
 
     // create the ap collector for memoization, add to each checker
@@ -1760,6 +1795,7 @@ vector<std::pair<map<string, string>, statistic>> valid_instants_on_traces(
         // is the instantiation valid?
         statistic global_stat = statistic(true, 0, 0);
         for (int i = 0; i < num_traces; i++) {
+
             global_stat = statistic(global_stat, all_checkers[i].check_on_trace(prop_type, instantiation_to_pass));
             if (!global_stat.is_satisfied) {
                 break;
