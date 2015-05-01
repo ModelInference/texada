@@ -1018,7 +1018,7 @@ void prefix_tree_checker::add_to_memo_map(const spot::ltl::formula* node,
 map<int, statistic> prefix_tree_checker::retrieve_memo(
         const spot::ltl::formula* node, trace_node trace_pt,
         std::set<int> trace_ids) {
-    // create the retrival key
+    // create the retrieval key
     memo_key retrieve_key;
     retrieve_key.node = node;
     retrieve_key.trace_pt = trace_pt;
@@ -1140,6 +1140,7 @@ vector<std::pair<map<string, string>, statistic>> valid_instants_on_traces(
             return_vec.push_back(finding);
         }
     }
+    delete(collector);
     return return_vec;
 
 }

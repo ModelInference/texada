@@ -602,7 +602,7 @@ TEST(PropertyTypeMinerMapTest, OneEffect) {
     ASSERT_TRUE(eval_array[7]);
 }
 
-TEST(CheckerEquivalencyTest, STprecedesPafterQ) {
+TEST(CheckerEquivalencyTest, DISABLED_STprecedesPafterQ) {
     if (getenv("TEXADA_HOME") == NULL) {
         std::cerr << "Error: TEXADA_HOME is undefined. \n";
         FAIL();
