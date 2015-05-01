@@ -38,18 +38,24 @@ public:
      * occurrence(s). These take in the formula and an interval and first the
      * first, last or all occurrence(s) of the formula in that interval.
      */
+
+    // things for memoization
+    void add_relevant_bindings(
+            map<const spot::ltl::formula*, set<string>> * bindings_map);
+
 private:
 
-    struct formula_interval {
+    struct memoization_key {
         const spot::ltl::formula* formula;
+        map<string,string> relevant_instants;
         interval intvl;
-        bool operator==(const formula_interval other) const {
+        bool operator==(const memoization_key other) const {
             return (formula == other.formula && intvl == other.intvl);
         }
     };
 
-    struct formula_interval_hash {
-        std::size_t operator()(const formula_interval& k) const {
+    struct memoization_key_hash {
+        std::size_t operator()(const memoization_key& k) const {
             using boost::hash_value;
             using boost::hash_combine;
 
@@ -59,6 +65,7 @@ private:
             // Modify 'seed' by XORing and bit-shifting in
             // one member of 'Key' after the other:
 
+            hash_combine(seed, hash_value(k.relevant_instants));
             hash_combine(seed, hash_value(k.intvl.start));
             hash_combine(seed, hash_value(k.intvl.end));
 
@@ -69,9 +76,9 @@ private:
     // position of the terminal event
     long terminal_pos;
     // map from formula interval to the first/last occurrence of the formula in that
-    // interval. used in memoisation storage.
-    std::unordered_map<formula_interval, long, formula_interval_hash> first_occ_map;
-    std::unordered_map<formula_interval, long, formula_interval_hash> last_occ_map;
+    // interval. used in memoization storage.
+    std::unordered_map<memoization_key, long, memoization_key_hash> first_occ_map;
+    std::unordered_map<memoization_key, long, memoization_key_hash> last_occ_map;
     // the trace this map trace checker checks on
     const map<event, vector<long>> * trace_map;
     // set to true to include memoization 
@@ -79,6 +86,16 @@ private:
     // keeps track of instantiation bindings
     bool use_instant_map;
     map<string,string> instantiation_map;
+    // keeps track of which bindings should be stored for each formula node:
+    // switch for each different formula checker
+    map<const spot::ltl::formula*, set<string>> * relevant_bindings_map;
+
+    //memoization things
+    memoization_key setup_key(const spot::ltl::formula*, interval);
+    long return_and_add_first(const spot::ltl::formula*, interval, long);
+    long return_and_add_last(const spot::ltl::formula*, interval, long);
+    set<string> aps_of_form(const spot::ltl::formula*);
+
 
     virtual statistic ap_check(const spot::ltl::atomic_prop* node,
             interval intvl, std::set<int> trace_ids = std::set<int>());
@@ -104,8 +121,6 @@ private:
     long find_first_occurrence(const spot::ltl::binop*, interval);
     long find_first_occurrence(const spot::ltl::atomic_prop*, interval);
 
-    long return_and_add_first(const spot::ltl::formula*, interval, long);
-    long return_and_add_last(const spot::ltl::formula*, interval, long);
 
     long find_last_occurrence(const spot::ltl::formula*, interval);
     long find_last_occurrence(const spot::ltl::atomic_prop*, interval);

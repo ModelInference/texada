@@ -7,6 +7,7 @@
 
 #include "maptracechecker.h"
 #include "../instantiation-tools/apsubbingcloner.h"
+#include "../instantiation-tools/subformulaapcollector.h"
 #include <ltlvisit/nenoform.hh>
 #include <ltlvisit/tostring.hh>
 #include <algorithm>
@@ -45,6 +46,8 @@ map_trace_checker::~map_trace_checker() {
  */
 statistic map_trace_checker::check_on_trace(const spot::ltl::formula* node,
         interval intvl) {
+    // TODO: Adjust this
+    use_memo = false;
     use_instant_map = false;
     intvl.end = terminal_pos - 1;
     return this->check(node, intvl);
@@ -370,7 +373,7 @@ long map_trace_checker::return_and_add_first(const spot::ltl::formula* node,
     // we can add intervals with one-off start of interval if
     // the first occurrence is not the first of the interval
     if (first_occ != intvl.start) {
-        formula_interval storer;
+        memoization_key storer;
         storer.formula = node;
         storer.intvl.start = intvl.start;
         storer.intvl.end = intvl.end;
@@ -386,7 +389,7 @@ long map_trace_checker::return_and_add_first(const spot::ltl::formula* node,
         //first-last+1;
         first_occ_map.emplace(storer, first_occ);
     } else {
-        formula_interval storer;
+        memoization_key storer;
         storer.formula = node;
         storer.intvl.start = intvl.start;
         storer.intvl.end = intvl.end;
@@ -410,7 +413,7 @@ long map_trace_checker::return_and_add_first(const spot::ltl::formula* node,
  */
 long map_trace_checker::return_and_add_last(const spot::ltl::formula* node,
         interval intvl, long last_occ) {
-    formula_interval storer;
+    memoization_key storer;
     storer.formula = node;
     storer.intvl.start = intvl.start;
     storer.intvl.end = intvl.end;
@@ -1644,6 +1647,61 @@ long map_trace_checker::find_last_occurrence(const spot::ltl::binop* node,
 }
 
 /**
+ * Finds the memoization key for the given node and interval, given the current instantiation bindings.
+ * @param node
+ * @param intvl
+ * @return
+ */
+map_trace_checker::memoization_key map_trace_checker::setup_key(const spot::ltl::formula* node, interval intvl){
+    map_trace_checker::memoization_key memo_key;
+    memo_key.formula = node;
+    memo_key.intvl = intvl;
+    set<string> relevant_vars = aps_of_form(node);
+    map<string, string> relevant_map;
+    // get the correct mappings from the checker state.
+    for (set<string>::iterator var_it = relevant_vars.begin();
+            var_it != relevant_vars.end(); var_it++) {
+        std::map<string, string>::iterator current_mapping =
+                instantiation_map.find(*var_it);
+        if (current_mapping != instantiation_map.end()) {
+            relevant_map.insert(*current_mapping);
+            //TODO what if the =/= doesn't hold?
+        }
+    }
+    memo_key.relevant_instants = relevant_map;
+    //TODO : Finish this
+    return memo_key;
+}
+
+
+/**
+ * Find the atomic propositions belonging to node.
+ * @param node
+ * @return
+ */
+set<string> map_trace_checker::aps_of_form(const spot::ltl::formula* node) {
+    map<const spot::ltl::formula*, set<string>>::iterator set_pair =
+            relevant_bindings_map->find(node);
+    if (set_pair == relevant_bindings_map->end()) {
+        std::cerr
+                << "Could not find the atomic props for this node in the map.";
+        return set<string>();
+        //TODO: exception
+    }
+    return set_pair->second;
+}
+
+
+/**
+ * Sets the relevant_bindings_map (i.e. the map which determines which bindings
+ * are contained in which subformula) to bindings_map
+ * @param bindings_map
+ */
+void map_trace_checker::add_relevant_bindings(map<const spot::ltl::formula*, set<string>> * bindings_map){
+    relevant_bindings_map = bindings_map;
+}
+
+/**
  * Check all instantiations of the formula on the traces given
  * @param prop_type the property type to check instantiations of
  * @param instantiator to generate all instatiation functions
@@ -1664,7 +1722,17 @@ vector<std::pair<map<string, string>, statistic>> valid_instants_on_traces(
             traces_it != traces->end(); traces_it++) {
         all_checkers.push_back(map_trace_checker(&(*traces_it)));
     }
+
     int num_traces = all_checkers.size();
+
+    // create the ap collector for memoization, add to each checker
+    subformula_ap_collector * collector = new subformula_ap_collector();
+    prop_type->accept(*collector);
+    for (int i = 0; i <num_traces; i++){
+        all_checkers[i].add_relevant_bindings(&collector->subform_ap_set);
+    }
+
+    // go through and check on all traces
     while (true) {
         shared_ptr<map<string,string>> current_instantiation = instantiator->get_next_instantiation();
         if (current_instantiation == NULL) {
@@ -1685,6 +1753,7 @@ vector<std::pair<map<string, string>, statistic>> valid_instants_on_traces(
         // is the instantiation valid?
         statistic global_stat = statistic(true, 0, 0);
         for (int i = 0; i < num_traces; i++) {
+
             global_stat = statistic(global_stat, all_checkers[i].check_on_trace(prop_type, instantiation_to_pass));
             if (!global_stat.is_satisfied) {
                 break;
@@ -1696,6 +1765,7 @@ vector<std::pair<map<string, string>, statistic>> valid_instants_on_traces(
             return_vec.push_back(finding);
         }
     }
+    delete(collector);
     return return_vec;
 }
 
