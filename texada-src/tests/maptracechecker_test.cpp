@@ -50,7 +50,6 @@ TEST(MapCheckerTest,SmallTrace){
     texada::map_trace_checker checker = texada::map_trace_checker(&trace_map);
     spot::ltl::parse_error_list pel;
 
-
     // Tests to try and cover the "check" functions
 
     std::string input = "G(a->Fb)";
