@@ -21,8 +21,8 @@ namespace texada {
 
 
 /**
- * Class to check whether an LTL formula is true on a trace in the
- * form of a vector. Can also be configured to retrieve support and
+ * Class to check whether an LTL formula is true on a trace in
+ * flinear form. Can also be configured to retrieve support and
  * support potential statistics for an LTL formula on a trace.
  *
  */

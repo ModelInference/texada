@@ -89,6 +89,8 @@ private:
     // keeps track of which bindings should be stored for each formula node:
     // switch for each different formula checker
     map<const spot::ltl::formula*, set<string>> * relevant_bindings_map;
+    // key : p val: negative normal form of !p
+    map<const spot::ltl::formula*, const spot::ltl::formula*>  neg_neno_map;
 
     //memoization things
     memoization_key setup_key(const spot::ltl::formula*, interval);

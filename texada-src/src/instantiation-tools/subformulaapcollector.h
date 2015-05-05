@@ -15,6 +15,13 @@
 
 namespace texada {
 
+/**
+ * Collects the atomic propositions of all the subformulae of a given ltl formula.
+ * Stores these atomic propositions in a subformula -> atomic proposition name map.
+ * Also collects atomic propositions for the input formula in negative normal form
+ * and the negation of the input formula in negative normal form and a map
+ * of p -> neno(!p).
+ */
 class subformula_ap_collector : public spot::ltl::postfix_visitor{
 public:
     subformula_ap_collector();
