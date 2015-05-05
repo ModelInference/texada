@@ -69,7 +69,6 @@ statistic map_trace_checker::check_on_trace(const spot::ltl::formula* node,
     return this->check(node, intvl);
 
 }
-
 /**
  * Checks whether a atomic proposition holds on the given interval.
  * @param node formula to check
@@ -121,9 +120,9 @@ statistic map_trace_checker::until_check(const spot::ltl::binop* node,
 
     // construct !p
     bool orig = use_memo;
+    use_memo = false;
     const spot::ltl::formula * not_p = spot::ltl::negative_normal_form(p, true);
     // check that !p never occurs
-    use_memo = false;
     long first_occ_not_p = find_first_occurrence(not_p, intvl);
     // clean up !p
     not_p->destroy();
@@ -158,14 +157,13 @@ statistic map_trace_checker::release_check(const spot::ltl::binop* node,
     // need to make sure there's no violation of R after end of intvl
     intvl.end = terminal_pos - 1;
 
+    // construct and find the first occurrence of !q
     bool orig = use_memo;
     use_memo = false;
-    // construct and find the first occurrence of !q
     const spot::ltl::formula * not_q = spot::ltl::negative_normal_form(q, true);
     long first_occ_not_q = find_first_occurrence(not_q, intvl);
     not_q->destroy();
     use_memo = orig;
-
 
     // find first occurrence of p
     long first_occ_p = find_first_occurrence(p, intvl);
@@ -244,7 +242,6 @@ statistic map_trace_checker::strongrelease_check(const spot::ltl::binop* node,
     // need to make sure there's no violation of R after end of intvl
     intvl.end = terminal_pos - 1;
 
-
     bool orig = use_memo;
     use_memo = false;
     // construct and find the first occurrence of !q
@@ -288,13 +285,13 @@ statistic map_trace_checker::globally_check(const spot::ltl::unop* node,
     // Globally operator holds on all future events, so
     // extend interval until terminal point
     intvl.end = terminal_pos - 1;
+    //construct and find first !p
     bool orig = use_memo;
     use_memo = false;
-    //construct and find first !p
     const spot::ltl::formula * not_p = spot::ltl::negative_normal_form(p, true);
     long first_occ = find_first_occurrence(not_p, intvl);
-    not_p->destroy();
     use_memo = orig;
+    not_p->destroy();
     if (first_occ == -1)
         return statistic(true, 1, 1);
     else
@@ -445,7 +442,7 @@ long map_trace_checker::return_and_add_first(const spot::ltl::formula* node,
  */
 long map_trace_checker::return_and_add_last(const spot::ltl::formula* node,
         interval intvl, long last_occ) {
-    if(use_memo || (node->kind() == spot::ltl::formula::AtomicProp)){
+    if(use_memo|| (node->kind() == spot::ltl::formula::AtomicProp)){
       memoization_key key;
       switch (node->kind()) {
       case spot::ltl::formula::AtomicProp:
@@ -609,12 +606,6 @@ long map_trace_checker::find_first_occurrence(
  */
 long map_trace_checker::find_first_occurrence(const spot::ltl::multop* node,
         interval intvl) {
-    memoization_key key = setup_key(node,intvl);
-    std::unordered_map<memoization_key, long, memoization_key_hash>::iterator it =
-            first_occ_map.find(key);
-    if (it != first_occ_map.end()) {
-        return it->second;
-    }
     spot::ltl::multop::type opkind = node->op();
     switch (opkind) {
 
@@ -633,9 +624,9 @@ long map_trace_checker::find_first_occurrence(const spot::ltl::multop* node,
         }
         // in this case no first occurrence was found
         if (total_first_occ == LONG_MAX)
-            return return_and_add_first(node, intvl, -1);
+            return -1;
         else
-            return return_and_add_first(node, intvl, total_first_occ);
+            return total_first_occ;
     }
 
         // in the and case the earliest occurrence of the and can only be
@@ -649,7 +640,7 @@ long map_trace_checker::find_first_occurrence(const spot::ltl::multop* node,
             long first_occ = find_first_occurrence(node->nth(i), intvl);
             // if one of the children never occurs, neither does the and
             if (first_occ == -1){
-                return return_and_add_first(node, intvl, -1);
+                return -1;
             }
             if (first_occ > total_first_occ) {
                 total_first_occ = first_occ;
@@ -666,15 +657,15 @@ long map_trace_checker::find_first_occurrence(const spot::ltl::multop* node,
                 // we just checked for first occurrence
                 if (intvl.start != intvl.end) {
                     intvl.start++;
-                    return return_and_add_first(node, intvl, find_first_occurrence(node, intvl));
+                    return find_first_occurrence(node, intvl);
                 }
                 // if we got to the end of the interval without finding it,
                 // there is no first occurrence
                 else
-                    return return_and_add_first(node, intvl, -1);
+                    return -1;
             }
         }
-        return return_and_add_first(node, intvl, total_first_occ);
+        return total_first_occ;
     }
 
     default:
@@ -691,6 +682,9 @@ long map_trace_checker::find_first_occurrence(const spot::ltl::multop* node,
  */
 long map_trace_checker::find_first_occurrence(const spot::ltl::unop* node,
         interval intvl) {
+
+
+
     spot::ltl::unop::type optype = node->op();
 
     switch (optype) {
@@ -800,32 +794,32 @@ long map_trace_checker::find_first_occurrence(const spot::ltl::binop* node,
         // if p never occurs, first xor is first q
         // (if q also doesn't occur, xor does not, so -1 is returned)
         if (first_occ_first == -1)
-            return return_and_add_first(node, intvl, first_occ_second);
+            return first_occ_second;
         // if q never occurs, first xor is first p
         else if (first_occ_second == -1)
-            return return_and_add_first(node, intvl, first_occ_first);
+            return first_occ_first;
         // return earlier of p and q first occurrences
         else if (first_occ_first < first_occ_second)
-            return return_and_add_first(node, intvl, first_occ_first);
+            return first_occ_first;
         else if (first_occ_first > first_occ_second)
-            return return_and_add_first(node, intvl, first_occ_second);
+            return first_occ_second;
         // at this point we know p and q first occur at the same time.
         // if we have a one-element interval, xor doesn't occur
         else if (first_occ_second == intvl.end)
-            return return_and_add_first(node, intvl, -1);
+            return -1;
         // else find on interval starting after the pair
         else {
             intvl.start = first_occ_second + 1;
-            return return_and_add_first(node, intvl, find_first_occurrence(node, intvl));
+            return find_first_occurrence(node, intvl);
         }
     }
 
         // Find first of negation of first, and find first of validity of last.
         // return whichever is earlier.
     case spot::ltl::binop::Implies: {
-        // Given p -> q, find first !p
         bool orig = use_memo;
         use_memo = false;
+        // Given p -> q, find first !p
         const spot::ltl::formula * neg_norm_first =
                 spot::ltl::negative_normal_form(node->first(), true);
         long first_occ_neg_first = find_first_occurrence(neg_norm_first, intvl);
@@ -837,15 +831,15 @@ long map_trace_checker::find_first_occurrence(const spot::ltl::binop* node,
         // if !p never occurs, first -> is first q
         // (if q also doesn't occur, -> does not, so -1 is returned)
         if (first_occ_neg_first == -1)
-            return return_and_add_first(node, intvl, first_occ_second);
+            return first_occ_second;
         // if q never occurs, first -> is first !p
         else if (first_occ_second == -1)
-            return return_and_add_first(node, intvl, first_occ_neg_first);
+            return first_occ_neg_first;
         // else return earliest one
         else if (first_occ_neg_first < first_occ_second)
-            return return_and_add_first(node, intvl, first_occ_neg_first);
+            return first_occ_neg_first;
         else
-            return return_and_add_first(node, intvl, first_occ_second);
+            return first_occ_second;
 
     }
 
@@ -856,11 +850,11 @@ long map_trace_checker::find_first_occurrence(const spot::ltl::binop* node,
         long first_occ_second = find_first_occurrence(node->second(), intvl);
         // if !p and !q at the start of the interval, p<->q holds there
         if (first_occ_first != intvl.start && first_occ_second != intvl.start) {
-            return return_and_add_first(node, intvl, intvl.start);
+            return intvl.start;
         }
         // if p and q occur at the same spot, p <-> q holds
         else if (first_occ_first == first_occ_second) {
-            return return_and_add_first(node, intvl, first_occ_first);
+            return first_occ_first;
         }
         // if p <-> q does not hold on a one-element interval, it does not occur
         else if (intvl.start >= intvl.end) {
@@ -869,7 +863,7 @@ long map_trace_checker::find_first_occurrence(const spot::ltl::binop* node,
         // go check on the next interval
         else {
             intvl.start++;
-            return return_and_add_first(node, intvl, find_first_occurrence(node, intvl));
+            return find_first_occurrence(node, intvl);
         }
 
     }
@@ -887,31 +881,30 @@ long map_trace_checker::find_first_occurrence(const spot::ltl::binop* node,
         long first_occ_second = find_first_occurrence(node->second(), temp);
         // until needs q to occur; if it does not
         if (first_occ_second == -1)
-            return return_and_add_first(node, intvl, -1);
+            return -1;
 
-        bool orig = use_memo;
-        use_memo = false;
         // find the last !p that occurs before the first q
         temp.end = first_occ_second - 1;
+        bool orig = use_memo;
+        use_memo = false;
         const spot::ltl::formula * neg_norm_first =
                 spot::ltl::negative_normal_form(node->first(), true);
         long last_occ_neg_first = find_last_occurrence(neg_norm_first, temp);
         neg_norm_first->destroy();
         use_memo = orig;
 
-
         // if !p doesn't occur before the first q, p U q holds
         // on the first element of the interval
         if (last_occ_neg_first == -1)
-            return return_and_add_first(node, intvl, intvl.start);
+            return intvl.start;
         // if the last !p before q is after the end of our original
         // interval, p U q holds nowhere on that interval
         if (last_occ_neg_first >= intvl.end) {
-            return return_and_add_first(node, intvl, -1);
+            return -1;
         }
         // first p U q occurs after the last !p before q.
         else
-            return return_and_add_first(node, intvl, ++last_occ_neg_first);
+            return ++last_occ_neg_first;
     }
 
         //Weak until case: identical to until except base case. Given p W q...
@@ -940,15 +933,15 @@ long map_trace_checker::find_first_occurrence(const spot::ltl::binop* node,
             // if !p never occurs, p W q first occurs at the
             // start of the interval
             if (last_occ_neg_first == -1)
-                return return_and_add_first(node, intvl, intvl.start);
+                return intvl.start;
             // if last !p is after the end of intvl,
             // p W q does not hold on intvl
             else if (last_occ_neg_first >= intvl.end)
-                return return_and_add_first(node, intvl, -1);
+                return -1;
             // if last !p occurs in the middle of intvl,
             // p W q first occurs after that !p.
             else
-                return return_and_add_first(node, intvl, ++last_occ_neg_first);
+                return ++last_occ_neg_first;
         }
         // here q occurs.
         // change temp end to find last !p before q
@@ -963,15 +956,15 @@ long map_trace_checker::find_first_occurrence(const spot::ltl::binop* node,
         use_memo = orig;
         // if !p never occurs, p W q first occurs at the start of the interval
         if (last_occ_neg_first == -1)
-            return return_and_add_first(node, intvl, intvl.start);
+            return intvl.start;
         // if last !p is after the end of intvl, p W q does not hold on intvl
         else if (last_occ_neg_first >= intvl.end) {
-            return return_and_add_first(node, intvl, -1);
+            return -1;
         }
         // if last !p occurs in the middle of intvl,  p W q first
         // occurs after that !p.
         else
-            return return_and_add_first(node, intvl, ++last_occ_neg_first);
+            return ++last_occ_neg_first;
     }
 
         // Release case:
@@ -989,25 +982,28 @@ long map_trace_checker::find_first_occurrence(const spot::ltl::binop* node,
         // the entire interval
         if (first_occ_first == -1) {
             // create and first last !p on extended interval
+            bool orig = use_memo;
+            use_memo = false;
             const spot::ltl::formula * neg_norm_second =
                     spot::ltl::negative_normal_form(node->second(), true);
             last_occ_neg_second = find_last_occurrence(neg_norm_second, temp);
             neg_norm_second->destroy();
+            use_memo = orig;
             // if !p never occurs, q R p holds at the first point of the interval
             if (last_occ_neg_second == -1)
-                return return_and_add_first(node, intvl, intvl.start);
+                return intvl.start;
             // last !p is after the end of intvl, q R p never holds on intvl
             else if (last_occ_neg_second >= intvl.end){
-                return return_and_add_first(node, intvl, -1);}
+                return -1;}
             // last !p in middle of intvl, q R p starts after that.
             else
-                return return_and_add_first(node, intvl, ++last_occ_neg_second);
+                return ++last_occ_neg_second;
         }
         // set temp to search for last !p before (inclusive) q
         temp.end = first_occ_first;
+        // create and find last !p before (inclusive) first q
         bool orig = use_memo;
         use_memo = false;
-        // create and find last !p before (inclusive) first q
         const spot::ltl::formula * neg_norm_second =
                 spot::ltl::negative_normal_form(node->second(), true);
         last_occ_neg_second = find_last_occurrence(neg_norm_second, temp);
@@ -1018,20 +1014,20 @@ long map_trace_checker::find_first_occurrence(const spot::ltl::binop* node,
              // if it's the end of the original intvl, we haven't found
             // q R p
             if (intvl.end <= temp.end)
-                return return_and_add_first(node, intvl, -1);
+                return -1;
             // else check to see if we find it at the next q
             intvl.start = ++temp.end;
-            return return_and_add_first(node, intvl, find_first_occurrence(node, intvl));
+            return find_first_occurrence(node, intvl);
         }
         // if !p never occurs, q R p first occurs
         // at the start of the interval
 
         else if (last_occ_neg_second == -1) {
-            return return_and_add_first(node, intvl, intvl.start);
+            return intvl.start;
         }
         // last !p in middle of intvl, q R p starts after that
         else {
-            return return_and_add_first(node, intvl,  ++last_occ_neg_second);
+            return ++last_occ_neg_second;
         }
     }
 
@@ -1046,7 +1042,7 @@ long map_trace_checker::find_first_occurrence(const spot::ltl::binop* node,
         long first_occ_first = find_first_occurrence(node->first(), temp);
         // if q never occurs, neither does q M p.
         if (first_occ_first == -1){
-             return return_and_add_first(node, intvl, -1);}
+             return -1;}
         // set temp to search for last !p before (inclusive) q
         temp.end = first_occ_first;
         // create and find last !p before (inclusive) q
@@ -1062,20 +1058,20 @@ long map_trace_checker::find_first_occurrence(const spot::ltl::binop* node,
             // if that q was out of the interval, q M p
             // never holds on the interval
             if (intvl.end <= temp.end)
-                return return_and_add_first(node, intvl, -1);
+                return -1;
             // else we can check if q M p will hold for the next
             // q on the interval.
             intvl.start = ++temp.end;
-            return return_and_add_first(node, intvl, find_first_occurrence(node, intvl));
+            return find_first_occurrence(node, intvl);
         }
         // if !p never occurs, q M p first occurs
         // at the start of the interval
         if (last_occ_neg_second == -1) {
-            return return_and_add_first(node, intvl, intvl.start);
+            return intvl.start;
         }
         // last !p in middle of intvl, q M p starts after that
         else
-            return return_and_add_first(node, intvl, ++last_occ_neg_second);
+            return ++last_occ_neg_second;
     }
 
     default:
@@ -1346,10 +1342,13 @@ long map_trace_checker::find_last_occurrence(const spot::ltl::unop* node,
         temp.start = intvl.start;
         temp.end = terminal_pos - 1;
         // create and find last !p
+        bool orig = use_memo;
+        use_memo = false;
         const spot::ltl::formula * neg_norm_child =
                 spot::ltl::negative_normal_form(node->child(), true);
         long last_neg_child = find_last_occurrence(neg_norm_child, temp);
         neg_norm_child->destroy();
+        use_memo = orig;
 
         // is last !p is after the end, never has Gp on intvl
         if (last_neg_child >= intvl.end)
@@ -1449,11 +1448,14 @@ long map_trace_checker::find_last_occurrence(const spot::ltl::binop* node,
         // and -1 will be returned.
     case spot::ltl::binop::Implies: {
         // given p -> q
+        bool orig = use_memo;
+        use_memo = false;
         // construct and find last !p
         const spot::ltl::formula * neg_norm_first =
                 spot::ltl::negative_normal_form(node->first(), true);
         long last_neg_first = find_last_occurrence(neg_norm_first, intvl);
         neg_norm_first->destroy();
+        use_memo = orig;
         //find last q
         long last_second = find_last_occurrence(node->second(), intvl);
         // return the later of the two (if neither occur, -1 is returned
@@ -1515,10 +1517,13 @@ long map_trace_checker::find_last_occurrence(const spot::ltl::binop* node,
             temp.end = next_first_second - 1;
             // find last !p b/w last of orignal interal and next q after
             // interval end
+            bool orig = use_memo;
+            use_memo = false;
             const spot::ltl::formula* neg_norm_first =
                     spot::ltl::negative_normal_form(node->first(), true);
             long last_first = find_last_occurrence(neg_norm_first, temp);
             neg_norm_first->destroy();
+            use_memo = orig;
             // interval's end is only p U q if there is no !p between
             // it and the next q
             if (last_first == -1)
@@ -1531,8 +1536,11 @@ long map_trace_checker::find_last_occurrence(const spot::ltl::binop* node,
         // Similar to until, given p W q:
     case ::spot::ltl::binop::W: {
         // create !p
+        bool orig = use_memo;
+        use_memo = false;
         const spot::ltl::formula* neg_norm_first =
                 spot::ltl::negative_normal_form(node->first(), true);
+        use_memo = orig;
 
         if (intvl.end < terminal_pos - 1) {
             // create interval after the original interval
@@ -1593,8 +1601,11 @@ long map_trace_checker::find_last_occurrence(const spot::ltl::binop* node,
     case ::spot::ltl::binop::R: {
         // Given q R p:
         // create !p
+        bool orig = use_memo;
+        use_memo = false;
         const spot::ltl::formula* neg_norm_second =
                 spot::ltl::negative_normal_form(node->second(), true);
+        use_memo = orig;
         // create the interval "after" intvl
         interval temp;
         temp.start = intvl.end;
@@ -1655,8 +1666,11 @@ long map_trace_checker::find_last_occurrence(const spot::ltl::binop* node,
     case ::spot::ltl::binop::M: {
         // Given q M p:
         // create !p
+        bool orig = use_memo;
+        use_memo = false;
         const spot::ltl::formula* neg_norm_second =
                 spot::ltl::negative_normal_form(node->second(), true);
+        use_memo = orig;
 
         // create interval after intvl
         interval temp;
@@ -1718,6 +1732,7 @@ long map_trace_checker::find_last_occurrence(const spot::ltl::binop* node,
  * @return
  */
 map_trace_checker::memoization_key map_trace_checker::setup_key(const spot::ltl::formula* node, interval intvl){
+    std::cout << "Called setup_key \n";
     map_trace_checker::memoization_key memo_key;
     memo_key.formula = node;
     memo_key.intvl = intvl;
@@ -1758,7 +1773,6 @@ map_trace_checker::memoization_key map_trace_checker::setup_key_ap(const spot::l
         } else {
             relevant_map.emplace(ap->name(), ap->name());
         }
-
     memo_key.relevant_instants = relevant_map;
     //TODO : Finish this
     return memo_key;
@@ -1774,7 +1788,7 @@ set<string> map_trace_checker::aps_of_form(const spot::ltl::formula* node) {
             relevant_bindings_map->find(node);
     if (set_pair == relevant_bindings_map->end()) {
         std::cerr
-                << "Could not find the atomic props for " << spot::ltl::to_string(node) << " in the map.\n";
+           << "Could not find the atomic props for " << spot::ltl::to_string(node) << " in the map.\n";
         return set<string>();
         //TODO: exception
     }
@@ -1822,7 +1836,7 @@ vector<std::pair<map<string, string>, statistic>> valid_instants_on_traces(
     for (int i = 0; i <num_traces; i++){
         all_checkers[i].add_relevant_bindings(&collector->subform_ap_set);
     }
-    std::cout << "Assigned relevant bindings\n";
+
     // go through and check on all traces
     while (true) {
         shared_ptr<map<string,string>> current_instantiation = instantiator->get_next_instantiation();
@@ -1856,10 +1870,7 @@ vector<std::pair<map<string, string>, statistic>> valid_instants_on_traces(
             return_vec.push_back(finding);
         }
     }
-    std::cout << "Deletion time\n";
     delete(collector);
-   // neno_prop_type->destroy();
-    //neg_neno_prop_type->destroy();
     return return_vec;
 }
 

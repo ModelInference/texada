@@ -118,12 +118,11 @@ TEST(ConstInstantsPoolTest,UsableByMapChecker) {
 }
 
 TEST(ConstInstantsPoolTest,UsableByPrefixChecker) {
-    std::cout << "Why u segfaulting :c\n";
     // Create formula to pass into instantiator
     std::string input = "G(a -> FXc)";
     spot::ltl::parse_error_list pel;
     const spot::ltl::formula* f = spot::ltl::parse(input, pel);
-    std::cout << "Why u segfaulting :c\n";
+
     texada::const_instants_pool* instantiator = new texada::const_instants_pool(f);
 
     // Create traces to pass into checkers
@@ -152,7 +151,7 @@ TEST(ConstInstantsPoolTest,UsableByPrefixChecker) {
             texada::prefix_tree_node>(texada::event("c"), set1);
     std::shared_ptr<texada::prefix_tree_node> terminal_right = std::make_shared<
             texada::prefix_tree_node>(set0);
-    std::cout << "Why u segfaulting :c\n";
+
     // construct tree
     top->add_child(middle_left);
     top->add_child(middle_right);
@@ -168,13 +167,12 @@ TEST(ConstInstantsPoolTest,UsableByPrefixChecker) {
 
     std::vector<std::pair<std::map<std::string, std::string>, texada::statistic>> p_valid_instants = texada::valid_instants_on_traces(f, instantiator,
             p_traces);
-    std::cout << "Why u segfaulting :c\n";
+
     ASSERT_EQ(p_valid_instants.size(), 1);
     ASSERT_EQ(p_valid_instants.at(0).first.at("a"), "a");
     ASSERT_EQ(p_valid_instants.at(0).first.at("c"), "c");
 
     f->destroy();
     delete instantiator;
-    std::cout << "Why u segfaulting :c\n";
 }
 
