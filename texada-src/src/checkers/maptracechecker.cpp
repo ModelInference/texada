@@ -606,6 +606,15 @@ long map_trace_checker::find_first_occurrence(
  */
 long map_trace_checker::find_first_occurrence(const spot::ltl::multop* node,
         interval intvl) {
+    if (use_memo){
+        memoization_key key = setup_key(node,intvl);
+        std::unordered_map<memoization_key, long, memoization_key_hash>::iterator it =
+                first_occ_map.find(key);
+        if (it != first_occ_map.end()) {
+            return it->second;
+        }
+    }
+
     spot::ltl::multop::type opkind = node->op();
     switch (opkind) {
 
@@ -683,7 +692,14 @@ long map_trace_checker::find_first_occurrence(const spot::ltl::multop* node,
 long map_trace_checker::find_first_occurrence(const spot::ltl::unop* node,
         interval intvl) {
 
-
+    if (use_memo){
+        memoization_key key = setup_key(node,intvl);
+        std::unordered_map<memoization_key, long, memoization_key_hash>::iterator it =
+                first_occ_map.find(key);
+        if (it != first_occ_map.end()) {
+            return it->second;
+        }
+    }
 
     spot::ltl::unop::type optype = node->op();
 
@@ -781,7 +797,14 @@ long map_trace_checker::find_first_occurrence(const spot::ltl::unop* node,
 long map_trace_checker::find_first_occurrence(const spot::ltl::binop* node,
         interval intvl) {
     spot::ltl::binop::type opkind = node->op();
-
+    if (use_memo){
+        memoization_key key = setup_key(node,intvl);
+        std::unordered_map<memoization_key, long, memoization_key_hash>::iterator it =
+                first_occ_map.find(key);
+        if (it != first_occ_map.end()) {
+            return it->second;
+        }
+    }
     switch (opkind) {
 
     //XOr case: Take the first of each one, unless they're at the same place.
@@ -1220,6 +1243,16 @@ long map_trace_checker::find_last_occurrence(const spot::ltl::atomic_prop* node,
  */
 long map_trace_checker::find_last_occurrence(const spot::ltl::multop* node,
         interval intvl) {
+
+    if (use_memo){
+        memoization_key key = setup_key(node,intvl);
+        std::unordered_map<memoization_key, long, memoization_key_hash>::iterator it =
+                last_occ_map.find(key);
+        if (it != last_occ_map.end()) {
+            return it->second;
+        }
+    }
+
     spot::ltl::multop::type opkind = node->op();
     switch (opkind) {
 
@@ -1293,6 +1326,16 @@ long map_trace_checker::find_last_occurrence(const spot::ltl::multop* node,
  */
 long map_trace_checker::find_last_occurrence(const spot::ltl::unop* node,
         interval intvl) {
+
+    if (use_memo){
+        memoization_key key = setup_key(node,intvl);
+        std::unordered_map<memoization_key, long, memoization_key_hash>::iterator it =
+                last_occ_map.find(key);
+        if (it != last_occ_map.end()) {
+            return it->second;
+        }
+    }
+
     spot::ltl::unop::type optype = node->op();
 
     switch (optype) {
@@ -1411,6 +1454,15 @@ long map_trace_checker::find_last_occurrence(const spot::ltl::constant* node,
  */
 long map_trace_checker::find_last_occurrence(const spot::ltl::binop* node,
         interval intvl) {
+
+    if (use_memo){
+        memoization_key key = setup_key(node,intvl);
+        std::unordered_map<memoization_key, long, memoization_key_hash>::iterator it =
+                last_occ_map.find(key);
+        if (it != last_occ_map.end()) {
+            return it->second;
+        }
+    }
     spot::ltl::binop::type opkind = node->op();
 
     switch (opkind) {
