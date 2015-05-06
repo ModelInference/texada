@@ -30,4 +30,8 @@ traces/perracotta-type-traces/oneeffect/instantiations.txt~
 traces/perracotta-type-traces/oneeffect/readme.txt~
 traces/perracotta-type-traces/response/args.txt~
 traces/perracotta-type-traces/response/readme.txt~
-
+*.orig
+*.swp
+*.swo
+*.swn
+*~
