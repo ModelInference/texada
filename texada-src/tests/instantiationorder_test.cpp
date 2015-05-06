@@ -27,19 +27,65 @@ TEST(MostOccurringSubsetGatherer, SmallTests){
 
     input = "G ((q & Fr) -> (p -> (!r U (s & !r & !z & X((!r & !z) U t)))) U r)";
     f = spot::ltl::parse(input, pel);
+    /*
+     * Tree structure:
+     *              G
+     *              |
+     *              ->
+     *             / \
+     *            &   U
+     *          / |   | \
+     *         q  F   -> r
+     *            |   |\
+     *            r   p U
+     *                 / \
+     *                !   &  _
+     *               /  / | \ \
+     *              r  s  !  z X
+     *                    |     \
+     *                    r     U
+     *                         / \
+     *                        &   t
+     *                       / \
+     *                      !   !
+     *                      r   z
+     * so two subformulae have {p,q,r,s,t,z} as a.p.s
+     *      1 has {q,r}
+     *      2 have {p,r,s,t,z}
+     *      2 have {r,s,t,z}
+     *      2 have {r,t,z}
+     *      1 has  {r,z}
+     */
 
     gatherer.set_to_count_map.clear();
     f->accept(gatherer);
-
-    for (std::map<std::set<std::string>, int>::iterator it1 = gatherer.set_to_count_map.begin();
-            it1 != gatherer.set_to_count_map.end(); it1++){
-        for (std::set<std::string>::iterator it2 = it1->first.begin();
-                it2 != it1->first.end(); it2++){
-            std::cout << *it2<< " ";
-        }
-        std::cout << it1->second <<"\n";
-
-    }
     ASSERT_EQ(gatherer.set_to_count_map.size(), 6);
+
+    set_key.clear();
+    set_key.insert("p");
+    set_key.insert("q");
+    set_key.insert("r");
+    set_key.insert("s");
+    set_key.insert("t");
+    set_key.insert("z");
+    ASSERT_FALSE(gatherer.set_to_count_map.find(set_key) == gatherer.set_to_count_map.end());
+    ASSERT_EQ(gatherer.set_to_count_map.find(set_key)->second, 2);
+    set_key.erase("q");
+    ASSERT_FALSE(gatherer.set_to_count_map.find(set_key) == gatherer.set_to_count_map.end());
+    ASSERT_EQ(gatherer.set_to_count_map.find(set_key)->second, 2);
+    set_key.erase("p");
+    ASSERT_FALSE(gatherer.set_to_count_map.find(set_key) == gatherer.set_to_count_map.end());
+    ASSERT_EQ(gatherer.set_to_count_map.find(set_key)->second, 2);
+    set_key.erase("s");
+    ASSERT_FALSE(gatherer.set_to_count_map.find(set_key) == gatherer.set_to_count_map.end());
+    ASSERT_EQ(gatherer.set_to_count_map.find(set_key)->second, 2);
+    set_key.erase("t");
+    ASSERT_FALSE(gatherer.set_to_count_map.find(set_key) == gatherer.set_to_count_map.end());
+    ASSERT_EQ(gatherer.set_to_count_map.find(set_key)->second, 1);
+    set_key.erase("z");
+    set_key.insert("q");
+    ASSERT_FALSE(gatherer.set_to_count_map.find(set_key) == gatherer.set_to_count_map.end());
+    ASSERT_EQ(gatherer.set_to_count_map.find(set_key)->second, 1);
+
 
 }
