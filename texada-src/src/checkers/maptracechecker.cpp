@@ -62,8 +62,6 @@ map_trace_checker::~map_trace_checker() {
  */
 statistic map_trace_checker::check_on_trace(const spot::ltl::formula* node,
         interval intvl) {
-    // TODO: Adjust this
-    use_memo = false;
     use_instant_map = false;
     intvl.end = terminal_pos - 1;
     return this->check(node, intvl);
@@ -78,7 +76,6 @@ statistic map_trace_checker::check_on_trace(const spot::ltl::formula* node,
 statistic map_trace_checker::check_on_trace(const spot::ltl::formula* node,
          map<string,string> instantiation_map_,
         interval intvl) {
-    use_memo = true;
     use_instant_map = true;
     instantiation_map = instantiation_map_;
     intvl.end = terminal_pos - 1;
