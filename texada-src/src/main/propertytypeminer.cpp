@@ -82,7 +82,7 @@ set<std::pair<const spot::ltl::formula*, statistic>> mine_property_type(
     bool allow_reps = opts.count("allow-same-bindings");
     // whether to pregenerate instantiations
     bool pregen_instants = opts.count("pregen-instants");
-    bool optimize_order = opts.count("optimize-order");
+    bool optimize_order = opts.count("optimize-var-order");
 
     /*
      * Begin: Focus for code review Oct 22, 2014
