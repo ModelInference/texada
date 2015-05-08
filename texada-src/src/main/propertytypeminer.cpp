@@ -82,6 +82,7 @@ set<std::pair<const spot::ltl::formula*, statistic>> mine_property_type(
     bool allow_reps = opts.count("allow-same-bindings");
     // whether to pregenerate instantiations
     bool pregen_instants = opts.count("pregen-instants");
+    bool optimize_order = opts.count("optimize-order");
 
     /*
      * Begin: Focus for code review Oct 22, 2014
@@ -190,8 +191,7 @@ set<std::pair<const spot::ltl::formula*, statistic>> mine_property_type(
     }
 
     // create the set of formula's variables
-    spot::ltl::atomic_prop_set * variables=
-            spot::ltl::atomic_prop_collect(formula);
+    shared_ptr<spot::ltl::atomic_prop_set> variables(spot::ltl::atomic_prop_collect(formula));
     // remove variables which are specified as constant events
     if (specified_formula_events.size() > 0) {
         spot::ltl::atomic_prop_set::iterator it = variables->begin();
@@ -213,7 +213,7 @@ set<std::pair<const spot::ltl::formula*, statistic>> mine_property_type(
     }
 
     int var_size = variables->size();
-    delete variables;
+
 
     // create the instantiator
     instants_pool_creator * instantiator;
@@ -222,10 +222,10 @@ set<std::pair<const spot::ltl::formula*, statistic>> mine_property_type(
         instantiator = new const_instants_pool(formula);
     } else if (pregen_instants) {
         instantiator = new pregen_instants_pool(event_set, formula,
-                allow_reps, false, specified_formula_events);
+                allow_reps, optimize_order, variables, specified_formula_events);
     } else {
-        instantiator = new otf_instants_pool(event_set, formula, allow_reps, false,
-                specified_formula_events);
+        instantiator = new otf_instants_pool(event_set, formula, allow_reps, optimize_order,
+                variables, specified_formula_events);
     }
 
     vector<std::pair<std::map<std::string, std::string>, texada::statistic>> valid_instants;

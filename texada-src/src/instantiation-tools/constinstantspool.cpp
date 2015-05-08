@@ -8,9 +8,12 @@
 #include "constinstantspool.h"
 #include "vector"
 
+#include <iostream>
+
 namespace texada {
 
 const_instants_pool::const_instants_pool(const spot::ltl::formula * formula) {
+
     instantiation = std::make_shared<map<string, string>>();
     instantiate(formula);
 }

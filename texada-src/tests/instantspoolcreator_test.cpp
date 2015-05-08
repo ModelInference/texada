@@ -22,6 +22,8 @@ TEST(InstantiatorPoolCreatorTest,TwoBindingsThreeEvents) {
     spot::ltl::parse_error_list pel;
     const spot::ltl::formula* f = spot::ltl::parse(input, pel);
 
+    std::shared_ptr<spot::ltl::atomic_prop_set> var_set(spot::ltl::atomic_prop_collect(f));
+
     // create a set of events
     std::shared_ptr<std::set<std::string>> events = std::make_shared<
             std::set<std::string>>();
@@ -31,7 +33,7 @@ TEST(InstantiatorPoolCreatorTest,TwoBindingsThreeEvents) {
     // now create the event instantiator
 
     texada::pregen_instants_pool instantiator = texada::pregen_instants_pool(
-            events, f, true, false, std::vector<std::string>());
+            events, f, true, false, var_set, std::vector<std::string>());
 
     std::shared_ptr<std::vector<std::map<std::string, std::string>>>returned_array = instantiator.return_instantiations();
     //check that all expected mappings occur
@@ -66,6 +68,8 @@ TEST(InstantiatorPoolCreatorTest,CheckNoRepetition) {
     spot::ltl::parse_error_list pel;
     const spot::ltl::formula* f = spot::ltl::parse(input, pel);
 
+    std::shared_ptr<spot::ltl::atomic_prop_set> var_set(spot::ltl::atomic_prop_collect(f));
+
     // create a set of events
     std::shared_ptr<std::set<std::string>> events = std::make_shared<
             std::set<std::string>>();
@@ -75,7 +79,7 @@ TEST(InstantiatorPoolCreatorTest,CheckNoRepetition) {
     // now create the event instantiator
 
     texada::pregen_instants_pool instantiator = texada::pregen_instants_pool(
-            events, f, false, false, std::vector<std::string>());
+            events, f, false, false, var_set, std::vector<std::string>());
 
     std::shared_ptr<std::vector<std::map<std::string, std::string>>>returned_array = instantiator.return_instantiations();
     //check that all expected mappings occur

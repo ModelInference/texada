@@ -7,6 +7,7 @@
 
 #include "pregeninstantspool.h"
 #include <math.h>
+#include "orderdecider.h"
 
 namespace texada {
 
@@ -17,42 +18,19 @@ namespace texada {
  */
 pregen_instants_pool::pregen_instants_pool(shared_ptr<set<string>> events_,
         const spot::ltl::formula * f, bool allow_reps, bool opt_order,
-        vector<string> exclude_events) :
-        instants_pool_creator(events_, f, allow_reps, opt_order, exclude_events) {
+        shared_ptr<spot::ltl::atomic_prop_set> set, vector<string> exclude_events) :
+        instants_pool_creator(events_, f, allow_reps, opt_order, set, exclude_events) {
     // create formula vars vector
     vector<string> formula_vars;
 
     if (optimize_order) {
-
+        formula_vars = optimize_var_order(formula, formula_aps->size());
     } else {
-        // create the set of formula's variables
-        spot::ltl::atomic_prop_set * formula_aps =
-                spot::ltl::atomic_prop_collect(formula);
-        // remove variables which are specified as constant events
-        if (events_to_exclude.size() > 0) {
-            spot::ltl::atomic_prop_set::iterator it = formula_aps->begin();
-            while (it != formula_aps->end()) {
-                bool erase = false;
-                for (int i = 0; i < events_to_exclude.size(); i++) {
-                    if ((*it)->name() == events_to_exclude.at(i)) {
-                        erase = true;
-                    }
-                }
-                if (erase) {
-                    spot::ltl::atomic_prop_set::iterator toErase = it;
-                    ++it;
-                    formula_aps->erase(toErase);
-                } else {
-                    ++it;
-                }
-            }
-        }
         // put into vector
         for (spot::ltl::atomic_prop_set::iterator it = formula_aps->begin();
                 it != formula_aps->end(); it++){
             formula_vars.push_back((*it)->name());
         }
-        delete formula_aps;
    }
 
     // We are creating a vector with the exact size required to store

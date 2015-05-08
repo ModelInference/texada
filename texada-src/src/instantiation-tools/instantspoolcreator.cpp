@@ -12,15 +12,18 @@ namespace texada {
 
 instants_pool_creator::instants_pool_creator(shared_ptr<set<string>> events_,
         const spot::ltl::formula * f, bool allow_reps, bool opt_order,
+        shared_ptr<spot::ltl::atomic_prop_set> set,
         vector<string> exclude_events) :
         formula(f), unique_events(events_), allow_repetition(allow_reps) ,
-        optimize_order(opt_order), events_to_exclude(exclude_events){
+        optimize_order(opt_order), events_to_exclude(exclude_events),
+        formula_aps(set){
 
 }
 
 instants_pool_creator::instants_pool_creator() {
     unique_events = NULL;
     formula = NULL;
+    formula_aps = NULL;
     allow_repetition = false;
 }
 

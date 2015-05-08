@@ -31,6 +31,7 @@ class instants_pool_creator {
 public:
     instants_pool_creator(shared_ptr<set<string>>  events,
             const spot::ltl::formula * f, bool allow_reps, bool opt_order,
+            shared_ptr<spot::ltl::atomic_prop_set>,
             vector<string> exclude_events = vector<string>());
     instants_pool_creator();
     virtual ~instants_pool_creator();
@@ -42,6 +43,7 @@ protected:
     shared_ptr<set<string>>  unique_events;
     vector<string> events_to_exclude;
     const spot::ltl::formula * formula;
+    shared_ptr<spot::ltl::atomic_prop_set> formula_aps;
     bool allow_repetition = false;
     bool optimize_order = false;
     int traversal_var = 0;

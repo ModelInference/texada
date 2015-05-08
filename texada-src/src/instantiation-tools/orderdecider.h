@@ -13,6 +13,8 @@
 #include <map>
 #include <vector>
 
+#include <ltlast/allnodes.hh>
+
 namespace texada {
 using std::set;
 using std::map;
@@ -37,6 +39,8 @@ private:
 
     set<string> vars_so_far;
 };
+
+vector<string> optimize_var_order(const spot::ltl::formula * f, int n);
 
 } /* namespace texada */
 
