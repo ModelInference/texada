@@ -33,7 +33,7 @@ class pregen_instants_pool: public instants_pool_creator {
 public:
 
     pregen_instants_pool(shared_ptr<set<string>> events,
-            shared_ptr<spot::ltl::atomic_prop_set>, bool allow_reps,
+            const spot::ltl::formula * f, bool allow_reps, bool opt_order,
             vector<string> exclude_events);
     virtual ~pregen_instants_pool();
     void reset_insantiations();
@@ -43,7 +43,7 @@ public:
 private:
     // the full set of instantiations, to
     // be returned
-    void instantiate_array();
+    void instantiate_array(vector<string>);
     void traverse_and_fill(string event, int i, int k);
     shared_ptr<vector<map<string, string>>> inst_pool;
     // to return the instantiations in correct order.
