@@ -83,6 +83,7 @@ set<std::pair<const spot::ltl::formula*, statistic>> mine_property_type(
     // whether to pregenerate instantiations
     bool pregen_instants = opts.count("pregen-instants");
     bool optimize_order = opts.count("optimize-var-order");
+    bool use_memo = opts.count("use-memo");
 
     /*
      * Begin: Focus for code review Oct 22, 2014
@@ -122,6 +123,15 @@ set<std::pair<const spot::ltl::formula*, statistic>> mine_property_type(
         std::cerr << "Statistics-related options were called for a non-linear checker. "
                 "Currently, the map and prefix checkers do not support statistic-related options."<< "\n";
         exit(1);
+    }
+
+    // currently, only the vanilla configuration is supported for
+    // the map and prefix checkers. So, stop program if a non-vanilla
+    // configuration is called with a non-linear checker
+    if (!use_map && (use_memo || optimize_order)) {
+          std::cerr << "Memoization-related options were called for a non-map checker. "
+                  "Currently, the linear and prefix checkers do not support memoization-related options."<< "\n";
+          exit(1);
     }
 
 
@@ -238,7 +248,7 @@ set<std::pair<const spot::ltl::formula*, statistic>> mine_property_type(
     } else if (use_map) {
         shared_ptr<set<map<event, vector<long>>> > map_trace_set = dynamic_cast<map_parser*>(parser)->return_map_trace();
         valid_instants = valid_instants_on_traces(formula, instantiator,
-                map_trace_set);
+                map_trace_set, use_memo);
     } else if (use_pretree) {
         shared_ptr<prefix_tree> prefix_tree_traces = dynamic_cast<prefix_tree_parser*>(parser)->return_prefix_trees();
         valid_instants = valid_instants_on_traces(formula, instantiator,
