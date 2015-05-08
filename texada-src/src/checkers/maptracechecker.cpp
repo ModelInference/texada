@@ -20,10 +20,26 @@ namespace texada {
  * Creates a map trace checker which can check any formula on the
  * trace map it's constructed on.
  * @param trace_map_
+ * @param use_mem
+ */
+map_trace_checker::map_trace_checker(
+        const std::map<event, std::vector<long>>* trace_map_, bool use_mem) :
+        trace_map(trace_map_) {
+    use_memo = use_mem;
+    std::vector<long> end_vector = trace_map->at(texada::event());
+    terminal_pos = end_vector[0];
+
+}
+
+/**
+ * Creates a map trace checker which can check any formula on the
+ * trace map it's constructed on. Defaults to no memoization.
+ * @param trace_map_
  */
 map_trace_checker::map_trace_checker(
         const std::map<event, std::vector<long>>* trace_map_) :
         trace_map(trace_map_) {
+    use_memo = false;
     std::vector<long> end_vector = trace_map->at(texada::event());
     terminal_pos = end_vector[0];
 
@@ -1784,7 +1800,7 @@ long map_trace_checker::find_last_occurrence(const spot::ltl::binop* node,
  * @return
  */
 map_trace_checker::memoization_key map_trace_checker::setup_key(const spot::ltl::formula* node, interval intvl){
-    std::cout << "Called setup_key \n";
+   // std::cout << "Called setup_key \n";
     map_trace_checker::memoization_key memo_key;
     memo_key.formula = node;
     memo_key.intvl = intvl;
@@ -1858,6 +1874,12 @@ void map_trace_checker::add_relevant_bindings(map<const spot::ltl::formula*, set
 
 }
 
+void map_trace_checker::clear_memo(){
+    first_occ_map.clear();
+    last_occ_map.clear();
+}
+
+
 /**
  * Check all instantiations of the formula on the traces given
  * @param prop_type the property type to check instantiations of
@@ -1868,7 +1890,7 @@ void map_trace_checker::add_relevant_bindings(map<const spot::ltl::formula*, set
 vector<std::pair<map<string, string>, statistic>> valid_instants_on_traces(
         const spot::ltl::formula * prop_type,
         instants_pool_creator * instantiator,
-        shared_ptr<set<map<event, vector<long>>> > traces) {
+        shared_ptr<set<map<event, vector<long>>> > traces, bool use_memo) {
     instantiator->reset_instantiations();
     // vector to return
     vector<std::pair<map<string, string>, statistic>> return_vec;
@@ -1890,12 +1912,13 @@ vector<std::pair<map<string, string>, statistic>> valid_instants_on_traces(
     }
 
     // go through and check on all traces
+    int i = 0;
     while (true) {
         shared_ptr<map<string,string>> current_instantiation = instantiator->get_next_instantiation();
         if (current_instantiation == NULL) {
             break;
         }
-        
+        //TODO: add memo.clear() every certain amt of time here.
         map<string,string> instantiation_to_pass = *current_instantiation;
         // easy work around the possibility of events instead of
         // variables: add to current_instantiation event->event
@@ -1921,10 +1944,30 @@ vector<std::pair<map<string, string>, statistic>> valid_instants_on_traces(
             std::pair<map<string, string>, statistic> finding(*current_instantiation, global_stat);
             return_vec.push_back(finding);
         }
+        i++;
     }
+    std::cout<< i << "\n";
     delete(collector);
     return return_vec;
 }
+
+
+/**
+ * Valid instants on trace, with default to no memoization.
+ * @param prop_type
+ * @param instantiator
+ * @param traces
+ * @return
+ */
+vector<std::pair<map<string, string>, statistic>> valid_instants_on_traces(
+        const spot::ltl::formula * prop_type,
+        instants_pool_creator * instantiator,
+        shared_ptr<set<map<event, vector<long>>> > traces) {
+    return valid_instants_on_traces(prop_type,instantiator,traces,false);
+
+}
+
+
 
 }
 /* namespace texada */

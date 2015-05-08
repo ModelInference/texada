@@ -28,7 +28,8 @@ namespace texada {
 class map_trace_checker : public bool_based_checker<interval>{
 
 public:
-    map_trace_checker(const map<event, vector<long>>*);
+    map_trace_checker(const map<event, vector<long>>*, bool use_memo );
+    map_trace_checker(const map<event, vector<long>>* );
     virtual ~map_trace_checker();
     statistic check_on_trace(const spot::ltl::formula *, interval intvl = interval());
     statistic check_on_trace(const spot::ltl::formula *, map<string,string>, interval intvl = interval());
@@ -42,6 +43,8 @@ public:
     // things for memoization
     void add_relevant_bindings(
             map<const spot::ltl::formula*, set<string>> * bindings_map);
+    // clears memo tables
+    void clear_memo();
 
 private:
 
@@ -152,6 +155,11 @@ private:
     }
 
 };
+
+vector<std::pair<map<string, string>, statistic>> valid_instants_on_traces(
+        const spot::ltl::formula * prop_type,
+        instants_pool_creator * instantiator,
+        shared_ptr<set<map<event, vector<long>>>>, bool use_memo);
 
 vector<std::pair<map<string, string>, statistic>> valid_instants_on_traces(
         const spot::ltl::formula * prop_type,
