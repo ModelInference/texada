@@ -47,7 +47,9 @@ boost::program_options::options_description get_options_description() {
             ("conf-threshold", boost::program_options::value<float>(),
             "only find instances above the given confidence threshold. Must be between 0 and 1 [default: 1]")
             ("print-stats", "print the support and confidence of each finding")
-            ("use-global-thresholds", "make all inputed thresholds global [default: false]");
+            ("use-global-thresholds", "make all inputed thresholds global [default: false]")
+            ("use-memo", "use full tree memoization with the map trace checker")
+            ("optimize-var-order", "optimize variable order for memoization");
     return desc;
 
 }

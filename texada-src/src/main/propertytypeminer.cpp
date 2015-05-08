@@ -190,8 +190,8 @@ set<std::pair<const spot::ltl::formula*, statistic>> mine_property_type(
     }
 
     // create the set of formula's variables
-    shared_ptr<spot::ltl::atomic_prop_set> variables(
-            spot::ltl::atomic_prop_collect(formula));
+    spot::ltl::atomic_prop_set * variables=
+            spot::ltl::atomic_prop_collect(formula);
     // remove variables which are specified as constant events
     if (specified_formula_events.size() > 0) {
         spot::ltl::atomic_prop_set::iterator it = variables->begin();
@@ -212,16 +212,19 @@ set<std::pair<const spot::ltl::formula*, statistic>> mine_property_type(
         }
     }
 
+    int var_size = variables->size();
+    delete variables;
+
     // create the instantiator
     instants_pool_creator * instantiator;
 
-    if (variables->empty()) {
+    if (var_size == 0) {
         instantiator = new const_instants_pool(formula);
     } else if (pregen_instants) {
-        instantiator = new pregen_instants_pool(event_set, variables,
-                allow_reps, specified_formula_events);
+        instantiator = new pregen_instants_pool(event_set, formula,
+                allow_reps, false, specified_formula_events);
     } else {
-        instantiator = new otf_instants_pool(event_set, variables, allow_reps,
+        instantiator = new otf_instants_pool(event_set, formula, allow_reps, false,
                 specified_formula_events);
     }
 

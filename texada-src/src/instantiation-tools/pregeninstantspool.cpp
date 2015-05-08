@@ -16,17 +16,52 @@ namespace texada {
  * @param ltlevents set of atomic propositions to be replaced
  */
 pregen_instants_pool::pregen_instants_pool(shared_ptr<set<string>> events_,
-        shared_ptr<spot::ltl::atomic_prop_set> ltlevents, bool allow_reps,
+        const spot::ltl::formula * f, bool allow_reps, bool opt_order,
         vector<string> exclude_events) :
-        instants_pool_creator(events_, ltlevents, allow_reps, exclude_events) {
+        instants_pool_creator(events_, f, allow_reps, opt_order, exclude_events) {
+    // create formula vars vector
+    vector<string> formula_vars;
+
+    if (optimize_order) {
+
+    } else {
+        // create the set of formula's variables
+        spot::ltl::atomic_prop_set * formula_aps =
+                spot::ltl::atomic_prop_collect(formula);
+        // remove variables which are specified as constant events
+        if (events_to_exclude.size() > 0) {
+            spot::ltl::atomic_prop_set::iterator it = formula_aps->begin();
+            while (it != formula_aps->end()) {
+                bool erase = false;
+                for (int i = 0; i < events_to_exclude.size(); i++) {
+                    if ((*it)->name() == events_to_exclude.at(i)) {
+                        erase = true;
+                    }
+                }
+                if (erase) {
+                    spot::ltl::atomic_prop_set::iterator toErase = it;
+                    ++it;
+                    formula_aps->erase(toErase);
+                } else {
+                    ++it;
+                }
+            }
+        }
+        // put into vector
+        for (spot::ltl::atomic_prop_set::iterator it = formula_aps->begin();
+                it != formula_aps->end(); it++){
+            formula_vars.push_back((*it)->name());
+        }
+        delete formula_aps;
+   }
+
     // We are creating a vector with the exact size required to store
     // all instantiations:
     // Each event can appear at each formula variable, so the total
     // size is: # of unique events ^ # of variable in formula
-
     inst_pool = std::make_shared<vector<map<string, string>>>(
-    vector<map<string, string>>(pow(unique_events->size(), formula_vars->size())));
-    instantiate_array();
+    vector<map<string, string>>(pow(unique_events->size(), formula_vars.size())));
+    instantiate_array(formula_vars);
 
 }
 
@@ -35,7 +70,7 @@ pregen_instants_pool::~pregen_instants_pool() {
 /**
  * Places all instantiations into the array.
  */
-void pregen_instants_pool::instantiate_array() {
+void pregen_instants_pool::instantiate_array(vector<string> formula_vars) {
 
     int num_unique_events = unique_events->size();
 
@@ -55,18 +90,14 @@ void pregen_instants_pool::instantiate_array() {
 
     // "level" of the pass, i.e. how deep in formula_vars we are
 
-    int lvl = 0;
-    int f_var_size = formula_vars->size();
-    for (set<const spot::ltl::atomic_prop*>::iterator formula_it =
-            formula_vars->begin(); formula_it != formula_vars->end();
-            ++formula_it) {
-        assert(lvl < f_var_size);
+
+    int f_var_size = formula_vars.size();
+    for (int i = 0; i < f_var_size; i++) {
         // inst_fxn has a string->string map, so get name of atomic prop
-        const spot::ltl::atomic_prop* event_var = *formula_it;
-        string name = event_var->name();
+        string name = formula_vars[i];
         // now traverse the array to fill this level
-        traverse_and_fill(name, lvl, num_unique_events);
-        lvl++;
+        traverse_and_fill(name, f_var_size -i -1, num_unique_events);
+
     }
 }
 /**
