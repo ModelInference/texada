@@ -34,7 +34,7 @@ public:
 
     pregen_instants_pool(shared_ptr<set<string>> events,
             const spot::ltl::formula * f, bool allow_reps, bool opt_order,
-            vector<string> exclude_events);
+            shared_ptr<spot::ltl::atomic_prop_set> set, vector<string> exclude_events);
     virtual ~pregen_instants_pool();
     void reset_insantiations();
     shared_ptr<map<string, string>> get_next_instantiation();

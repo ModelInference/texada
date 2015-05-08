@@ -6,6 +6,7 @@
  */
 
 #include "orderdecider.h"
+#include "mostoccurringsubsetgatherer.h"
 
 #include <iostream>
 
@@ -181,6 +182,20 @@ int order_decider::count_occurrences_with_set(string occurrer, set<string> occur
 
     }
     return count;
+}
+
+/**
+ * Returns the memoization-optimized order for f (first element of returned
+ * vector should be the one that spans the most time).
+ * @param f formula to find op
+ * @return
+ */
+vector<string> optimize_var_order(const spot::ltl::formula * f, int n){
+    most_occurring_subset_gatherer gatherer = most_occurring_subset_gatherer();
+    f->accept(gatherer);
+    order_decider decider = order_decider(gatherer.set_to_count_map, n);
+    decider.determine_order();
+    return decider.vars_in_order;
 }
 
 } /* namespace texada */

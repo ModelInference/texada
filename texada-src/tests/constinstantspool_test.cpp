@@ -114,7 +114,9 @@ TEST(ConstInstantsPoolTest,UsableByMapChecker) {
     ASSERT_EQ(m_valid_instants.at(0).first.at("c"), "c");
 
     f->destroy();
+
     delete instantiator;
+
 }
 
 TEST(ConstInstantsPoolTest,UsableByPrefixChecker) {
