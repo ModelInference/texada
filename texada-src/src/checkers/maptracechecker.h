@@ -42,6 +42,8 @@ public:
     // things for memoization
     void add_relevant_bindings(
             map<const spot::ltl::formula*, set<string>> * bindings_map);
+    void clear_memo();
+    int num_memo_elements();
 
 private:
 
