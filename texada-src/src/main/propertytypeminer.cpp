@@ -34,6 +34,7 @@
 
 namespace texada {
 
+
 /**
  * Finds instantiations of the given property type using the linear
  * trace checker. NOTE: this method is only used in testing.

@@ -1784,7 +1784,6 @@ long map_trace_checker::find_last_occurrence(const spot::ltl::binop* node,
  * @return
  */
 map_trace_checker::memoization_key map_trace_checker::setup_key(const spot::ltl::formula* node, interval intvl){
-    std::cout << "Called setup_key \n";
     map_trace_checker::memoization_key memo_key;
     memo_key.formula = node;
     memo_key.intvl = intvl;
@@ -1857,6 +1856,22 @@ void map_trace_checker::add_relevant_bindings(map<const spot::ltl::formula*, set
     relevant_bindings_map = bindings_map;
 
 }
+
+/**
+ * Clears the memoization maps.
+ */
+void map_trace_checker::clear_memo(){
+    first_occ_map.clear();
+    last_occ_map.clear();
+}
+
+/**
+ * Gives number of memo elements
+ */
+int map_trace_checker::num_memo_elements(){
+    return first_occ_map.size()+ last_occ_map.size();
+}
+
 
 /**
  * Check all instantiations of the formula on the traces given
