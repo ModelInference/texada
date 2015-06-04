@@ -96,6 +96,7 @@ shared_ptr<set<string>> parser::return_props() {
 bool parser::get_event(std::ifstream &infile, event &event) {
     std::string line;
     std::shared_ptr<std::string> prop;
+    bool last_event_was_terminal = event.is_terminal();
     event.clear();
     do {
         if (std::getline(infile, line)) {
@@ -116,7 +117,12 @@ bool parser::get_event(std::ifstream &infile, event &event) {
                 exit(1);
             }
         } else {
-            // TODO: handle case when an EOF is also an event termination
+            // if EOF is reached without an explicit trace separator to indicate
+            // terminal event, add terminal event to include the last trace
+            if (!last_event_was_terminal) {
+                add_event(texada::event());
+            }
+
             return false;
         }
     } while (parses_mult_prop || (ignores_nm_lines && prop == NULL));
