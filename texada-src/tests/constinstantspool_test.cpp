@@ -106,14 +106,17 @@ TEST(ConstInstantsPoolTest,UsableByMapChecker) {
 
     m_traces->insert(m_trace1);
     m_traces->insert(m_trace2);
-
+    std::cout << "you okay?\n";
     std::vector<std::pair<std::map<std::string, std::string>, texada::statistic>> m_valid_instants = texada::valid_instants_on_traces(f, instantiator, m_traces);
-
+    std::cout << "you okay?\n";
     ASSERT_EQ(m_valid_instants.size(), 1);
     ASSERT_EQ(m_valid_instants.at(0).first.at("a"), "a");
     ASSERT_EQ(m_valid_instants.at(0).first.at("c"), "c");
 
+    std::cout << "you okay?\n";
+
     f->destroy();
+    std::cout << "you okay?\n";
     delete instantiator;
 }
 
