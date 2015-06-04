@@ -8,6 +8,7 @@
 #include "subformulaapcollector.h"
 #include <ltlvisit/apcollect.hh>
 #include <iostream>
+#include <ltlvisit/nenoform.hh>
 
 namespace texada {
 
@@ -17,7 +18,13 @@ subformula_ap_collector::subformula_ap_collector() {
 }
 
 subformula_ap_collector::~subformula_ap_collector() {
-    // TODO Auto-generated destructor stub
+   /* std::map<const spot::ltl::formula*,std::set<std::string>>::iterator it = subform_ap_set.begin();
+    while (it != subform_ap_set.end()){
+        std::cout << "Did we get here too?\n";
+        std::map<const spot::ltl::formula*,std::set<std::string>>::iterator to_delete = it;
+        it++;
+        to_delete->first->destroy();
+    }*/
 }
 
 void subformula_ap_collector::doit(const spot::ltl::atomic_prop* ap) {
@@ -36,6 +43,8 @@ void subformula_ap_collector::doit_default(const spot::ltl::formula* f) {
     }
     delete atomic_props;
     subform_ap_set.emplace(f,ap_names);
+    subform_ap_set.emplace(spot::ltl::negative_normal_form(f,false), ap_names);
+    subform_ap_set.emplace(spot::ltl::negative_normal_form(f,true), ap_names);
 
 
 }
