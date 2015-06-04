@@ -57,7 +57,7 @@ def generate_data_temp_log(traces, invars, filepath, incl_cls, incl_obj):
       for obj, trace in traces.iteritems():
          for ppt in trace:
             ppt_name = ppt[0]+"."+ppt[1]+":::"+ppt[2]+ppt[3]
-            if ppt_name not in invars:
+            if (ppt_name not in invars):
                continue
             invarlist = invars[ppt_name]
             # if the ppt is an exit point, append the invariants of the
@@ -97,9 +97,7 @@ def generate_data_temp_logs(traces, invars, filepath, incl_cls, incl_obj):
      filestart = filepath[:lastdot]
    else:
      filestart = filepath
-   k = 0; 
    for obj, trace in traces.iteritems():
-      k = k + 1;
       with open(filestart +  str(obj).strip(".") + extension , 'w') as f:
          for ppt in trace:
             ppt_name = ppt[0]+"."+ppt[1]+":::"+ppt[2]+ppt[3]
@@ -112,7 +110,7 @@ def generate_data_temp_logs(traces, invars, filepath, incl_cls, incl_obj):
             # the union of[method()::EXIT42] and emap[method()::EXIT].
             if ppt[2] == "EXIT":
                agg_ppt_name = ppt[0]+"."+ppt[1]+":::"+ppt[2]
-               invarlist = invarlist + invars[agg_ppt_name]
+               invarlist = invarlist +invars[agg_ppt_name]
             # if configured to include class invariants, find and append onto invarlist the class invariants corresponding to this ppt.
             if incl_cls:
                cls_name = ppt[0]+":::"+"CLASS"
