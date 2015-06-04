@@ -89,15 +89,17 @@ TEST(MultiPropParserTest, MapTest) {
     ASSERT_EQ(trace_set->size(), 1);
     std::map<texada::event, std::vector<long>> trace =
             *trace_set->begin();
-    ASSERT_EQ(trace.size(), 5);
-    std::set<std::string> props0 = {"a", "b"};
-    std::set<std::string> props1 = {"a", "b", "d"};
+    ASSERT_EQ(trace.size(), 6);
+    std::set<std::string> props0 = {"a"};
+    std::set<std::string> props1 = {"b"};
     std::set<std::string> props2 = {"c"};
-    std::set<std::string> props3 = {"b", "e"};
-    ASSERT_EQ(trace.at(texada::event(props0)).size(), 1);
-    ASSERT_EQ(trace.at(texada::event(props1)).size(), 1);
+    std::set<std::string> props3 = {"d"};
+    std::set<std::string> props4 = {"e"};
+    ASSERT_EQ(trace.at(texada::event(props0)).size(), 2);
+    ASSERT_EQ(trace.at(texada::event(props1)).size(), 3);
     ASSERT_EQ(trace.at(texada::event(props2)).size(), 1);
     ASSERT_EQ(trace.at(texada::event(props3)).size(), 1);
+    ASSERT_EQ(trace.at(texada::event(props4)).size(), 1);
     ASSERT_EQ(trace.at(texada::event()).size(), 1);
 }
 
