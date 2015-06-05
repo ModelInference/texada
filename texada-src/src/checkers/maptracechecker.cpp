@@ -1824,16 +1824,16 @@ map_trace_checker::memoization_key map_trace_checker::setup_key_ap(const spot::l
  * @return
  */
 set<string> map_trace_checker::aps_of_form(const spot::ltl::formula* node) {
-    map<const spot::ltl::formula*, set<string>>::iterator set_pair =
+    map<const spot::ltl::formula*, std::pair<set<string>,bool>>::iterator set_pair =
             relevant_bindings_map->find(node);
-    std::cout << "Finding relevant bindings for " << spot::ltl::to_string(node) << "\n";
     if (set_pair == relevant_bindings_map->end()) {
         std::cerr
            << "Could not find the atomic props for " << spot::ltl::to_string(node) << " in the map.\n";
         return set<string>();
         //TODO: exception
     }
-    return set_pair->second;
+    std::pair<set<string>, bool> pair = set_pair->second;
+    return pair.first;
 }
 
 
@@ -1842,7 +1842,7 @@ set<string> map_trace_checker::aps_of_form(const spot::ltl::formula* node) {
  * are contained in which subformula) to bindings_map
  * @param bindings_map
  */
-void map_trace_checker::add_relevant_bindings(map<const spot::ltl::formula*, set<string>> * bindings_map){
+void map_trace_checker::add_relevant_bindings(map<const spot::ltl::formula*, std::pair<set<string>,bool>> * bindings_map){
     relevant_bindings_map = bindings_map;
 
 }
@@ -1927,8 +1927,8 @@ vector<std::pair<map<string, string>, statistic>> valid_instants_on_traces(
             return_vec.push_back(finding);
         }
     }
-    std::cout <<"Did we get here?\n";
     delete(collector);
+
     return return_vec;
 }
 

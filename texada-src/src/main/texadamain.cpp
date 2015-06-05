@@ -105,7 +105,12 @@ int main(int ac, char* av[]) {
                 std::cout << "\n";
             }
         }
-
+        std::set<std::pair<const spot::ltl::formula*, texada::statistic>>::iterator it = found_instants.begin();
+        while (it != found_instants.end()){
+            std::set<std::pair<const spot::ltl::formula*, texada::statistic>>::iterator to_delete = it;
+            it++;
+            to_delete->first->destroy();
+        }
         // exception catching
     } catch (std::exception& e) {
         std::cerr << "Error: " << e.what() << "\n";

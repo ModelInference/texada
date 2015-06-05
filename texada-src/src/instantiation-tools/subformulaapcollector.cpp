@@ -18,13 +18,20 @@ subformula_ap_collector::subformula_ap_collector() {
 }
 
 subformula_ap_collector::~subformula_ap_collector() {
-   /* std::map<const spot::ltl::formula*,std::set<std::string>>::iterator it = subform_ap_set.begin();
+    std::map<const spot::ltl::formula*,std::pair<std::set<std::string>,bool>>::iterator it = subform_ap_set.begin();
     while (it != subform_ap_set.end()){
-        std::cout << "Did we get here too?\n";
-        std::map<const spot::ltl::formula*,std::set<std::string>>::iterator to_delete = it;
-        it++;
-        to_delete->first->destroy();
-    }*/
+       // std::cout << "Did we get here too?\n";
+        std::pair<std::set<std::string>, bool> pair = it->second;
+        if (pair.second){
+         std::map<const spot::ltl::formula*,std::pair<std::set<std::string>,bool>>::iterator to_delete = it;
+         it++;
+         to_delete->first->destroy();
+        }
+        else {
+            it++;
+        }
+    }
+    subform_ap_set.clear();
 }
 
 void subformula_ap_collector::doit(const spot::ltl::atomic_prop* ap) {
@@ -42,9 +49,9 @@ void subformula_ap_collector::doit_default(const spot::ltl::formula* f) {
         ap_names.insert((*it)->name());
     }
     delete atomic_props;
-    subform_ap_set.emplace(f,ap_names);
-    subform_ap_set.emplace(spot::ltl::negative_normal_form(f,false), ap_names);
-    subform_ap_set.emplace(spot::ltl::negative_normal_form(f,true), ap_names);
+    subform_ap_set.emplace(f,std::pair<std::set<std::string>,bool>(ap_names, 0));
+    subform_ap_set.emplace(spot::ltl::negative_normal_form(f,false), std::pair<std::set<std::string>,bool>(ap_names, 1));
+    subform_ap_set.emplace(spot::ltl::negative_normal_form(f,true), std::pair<std::set<std::string>,bool>(ap_names, 1));
 
 
 }

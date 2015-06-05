@@ -27,7 +27,7 @@ public:
     subformula_ap_collector();
     virtual ~subformula_ap_collector();
 
-    std::map<const spot::ltl::formula*,std::set<std::string>> subform_ap_set;
+    std::map<const spot::ltl::formula*,std::pair<std::set<std::string>, bool>> subform_ap_set;
 
     virtual void doit(const spot::ltl::atomic_prop* ap);
     virtual void doit(const spot::ltl::constant* c);
