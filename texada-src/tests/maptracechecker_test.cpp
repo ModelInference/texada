@@ -274,6 +274,7 @@ TEST(MapCheckerTest, SmallMemoization){
     f->accept(*collector);
     checker.add_relevant_bindings(&collector->subform_ap_set);
 
+
     std::map<std::string,std::string> bindings_map;
     bindings_map.emplace("x","a");
     bindings_map.emplace("y","b");

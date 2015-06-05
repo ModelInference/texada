@@ -15,8 +15,8 @@ TEST(SubFormulaAPCollectorTest, BasicTraversal) {
     const spot::ltl::formula * to_traverse = spot::ltl::parse(
             "G((q & Fr) -> ((!(s & (!r) & X(!r U (t & !r)))) U (r | p)))",
             pe_list);
-    texada::subformula_ap_collector * collector = new texada::subformula_ap_collector();
-    to_traverse->accept(*collector);
+    texada::subformula_ap_collector  collector = texada::subformula_ap_collector();
+    to_traverse->accept(collector);
     /**
     for( std::map<const spot::ltl::formula*,std::set<std::string>>::iterator it = collector->subform_ap_set.begin();
             it != collector->subform_ap_set.end(); it++){
@@ -28,7 +28,6 @@ TEST(SubFormulaAPCollectorTest, BasicTraversal) {
     }
     std::cout << collector->subform_ap_set.size();
     **/
-    delete collector;
     to_traverse->destroy();
 }
 

@@ -41,7 +41,7 @@ public:
 
     // things for memoization
     void add_relevant_bindings(
-            map<const spot::ltl::formula*, set<string>> * bindings_map);
+            map<const spot::ltl::formula*, std::pair<set<string>,bool>> * bindings_map);
     void clear_memo();
     int num_memo_elements();
 
@@ -90,7 +90,7 @@ private:
     map<string,string> instantiation_map;
     // keeps track of which bindings should be stored for each formula node:
     // switch for each different formula checker
-    map<const spot::ltl::formula*, set<string>> * relevant_bindings_map;
+    map<const spot::ltl::formula*, std::pair<set<string>,bool>> * relevant_bindings_map;
 
     //memoization things
     memoization_key setup_key(const spot::ltl::formula*, interval);
