@@ -142,7 +142,6 @@ std::vector<std::string> string_to_args(std::string commands) {
     std::vector<std::string> quote_parsed_input;
     // to know our state inside quotes
     bool inside_quotes = false;
-    bool ended_quote = true;
     // where in the quote_parsed_input is the current quote
     int quote_start_pos;
     // is this a ' or "
@@ -152,14 +151,13 @@ std::vector<std::string> string_to_args(std::string commands) {
             tok.begin(); it != tok.end(); it++) {
         if (inside_quotes == true) {
             // if inside quotes and we found an end quote:
-            if ((*it).find_first_of("\'\"") != std::string::npos) {
+            if ((*it).find_first_of(quote_start_char) != std::string::npos) {
                 // if it's not the correct endquote, error
-                if (it->at((*it).find_first_of("\'\"")) != quote_start_char) {
-                    std::cerr << "Error: mismatched quotes. \n";
+             //   if (it->at((*it).find_first_of("\'\"")) != quote_start_char) {
+            //        std::cerr << "Error: mismatched quotes. \n";
                     //TODO: throw excpetion
-                }
+              //  }
                 // if it's the correct end quote, we've ended our quote
-                ended_quote = true;
                 inside_quotes = false;
                 std::string element = std::string(*it);
                 // add the end part of the quote to the quoted element
@@ -167,7 +165,7 @@ std::vector<std::string> string_to_args(std::string commands) {
                 quote_parsed_input[quote_start_pos] =
                         quote_parsed_input[quote_start_pos] + " "
                                 + element.substr(0,
-                                        (*it).find_first_of("\'\""));
+                                        (*it).find_first_of(quote_start_char));
             } else {
                 // if we're inside quotes, just stick this part
                 // onto the inside of quotes
@@ -188,7 +186,6 @@ std::vector<std::string> string_to_args(std::string commands) {
                 // if we just found an opening quote and it's not a one-block
                 // quote, we're inside quotes
                 inside_quotes = true;
-                ended_quote = false;
                 quote_start_char = it->at((*it).find_first_of("\'\""));
                 quote_start_pos = quote_parsed_input.size();
                 std::string first_element = std::string(*it);
@@ -202,7 +199,7 @@ std::vector<std::string> string_to_args(std::string commands) {
         }
     }
     //TODO: can I just use inside_quotes instead
-    if (!ended_quote) {
+    if (inside_quotes) {
         std::cerr << "Error: missing \' or \". \n";
         //TODO: throw exception
     }
