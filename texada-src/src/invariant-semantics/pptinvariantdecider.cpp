@@ -1,0 +1,142 @@
+/*
+ * pptinvariantdecider.cpp
+ *
+ *  Created on: Jul 1, 2015
+ *      Author: clemieux
+ */
+
+#include "pptinvariantdecider.h"
+#include <iostream>
+#include <map>
+#include "z3++.h"
+
+namespace texada {
+
+ppt_invariant_decider::ppt_invariant_decider() {
+    to_be_proved = "";
+    declarations = set<string>();
+    preconditions = set<string>();
+    // TODO Auto-generated constructor stub
+
+}
+
+ppt_invariant_decider::~ppt_invariant_decider() {
+    // TODO Auto-generated destructor stub
+}
+
+/**
+ * Adds a precondition in the form "decl: (...) inv: (...)" to the object
+ * @param precon
+ */
+void ppt_invariant_decider::add_precondition(string precon) {
+    std::size_t inv_loc = precon.find(" inv: ");
+    string invariant = precon.substr(inv_loc);
+    std::size_t first_paren_loc = invariant.find("(");
+    invariant = invariant.substr(first_paren_loc);
+    preconditions.insert(invariant);
+    string decls = precon.substr(0,inv_loc);
+    first_paren_loc = decls.find("(");
+    decls = decls.substr(first_paren_loc);
+    add_all_declarations(decls);
+
+}
+
+/**
+ * Adds all the declarations in the decls string to the set
+ * Assumes a string of the form "(decl 1) (decl 2) ... (decl n)"
+ * @param decls
+ */
+void ppt_invariant_decider::add_all_declarations(string decls){
+    int paren_count = 0;
+    set<string> reserve_set = set<string>();
+    int char_pos = 0;
+    int paren_begin_pos;
+    for (std::string::iterator it = decls.begin(); it != decls.end(); it++){
+       if ((*it) == '('){
+           if (paren_count == 0){
+               paren_begin_pos = char_pos;
+           }
+           paren_count++;
+       }
+       else if ((*it) == ')'){
+           paren_count--;
+           if (paren_count == 0){
+               reserve_set.insert(decls.substr(paren_begin_pos, char_pos + 1 - paren_begin_pos));
+           }
+       }
+       char_pos++;
+    }
+    declarations.insert(reserve_set.begin(), reserve_set.end());
+}
+
+/**
+ * Adds a statement to be proven in the form "decl: (...) inv: (...)" to the object
+ * @param precon
+ */
+void ppt_invariant_decider::add_to_be_proved(string proved) {
+    std::size_t inv_loc = proved.find(" inv: ");
+    string invariant = proved.substr(inv_loc);
+    std::size_t first_paren_loc = invariant.find("(");
+    invariant = invariant.substr(first_paren_loc);
+    to_be_proved = invariant;
+    string decls = proved.substr(0,inv_loc);
+    first_paren_loc = decls.find("(");
+    decls = decls.substr(first_paren_loc);
+    add_all_declarations(decls);
+}
+
+/**
+ * Decides whether the preconditions imply the to_be_proved invariant
+ * using the z3 API.
+ * @return
+ */
+bool ppt_invariant_decider::decide() {
+    string prog = "";
+    if (preconditions.size() == 0){
+        std::cerr << "No premises to prove from.\n";
+        return false;
+    }
+    if (to_be_proved == ""){
+        std::cerr << "Nothing to prove.\n";
+        return false;
+    }
+    for (set<string>::iterator it = declarations.begin(); it != declarations.end() ; it++){
+        std::cout << *it << "\n";
+        prog += (*it) + " ";
+    }
+    string pre;
+    if (preconditions.size() > 1){
+        pre = "(and";
+        for (set<string>::iterator it = preconditions.begin(); it != preconditions.end(); it++){
+            std::cout << *it<< "\n";
+            pre += " " + (*it);
+        }
+        pre += ")";
+    }
+    else {
+        pre = *(preconditions.begin());
+        std::cout << pre << "\n";
+    }
+    prog += "(assert (implies " + pre + " " + to_be_proved + "))";
+    std::cout << prog<< "\n";
+
+    z3::context context;
+
+    Z3_ast parsed_prog = Z3_parse_smtlib2_string(context,prog.c_str(),0,0,0,0,0,0);
+    z3::expr e(context, parsed_prog);
+
+    z3::solver solver(context);
+    solver.add(e);
+
+    z3::check_result result = solver.check();
+
+    if (result == z3::check_result::sat){
+        return true;
+    }
+    else {
+        // here we assume unknown is a false return
+        return false;
+    }
+}
+
+} /* namespace texada */

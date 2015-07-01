@@ -24,7 +24,7 @@ endif
 
 RM := rm -rf
 
-LIBS := -lspot -lgtest -lpthread -lgtest_main -lboost_program_options -lboost_regex
+LIBS := -lspot -lgtest -lpthread -lgtest_main -lboost_program_options -lboost_regex -lz3
 
 TX_SRC := texada-src/
 SRC := $(TX_SRC)src/
