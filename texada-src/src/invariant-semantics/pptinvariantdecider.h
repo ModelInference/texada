@@ -26,6 +26,7 @@ public:
     void add_precondition(string precon);
     void add_to_be_proved(string proved);
     bool decide();
+    void clear();
 private:
     set<string> declarations;
     set<string> preconditions;
