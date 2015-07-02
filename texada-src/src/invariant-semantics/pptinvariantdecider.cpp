@@ -16,12 +16,17 @@ ppt_invariant_decider::ppt_invariant_decider() {
     to_be_proved = "";
     declarations = set<string>();
     preconditions = set<string>();
-    // TODO Auto-generated constructor stub
 
 }
 
 ppt_invariant_decider::~ppt_invariant_decider() {
     // TODO Auto-generated destructor stub
+}
+
+void ppt_invariant_decider::clear() {
+    to_be_proved = "";
+    declarations.clear();
+    preconditions.clear();
 }
 
 /**
@@ -117,7 +122,8 @@ bool ppt_invariant_decider::decide() {
         pre = *(preconditions.begin());
         std::cout << pre << "\n";
     }
-    prog += "(assert (implies " + pre + " " + to_be_proved + "))";
+    // prog is !(preconditions->to_be_proved)
+    prog += "(assert (and " + pre + " (not " + to_be_proved + ")))";
     std::cout << prog<< "\n";
 
     z3::context context;
@@ -130,7 +136,9 @@ bool ppt_invariant_decider::decide() {
 
     z3::check_result result = solver.check();
 
-    if (result == z3::check_result::sat){
+    // If !(preconditions->to_be_proved) is satisfiable, then preconditions->to_be_proved
+    // is not valid; if it's unsat our desired result is valid.
+    if (result == z3::check_result::unsat){
         return true;
     }
     else {
