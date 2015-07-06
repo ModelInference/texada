@@ -78,6 +78,10 @@ statistic map_trace_checker::check_on_trace(const spot::ltl::formula* node,
  */
 statistic map_trace_checker::ap_check(const spot::ltl::atomic_prop* node,
         interval intvl, std::set<int> trace_ids) {
+    // TODO: refactor to legitimately to an AP check on intvl.start: need to
+    // collect APs and form an event. Maybe actually don't totally refactor; only
+    // do this for when invariant semantics is turned on, since we lose lots of
+    // efficiency.
     try {
         std::vector<long> to_search;
         if (use_instant_map){

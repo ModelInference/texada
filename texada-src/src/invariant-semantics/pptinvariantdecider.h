@@ -10,9 +10,11 @@
 
 #include <set>
 #include <string>
+#include "../trace/event.h"
 
 namespace texada {
 using std::set;
+using std::map;
 using std::string;
 
 /**
@@ -24,6 +26,7 @@ public:
     ppt_invariant_decider();
     virtual ~ppt_invariant_decider();
     void add_precondition(string precon);
+    void add_preconditions(set<string>);
     void add_to_be_proved(string proved);
     bool decide();
     void clear();
@@ -34,6 +37,9 @@ private:
     void add_all_declarations(string decls);
 
 };
+
+bool ap_holds(event, string, map<string,string> *);
+
 
 } /* namespace texada */
 
