@@ -52,6 +52,10 @@ private:
     virtual statistic next_check(const spot::ltl::unop* node,
             const event* trace_pt, std::set<int> trace_ids = std::set<int>());
 
+    // use invariant semantics
+    bool use_invariant_semantics;
+    shared_ptr<map<string,string>> translations;
+
 };
 
 /**
@@ -66,7 +70,9 @@ private:
 vector<std::pair<map<string, string>, statistic>> valid_instants_on_traces(
         const spot::ltl::formula * prop_type,
         instants_pool_creator * instantiator,
-        shared_ptr<std::multiset<vector<event>>> traces);
+        shared_ptr<std::multiset<vector<event>>> traces,
+        bool use_invar_semantics = false,
+        shared_ptr<map<string,string>> translations = nullptr);
 
 /**
  * Finds valid instants on traces based on given configuration
@@ -75,7 +81,9 @@ vector<std::pair<map<string, string>, statistic>> valid_instants_on_traces(
         const spot::ltl::formula * prop_type,
         instants_pool_creator * instantiator,
         shared_ptr<std::multiset<vector<event>>> traces,
-        settings c_settings);
+        settings c_settings,
+        bool use_invar_semantics = false,
+        shared_ptr<map<string,string>> translations = nullptr);
 
 } /* namespace texada */
 

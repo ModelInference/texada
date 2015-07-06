@@ -239,7 +239,7 @@ TEST(MapCheckerTest,ResourceAllocation){
 
 // small test for memoized version.
 TEST(MapCheckerTest, SmallMemoization){
-  
+
       // create the trace map
     std::map<texada::event, std::vector<long>> trace_map;
 

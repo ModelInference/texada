@@ -91,6 +91,9 @@ private:
     // keeps track of which bindings should be stored for each formula node:
     // switch for each different formula checker
     map<const spot::ltl::formula*, set<string>> * relevant_bindings_map;
+    // use invariant semantics
+    bool use_invariant_semantics;
+    shared_ptr<map<string,string>> translations;
 
     //memoization things
     memoization_key setup_key(const spot::ltl::formula*, interval);
@@ -158,7 +161,9 @@ private:
 vector<std::pair<map<string, string>, statistic>> valid_instants_on_traces(
         const spot::ltl::formula * prop_type,
         instants_pool_creator * instantiator,
-        shared_ptr<set<map<event, vector<long>>>>);
+        shared_ptr<set<map<event, vector<long>>>>,
+        bool use_invar_semantics = false,
+        shared_ptr<map<string,string>> translations = nullptr);
 } /* namespace texada */
 
 #endif /* MAPTRACECHECKER_H_ */

@@ -17,6 +17,7 @@
 #include <boost/program_options.hpp>
 
 #include "../parsers/parser.h"
+#include "../parsers/translationsparser.h"
 #include "../parsers/linearparser.h"
 #include "../parsers/mapparser.h"
 #include "../parsers/prefixtreeparser.h"
@@ -113,6 +114,17 @@ set<std::pair<const spot::ltl::formula*, statistic>> mine_property_type(
     }
     if (opts.count("conf-threshold")) {
         c_settings.set_conf_t(opts["conf-threshold"].as<float>());
+    }
+
+    bool use_invariant_semantics = false;
+    shared_ptr<map<string,string>> translations = nullptr;
+    // Setting options for invariant semantics
+    if (opts.count("invariant-semantics-input")){
+       use_invariant_semantics = true;
+       translations_parser t_parser = translations_parser();
+       std::ifstream t_infile(opts["invariant-semantics-input"].as<string>());
+       t_parser.parse(t_infile);
+       translations = t_parser.get_translations();
     }
 
     // currently, only the vanilla configuration is supported for
@@ -232,15 +244,15 @@ set<std::pair<const spot::ltl::formula*, statistic>> mine_property_type(
         shared_ptr<std::multiset<vector<event> >> vector_trace_set =
                 dynamic_cast<linear_parser*>(parser)->return_vec_trace();
         valid_instants = valid_instants_on_traces(formula, instantiator,
-                vector_trace_set, c_settings);
+                vector_trace_set, c_settings, use_invariant_semantics, translations);
     } else if (use_map) {
         shared_ptr<set<map<event, vector<long>>> > map_trace_set = dynamic_cast<map_parser*>(parser)->return_map_trace();
         valid_instants = valid_instants_on_traces(formula, instantiator,
-                map_trace_set);
+                map_trace_set, use_invariant_semantics, translations);
     } else if (use_pretree) {
         shared_ptr<prefix_tree> prefix_tree_traces = dynamic_cast<prefix_tree_parser*>(parser)->return_prefix_trees();
         valid_instants = valid_instants_on_traces(formula, instantiator,
-                prefix_tree_traces);
+                prefix_tree_traces, use_invariant_semantics, translations);
     }
 
     set<std::pair<const spot::ltl::formula*, statistic>> return_set;
