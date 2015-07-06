@@ -10,6 +10,7 @@
 
 #include <set>
 #include <string>
+#include <map>
 #include "../trace/event.h"
 
 namespace texada {

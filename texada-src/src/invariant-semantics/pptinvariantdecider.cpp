@@ -31,7 +31,7 @@ void ppt_invariant_decider::clear() {
 }
 
 void ppt_invariant_decider::add_preconditions(set<string> precons){
-    for (set<string>::iterator it = precons.begin(); it != precons.end; it++){
+    for (set<string>::iterator it = precons.begin(); it != precons.end(); it++){
         add_precondition(*it);
     }
 }
