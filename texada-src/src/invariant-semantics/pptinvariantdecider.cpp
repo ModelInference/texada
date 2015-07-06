@@ -13,6 +13,7 @@
 namespace texada {
 
 ppt_invariant_decider::ppt_invariant_decider() {
+    // TODO: other set up code to, for example, establish string theories
     to_be_proved = "";
     declarations = set<string>();
     preconditions = set<string>();
@@ -27,6 +28,12 @@ void ppt_invariant_decider::clear() {
     to_be_proved = "";
     declarations.clear();
     preconditions.clear();
+}
+
+void ppt_invariant_decider::add_preconditions(set<string> precons){
+    for (set<string>::iterator it = precons.begin(); it != precons.end; it++){
+        add_precondition(*it);
+    }
 }
 
 /**
@@ -146,5 +153,25 @@ bool ppt_invariant_decider::decide() {
         return false;
     }
 }
+
+/**
+ * Determines whether inv holds at location by using the z3-format logical versions of all
+ * events at location (and the inv event) provided in translations. This starts up a z3
+ * solver
+ * @param location premises, information to be proven from
+ * @param inv conclusion we wish to know about (does it hold given premises or not)
+ * @param translations provide z3 versions of all events in location and inv
+ * @return
+ */
+bool ap_holds(event location, string inv, map<string,string> * translations){
+     ppt_invariant_decider decider = ppt_invariant_decider();
+     set<string> untranslated_props = location.get_props();
+     for (set<string>::iterator it = untranslated_props.begin(); it != untranslated_props.end(); it++){
+         decider.add_precondition(translations->at(*it));
+     }
+     decider.add_to_be_proved(translations->at(inv));
+     return decider.decide();
+}
+
 
 } /* namespace texada */

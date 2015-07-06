@@ -47,6 +47,7 @@ boost::program_options::options_description get_options_description() {
             ("conf-threshold", boost::program_options::value<float>(),
             "only find instances above the given confidence threshold. Must be between 0 and 1 [default: 1]")
             ("print-stats", "print the support and confidence of each finding")
+            ("invariant-semantics-input", boost::program_options::value<std::string>(), "specify a file translating event strings to smtlibv2 [in the form decl: (...) inv: (...)], and use this information to make logical comparisions to determine if invariants hold.")
             ("use-global-thresholds", "make all inputed thresholds global [default: false]");
     return desc;
 
