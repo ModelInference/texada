@@ -1093,7 +1093,8 @@ void prefix_tree_checker::clear_memo_map(){
  */
 vector<std::pair<map<string, string>, statistic>> valid_instants_on_traces(
         const spot::ltl::formula * prop_type,
-        instants_pool_creator * instantiator, shared_ptr<prefix_tree> traces) {
+        instants_pool_creator * instantiator, shared_ptr<prefix_tree> traces, bool use_invariant_semantics,
+        shared_ptr<map<string,string>> translations) {
     instantiator->reset_instantiations();
     // vector to return
     vector<std::pair<map<string, string>, statistic>> return_vec;

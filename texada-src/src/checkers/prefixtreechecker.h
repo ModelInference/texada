@@ -96,6 +96,10 @@ private:
     bool use_memo = false;
     map<string, string> instantiations;
 
+    // use invariant semantics
+    bool use_invariant_semantics;
+    shared_ptr<map<string,string>> translations;
+
     struct memo_key {
         const spot::ltl::formula* node;
         map<string, string> relevant_mappings;
@@ -142,7 +146,9 @@ private:
 
 vector<std::pair<map<string, string>, statistic>> valid_instants_on_traces(
         const spot::ltl::formula * prop_type,
-        instants_pool_creator * instantiator, shared_ptr<prefix_tree> traces);
+        instants_pool_creator * instantiator, shared_ptr<prefix_tree> traces,
+        bool use_invar_semantics = false,
+        shared_ptr<map<string,string>> translations = nullptr);
 
 } /* namespace texada */
 

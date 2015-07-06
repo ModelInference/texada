@@ -1887,7 +1887,9 @@ int map_trace_checker::num_memo_elements(){
 vector<std::pair<map<string, string>, statistic>> valid_instants_on_traces(
         const spot::ltl::formula * prop_type,
         instants_pool_creator * instantiator,
-        shared_ptr<set<map<event, vector<long>>> > traces) {
+        shared_ptr<set<map<event, vector<long>>> > traces,
+        bool use_invar_semantics,
+        shared_ptr<map<string,string>> translations) {
     instantiator->reset_instantiations();
     // vector to return
     vector<std::pair<map<string, string>, statistic>> return_vec;
