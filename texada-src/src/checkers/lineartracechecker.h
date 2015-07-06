@@ -22,13 +22,14 @@ namespace texada {
 
 /**
  * Class to check whether an LTL formula is true on a trace in
- * flinear form. Can also be configured to retrieve support and
+ * linear form. Can also be configured to retrieve support and
  * support potential statistics for an LTL formula on a trace.
  *
  */
 class linear_trace_checker : public bool_based_checker<const event*>{
 public:
-	linear_trace_checker() {};
+	linear_trace_checker();
+	linear_trace_checker(bool, shared_ptr<map<string,string>>);
 	virtual ~linear_trace_checker() {};
 
 	statistic check_on_trace(const spot::ltl::formula* node, const event *trace);

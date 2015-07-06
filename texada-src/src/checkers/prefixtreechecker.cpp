@@ -14,8 +14,13 @@
 namespace texada {
 
 prefix_tree_checker::prefix_tree_checker() {
-    // TODO Auto-generated constructor stub
+    use_invariant_semantics = false;
+    translations = nullptr;
+}
 
+prefix_tree_checker::prefix_tree_checker(bool use_inv_s, shared_ptr<map<string,string>> ptr){
+    use_invariant_semantics = use_inv_s;
+    translations = ptr;
 }
 
 prefix_tree_checker::~prefix_tree_checker() {
@@ -1098,7 +1103,7 @@ vector<std::pair<map<string, string>, statistic>> valid_instants_on_traces(
     instantiator->reset_instantiations();
     // vector to return
     vector<std::pair<map<string, string>, statistic>> return_vec;
-    prefix_tree_checker checker;
+    prefix_tree_checker checker(use_invariant_semantics,translations);
 
     // create the ap collector for memoization
     subformula_ap_collector * collector = new subformula_ap_collector();

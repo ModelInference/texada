@@ -25,6 +25,7 @@ class prefix_tree_checker: public ltl_formula_checker<map<int, statistic>,
         shared_ptr<prefix_tree_node>> {
 public:
     prefix_tree_checker();
+    prefix_tree_checker(bool, shared_ptr<map<string,string>>);
     virtual ~prefix_tree_checker();
     typedef shared_ptr<prefix_tree_node> trace_node;
 

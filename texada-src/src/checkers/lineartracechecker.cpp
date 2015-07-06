@@ -16,6 +16,18 @@
 #include "settings.h"
 namespace texada {
 
+linear_trace_checker::linear_trace_checker(){
+    use_invariant_semantics = false;
+    translations = nullptr;
+}
+
+linear_trace_checker::linear_trace_checker(bool use_inv_s, shared_ptr<map<string,string>> ptr){
+    use_invariant_semantics = use_inv_s;
+    translations = ptr;
+}
+
+
+
 statistic linear_trace_checker::check_on_trace(const spot::ltl::formula * node, const event * trace){
     return this->check(node, trace);
 }
@@ -298,7 +310,7 @@ vector<std::pair<map<string, string>, statistic>> valid_instants_on_traces(
         std::cerr << "Wanted to use invar semantics but no translations were provided.\n";
         return return_vec;
     }
-    linear_trace_checker checker;
+    linear_trace_checker checker(use_invar_semantics,translations);
     // set checker configurations
     checker.configure(c_settings);
     // simplifier for turning formulas into negative normal form so that

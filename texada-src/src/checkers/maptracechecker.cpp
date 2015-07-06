@@ -22,12 +22,28 @@ namespace texada {
  * @param trace_map_
  */
 map_trace_checker::map_trace_checker(
-        const std::map<event, std::vector<long>>* trace_map_) :
-        trace_map(trace_map_) {
+        const std::map<event, std::vector<long>>* trace_map_,
+        bool use_inv_s, shared_ptr<map<string,string>> ptr) :
+        trace_map(trace_map_), use_invariant_semantics(use_inv_s), translations(ptr) {
     std::vector<long> end_vector = trace_map->at(texada::event());
     terminal_pos = end_vector[0];
 
 }
+
+/**
+ * Creates a map trace checker which can check any formula on the
+ * trace map it's constructed on.
+ * @param trace_map_
+ */
+map_trace_checker::map_trace_checker(
+        const std::map<event, std::vector<long>>* trace_map_) :
+        trace_map(trace_map_), use_invariant_semantics(false), translations(nullptr) {
+    std::vector<long> end_vector = trace_map->at(texada::event());
+    terminal_pos = end_vector[0];
+
+}
+
+
 
 /**
  * destructor
@@ -1898,7 +1914,7 @@ vector<std::pair<map<string, string>, statistic>> valid_instants_on_traces(
     vector<map_trace_checker> all_checkers;
     for (set<map<event,vector<long>>>::iterator traces_it = traces->begin();
             traces_it != traces->end(); traces_it++) {
-        all_checkers.push_back(map_trace_checker(&(*traces_it)));
+        all_checkers.push_back(map_trace_checker(&(*traces_it), use_invar_semantics, translations));
     }
 
     int num_traces = all_checkers.size();
