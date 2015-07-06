@@ -29,6 +29,7 @@ class map_trace_checker : public bool_based_checker<interval>{
 
 public:
     map_trace_checker(const map<event, vector<long>>*);
+    map_trace_checker(const map<event, vector<long>>*, bool, shared_ptr<map<string,string>>);
     virtual ~map_trace_checker();
     statistic check_on_trace(const spot::ltl::formula *, interval intvl = interval());
     statistic check_on_trace(const spot::ltl::formula *, map<string,string>, interval intvl = interval());

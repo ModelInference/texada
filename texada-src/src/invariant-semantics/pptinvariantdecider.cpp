@@ -163,7 +163,7 @@ bool ppt_invariant_decider::decide() {
  * @param translations provide z3 versions of all events in location and inv
  * @return
  */
-bool ap_holds(event location, string inv, map<string,string> * translations){
+bool ap_holds(event location, string inv, shared_ptr<map<string,string>>translations){
      ppt_invariant_decider decider = ppt_invariant_decider();
      set<string> untranslated_props = location.get_props();
      for (set<string>::iterator it = untranslated_props.begin(); it != untranslated_props.end(); it++){

@@ -12,11 +12,13 @@
 #include <string>
 #include <map>
 #include "../trace/event.h"
+#include <memory>
 
 namespace texada {
 using std::set;
 using std::map;
 using std::string;
+using std::shared_ptr;
 
 /**
  * Decides whether an invariant holds given certain pre-conditions. Expects
@@ -39,7 +41,7 @@ private:
 
 };
 
-bool ap_holds(event, string, map<string,string> *);
+bool ap_holds(event, string, shared_ptr<map<string,string>>);
 
 
 } /* namespace texada */
