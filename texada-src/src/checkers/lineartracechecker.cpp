@@ -43,8 +43,16 @@ statistic linear_trace_checker::ap_check(const spot::ltl::atomic_prop *node,
     if (trace->is_satisfied(node->name())) {
         return statistic(true, 1, 1);
     } else {
-        return statistic(false, 0, 1);
-    }
+        if (use_invariant_semantics){
+            if (ap_holds(*trace, node->name(),translations)){
+                return statistic(true, 1, 1);
+            } else{
+                return statistic(false, 0, 1);
+            }
+        } else {
+            return statistic(false, 0, 1);
+        }
+}
 }
 
 /**

@@ -113,25 +113,24 @@ bool ppt_invariant_decider::decide() {
         return false;
     }
     for (set<string>::iterator it = declarations.begin(); it != declarations.end() ; it++){
-        std::cout << *it << "\n";
         prog += (*it) + " ";
     }
     string pre;
     if (preconditions.size() > 1){
         pre = "(and";
         for (set<string>::iterator it = preconditions.begin(); it != preconditions.end(); it++){
-            std::cout << *it<< "\n";
+            //std::cout << *it<< "\n";
             pre += " " + (*it);
         }
         pre += ")";
     }
     else {
         pre = *(preconditions.begin());
-        std::cout << pre << "\n";
+      //  std::cout << pre << "\n";
     }
     // prog is !(preconditions->to_be_proved)
     prog += "(assert (and " + pre + " (not " + to_be_proved + ")))";
-    std::cout << prog<< "\n";
+    //std::cout << prog<< "\n";
 
     z3::context context;
 

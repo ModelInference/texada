@@ -14,6 +14,7 @@
 #include <iostream>
 #include "statistic.h"
 #include "settings.h"
+#include "../invariant-semantics/pptinvariantdecider.h"
 
 #include "../instantiation-tools/pregeninstantspool.h"
 
