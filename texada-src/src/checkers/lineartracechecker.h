@@ -14,6 +14,7 @@
 #include <iostream>
 #include "statistic.h"
 #include "settings.h"
+#include "../invariant-semantics/pptinvariantdecider.h"
 
 #include "../instantiation-tools/pregeninstantspool.h"
 
@@ -22,13 +23,14 @@ namespace texada {
 
 /**
  * Class to check whether an LTL formula is true on a trace in
- * flinear form. Can also be configured to retrieve support and
+ * linear form. Can also be configured to retrieve support and
  * support potential statistics for an LTL formula on a trace.
  *
  */
 class linear_trace_checker : public bool_based_checker<const event*>{
 public:
-	linear_trace_checker() {};
+	linear_trace_checker();
+	linear_trace_checker(bool, shared_ptr<map<string,string>>);
 	virtual ~linear_trace_checker() {};
 
 	statistic check_on_trace(const spot::ltl::formula* node, const event *trace);
@@ -52,6 +54,10 @@ private:
     virtual statistic next_check(const spot::ltl::unop* node,
             const event* trace_pt, std::set<int> trace_ids = std::set<int>());
 
+    // use invariant semantics
+    bool use_invariant_semantics;
+    shared_ptr<map<string,string>> translations;
+
 };
 
 /**
@@ -66,7 +72,9 @@ private:
 vector<std::pair<map<string, string>, statistic>> valid_instants_on_traces(
         const spot::ltl::formula * prop_type,
         instants_pool_creator * instantiator,
-        shared_ptr<std::multiset<vector<event>>> traces);
+        shared_ptr<std::multiset<vector<event>>> traces,
+        bool use_invar_semantics = false,
+        shared_ptr<map<string,string>> translations = nullptr);
 
 /**
  * Finds valid instants on traces based on given configuration
@@ -75,7 +83,9 @@ vector<std::pair<map<string, string>, statistic>> valid_instants_on_traces(
         const spot::ltl::formula * prop_type,
         instants_pool_creator * instantiator,
         shared_ptr<std::multiset<vector<event>>> traces,
-        settings c_settings);
+        settings c_settings,
+        bool use_invar_semantics = false,
+        shared_ptr<map<string,string>> translations = nullptr);
 
 } /* namespace texada */
 

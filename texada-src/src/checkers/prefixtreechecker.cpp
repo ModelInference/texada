@@ -14,8 +14,13 @@
 namespace texada {
 
 prefix_tree_checker::prefix_tree_checker() {
-    // TODO Auto-generated constructor stub
+    use_invariant_semantics = false;
+    translations = nullptr;
+}
 
+prefix_tree_checker::prefix_tree_checker(bool use_inv_s, shared_ptr<map<string,string>> ptr){
+    use_invariant_semantics = use_inv_s;
+    translations = ptr;
 }
 
 prefix_tree_checker::~prefix_tree_checker() {
@@ -132,7 +137,11 @@ map<int, statistic> prefix_tree_checker::ap_check(const spot::ltl::atomic_prop* 
             if (trace_pt->is_satisfied(prop)) {
                 return create_int_bool_map(trace_ids, statistic(true, 1, 1));
             } else {
-                return create_int_bool_map(trace_ids, statistic(false, 0, 1));
+                if (use_invariant_semantics){
+                    if (ap_holds(trace_pt->get_event(), node->name(),translations)){
+                        return create_int_bool_map(trace_ids, statistic(true, 1, 1));
+                    } else return create_int_bool_map(trace_ids, statistic(false, 0, 1));
+                } else return create_int_bool_map(trace_ids, statistic(false, 0, 1));
             }
         } else {
             std::cerr << "Did not find mapping for " << node->name() <<". \n";
@@ -143,7 +152,11 @@ map<int, statistic> prefix_tree_checker::ap_check(const spot::ltl::atomic_prop* 
         if (trace_pt->is_satisfied(node->name())) {
             return create_int_bool_map(trace_ids, statistic(true, 1, 1));
         } else {
-            return create_int_bool_map(trace_ids, statistic(false, 0, 1));
+            if (use_invariant_semantics){
+                if (ap_holds(trace_pt->get_event(), node->name(),translations)){
+                    return create_int_bool_map(trace_ids, statistic(true, 1, 1));
+                } else return create_int_bool_map(trace_ids, statistic(false, 0, 1));
+            }else return create_int_bool_map(trace_ids, statistic(false, 0, 1));
         }
     }
 }
@@ -1093,11 +1106,12 @@ void prefix_tree_checker::clear_memo_map(){
  */
 vector<std::pair<map<string, string>, statistic>> valid_instants_on_traces(
         const spot::ltl::formula * prop_type,
-        instants_pool_creator * instantiator, shared_ptr<prefix_tree> traces) {
+        instants_pool_creator * instantiator, shared_ptr<prefix_tree> traces, bool use_invariant_semantics,
+        shared_ptr<map<string,string>> translations) {
     instantiator->reset_instantiations();
     // vector to return
     vector<std::pair<map<string, string>, statistic>> return_vec;
-    prefix_tree_checker checker;
+    prefix_tree_checker checker(use_invariant_semantics,translations);
 
     // create the ap collector for memoization
     subformula_ap_collector * collector = new subformula_ap_collector();

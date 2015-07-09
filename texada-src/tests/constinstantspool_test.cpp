@@ -62,7 +62,7 @@ TEST(ConstInstantsPoolTest,UsableByLinearChecker) {
     l_traces->insert(l_trace2);
 
     std::vector<std::pair<std::map<std::string, std::string>, texada::statistic>> l_valid_instants = texada::valid_instants_on_traces(f, instantiator,
-            l_traces);
+            l_traces, false, nullptr);
 
     ASSERT_EQ(l_valid_instants.size(), 1);
     ASSERT_EQ(l_valid_instants.at(0).first.at("a"), "a");
@@ -107,7 +107,7 @@ TEST(ConstInstantsPoolTest,UsableByMapChecker) {
     m_traces->insert(m_trace1);
     m_traces->insert(m_trace2);
 
-    std::vector<std::pair<std::map<std::string, std::string>, texada::statistic>> m_valid_instants = texada::valid_instants_on_traces(f, instantiator, m_traces);
+    std::vector<std::pair<std::map<std::string, std::string>, texada::statistic>> m_valid_instants = texada::valid_instants_on_traces(f, instantiator, m_traces, false, nullptr);
 
     ASSERT_EQ(m_valid_instants.size(), 1);
     ASSERT_EQ(m_valid_instants.at(0).first.at("a"), "a");
@@ -166,7 +166,7 @@ TEST(ConstInstantsPoolTest,UsableByPrefixChecker) {
     p_traces->add_trace(set01, top);
 
     std::vector<std::pair<std::map<std::string, std::string>, texada::statistic>> p_valid_instants = texada::valid_instants_on_traces(f, instantiator,
-            p_traces);
+            p_traces, false, nullptr);
 
     ASSERT_EQ(p_valid_instants.size(), 1);
     ASSERT_EQ(p_valid_instants.at(0).first.at("a"), "a");

@@ -13,6 +13,7 @@
 namespace texada {
 
 ppt_invariant_decider::ppt_invariant_decider() {
+    // TODO: other set up code to, for example, establish string theories
     to_be_proved = "";
     declarations = set<string>();
     preconditions = set<string>();
@@ -27,6 +28,12 @@ void ppt_invariant_decider::clear() {
     to_be_proved = "";
     declarations.clear();
     preconditions.clear();
+}
+
+void ppt_invariant_decider::add_preconditions(set<string> precons){
+    for (set<string>::iterator it = precons.begin(); it != precons.end(); it++){
+        add_precondition(*it);
+    }
 }
 
 /**
@@ -106,25 +113,24 @@ bool ppt_invariant_decider::decide() {
         return false;
     }
     for (set<string>::iterator it = declarations.begin(); it != declarations.end() ; it++){
-        std::cout << *it << "\n";
         prog += (*it) + " ";
     }
     string pre;
     if (preconditions.size() > 1){
         pre = "(and";
         for (set<string>::iterator it = preconditions.begin(); it != preconditions.end(); it++){
-            std::cout << *it<< "\n";
+            //std::cout << *it<< "\n";
             pre += " " + (*it);
         }
         pre += ")";
     }
     else {
         pre = *(preconditions.begin());
-        std::cout << pre << "\n";
+      //  std::cout << pre << "\n";
     }
     // prog is !(preconditions->to_be_proved)
     prog += "(assert (and " + pre + " (not " + to_be_proved + ")))";
-    std::cout << prog<< "\n";
+    //std::cout << prog<< "\n";
 
     z3::context context;
 
@@ -146,5 +152,25 @@ bool ppt_invariant_decider::decide() {
         return false;
     }
 }
+
+/**
+ * Determines whether inv holds at location by using the z3-format logical versions of all
+ * events at location (and the inv event) provided in translations. This starts up a z3
+ * solver
+ * @param location premises, information to be proven from
+ * @param inv conclusion we wish to know about (does it hold given premises or not)
+ * @param translations provide z3 versions of all events in location and inv
+ * @return
+ */
+bool ap_holds(event location, string inv, shared_ptr<map<string,string>>translations){
+     ppt_invariant_decider decider = ppt_invariant_decider();
+     set<string> untranslated_props = location.get_props();
+     for (set<string>::iterator it = untranslated_props.begin(); it != untranslated_props.end(); it++){
+         decider.add_precondition(translations->at(*it));
+     }
+     decider.add_to_be_proved(translations->at(inv));
+     return decider.decide();
+}
+
 
 } /* namespace texada */

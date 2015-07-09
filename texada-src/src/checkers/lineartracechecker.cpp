@@ -16,6 +16,18 @@
 #include "settings.h"
 namespace texada {
 
+linear_trace_checker::linear_trace_checker(){
+    use_invariant_semantics = false;
+    translations = nullptr;
+}
+
+linear_trace_checker::linear_trace_checker(bool use_inv_s, shared_ptr<map<string,string>> ptr){
+    use_invariant_semantics = use_inv_s;
+    translations = ptr;
+}
+
+
+
 statistic linear_trace_checker::check_on_trace(const spot::ltl::formula * node, const event * trace){
     return this->check(node, trace);
 }
@@ -31,8 +43,16 @@ statistic linear_trace_checker::ap_check(const spot::ltl::atomic_prop *node,
     if (trace->is_satisfied(node->name())) {
         return statistic(true, 1, 1);
     } else {
-        return statistic(false, 0, 1);
-    }
+        if (use_invariant_semantics){
+            if (ap_holds(*trace, node->name(),translations)){
+                return statistic(true, 1, 1);
+            } else{
+                return statistic(false, 0, 1);
+            }
+        } else {
+            return statistic(false, 0, 1);
+        }
+}
 }
 
 /**
@@ -268,8 +288,10 @@ statistic linear_trace_checker::next_check(const spot::ltl::unop* node,
 vector<std::pair<map<string, string>, statistic>> valid_instants_on_traces(
         const spot::ltl::formula * prop_type,
         instants_pool_creator * instantiator,
-        shared_ptr<std::multiset<vector<event>>> traces) {
-    return valid_instants_on_traces(prop_type, instantiator, traces, settings());
+        shared_ptr<std::multiset<vector<event>>> traces,
+        bool use_invar_semantics,
+        shared_ptr<map<string,string>> translations) {
+    return valid_instants_on_traces(prop_type, instantiator, traces, settings(), use_invar_semantics, translations);
 }
 
 /**
@@ -286,11 +308,17 @@ vector<std::pair<map<string, string>, statistic>> valid_instants_on_traces(
         const spot::ltl::formula * prop_type,
         instants_pool_creator * instantiator,
         shared_ptr<std::multiset<vector<event>>> traces,
-        settings c_settings) {
+        settings c_settings,
+        bool use_invar_semantics,
+        shared_ptr<map<string,string>> translations) {
     instantiator->reset_instantiations();
     // vector to return
     vector<std::pair<map<string, string>, statistic>> return_vec;
-    linear_trace_checker checker;
+    if (use_invar_semantics && (translations == NULL)){
+        std::cerr << "Wanted to use invar semantics but no translations were provided.\n";
+        return return_vec;
+    }
+    linear_trace_checker checker(use_invar_semantics,translations);
     // set checker configurations
     checker.configure(c_settings);
     // simplifier for turning formulas into negative normal form so that

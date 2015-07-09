@@ -1,8 +1,17 @@
 #include <gtest/gtest.h>
 #include "../src/invariant-semantics/pptinvariantdecider.h"
+#include "../src/instantiation-tools/constinstantspool.h"
+#include "../src/checkers/lineartracechecker.h"
+#include "../src/parsers/linearparser.h"
 #include <fstream>
 #include <iostream>
+#include <memory>
+#include <map>
+#include <string>
 #include <stdlib.h>
+#include <ltlparse/public.hh>
+#include <ltlvisit/apcollect.hh>
+#include <ltlvisit/tostring.hh>
 
 
 TEST(PptInvariantDeciderTest, EqualToFourImpliesGreaterThanThree){
@@ -39,3 +48,4 @@ TEST(PptInvariantDeciderTest, QueueArPpt){
     ASSERT_FALSE(decider.decide());
 
 }
+
