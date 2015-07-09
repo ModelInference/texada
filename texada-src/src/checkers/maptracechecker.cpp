@@ -22,12 +22,28 @@ namespace texada {
  * @param trace_map_
  */
 map_trace_checker::map_trace_checker(
-        const std::map<event, std::vector<long>>* trace_map_) :
-        trace_map(trace_map_) {
+        const std::map<event, std::vector<long>>* trace_map_,
+        bool use_inv_s, shared_ptr<map<string,string>> ptr) :
+        trace_map(trace_map_), use_invariant_semantics(use_inv_s), translations(ptr) {
     std::vector<long> end_vector = trace_map->at(texada::event());
     terminal_pos = end_vector[0];
 
 }
+
+/**
+ * Creates a map trace checker which can check any formula on the
+ * trace map it's constructed on.
+ * @param trace_map_
+ */
+map_trace_checker::map_trace_checker(
+        const std::map<event, std::vector<long>>* trace_map_) :
+        trace_map(trace_map_), use_invariant_semantics(false), translations(nullptr) {
+    std::vector<long> end_vector = trace_map->at(texada::event());
+    terminal_pos = end_vector[0];
+
+}
+
+
 
 /**
  * destructor
@@ -78,6 +94,10 @@ statistic map_trace_checker::check_on_trace(const spot::ltl::formula* node,
  */
 statistic map_trace_checker::ap_check(const spot::ltl::atomic_prop* node,
         interval intvl, std::set<int> trace_ids) {
+    // TODO: refactor to legitimately to an AP check on intvl.start: need to
+    // collect APs and form an event. Maybe actually don't totally refactor; only
+    // do this for when invariant semantics is turned on, since we lose lots of
+    // efficiency.
     try {
         std::vector<long> to_search;
         if (use_instant_map){
@@ -1883,7 +1903,9 @@ int map_trace_checker::num_memo_elements(){
 vector<std::pair<map<string, string>, statistic>> valid_instants_on_traces(
         const spot::ltl::formula * prop_type,
         instants_pool_creator * instantiator,
-        shared_ptr<set<map<event, vector<long>>> > traces) {
+        shared_ptr<set<map<event, vector<long>>> > traces,
+        bool use_invar_semantics,
+        shared_ptr<map<string,string>> translations) {
     instantiator->reset_instantiations();
     // vector to return
     vector<std::pair<map<string, string>, statistic>> return_vec;
@@ -1892,7 +1914,7 @@ vector<std::pair<map<string, string>, statistic>> valid_instants_on_traces(
     vector<map_trace_checker> all_checkers;
     for (set<map<event,vector<long>>>::iterator traces_it = traces->begin();
             traces_it != traces->end(); traces_it++) {
-        all_checkers.push_back(map_trace_checker(&(*traces_it)));
+        all_checkers.push_back(map_trace_checker(&(*traces_it), use_invar_semantics, translations));
     }
 
     int num_traces = all_checkers.size();
