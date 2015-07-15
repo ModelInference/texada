@@ -129,7 +129,8 @@ bool ppt_invariant_decider::decide() {
       //  std::cout << pre << "\n";
     }
     // prog is !(preconditions->to_be_proved)
-    prog += "(assert (and " + pre + " (not " + to_be_proved + ")))";
+    prog = "(declare-sort String 0) (declare-fun arrayLength ((Array Int Int)) Int) (declare-fun arrayLength ((Array Int Real)) Int) (declare-fun arrayLength ((Array Int String)) Int) (assert (forall ((a (Array Int Int)) (b (Array Int Real)) (c (Array Int String))) (and (>= (arrayLength a) 0) (>= (arrayLength b) 0) (>= (arrayLength c) 0))))" + prog +
+            "(assert (and " + pre + " (not " + to_be_proved + ")))";
     //std::cout << prog<< "\n";
 
     z3::context context;

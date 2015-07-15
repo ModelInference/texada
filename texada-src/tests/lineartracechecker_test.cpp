@@ -182,7 +182,7 @@ TEST(LinearTraceCheckerTest,Until) {
 
 // checking support and support potential of property instances are computed properly
 TEST(LinearTraceCheckerTest, SupAndSupPot) {
-    std::cout << "MEOWW\n";
+
     // create trace a b a b a c
     std::vector<texada::event> trace_vec;
     trace_vec.push_back(texada::event("a"));
