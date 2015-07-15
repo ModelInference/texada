@@ -166,11 +166,20 @@ bool ap_holds(event location, string inv, shared_ptr<map<string,string>>translat
      ppt_invariant_decider decider = ppt_invariant_decider();
      set<string> untranslated_props = location.get_props();
      for (set<string>::iterator it = untranslated_props.begin(); it != untranslated_props.end(); it++){
+         try{
          decider.add_precondition(translations->at(*it));
+         } catch (const std::out_of_range& oor) {
+             std::cerr << "Out of Range error: can't find translation for " << *it << '\n';
+             throw oor;
+         }
      }
+     try {
      decider.add_to_be_proved(translations->at(inv));
+     } catch (const std::out_of_range& oor) {
+         std::cerr << "Out of Range error: can't find translation for " << inv << '\n';
+           throw oor;
+       }
      return decider.decide();
 }
-
 
 } /* namespace texada */
