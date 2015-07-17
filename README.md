@@ -193,7 +193,7 @@ which says that the event ```c``` is always followed by event ```d```. You can c
 
 A more advanced invocation of Texada, using additional options, looks like this (note that this example covers a subset of possible options; see [Command line usage screen](#markdown-header-command-line-usage-screen) below for a full listing):
 
-    ./texada -m -f 'G(x -> X(F(y)))' --log-file logfile.txt -r 'SUCCESS: (?<ETYPE>.*)' 'FAIL: (?<ETYPE>.*)' -s 'end' -i
+    ./texada -m -f 'G(x -> X(F(y)))' --log-file logfile.txt -r 'SUCCESS: (?<ETYPE>.*)' 'FAIL: (?<ETYPE>.*)' --trace-separator 'end' -i
 
 Here, in addition to the 4 required arguments described previously, there are the following additional options:
 
@@ -205,7 +205,7 @@ Here, in addition to the 4 required arguments described previously, there are th
 
 * A regular expression specifying a trace terminator:
 
-    ... -s 'end'
+    ... --trace-separator 'end'
 
 * A flag specifying that all lines which fail to match the provided regular expressions are to be ignored:
 
@@ -235,7 +235,7 @@ Note that with Texada's default parsing setting, this log would be interpreted a
 
 Let's say that we want Texada to: (1) interpret 'end' as marking the termination of a trace, (2) ignore lines beginning with '//', (3) ignore the "SUCCESS: " and "FAIL: " parts of the log lines, and (4) determine a line's event type purely on the final symbols (e.g., we want to interpret "SUCCESS: d" and "FAIL: d" as instances of the event "d"). To do this, we would append the following options to our command:
 
-    ... -r 'SUCCESS: (?<ETYPE>.*)' 'FAIL: (?<ETYPE>.*)' -s 'end' -i
+    ... -r 'SUCCESS: (?<ETYPE>.*)' 'FAIL: (?<ETYPE>.*)' --trace-separator 'end' -i
 
 Here, the input
 
@@ -245,7 +245,7 @@ says, in effect, that if a log line matches the regular expression 'SUCCESS: (?<
 
 In full, a command to find events x and y which satisfy the relationship 'x is always followed by y' (or in LTL: G(x -> XF(y))) would look like this:
 
-    ./texada -m -f 'G(x -> X(F(y)))' --log-file structured_log.txt -r 'SUCCESS: (?<ETYPE>.*)' 'FAIL: (?<ETYPE>.*)' -s 'end' -i
+    ./texada -m -f 'G(x -> X(F(y)))' --log-file structured_log.txt -r 'SUCCESS: (?<ETYPE>.*)' 'FAIL: (?<ETYPE>.*)' --trace-separator 'end' -i
 
 This would produce the following output:
 
@@ -333,11 +333,11 @@ Texada relies on user-supplied regular expressions ([Perl regular expressions](h
 
 There are two command line options which require regular expression arguments: 
 
-* -s : specifies the log lines to be interpreted as partitions between traces, takes a single regular expression argument, and all lines matching this expression are treated as partitions between traces.
+* --trace-separator : specifies the log lines to be interpreted as partitions between traces, takes a single regular expression argument, and all lines matching this expression are treated as partitions between traces.
 
-* -r : takes a list of regular expressions as argument, each specifying the structure of some log line. Unlike -s, the regex arguments of -r require a capturing group with the name <ETYPE>. Texada will walk through the log lines and try to match each line with one of these regular expressions; once a match is found, the string captured by the named group <ETYPE> will become the event type of the line.
+* --regex or -r : takes a list of regular expressions as argument, each specifying the structure of some log line. Unlike --trace-separator, the regex arguments of -r require a capturing group with the name <ETYPE>. Texada will walk through the log lines and try to match each line with one of these regular expressions; once a match is found, the string captured by the named group <ETYPE> will become the event type of the line.
 
-* -i : If a line fails to match any of the provided regular expressions, the program will abort. To ignore these unmatched log lines use the -i option.
+* --ignore-nm-lines or -i : If a line fails to match any of the provided regular expressions, the program will abort. To ignore these unmatched log lines use the -i option.
 
 
 # Command line usage screen
