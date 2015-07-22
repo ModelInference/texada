@@ -95,8 +95,8 @@ abstract class DiningServer {
     private void eat(String name, int napEat) throws InterruptedException {
         int napping;
         napping = 1 + (int) random(napEat);
-        System.out.println("age=" + age() + ", " + name + " is eating for "
-                + napping + " ms");
+        //System.out.println("age=" + age() + ", " + name + " is eating for "
+        //+ napping + " ms");
         Thread.sleep(napping);
     }
 
@@ -129,11 +129,13 @@ abstract class DiningServer {
     protected void printState(String caller) {
         // Build a line and use one println() instead of several print()'s
         // so that multiple threads' output does not become interleaved.
-        StringBuffer line = new StringBuffer();
-        line.append(caller);
+        //StringBuffer line = new StringBuffer();
+        //line.append(caller);
+        System.out.println("==");
         for (int i = 0; i < numPhils; i++) {
-            line.append(", " + i + " is " + state[i]);
+            //line.append(", " + i + " is " + state[i]);
+            System.out.println(i + " is " + state[i] + "\n..");
         }
-        System.out.println(line);
+        //System.out.println(line);
     }
 }
