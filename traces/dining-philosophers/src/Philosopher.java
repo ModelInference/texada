@@ -106,8 +106,8 @@ class Philosopher implements Runnable {
     private void think() throws InterruptedException {
         int napping;
         napping = 1 + (int) random(napThink);
-        System.out.println("age=" + age() + ", " + name + " is thinking for "
-                + napping + " ms");
+        //System.out.println("age=" + age() + ", " + name + " is thinking for "
+        //+ napping + " ms");
         Thread.sleep(napping);
     }
 
@@ -119,23 +119,23 @@ class Philosopher implements Runnable {
             return;
         while (true) {
             if (Thread.interrupted()) {
-                System.out.println("age=" + age() + ", " + name
-                        + " interrupted");
+                //System.out.println("age=" + age() + ", " + name
+                //+ " interrupted");
                 return;
             }
             try {
                 think();
             } catch (InterruptedException e) {
-                System.out.println("age=" + age() + ", " + name
-                        + " interrupted out of think");
+                //System.out.println("age=" + age() + ", " + name
+                //+ " interrupted out of think");
                 return;
             }
-            System.out.println("age=" + age() + ", " + name + " wants to dine");
+            //System.out.println("age=" + age() + ", " + name + " wants to dine");
             try {
                 ds.dine(name, id, napEat); // got hungry, try to eat
             } catch (InterruptedException e) {
-                System.out.println("age=" + age() + ", " + name
-                        + " interrupted out of dine");
+                //System.out.println("age=" + age() + ", " + name
+                //      + " interrupted out of dine");
                 return;
             }
         }

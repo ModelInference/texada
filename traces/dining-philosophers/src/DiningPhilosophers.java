@@ -25,9 +25,9 @@ class DiningPhilosophers {
             napEat = Integer.parseInt(args[3]);
         } catch (Exception e) { /* use defaults */
         }
-        System.out.println("DiningPhilosophers: numPhilosophers="
-                + numPhilosophers + ", runTime=" + runTime + ", napThink="
-                + napThink + ", napEat=" + napEat);
+        //System.out.println("DiningPhilosophers: numPhilosophers="
+        //+ numPhilosophers + ", runTime=" + runTime + ", napThink="
+        //+ napThink + ", napEat=" + napEat);
 
         // create the DiningServer object
         DiningServer ds = DiningServerImpl.newInstance(numPhilosophers);
@@ -38,25 +38,25 @@ class DiningPhilosophers {
         for (int i = 0; i < numPhilosophers; i++)
             p[i] = Philosopher.newInstance(i, napThink * 1000, napEat * 1000,
                     ds);
-        System.out.println("All Philosopher threads started");
+        //System.out.println("All Philosopher threads started");
 
         // let the Philosophers run for a while
         try {
             Thread.sleep(runTime * 1000);
-            System.out.println("age=" + age()
-                    + ", time to terminate the Philosophers and exit");
+            //System.out.println("age=" + age()
+            //+ ", time to terminate the Philosophers and exit");
             for (int i = 0; i < numPhilosophers; i++) {
                 p[i].timeToQuit();
-                System.out.println("age=" + age() + ", philosopher" + i
-                        + " told");
+                //System.out.println("age=" + age() + ", philosopher" + i
+                //      + " told");
             }
             for (int i = 0; i < numPhilosophers; i++) {
                 p[i].pauseTilDone();
-                System.out.println("age=" + age() + ", philosopher" + i
-                        + " done");
+                //System.out.println("age=" + age() + ", philosopher" + i
+                //+ " done");
             }
         } catch (InterruptedException e) { /* ignored */
         }
-        System.out.println("age=" + age() + ", all Philosophers are done");
+        //System.out.println("age=" + age() + ", all Philosophers are done");
     }
 }
