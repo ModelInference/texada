@@ -12,7 +12,26 @@ $ ./run.sh
 
 
 You should see output like this:
-
-
-
-
+==
+0 is THINKING
+..
+1 is THINKING
+..
+2 is THINKING
+..
+3 is THINKING
+..
+4 is THINKING
+..
+==
+0 is HUNGRY
+..
+1 is THINKING
+..
+2 is THINKING
+..
+3 is THINKING
+..
+4 is THINKING
+..
+==
