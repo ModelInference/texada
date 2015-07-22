@@ -7,5 +7,10 @@ texada
 texadatest
 .cproject
 .cproject~
+
 *~
 *.orig
+
+# Ignore generated .class files for dining philosophers
+traces/dining-philosophers/bin/
+
