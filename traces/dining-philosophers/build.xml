@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+<project basedir="." default="build" name="DiningPhilosophers">
+    <description>
+      Provides target to build the DiningPhilosophers implementation.
+    </description>
+
+    <property environment="env"/>
+    
+    <!-- Where to find the generated classes. -->
+    <path id="dining.classes.classpath">
+        <pathelement location="bin"/>
+    </path>
+
+    <property name="debuglevel" value="source,lines,vars"/>
+    <property name="target" value="1.7"/>
+    <property name="source" value="1.7"/>
+
+    <!--=====================================================================-->
+    <target name="clean">
+      <delete dir="bin"/>
+    </target>
+
+    <!--=====================================================================-->
+    <target name="build">
+      <echo message="Ant running on Java version ${ant.java.version}"/>
+      <!-- Create the bin/ dir where compiled .class files will go. -->
+      <mkdir dir="bin"/>
+
+      <echo message="Ant running on Java version ${ant.java.version}"/>
+      
+      <echo message="${ant.project.name}: ${ant.file}"/>
+      <javac debug="true" debuglevel="${debuglevel}" includeantruntime="false" destdir="bin" source="${source}" target="${target}">
+	<compilerarg value="-Xlint" />
+        <src path="src"/>
+      </javac>
+    </target>
+
+</project>
