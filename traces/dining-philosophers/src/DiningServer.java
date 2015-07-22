@@ -131,11 +131,11 @@ abstract class DiningServer {
         // so that multiple threads' output does not become interleaved.
         //StringBuffer line = new StringBuffer();
         //line.append(caller);
-        System.out.println("==");
         for (int i = 0; i < numPhils; i++) {
             //line.append(", " + i + " is " + state[i]);
-            System.out.println(i + " is " + state[i] + "\n..");
+            System.out.println(i + " is " + state[i]);
         }
+        System.out.println("..");
         //System.out.println(line);
     }
 }
