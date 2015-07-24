@@ -1,9 +1,8 @@
 ## Try the [Texada service](http://bestchai.bitbucket.org/texada/) from your browser ##
 -----------------------
 
-[[Screenshot](https://bitbucket.org/bestchai/texada/raw/master/images/play-demo-video.jpg)](https://www.youtube.com/watch?v=H7i5NhXj4nk)
-A video demo demonstrating how Texada can be used to validate
-properties of a solution to the [dining philosophers problem](https://en.wikipedia.org/wiki/Dining_philosophers_problem).
+[![Screenshot](https://bitbucket.org/bestchai/texada/raw/default/images/play-demo-video.jpg)](https://www.youtube.com/watch?v=H7i5NhXj4nk)
+A demo showing how to use Texada to validate properties of a solution to the [dining philosophers problem](https://en.wikipedia.org/wiki/Dining_philosophers_problem).
 
 
 ## Table of contents
