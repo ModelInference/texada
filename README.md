@@ -2,6 +2,7 @@
 -----------------------
 
 [![Screenshot](https://bitbucket.org/bestchai/texada/raw/default/images/play-demo-video.jpg)](https://www.youtube.com/watch?v=H7i5NhXj4nk)
+
 A demo showing how to use Texada to validate properties of a solution to the [dining philosophers problem](https://en.wikipedia.org/wiki/Dining_philosophers_problem).
 
 
