@@ -12,6 +12,7 @@
 #include "statistic.h"
 #include "settings.h"
 #include "interval.h"
+#include "ltlvisit/tostring.hh"
 
 namespace texada {
 
@@ -289,8 +290,29 @@ protected:
             case spot::ltl::binop::W:
             case spot::ltl::binop::M:
                 return interval(0,LONG_MAX);
+            case spot::ltl::binop::Xor:
+            case spot::ltl::binop::Equiv:
+            case spot::ltl::binop::Implies:{
+                interval intvl(LONG_MAX,-LONG_MAX);
+                interval intvl_i= get_interval(bnode->first());
+                if (intvl.start > intvl_i.start) {
+                     intvl.start = intvl_i.start;
+                }
+                if (intvl.end < intvl_i.end) {
+                     intvl.end = intvl_i.end;
+                }
+                intvl_i= get_interval(bnode->second());
+                if (intvl.start > intvl_i.start) {
+                     intvl.start = intvl_i.start;
+                }
+                if (intvl.end < intvl_i.end) {
+                     intvl.end = intvl_i.end;
+                }
+                return intvl;
+            }
+
             default:
-                std::cerr << "Unsupported binary operator. Returning [-1,-1]. \n";
+                std::cerr << "Unsupported binary operator " << spot::ltl::to_string(node) << ". Returning [-1,-1]. \n";
                 return interval(-1,-1);
             }
         }
@@ -312,7 +334,7 @@ protected:
                         intvl.end = intvl_i.end;
                     }
                 }
-                return interval(0,0);
+                return intvl;
             }
             default:
                 std::cerr << "Unsupported multiple operator. Returning [-1,-1]. \n";
