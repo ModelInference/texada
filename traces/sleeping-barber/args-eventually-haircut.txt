@@ -1,0 +1,1 @@
+-l -f 'Fx' --parse-mult-prop ./traces/sleeping-barber/7-customers-log.txt

@@ -1,0 +1,1 @@
+-l -f 'G(x->!y)' --parse-mult-prop ./traces/sleeping-barber/7-customers-log.txt
