@@ -1,0 +1,415 @@
+Barber is Sleeping
+Customer4 is Entering
+Customer3 is Chilling
+Customer1 is Chilling
+Customer5 is Chilling
+Customer0 is Chilling
+Customer6 is Chilling
+Customer2 is Chilling
+..
+Barber is Checking
+Customer4 is Waiting
+Customer3 is Chilling
+Customer1 is Chilling
+Customer5 is Chilling
+Customer0 is Chilling
+Customer6 is Chilling
+Customer2 is Chilling
+..
+Barber is CuttingHair
+Customer4 is GettingHairCut
+Customer3 is Chilling
+Customer1 is Chilling
+Customer5 is Chilling
+Customer0 is Entering
+Customer6 is Chilling
+Customer2 is Chilling
+..
+Barber is CuttingHair
+Customer4 is GettingHairCut
+Customer3 is Chilling
+Customer1 is Entering
+Customer5 is Chilling
+Customer0 is Waiting
+Customer6 is Chilling
+Customer2 is Chilling
+..
+Barber is CuttingHair
+Customer4 is GettingHairCut
+Customer3 is Chilling
+Customer1 is Waiting
+Customer5 is Chilling
+Customer0 is Waiting
+Customer6 is Chilling
+Customer2 is Entering
+..
+Barber is CuttingHair
+Customer4 is GettingHairCut
+Customer3 is Entering
+Customer1 is Waiting
+Customer5 is Chilling
+Customer0 is Waiting
+Customer6 is Chilling
+Customer2 is Waiting
+..
+Barber is CuttingHair
+Customer4 is GettingHairCut
+Customer3 is Exiting
+Customer1 is Waiting
+Customer5 is Chilling
+Customer0 is Waiting
+Customer6 is Chilling
+Customer2 is Waiting
+..
+Barber is CuttingHair
+Customer4 is GettingHairCut
+Customer3 is Chilling
+Customer1 is Waiting
+Customer5 is Entering
+Customer0 is Waiting
+Customer6 is Chilling
+Customer2 is Waiting
+..
+Barber is CuttingHair
+Customer4 is GettingHairCut
+Customer3 is Chilling
+Customer1 is Waiting
+Customer5 is Exiting
+Customer0 is Waiting
+Customer6 is Chilling
+Customer2 is Waiting
+..
+Barber is CuttingHair
+Customer4 is GettingHairCut
+Customer3 is Chilling
+Customer1 is Waiting
+Customer5 is Chilling
+Customer0 is Waiting
+Customer6 is Entering
+Customer2 is Waiting
+..
+Barber is CuttingHair
+Customer4 is GettingHairCut
+Customer3 is Chilling
+Customer1 is Waiting
+Customer5 is Chilling
+Customer0 is Waiting
+Customer6 is Exiting
+Customer2 is Waiting
+..
+Barber is CuttingHair
+Customer4 is GettingHairCut
+Customer3 is Entering
+Customer1 is Waiting
+Customer5 is Chilling
+Customer0 is Waiting
+Customer6 is Chilling
+Customer2 is Waiting
+..
+Barber is CuttingHair
+Customer4 is GettingHairCut
+Customer3 is Exiting
+Customer1 is Waiting
+Customer5 is Chilling
+Customer0 is Waiting
+Customer6 is Chilling
+Customer2 is Waiting
+..
+Barber is CuttingHair
+Customer4 is GettingHairCut
+Customer3 is Chilling
+Customer1 is Waiting
+Customer5 is Entering
+Customer0 is Waiting
+Customer6 is Chilling
+Customer2 is Waiting
+..
+Barber is CuttingHair
+Customer4 is GettingHairCut
+Customer3 is Chilling
+Customer1 is Waiting
+Customer5 is Exiting
+Customer0 is Waiting
+Customer6 is Chilling
+Customer2 is Waiting
+..
+Barber is Checking
+Customer4 is Exiting
+Customer3 is Chilling
+Customer1 is Waiting
+Customer5 is Chilling
+Customer0 is Waiting
+Customer6 is Chilling
+Customer2 is Waiting
+..
+Barber is CuttingHair
+Customer4 is Exiting
+Customer3 is Chilling
+Customer1 is Waiting
+Customer5 is Chilling
+Customer0 is GettingHairCut
+Customer6 is Chilling
+Customer2 is Waiting
+..
+Barber is CuttingHair
+Customer4 is Chilling
+Customer3 is Chilling
+Customer1 is Waiting
+Customer5 is Chilling
+Customer0 is GettingHairCut
+Customer6 is Chilling
+Customer2 is Waiting
+..
+Barber is CuttingHair
+Customer4 is Chilling
+Customer3 is Chilling
+Customer1 is Waiting
+Customer5 is Entering
+Customer0 is GettingHairCut
+Customer6 is Chilling
+Customer2 is Waiting
+..
+Barber is CuttingHair
+Customer4 is Chilling
+Customer3 is Chilling
+Customer1 is Waiting
+Customer5 is Waiting
+Customer0 is GettingHairCut
+Customer6 is Entering
+Customer2 is Waiting
+..
+Barber is CuttingHair
+Customer4 is Chilling
+Customer3 is Chilling
+Customer1 is Waiting
+Customer5 is Waiting
+Customer0 is GettingHairCut
+Customer6 is Exiting
+Customer2 is Waiting
+..
+Barber is CuttingHair
+Customer4 is Chilling
+Customer3 is Entering
+Customer1 is Waiting
+Customer5 is Waiting
+Customer0 is GettingHairCut
+Customer6 is Chilling
+Customer2 is Waiting
+..
+Barber is CuttingHair
+Customer4 is Chilling
+Customer3 is Exiting
+Customer1 is Waiting
+Customer5 is Waiting
+Customer0 is GettingHairCut
+Customer6 is Chilling
+Customer2 is Waiting
+..
+Barber is CuttingHair
+Customer4 is Chilling
+Customer3 is Chilling
+Customer1 is Waiting
+Customer5 is Waiting
+Customer0 is GettingHairCut
+Customer6 is Entering
+Customer2 is Waiting
+..
+Barber is CuttingHair
+Customer4 is Chilling
+Customer3 is Chilling
+Customer1 is Waiting
+Customer5 is Waiting
+Customer0 is GettingHairCut
+Customer6 is Exiting
+Customer2 is Waiting
+..
+Barber is Checking
+Customer4 is Chilling
+Customer3 is Chilling
+Customer1 is Waiting
+Customer5 is Waiting
+Customer0 is Exiting
+Customer6 is Chilling
+Customer2 is Waiting
+..
+Barber is CuttingHair
+Customer4 is Chilling
+Customer3 is Chilling
+Customer1 is GettingHairCut
+Customer5 is Waiting
+Customer0 is Exiting
+Customer6 is Chilling
+Customer2 is Waiting
+..
+Barber is CuttingHair
+Customer4 is Chilling
+Customer3 is Chilling
+Customer1 is GettingHairCut
+Customer5 is Waiting
+Customer0 is Chilling
+Customer6 is Chilling
+Customer2 is Waiting
+..
+Barber is CuttingHair
+Customer4 is Chilling
+Customer3 is Entering
+Customer1 is GettingHairCut
+Customer5 is Waiting
+Customer0 is Chilling
+Customer6 is Chilling
+Customer2 is Waiting
+..
+Barber is CuttingHair
+Customer4 is Chilling
+Customer3 is Waiting
+Customer1 is GettingHairCut
+Customer5 is Waiting
+Customer0 is Chilling
+Customer6 is Entering
+Customer2 is Waiting
+..
+Barber is CuttingHair
+Customer4 is Chilling
+Customer3 is Waiting
+Customer1 is GettingHairCut
+Customer5 is Waiting
+Customer0 is Chilling
+Customer6 is Exiting
+Customer2 is Waiting
+..
+Barber is Checking
+Customer4 is Chilling
+Customer3 is Waiting
+Customer1 is Exiting
+Customer5 is Waiting
+Customer0 is Chilling
+Customer6 is Chilling
+Customer2 is Waiting
+..
+Barber is CuttingHair
+Customer4 is Chilling
+Customer3 is Waiting
+Customer1 is Exiting
+Customer5 is Waiting
+Customer0 is Chilling
+Customer6 is Chilling
+Customer2 is GettingHairCut
+..
+Barber is CuttingHair
+Customer4 is Chilling
+Customer3 is Waiting
+Customer1 is Chilling
+Customer5 is Waiting
+Customer0 is Chilling
+Customer6 is Chilling
+Customer2 is GettingHairCut
+..
+Barber is CuttingHair
+Customer4 is Chilling
+Customer3 is Waiting
+Customer1 is Chilling
+Customer5 is Waiting
+Customer0 is Chilling
+Customer6 is Entering
+Customer2 is GettingHairCut
+..
+Barber is Checking
+Customer4 is Chilling
+Customer3 is Waiting
+Customer1 is Chilling
+Customer5 is Waiting
+Customer0 is Chilling
+Customer6 is Waiting
+Customer2 is Exiting
+..
+Barber is CuttingHair
+Customer4 is Chilling
+Customer3 is Waiting
+Customer1 is Chilling
+Customer5 is GettingHairCut
+Customer0 is Chilling
+Customer6 is Waiting
+Customer2 is Exiting
+..
+Barber is CuttingHair
+Customer4 is Chilling
+Customer3 is Waiting
+Customer1 is Chilling
+Customer5 is GettingHairCut
+Customer0 is Chilling
+Customer6 is Waiting
+Customer2 is Chilling
+..
+Barber is Checking
+Customer4 is Chilling
+Customer3 is Waiting
+Customer1 is Chilling
+Customer5 is Exiting
+Customer0 is Chilling
+Customer6 is Waiting
+Customer2 is Chilling
+..
+Barber is CuttingHair
+Customer4 is Chilling
+Customer3 is GettingHairCut
+Customer1 is Chilling
+Customer5 is Exiting
+Customer0 is Chilling
+Customer6 is Waiting
+Customer2 is Chilling
+..
+Barber is CuttingHair
+Customer4 is Chilling
+Customer3 is GettingHairCut
+Customer1 is Chilling
+Customer5 is Chilling
+Customer0 is Chilling
+Customer6 is Waiting
+Customer2 is Chilling
+..
+Barber is Checking
+Customer4 is Chilling
+Customer3 is Exiting
+Customer1 is Chilling
+Customer5 is Chilling
+Customer0 is Chilling
+Customer6 is Waiting
+Customer2 is Chilling
+..
+Barber is CuttingHair
+Customer4 is Chilling
+Customer3 is Exiting
+Customer1 is Chilling
+Customer5 is Chilling
+Customer0 is Chilling
+Customer6 is GettingHairCut
+Customer2 is Chilling
+..
+Barber is CuttingHair
+Customer4 is Chilling
+Customer3 is Chilling
+Customer1 is Chilling
+Customer5 is Chilling
+Customer0 is Chilling
+Customer6 is GettingHairCut
+Customer2 is Chilling
+..
+Barber is Sleeping
+Customer4 is Chilling
+Customer3 is Chilling
+Customer1 is Chilling
+Customer5 is Chilling
+Customer0 is Chilling
+Customer6 is Exiting
+Customer2 is Chilling
+..
+Barber is Sleeping
+Customer4 is Chilling
+Customer3 is Chilling
+Customer1 is Chilling
+Customer5 is Chilling
+Customer0 is Chilling
+Customer6 is Chilling
+Customer2 is Chilling
+..
+--
