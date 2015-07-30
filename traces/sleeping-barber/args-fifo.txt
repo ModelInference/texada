@@ -1,0 +1,1 @@
+-l -f '(!y W x) -> (!z W u)' --parse-mult-prop ./traces/sleeping-barber/7-customers-log.txt
