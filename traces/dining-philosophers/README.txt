@@ -10,7 +10,6 @@ $ ant
 2. Run the implementation from ./ with:
 $ ./run.sh
 
-
 You should see output like this:
 
 0 is THINKING
@@ -25,3 +24,21 @@ You should see output like this:
 3 is THINKING
 4 is THINKING
 ..
+
+
+============== RUNNING TEXADA TO CONFIRM SOLUTION PROPERTIES ===============
+
+Several args files are provided which can be given to texada with the -c
+or --config-file option in order to confirm some expected solution properties:
+
+ args-check-exclusive-access.txt 
+ This args file provides arguments to check the "adjacent philosophers never
+ eat at the same time" or equivalently "only one philosopher can access the
+ same utensil at the same time" property. 
+
+ args-eventually-eat-together(-phil*).txt
+ These args files provide arguments to check that eventually non-adjacent
+ philosophers eat together. the (-phil*) versions output only the properties
+ involving the given philospher eating, and are easier for manual examination.
+
+
