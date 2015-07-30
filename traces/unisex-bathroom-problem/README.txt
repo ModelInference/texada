@@ -1,6 +1,30 @@
-This is a placeholder for a use-case based on the unisex bathroom
+This is a place-holder for a use-case based on the unisex bathroom
 problem. See the following write-up for a description of the problem:
 http://ww1.ucmss.com/books/LFS/CSREA2006/PDP3757.pdf
+
+
+Properties that we can capture in LTL:
+
+- never any men and women in the bathroom at the same time (similar to
+  no one eating at the same time)
+
+- never more people in the bathroom than there is stall capacity
+
+- everyone goes to the bathroom at least some number of times (the
+  "bounded existence" pattern here:
+  http://patterns.projects.cis.ksu.edu/documentation/patterns/ltl.shtml)
+
+- being in the bathroom is guarded by entering and exiting the
+  bathroom
+
+
+Properties that we cannot capture in LTL:
+
+- fairness (unless we have a constrained set of people that we know
+  about in advance)
+
+- performance/throughput (e.g., elapsed waiting time)
+
 
 The basic idea in this problem is that you have some state/event that
 should only occur between two other states/events, and always be
