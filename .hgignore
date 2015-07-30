@@ -13,4 +13,4 @@ texadatest
 
 # Ignore generated .class files for dining philosophers
 traces/dining-philosophers/bin/
-
+traces/sleeping-barber/bin/
