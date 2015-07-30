@@ -1,0 +1,1 @@
+-l -f 'F("4 is EATING"&y)' --event "4 is EATING" --parse-mult-prop ./traces/dining-philosophers/dining_philosophers_log.txt

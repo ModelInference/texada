@@ -1,0 +1,1 @@
+-l -f 'F(x&y)' --parse-mult-prop ./traces/dining-philosophers/dining_philosophers_log.txt
