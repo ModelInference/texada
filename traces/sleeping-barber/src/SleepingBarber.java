@@ -9,7 +9,7 @@ public class SleepingBarber extends Thread {
    // Constants to adjust if desired
    public static final int CHAIRS = 3;
    public static final int CUSTOMERS = 7;
-   public static final int NUM_HAIRCUTS = 1; 
+   public static final int NUM_HAIRCUTS = 2; 
 
    // Semaphores
    // signalled when a customer enters and gets a chair to sit in

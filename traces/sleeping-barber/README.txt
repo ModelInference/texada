@@ -44,6 +44,14 @@ properties for the sleeping barber implementation given in src.
  args-eventually-hair-cut.txt
  This file provides args to check which events eventually happy over all traces
  in order to confirm all customers get a haircut.
+
+ args-exactly-two-haircuts.txt
+ This file provides args to check that each customer gets exactly two haircuts.
+ Note that in the output "Customer4 is GettingHairCut" does not appear in a valid
+ binding; this is because in the second trace of the log, Customer4 gets a 
+ haircut while no logging event happen, so "Customer4 is GettingHairCut" is never
+ logged. But we see the customer does get a haircut since the entering->waiting->
+ exiting cycle occurs. 
  
  args-fifo.txt
  This file provides args to check that the first-in-first-out property is 

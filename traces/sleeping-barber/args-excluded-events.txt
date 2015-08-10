@@ -1,1 +1,1 @@
--l -f 'G(x->!y)' --parse-mult-prop ./traces/sleeping-barber/7-customers-log.txt
+-m -f 'G(x->!y)' --parse-mult-prop ./traces/sleeping-barber/7-customers-2-cuts-log.txt
