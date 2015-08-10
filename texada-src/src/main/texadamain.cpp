@@ -89,21 +89,33 @@ int main(int ac, char* av[]) {
         std::set<std::pair<const spot::ltl::formula*, texada::statistic>> found_instants =
                 texada::mine_property_type(opts_map);
 
+        if (opts_map.count("output-json")){
+            //todo:: preamble:
+        }
+
         // print out all the valid instantiations
         for (std::set<std::pair<const spot::ltl::formula*, texada::statistic>>::iterator it =
                 found_instants.begin(); it != found_instants.end(); it++) {
-            std::cout << spot::ltl::to_string((*it).first) << "\n";
+            if (opts_map.count("output-json")){
+                print_json(*it, opts_map.count("print-stats"));
+            } else {
+              std::cout << spot::ltl::to_string((*it).first) << "\n";
 
-            // if printing is turned on, print the statistics of each valid finding
-            // warning: printing statistics incurs expensive overhead as it disables
-            // all possible short-circuiting within the checker.
-            if (opts_map.count("print-stats")) {
-                std::cout << "   support: " + std::to_string((*it).second.support) << "\n";
-                std::cout << "   support potential: " + std::to_string((*it).second.support_potential) << "\n";
-                std::cout << "   confidence: ";
-                std::printf("%6.4lf", (*it).second.confidence());
-                std::cout << "\n";
-            }
+              // if printing is turned on, print the statistics of each valid finding
+              // warning: printing statistics incurs expensive overhead as it disables
+              // all possible short-circuiting within the checker.
+              if (opts_map.count("print-stats")) {
+                  std::cout << "   support: " + std::to_string((*it).second.support) << "\n";
+                  std::cout << "   support potential: " + std::to_string((*it).second.support_potential) << "\n";
+                  std::cout << "   confidence: ";
+                  std::printf("%6.4lf", (*it).second.confidence());
+                  std::cout << "\n";
+           }
+           }
+        }
+
+        if (opts_map.count("output-json")){
+            //todo:: postamble
         }
 
         // exception catching
@@ -113,5 +125,14 @@ int main(int ac, char* av[]) {
     }
 
     return 0;
+}
+
+/**
+ * Prints a
+ * @param instant the instantiation and its statistic
+ * @param print_stats whether to print the statistics as well
+ */
+void print_json(std::pair<const spot::ltl::formula*, texada::statistic> instant, int print_stats){
+  // todo: print innards of prop type
 }
 
