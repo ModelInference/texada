@@ -1,1 +1,1 @@
--l -f 'G("Barber is Sleeping"->!y)' --event "Barber is Sleeping" --parse-mult-prop ./traces/sleeping-barber/7-customers-log.txt
+-m -f 'G("Barber is Sleeping"->!y)' --event "Barber is Sleeping" --parse-mult-prop ./traces/sleeping-barber/7-customers-log-2-cuts.txt
