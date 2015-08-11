@@ -49,7 +49,7 @@ boost::program_options::options_description get_options_description() {
             ("print-stats", "print the support and confidence of each finding")
             ("invariant-semantics-input", boost::program_options::value<std::string>(), "specify a file translating event strings to smtlibv2 [in the form decl: (...) inv: (...)], and use this information to make logical comparisions to determine if invariants hold.")
             ("use-global-thresholds", "make all inputed thresholds global [default: false]")
-            ("output-json", "use json output format [default: false]");
+            ("output-json", boost::program_options::value<std::string>(), "write output in json file to given file [default: print string rep to console]");
     return desc;
 
 }
