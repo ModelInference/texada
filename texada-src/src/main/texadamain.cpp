@@ -91,6 +91,8 @@ int main(int ac, char* av[]) {
 
         if (opts_map.count("output-json")){
             //todo:: preamble:
+            std::cout << "{\"prop-type\": {\"str\": \"" << opts_map["prop-type"].as<std::string>()
+                    << "\", \"vars\" : [ ";
         }
 
         // print out all the valid instantiations
@@ -134,5 +136,11 @@ int main(int ac, char* av[]) {
  */
 void print_json(std::pair<const spot::ltl::formula*, texada::statistic> instant, int print_stats){
   // todo: print innards of prop type
+    if (print_stats){
+        std::cout << " , \"support\" : " << std::to_string(instant.second.support) << " ";
+        std::cout << ", \"support potential\" : " << std::to_string(instant.second.support_potential) << " ";
+        std::cout << ", \"confidence\" : " <<
+        std::printf("%6.4lf", instant.second.confidence());
+    }
 }
 
