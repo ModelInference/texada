@@ -25,7 +25,7 @@
  * @param print_stats whether to print the statistics as well
  */
 void print_json(std::pair<const spot::ltl::formula*, texada::statistic> instant, int print_stats){
-  // todo: print innards of prop type
+  // todo: this needs to take in an outfile
     if (print_stats){
         std::cout << " , \"support\" : " << std::to_string(instant.second.support) << " ";
         std::cout << ", \"support potential\" : " << std::to_string(instant.second.support_potential) << " ";
@@ -67,16 +67,12 @@ void remove_overlapping_locations(std::vector<int> * posns, std::set<std::string
                 invalid_posns.insert((*pos)+ i);
             }
         }
-        // here we remove any overlapping positions
-        for (std::vector<int>::iterator pos = posns->begin(); pos != posns->end(); ){
-            if (invalid_posns.find(*pos) != invalid_posns.end()){
-                std::vector<int>::iterator to_delete = pos;
-                pos++;
-                posns->erase(to_delete);
-            } else {
-                pos++;
-            }
-        }
+       // here we remove any overlapping positions. Note the predicate for deletion checks
+       // if x is in the invalid positions
+       auto remove = std::remove_if(posns->begin(), posns->end(),
+               [invalid_posns](int x){return invalid_posns.find(x) != invalid_posns.end();});
+       posns->erase(remove);
+
     }
 }
 
@@ -127,6 +123,32 @@ std::shared_ptr<std::map<std::string, std::vector<int>>> get_var_pos(std::string
         }
     }
     return ret_map;
+}
+
+/**
+ * Write "map" in the form {"x" : [2,4], "y" : [6]} to write_on
+ * REQUIRES: write_on is already opened
+ * @param write_on ofstream to write on
+ * @param to_write map to write on ofstream
+ */
+void print_map_json(std::ofstream * write_on,
+        std::shared_ptr<std::map<std::string, std::vector<int>>> to_write){
+    *write_on << "{";
+    for (std::map<std::string,std::vector<int>>::iterator it = to_write->begin();
+            it != to_write->end(); it++){
+        if (it != to_write->begin()){
+            *write_on << ", ";
+        }
+        *write_on << "\"" << it->first << "\" : [";
+        for (std::vector<int>::iterator vec_it = it->second.begin();
+                vec_it != it->second.end(); vec_it++){
+            if (vec_it != it->second.begin())
+                *write_on << ", ";
+            *write_on << *vec_it;
+        }
+        *write_on << "]";
+    }
+    *write_on << "}";
 }
 
 
@@ -208,9 +230,8 @@ int main(int ac, char* av[]) {
 
         std::ofstream outfile;
         if (opts_map.count("output-json")){
-
             // get prop type
-            std::string prop_type =opts_map["prop-type"].as<std::string>();
+            std::string prop_type = opts_map["property-type"].as<std::string>();
             // open file
             outfile.open(opts_map["output-json"].as<std::string>());
 
@@ -223,13 +244,12 @@ int main(int ac, char* av[]) {
             std::set<std::string> aps = std::set<std::string>();
             for (spot::ltl::atomic_prop_set::iterator it = atomic_props->begin(); it != atomic_props->end(); it++){
                 aps.insert((*it)->name());
-
             }
             std::shared_ptr<std::map<std::string, std::vector<int>>> var_pos_map =
-                    get_var_pos(opts_map["prop-type"].as<std::string>(), &aps);
+                    get_var_pos(prop_type, &aps);
+            outfile << "{\"prop-type\": {\"str\": \"" << prop_type << "\", \"vars\" : ";
+            print_map_json(&outfile,var_pos_map);
             //todo:: preamble:
-            std::cout << "{\"prop-type\": {\"str\": \"" << opts_map["prop-type"].as<std::string>()
-                    << "\", \"vars\" : [ ";
         }
 
         // print out all the valid instantiations
