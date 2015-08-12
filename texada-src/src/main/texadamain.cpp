@@ -26,25 +26,25 @@
  * @param instant the instantiation and its statistic
  * @param print_stats whether to print the statistics as well
  */
-void print_json(std::ofstream * outfile, std::pair<std::map<std::string,std::string>, texada::statistic> instant, int print_stats){
+void print_json(std::ostream & outfile, std::pair<std::map<std::string,std::string>, texada::statistic> instant, int print_stats){
   // todo: this needs to take in an outfile
-    *outfile << "{";
+    outfile << "{";
     for (std::map<std::string,std::string>::iterator it = instant.first.begin(); it != instant.first.end(); it++){
         if (it != instant.first.begin()){
-            *outfile << ", ";
+            outfile << ", ";
         }
-        *outfile << "\"" << it->first << "\" : \"" << it->second << "\"";
+        outfile << "\"" << it->first << "\" : \"" << it->second << "\"";
     }
-    *outfile << "";
+    outfile << "";
     if (print_stats){
         // TODO: might be a better way to do this; do we want to better separate the
         // variable pairs from these ones
-        *outfile << " , \"support\" : " << std::to_string(instant.second.support) << " ";
-        *outfile << ", \"support potential\" : " << std::to_string(instant.second.support_potential) << " ";
-        outfile->precision(5);
-        *outfile << ", \"confidence\" : " << instant.second.confidence();
+        outfile << " , \"support\" : " << std::to_string(instant.second.support) << " ";
+        outfile << ", \"support potential\" : " << std::to_string(instant.second.support_potential) << " ";
+        outfile.precision(5);
+        outfile << ", \"confidence\" : " << instant.second.confidence();
     }
-    *outfile << "}";
+    outfile << "}";
 }
 
 /**
@@ -144,24 +144,24 @@ std::shared_ptr<std::map<std::string, std::vector<int>>> get_var_pos(std::string
  * @param write_on ofstream to write on
  * @param to_write map to write on ofstream
  */
-void print_map_json(std::ofstream * write_on,
+void print_map_json(std::ostream & write_on,
         std::shared_ptr<std::map<std::string, std::vector<int>>> to_write){
-    *write_on << "{";
+    write_on << "{";
     for (std::map<std::string,std::vector<int>>::iterator it = to_write->begin();
             it != to_write->end(); it++){
         if (it != to_write->begin()){
-            *write_on << ", ";
+            write_on << ", ";
         }
-        *write_on << "\"" << it->first << "\" : [";
+        write_on << "\"" << it->first << "\" : [";
         for (std::vector<int>::iterator vec_it = it->second.begin();
                 vec_it != it->second.end(); vec_it++){
             if (vec_it != it->second.begin())
-                *write_on << ", ";
-            *write_on << *vec_it;
+                write_on << ", ";
+            write_on << *vec_it;
         }
-        *write_on << "]";
+        write_on << "]";
     }
-    *write_on << "}";
+    write_on << "}";
 }
 
 
@@ -264,19 +264,26 @@ int main(int ac, char* av[]) {
             }
         }
 
-        std::ofstream outfile;
+
+        std::ofstream realOutFile;
+
+        if(opts_map.count("out-file"))
+            realOutFile.open(opts_map["out-file"].as<std::string>(), std::ios::out);
+
+        std::ostream & outFile = (opts_map.count("out-file") ? realOutFile : std::cout);
+
+        // open file
+            //        outfile.open(opts_map["output-json"].as<std::string>());
         if (opts_map.count("output-json")){
-            // open file
-            outfile.open(opts_map["output-json"].as<std::string>());
 
             std::shared_ptr<std::map<std::string, std::vector<int>>> var_pos_map =
                     get_var_pos(prop_type, &aps);
-            outfile << "{\"prop-type\": {\"str\": \"" << prop_type << "\", \"vars\" : ";
-            print_map_json(&outfile,var_pos_map);
-            outfile << ", \"tree\": ";
-            texada::json_tree_printer printer = texada::json_tree_printer(&outfile);
+            outFile << "{\"prop-type\": {\"str\": \"" << prop_type << "\", \"vars\" : ";
+            print_map_json(outFile,var_pos_map);
+            outFile << ", \"tree\": ";
+            texada::json_tree_printer printer = texada::json_tree_printer(outFile);
             formula->accept(printer);
-            outfile << "}, \"prop-instances\" : [";
+            outFile << "}, \"prop-instances\" : [";
 
         }
 
@@ -285,28 +292,31 @@ int main(int ac, char* av[]) {
                 found_instants.begin(); it != found_instants.end(); it++) {
             if (opts_map.count("output-json")){
                 if (it != found_instants.begin())
-                    outfile << ", ";
-                print_json(&outfile, *it, opts_map.count("print-stats"));
+                    outFile << ", ";
+                print_json(outFile, *it, opts_map.count("print-stats"));
             } else {
               const spot::ltl::formula * valid_form = texada::instantiate(formula, it->first, specified_formula_events);
-              std::cout << spot::ltl::to_string(valid_form) << "\n";
+              outFile << spot::ltl::to_string(valid_form) << "\n";
               valid_form->destroy();
 
               // if printing is turned on, print the statistics of each valid finding
               // warning: printing statistics incurs expensive overhead as it disables
               // all possible short-circuiting within the checker.
               if (opts_map.count("print-stats")) {
-                  std::cout << "   support: " + std::to_string((*it).second.support) << "\n";
-                  std::cout << "   support potential: " + std::to_string((*it).second.support_potential) << "\n";
-                  std::cout << "   confidence: ";
-                  std::printf("%6.4lf", (*it).second.confidence());
-                  std::cout << "\n";
+                  outFile << "   support: " + std::to_string(it->second.support) << "\n";
+                  outFile << "   support potential: " + std::to_string(it->second.support_potential) << "\n";
+                  outFile << "   confidence: ";
+                  outFile.precision(5);
+                  outFile << it->second.confidence();
+                  outFile << "\n";
            }
            }
         }
         if (opts_map.count("output-json")){
-            outfile << "]}";
-            outfile.close();
+            outFile << "]}\n";
+        }
+        if (opts_map.count("out-file")){
+            realOutFile.close();
         }
         formula->destroy();
         // exception catching
