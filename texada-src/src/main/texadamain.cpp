@@ -225,7 +225,7 @@ int main(int ac, char* av[]) {
         }
 
         // the set of valid instantiations
-        std::set<std::pair<const spot::ltl::formula*, texada::statistic>> found_instants =
+        std::vector<std::pair<std::map<std::string, std::string>, texada::statistic>> found_instants =
                 texada::mine_property_type(opts_map);
 
         std::ofstream outfile;
@@ -251,7 +251,7 @@ int main(int ac, char* av[]) {
             print_map_json(&outfile,var_pos_map);
             //todo:: preamble:
         }
-
+/* TODO:: fix to print out instants
         // print out all the valid instantiations
         for (std::set<std::pair<const spot::ltl::formula*, texada::statistic>>::iterator it =
                 found_instants.begin(); it != found_instants.end(); it++) {
@@ -272,7 +272,7 @@ int main(int ac, char* av[]) {
            }
            }
         }
-
+*/
         if (opts_map.count("output-json")){
             //todo:: postamble
             outfile.close();
