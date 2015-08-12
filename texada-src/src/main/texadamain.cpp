@@ -25,14 +25,25 @@
  * @param instant the instantiation and its statistic
  * @param print_stats whether to print the statistics as well
  */
-void print_json(std::pair<const spot::ltl::formula*, texada::statistic> instant, int print_stats){
+void print_json(std::ofstream * outfile, std::pair<std::map<std::string,std::string>, texada::statistic> instant, int print_stats){
   // todo: this needs to take in an outfile
-    if (print_stats){
-        std::cout << " , \"support\" : " << std::to_string(instant.second.support) << " ";
-        std::cout << ", \"support potential\" : " << std::to_string(instant.second.support_potential) << " ";
-        std::cout << ", \"confidence\" : " <<
-        std::printf("%6.4lf", instant.second.confidence());
+    *outfile << "{";
+    for (std::map<std::string,std::string>::iterator it = instant.first.begin(); it != instant.first.end(); it++){
+        if (it != instant.first.begin()){
+            *outfile << ", ";
+        }
+        *outfile << "\"" << it->first << "\" : \"" << it->second << "\"";
     }
+    *outfile << "";
+    if (print_stats){
+        // TODO: might be a better way to do this; do we want to better separate the
+        // variable pairs from these ones
+        *outfile << " , \"support\" : " << std::to_string(instant.second.support) << " ";
+        *outfile << ", \"support potential\" : " << std::to_string(instant.second.support_potential) << " ";
+        outfile->precision(5);
+        *outfile << ", \"confidence\" : " << instant.second.confidence();
+    }
+    *outfile << "}";
 }
 
 /**
@@ -261,15 +272,17 @@ int main(int ac, char* av[]) {
                     get_var_pos(prop_type, &aps);
             outfile << "{\"prop-type\": {\"str\": \"" << prop_type << "\", \"vars\" : ";
             print_map_json(&outfile,var_pos_map);
+            outfile << "}, \"prop-instances\" : [";
             //todo:: preamble:
         }
-// TODO:: fix to print out instants
+
         // print out all the valid instantiations
         for (std::vector<std::pair<std::map<std::string, std::string>, texada::statistic>>::iterator it =
                 found_instants.begin(); it != found_instants.end(); it++) {
             if (opts_map.count("output-json")){
-                // TODO
-               // print_json(*it, opts_map.count("print-stats"));
+                if (it != found_instants.begin())
+                    outfile << ", ";
+                print_json(&outfile, *it, opts_map.count("print-stats"));
             } else {
               const spot::ltl::formula * valid_form = texada::instantiate(formula, it->first, specified_formula_events);
               std::cout << spot::ltl::to_string(valid_form) << "\n";
@@ -286,23 +299,9 @@ int main(int ac, char* av[]) {
                   std::cout << "\n";
            }
            }
-        }/*
-
-            set<std::pair<const spot::ltl::formula*, statistic>> return_set;
-    int valid_instants_size = valid_instants.size();
-    for (int i = 0; i < valid_instants_size; i++) {
-        map<string, string> binding_i = valid_instants.at(i).first;
-        statistic stat_i = valid_instants.at(i).second;
-        for (map<string, string>::iterator it = binding_i.begin();
-                it != binding_i.end(); it++) {
         }
-
-        return_set.insert(std::make_pair(valid_form_i, stat_i));
-    }
-
-*/
         if (opts_map.count("output-json")){
-            //todo:: postamble
+            outfile << "]}";
             outfile.close();
         }
 
