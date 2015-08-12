@@ -14,6 +14,7 @@
 #include <ltlvisit/apcollect.hh>
 
 #include "propertytypeminer.h"
+#include "jsontreeprinter.h"
 #include "../instantiation-tools/apsubbingcloner.h"
 #include "../parsers/parser.h"
 #include "../checkers/statistic.h"
@@ -272,8 +273,11 @@ int main(int ac, char* av[]) {
                     get_var_pos(prop_type, &aps);
             outfile << "{\"prop-type\": {\"str\": \"" << prop_type << "\", \"vars\" : ";
             print_map_json(&outfile,var_pos_map);
+            outfile << ", \"tree\": ";
+            texada::json_tree_printer printer = texada::json_tree_printer(&outfile);
+            formula->accept(printer);
             outfile << "}, \"prop-instances\" : [";
-            //todo:: preamble:
+
         }
 
         // print out all the valid instantiations
@@ -304,13 +308,12 @@ int main(int ac, char* av[]) {
             outfile << "]}";
             outfile.close();
         }
-
+        formula->destroy();
         // exception catching
     } catch (std::exception& e) {
         std::cerr << "Error: " << e.what() << "\n";
         return 1;
     }
-
     return 0;
 }
 
