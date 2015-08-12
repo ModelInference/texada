@@ -17,7 +17,7 @@ namespace texada {
 // prints an LTL tree in JSON format to the outfile.
 class json_tree_printer: public spot::ltl::postfix_visitor {
 public:
-    json_tree_printer(std::ofstream * of);
+    json_tree_printer(std::ostream & of);
     virtual ~json_tree_printer();
     void visit(const spot::ltl::atomic_prop *ap);
     void visit(const spot::ltl::binop *bp);
@@ -25,7 +25,7 @@ public:
     void visit(const spot::ltl::multop *mo);
     void visit(const spot::ltl::constant *c);
 private:
-    std::ofstream * outfile;
+    std::ostream & outfile;
 };
 
 } /* namespace texada */
