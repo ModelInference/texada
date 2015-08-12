@@ -44,7 +44,7 @@ namespace texada {
  * @param trace_source the input source of the trace
  * @return valid instantiations of the property type on the trace
  */
-set<std::pair<const spot::ltl::formula*, statistic>> mine_lin_property_type(string formula_string,
+vector<std::pair<std::map<std::string, std::string>, texada::statistic>> mine_lin_property_type(string formula_string,
         string trace_source) {
     return mine_property_type(
             set_options("-f '" + formula_string + "' -l " + trace_source));
@@ -58,7 +58,7 @@ set<std::pair<const spot::ltl::formula*, statistic>> mine_lin_property_type(stri
  * @param trace_source the input source of the trace
  * @return valid instantiations of the property type on the trace
  */
-set<std::pair<const spot::ltl::formula*, statistic>> mine_map_property_type(string formula_string,
+vector<std::pair<std::map<std::string, std::string>, texada::statistic>> mine_map_property_type(string formula_string,
         string trace_source) {
     return mine_property_type(
             set_options("-f '" + formula_string + "' -m " + trace_source));
@@ -73,7 +73,7 @@ set<std::pair<const spot::ltl::formula*, statistic>> mine_map_property_type(stri
  * @param use_map use map miner if true, linear miner otherwise
  * @return valid instantiations of the inputted formula on inputted trace set
  */
-set<std::pair<const spot::ltl::formula*, statistic>> mine_property_type(
+vector<std::pair<std::map<std::string, std::string>, texada::statistic>> mine_property_type(
         boost::program_options::variables_map opts) {
     // collect all relevant information from options
     // what trace type to use. TODO: update for pre_tree when added
@@ -163,7 +163,7 @@ set<std::pair<const spot::ltl::formula*, statistic>> mine_property_type(
     std::ifstream infile(trace_source);
     if (infile.fail()) {
         std::cerr << "Error: could not open file \n";
-        return set<std::pair<const spot::ltl::formula*, statistic>>();
+        return std::vector<std::pair<std::map<std::string, std::string>, texada::statistic>>();
     }
 
     parser * parser;
@@ -271,7 +271,8 @@ set<std::pair<const spot::ltl::formula*, statistic>> mine_property_type(
     delete instantiator;
     delete parser;
     formula->destroy();
-    return return_set;
+    //return return_set;
+    return valid_instants;
 
 }
 
