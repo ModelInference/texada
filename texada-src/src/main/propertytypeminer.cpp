@@ -255,23 +255,11 @@ vector<std::pair<std::map<std::string, std::string>, texada::statistic>> mine_pr
                 prefix_tree_traces, use_invariant_semantics, translations);
     }
 
-    set<std::pair<const spot::ltl::formula*, statistic>> return_set;
-    int valid_instants_size = valid_instants.size();
-    for (int i = 0; i < valid_instants_size; i++) {
-        map<string, string> binding_i = valid_instants.at(i).first;
-        statistic stat_i = valid_instants.at(i).second;
-        for (map<string, string>::iterator it = binding_i.begin();
-                it != binding_i.end(); it++) {
-        }
-        const spot::ltl::formula * valid_form_i = instantiate(formula,
-                binding_i, specified_formula_events);
-        return_set.insert(std::make_pair(valid_form_i, stat_i));
-    }
+
 
     delete instantiator;
     delete parser;
     formula->destroy();
-    //return return_set;
     return valid_instants;
 
 }
