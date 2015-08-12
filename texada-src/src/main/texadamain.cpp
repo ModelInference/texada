@@ -14,6 +14,7 @@
 #include <ltlvisit/apcollect.hh>
 
 #include "propertytypeminer.h"
+#include "../instantiation-tools/apsubbingcloner.h"
 #include "../parsers/parser.h"
 #include "../checkers/statistic.h"
 
@@ -228,37 +229,51 @@ int main(int ac, char* av[]) {
         std::vector<std::pair<std::map<std::string, std::string>, texada::statistic>> found_instants =
                 texada::mine_property_type(opts_map);
 
+        // get prop type
+        std::string prop_type = opts_map["property-type"].as<std::string>();
+        // we'll only get here if there are no parse errors, so no need to check the error list
+        spot::ltl::parse_error_list pel = spot::ltl::parse_error_list();
+        const spot::ltl::formula * formula = spot::ltl::parse(prop_type, pel);
+        // get vars of formula
+        std::shared_ptr<spot::ltl::atomic_prop_set> atomic_props =
+                std::shared_ptr<spot::ltl::atomic_prop_set>(spot::ltl::atomic_prop_collect(formula));
+        std::set<std::string> aps = std::set<std::string>();
+        for (spot::ltl::atomic_prop_set::iterator it = atomic_props->begin(); it != atomic_props->end(); it++){
+            aps.insert((*it)->name());
+        }
+
+        std::vector<std::string> specified_formula_events = std::vector<std::string>();
+        for (std::set<std::string>::iterator it = aps.begin(); it != aps.end(); it++){
+            std::map<std::string,std::string> sample_map = found_instants.begin()->first;
+            try{
+                sample_map.at(*it);
+            } catch (std::out_of_range e){
+                specified_formula_events.push_back(*it);
+            }
+        }
+
         std::ofstream outfile;
         if (opts_map.count("output-json")){
-            // get prop type
-            std::string prop_type = opts_map["property-type"].as<std::string>();
             // open file
             outfile.open(opts_map["output-json"].as<std::string>());
 
-            // get vars of formula: we'll only get here if there are no parse errors,
-            // so no need to check the error list
-            spot::ltl::parse_error_list pel = spot::ltl::parse_error_list();
-            const spot::ltl::formula * formula= spot::ltl::parse(prop_type, pel);
-            std::shared_ptr<spot::ltl::atomic_prop_set> atomic_props =
-                    std::shared_ptr<spot::ltl::atomic_prop_set>(spot::ltl::atomic_prop_collect(formula));
-            std::set<std::string> aps = std::set<std::string>();
-            for (spot::ltl::atomic_prop_set::iterator it = atomic_props->begin(); it != atomic_props->end(); it++){
-                aps.insert((*it)->name());
-            }
             std::shared_ptr<std::map<std::string, std::vector<int>>> var_pos_map =
                     get_var_pos(prop_type, &aps);
             outfile << "{\"prop-type\": {\"str\": \"" << prop_type << "\", \"vars\" : ";
             print_map_json(&outfile,var_pos_map);
             //todo:: preamble:
         }
-/* TODO:: fix to print out instants
+// TODO:: fix to print out instants
         // print out all the valid instantiations
-        for (std::set<std::pair<const spot::ltl::formula*, texada::statistic>>::iterator it =
+        for (std::vector<std::pair<std::map<std::string, std::string>, texada::statistic>>::iterator it =
                 found_instants.begin(); it != found_instants.end(); it++) {
             if (opts_map.count("output-json")){
-                print_json(*it, opts_map.count("print-stats"));
+                // TODO
+               // print_json(*it, opts_map.count("print-stats"));
             } else {
-              std::cout << spot::ltl::to_string((*it).first) << "\n";
+              const spot::ltl::formula * valid_form = texada::instantiate(formula, it->first, specified_formula_events);
+              std::cout << spot::ltl::to_string(valid_form) << "\n";
+              valid_form->destroy();
 
               // if printing is turned on, print the statistics of each valid finding
               // warning: printing statistics incurs expensive overhead as it disables
@@ -271,7 +286,20 @@ int main(int ac, char* av[]) {
                   std::cout << "\n";
            }
            }
+        }/*
+
+            set<std::pair<const spot::ltl::formula*, statistic>> return_set;
+    int valid_instants_size = valid_instants.size();
+    for (int i = 0; i < valid_instants_size; i++) {
+        map<string, string> binding_i = valid_instants.at(i).first;
+        statistic stat_i = valid_instants.at(i).second;
+        for (map<string, string>::iterator it = binding_i.begin();
+                it != binding_i.end(); it++) {
         }
+
+        return_set.insert(std::make_pair(valid_form_i, stat_i));
+    }
+
 */
         if (opts_map.count("output-json")){
             //todo:: postamble
