@@ -34,7 +34,7 @@ a
 b
 c
 --</textarea></div>
-            <div><h3>Args:</h3><input class="input" name="args" size="40" id="args" value="-f 'G(x -> XF y)' -l"/></div>
+            <div><h3>Args:</h3><input class="input" name="args" size="40" id="args" value="-f '!y W x' -l"/></div>
             <br/>
             <div><input class="button" id = "mine" type="submit" value="Mine property instances"></div>
             </form>
@@ -79,7 +79,7 @@ End:
                   out_str = out_str.slice(0,-2);
                   out_str +=  "]<br>";
               }
-                $("div.output").replaceWith('<div id="result" class="output" style="display:{{.OutputDisplay}}">'+ out_str +'</div>');
+              //  $("div.output").replaceWith('<div id="result" class="output" style="display:{{.OutputDisplay}}">'+ out_str +'</div>');
             }
  
     });
