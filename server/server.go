@@ -19,7 +19,7 @@ var templates = template.Must(template.ParseFiles("static/index.html"))
 // The input to the webpage template, carries texada output.
 type Output struct {
     OutputTitle string
-    OutputResult string
+    OutputJSON string
     OutputDisplay string
 }
 
@@ -83,7 +83,7 @@ func mineHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	
-	outbytes, err := exec.Command(texadaCmd, "-c", argsfile.Name(), logfile.Name()).Output();
+	outbytes, err := exec.Command(texadaCmd,"--output-json","-c", argsfile.Name(), logfile.Name()).Output();
 	if err != nil {
 		os.Remove(logfile.Name())
 		os.Remove(argsfile.Name())
@@ -93,10 +93,10 @@ func mineHandler(w http.ResponseWriter, r *http.Request) {
 	
 	os.Remove(logfile.Name())
 	os.Remove(argsfile.Name())
-	outstr := strings.TrimSpace(string(outbytes))
+	jsonstr := strings.TrimSpace(string(outbytes))
 	// cmdfull := cmd + " -c " + argsfile.Name() + " " + logfile.Name()
 
-	result := Output{OutputTitle: "Texada output:", OutputResult: outstr, OutputDisplay: "block"}
+	result := Output{OutputTitle: "Texada output:", OutputJSON: jsonstr, OutputDisplay: "block"}
 	renderTemplate(w, "index", result)
 }
 
@@ -104,7 +104,7 @@ func mineHandler(w http.ResponseWriter, r *http.Request) {
 func viewHandler(w http.ResponseWriter, r *http.Request) {
 	printRequest(r)
 
-	result := Output{OutputTitle: "", OutputResult: "", OutputDisplay: "none"}
+	result := Output{OutputTitle: "", OutputJSON: "", OutputDisplay: "none"}
 	renderTemplate(w, "index", result)
 }
 
