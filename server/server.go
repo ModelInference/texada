@@ -107,7 +107,8 @@ func mineHandler(w http.ResponseWriter, r *http.Request) {
 	os.Remove(logfile.Name())
 	os.Remove(argsfile.Name())
 	jsonstr := strings.TrimSpace(string(outbytes))
-        fmt.Println(jsonstr)
+        w.Write([]byte(jsonstr))
+        //fmt.Println(jsonstr)
 	// cmdfull := cmd + " -c " + argsfile.Name() + " " + logfile.Name()
 
 	//result := Output{OutputTitle: "Texada output:", OutputJSON: jsonstr, OutputDisplay: "block"}
