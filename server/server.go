@@ -4,10 +4,10 @@ import (
 	"html"
 	"html/template"
         "encoding/json"
-	//"io/ioutil"
+	"io/ioutil"
 	"net/http"
-	//"os/exec"
-	//"strings"
+	"os/exec"
+	"strings"
 	"os"
 	"fmt"
 	"time"
@@ -53,44 +53,34 @@ func printRequest(r *http.Request) {
 // Handles POST to /texada/mine/
 func mineHandler(w http.ResponseWriter, r *http.Request) {
 	printRequest(r)
-      //  body, err1 := ioutil.ReadAll(r.Body)
-      //  if err1 != nil {
-     //     fmt.Println(err1.Error())
-     //   }
-     //   fmt.Println(string(body))
 
-
-        //fmt.Println("try 2")
+        // Retrieve  data.
         decoder := json.NewDecoder(r.Body)
         var in Input 
-        //err := json.Unmarshal([]byte(body), &in)
         err := decoder.Decode(&in)
         if err != nil {
             fmt.Println(err.Error())
         }
+        // debugging
         fmt.Println(in.Log)
         fmt.Println(in.Args)
-      //  fmt.Println("Hey?")
-        
-/*
-	// Retrieve form data.
-        // instead retrieve data from json that's sent
-	body := r.FormValue("body")
-	args := r.FormValue("args")
+        // end of debugging
+	log := in.Log
+	args := in.Args
 	
 	// Remove carriage returns from the input, and convert to []byte
-	body = strings.Replace(body,"\r","",-1)
+	log = strings.Replace(log,"\r","",-1)
 	args = strings.Replace(args,"\r","",-1)
-	bodybytes := []byte(body)
+	logbytes := []byte(log)
 	argsbytes := []byte(args)
 
-	// Save body to file.
+	// Save log to file.
 	logfile, err := ioutil.TempFile("/tmp/", "log-");
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	if ioutil.WriteFile(logfile.Name(), bodybytes, 0600) != nil {
+	if ioutil.WriteFile(logfile.Name(), logbytes, 0600) != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -128,11 +118,12 @@ func mineHandler(w http.ResponseWriter, r *http.Request) {
 	os.Remove(logfile.Name())
 	os.Remove(argsfile.Name())
 	jsonstr := strings.TrimSpace(string(outbytes))
+        fmt.Println(jsonstr)
 	// cmdfull := cmd + " -c " + argsfile.Name() + " " + logfile.Name()
 
 	result := Output{OutputTitle: "Texada output:", OutputJSON: jsonstr, OutputDisplay: "block"}
         // wouldn't render, would just send the JSON back with w.Write
-	renderTemplate(w, "index", result)*/
+	//renderTemplate(w, "index", result)
 }
 
 // Handles GET of /texada/
