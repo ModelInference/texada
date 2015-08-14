@@ -3,10 +3,11 @@ package main
 import (
 	"html"
 	"html/template"
-	"io/ioutil"
+        "encoding/json"
+	//"io/ioutil"
 	"net/http"
-	"os/exec"
-	"strings"
+	//"os/exec"
+	//"strings"
 	"os"
 	"fmt"
 	"time"
@@ -21,6 +22,11 @@ type Output struct {
     OutputTitle string
     OutputJSON string
     OutputDisplay string
+}
+
+type Input struct {
+    Log string `json:"log"`
+    Args string `json:"args"`
 }
 
 // Where to find the texada binary
@@ -47,8 +53,28 @@ func printRequest(r *http.Request) {
 // Handles POST to /texada/mine/
 func mineHandler(w http.ResponseWriter, r *http.Request) {
 	printRequest(r)
+      //  body, err1 := ioutil.ReadAll(r.Body)
+      //  if err1 != nil {
+     //     fmt.Println(err1.Error())
+     //   }
+     //   fmt.Println(string(body))
 
+
+        //fmt.Println("try 2")
+        decoder := json.NewDecoder(r.Body)
+        var in Input 
+        //err := json.Unmarshal([]byte(body), &in)
+        err := decoder.Decode(&in)
+        if err != nil {
+            fmt.Println(err.Error())
+        }
+        fmt.Println(in.Log)
+        fmt.Println(in.Args)
+      //  fmt.Println("Hey?")
+        
+/*
 	// Retrieve form data.
+        // instead retrieve data from json that's sent
 	body := r.FormValue("body")
 	args := r.FormValue("args")
 	
@@ -82,6 +108,7 @@ func mineHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+        // some debugging code to try to figure out segfault
 	fmt.Println("Before command exec" + texadaCmd + " --output-json" +" -c " + argsfile.Name()+ " "+logfile.Name())
         dat, err1 := ioutil.ReadFile(argsfile.Name())
         if err1 != nil {
@@ -104,7 +131,8 @@ func mineHandler(w http.ResponseWriter, r *http.Request) {
 	// cmdfull := cmd + " -c " + argsfile.Name() + " " + logfile.Name()
 
 	result := Output{OutputTitle: "Texada output:", OutputJSON: jsonstr, OutputDisplay: "block"}
-	renderTemplate(w, "index", result)
+        // wouldn't render, would just send the JSON back with w.Write
+	renderTemplate(w, "index", result)*/
 }
 
 // Handles GET of /texada/

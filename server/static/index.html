@@ -18,9 +18,9 @@
 
       <tr>
         <td>
-          <form action="/texada/mine/" method="POST">
+          <form id="form1" action="/texada/mine/" method="POST">
             <div><h3>Log:</h3>
-              <textarea class="input" name="body" rows="15" cols="40">a
+              <textarea class="input" id="log" name="body" rows="15" cols="40">a
 b
 c
 --
@@ -43,7 +43,7 @@ c
           <h3>
             {{.OutputTitle}}
           </h3>
-          <div id="result" class="output" style="display:{{.OutputDisplay}}">{{.OutputJSON}} </div>
+          <div id="result" class="output" style="display:{{.OutputDisplay}}">{{.OutputJSON}} </div> 
         </td>
       </tr> 
 
@@ -65,6 +65,25 @@ End:
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script>
     $( document ).ready(function() {
+         $("#form1").submit(function(event) {
+             event.preventDefault(); // don't send data with standard form tactic
+             var out_str = "{\"log\" : \"" + $("#log").text().replace(/\n/g, '\\n') + "\", \"args\" : \"" + $("#args").val() + "\"}";
+             alert(out_str);
+            $.post("/texada/mine/", out_str, function( data ) {
+              alert(data);
+            }, "json");
+        
+         });
+
+
+
+
+
+
+// have a button handler 
+// button handler will retrieve what's in the log area, turn into json object log: [array of lines]
+// also retrieve args as args: string
+/*
             if ("{{.OutputJSON}}"!= ""){
               var output_obj = jQuery.parseJSON("{{.OutputJSON}}");
               var prop_type = output_obj["prop-type"]["str"];
@@ -80,7 +99,7 @@ End:
                   out_str +=  "]<br>";
               }
               //  $("div.output").replaceWith('<div id="result" class="output" style="display:{{.OutputDisplay}}">'+ out_str +'</div>');
-            }
+            }*/
  
     });
     </script>
