@@ -61,10 +61,6 @@ func mineHandler(w http.ResponseWriter, r *http.Request) {
         if err != nil {
             fmt.Println(err.Error())
         }
-        // debugging
-        fmt.Println(in.Log)
-        fmt.Println(in.Args)
-        // end of debugging
 	log := in.Log
 	args := in.Args
 	
@@ -98,23 +94,16 @@ func mineHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-        // some debugging code to try to figure out segfault
-	fmt.Println("Before command exec" + texadaCmd + " --output-json" +" -c " + argsfile.Name()+ " "+logfile.Name())
-        dat, err1 := ioutil.ReadFile(argsfile.Name())
-        if err1 != nil {
-        panic(err1)
-        }
-        fmt.Print("args: " + string(dat))
-	outbytes, err := exec.Command(texadaCmd,"-c", argsfile.Name(), logfile.Name()).Output();
-        fmt.Println("After command exec")
+
+	outbytes, err := exec.Command(texadaCmd,"--output-json","-c", argsfile.Name(), logfile.Name()).Output();
+
 	if err != nil {
                 fmt.Println(err.Error())
-		//os.Remove(logfile.Name())
-		//os.Remove(argsfile.Name())
+		os.Remove(logfile.Name())
+		os.Remove(argsfile.Name())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	fmt.Println("heere?")
 	os.Remove(logfile.Name())
 	os.Remove(argsfile.Name())
 	jsonstr := strings.TrimSpace(string(outbytes))
