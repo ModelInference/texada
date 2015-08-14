@@ -256,17 +256,18 @@ int main(int ac, char* av[]) {
 
         std::vector<std::string> specified_formula_events = std::vector<std::string>();
         for (std::set<std::string>::iterator it = aps.begin(); it != aps.end(); it++){
+            // if we did not find any instantiations, this is not required
+            if (found_instants.begin() != found_instants.end()){
             std::map<std::string,std::string> sample_map = found_instants.begin()->first;
             try{
                 sample_map.at(*it);
             } catch (std::out_of_range e){
                 specified_formula_events.push_back(*it);
             }
+            }
         }
 
-
         std::ofstream realOutFile;
-
         if(opts_map.count("out-file"))
             realOutFile.open(opts_map["out-file"].as<std::string>(), std::ios::out);
 
@@ -286,7 +287,6 @@ int main(int ac, char* av[]) {
             outFile << "}, \"prop-instances\" : [";
 
         }
-
         // print out all the valid instantiations
         for (std::vector<std::pair<std::map<std::string, std::string>, texada::statistic>>::iterator it =
                 found_instants.begin(); it != found_instants.end(); it++) {

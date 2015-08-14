@@ -104,13 +104,13 @@ func mineHandler(w http.ResponseWriter, r *http.Request) {
         if err1 != nil {
         panic(err1)
         }
-        fmt.Print(string(dat))
-	outbytes, err := exec.Command(texadaCmd,"--output-json","-c", argsfile.Name(), logfile.Name()).Output();
+        fmt.Print("args: " + string(dat))
+	outbytes, err := exec.Command(texadaCmd,"-c", argsfile.Name(), logfile.Name()).Output();
         fmt.Println("After command exec")
 	if err != nil {
-                fmt.Println("Here?")
-		os.Remove(logfile.Name())
-		os.Remove(argsfile.Name())
+                fmt.Println(err.Error())
+		//os.Remove(logfile.Name())
+		//os.Remove(argsfile.Name())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -121,7 +121,7 @@ func mineHandler(w http.ResponseWriter, r *http.Request) {
         fmt.Println(jsonstr)
 	// cmdfull := cmd + " -c " + argsfile.Name() + " " + logfile.Name()
 
-	result := Output{OutputTitle: "Texada output:", OutputJSON: jsonstr, OutputDisplay: "block"}
+	//result := Output{OutputTitle: "Texada output:", OutputJSON: jsonstr, OutputDisplay: "block"}
         // wouldn't render, would just send the JSON back with w.Write
 	//renderTemplate(w, "index", result)
 }
