@@ -4,6 +4,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html" />
     <link rel="stylesheet" type="text/css" href="/static/main.css" /> 
+    <link rel="stylesheet" type="text/css" href="/static/onoff.css" /> 
     <title>Texada</title>
   </head>
 
@@ -13,6 +14,7 @@
 
       <tr><td colspan=2>
           <h2><a href="https://bitbucket.org/bestchai/texada">Texada</a>: temporal property miner</h2>
+<h3>Texada is a tool for extracting patterns in LTL format from totally-ordered sequences of events.</h3>
           <br/>
       </td></tr>
 
@@ -41,9 +43,20 @@ c
         </td>
         <td valign="top">
           <h3>
-            Output
+            Output:
           </h3>
-          <div id="result" class="output" style="display:block"> </div> 
+
+          <div id="result" class="output" style="display:block"> 
+<table> <tr><td><b> Bindings <b></td><td>
+          <div class="onoffswitch">
+            <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="myonoffswitch">
+             <label class="onoffswitch-label" for="myonoffswitch">
+              <span class="onoffswitch-inner"></span>
+              <span class="onoffswitch-switch"></span>
+             </label>
+          </div></td><td>
+<b> Property Instantiations </b></td></tr> </table><table>
+<tr id="realout"> <td> </td></tr></table> </div> 
         </td>
       </tr> 
 
