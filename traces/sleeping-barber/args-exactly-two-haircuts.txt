@@ -1,1 +1,1 @@
--m -f '(!x U (x U (!x U (x U G!x)))) & F(x & XF(!x & XFx))' --parse-mult-prop ./traces/sleeping-barber/7-customers-2-cuts-log.txt
+-m -f '(!x W (x W (!x W (x W G!x)))) & F(x & XF(!x & XFx))' --parse-mult-prop ./traces/sleeping-barber/7-customers-2-cuts-log.txt
