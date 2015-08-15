@@ -58,7 +58,12 @@ textarea {
     padding: 2px;
 }
 
-input {
+#mine {
+    width: 300px;
+    padding: 2px;
+}
+
+#args {
     width: 300px;
     padding: 2px;
 }
