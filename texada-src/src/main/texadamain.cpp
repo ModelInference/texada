@@ -28,21 +28,23 @@
  */
 void print_json(std::ostream & outfile, std::pair<std::map<std::string,std::string>, texada::statistic> instant, int print_stats){
   // todo: this needs to take in an outfile
-    outfile << "{";
+    outfile << "{\"vars\" : {";
     for (std::map<std::string,std::string>::iterator it = instant.first.begin(); it != instant.first.end(); it++){
         if (it != instant.first.begin()){
             outfile << ", ";
         }
         outfile << "\"" << it->first << "\" : \"" << it->second << "\"";
     }
-    outfile << "";
+    outfile << "}";
     if (print_stats){
         // TODO: might be a better way to do this; do we want to better separate the
         // variable pairs from these ones
+        outfile << ", {\"stats\" : {";
         outfile << " , \"support\" : " << std::to_string(instant.second.support) << " ";
         outfile << ", \"support potential\" : " << std::to_string(instant.second.support_potential) << " ";
         outfile.precision(5);
         outfile << ", \"confidence\" : " << instant.second.confidence();
+        outfile << "}";
     }
     outfile << "}";
 }
