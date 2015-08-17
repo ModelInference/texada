@@ -15,16 +15,17 @@
               bindings_str = "";
               instants_str = "";
               for (var i = 0; i < instants.length; i++){ 
+                  var vars = instants[i]["vars"]
                   var l = i + 1
                   bindings_str += l + ". ["
                   instants_str += l + ". "
-                  for (var prop in instants[i]){
-                     bindings_str += prop + ": " + instants[i][prop] + ", ";
+                  for (var prop in vars){
+                     bindings_str += prop + ": " + vars[prop] + ", ";
                   }
                   // remove last comma
                   bindings_str = bindings_str.slice(0,-2)
                   bindings_str +=  "]<br>"
-                 instants_str += instantiateString(out_obj["prop-type"]["vars"], instants[i], out_obj["prop-type"]["str"])+ "<br>"
+                 instants_str += instantiateString(out_obj["prop-type"]["vars"], vars, out_obj["prop-type"]["str"])+ "<br>"
               }
 
               if (instants.length == 0){

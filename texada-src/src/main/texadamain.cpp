@@ -39,8 +39,8 @@ void print_json(std::ostream & outfile, std::pair<std::map<std::string,std::stri
     if (print_stats){
         // TODO: might be a better way to do this; do we want to better separate the
         // variable pairs from these ones
-        outfile << ", {\"stats\" : {";
-        outfile << " , \"support\" : " << std::to_string(instant.second.support) << " ";
+        outfile << ", \"stats\" : {";
+        outfile << "\"support\" : " << std::to_string(instant.second.support) << " ";
         outfile << ", \"support potential\" : " << std::to_string(instant.second.support_potential) << " ";
         outfile.precision(5);
         outfile << ", \"confidence\" : " << instant.second.confidence();
