@@ -84,4 +84,6 @@ visibility: hidden
 
 }
 
+table#realout td + td { border-left:2px solid black; }
+
 -->

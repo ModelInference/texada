@@ -1,7 +1,7 @@
  $( document ).ready(function() {
          var out_obj = {}
          var output_loaded = false
-         var all_out = '<td id = "allout" valign="top"> <h3> Output: </h3> <div id="result" class="output" style="display:block"> <table> <tr><td><b> Bindings <b></td><td> <div class="onoffswitch"> <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="myonoffswitch"> <label class="onoffswitch-label" for="myonoffswitch"> <span class="onoffswitch-inner"></span> <span class="onoffswitch-switch"></span> </label> </div></td><td> <b> Property Instantiations </b></td></tr> </table><table id="realout"> <tr > <td> </td></tr></table> </div> </td>'
+         var all_out = '<td id = "allout" valign="top"> <h3> Output: </h3> <div id="result" class="output" style="display:block"> <table > <tr><td><b> Bindings <b></td><td> <div class="onoffswitch"> <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="myonoffswitch"> <label class="onoffswitch-label" for="myonoffswitch"> <span class="onoffswitch-inner"></span> <span class="onoffswitch-switch"></span> </label> </div></td><td> <b> Property Instantiations </b></td></tr> </table><table id="realout"> <tr > <td> </td></tr></table> </div> </td>'
          var bindings_str = ""
          var instants_str = ""
          $("#form1").submit(function(event) {
