@@ -51,7 +51,7 @@ compiled all the commands you need to run to get started on [this wiki page](htt
 
 ### Required libraries
 
-Texada depends on a few non-standard libraries, [Google Test](https://code.google.com/p/googletest/), [SPOT](http://spot.lip6.fr/wiki/GetSpot), and [Boost](http://www.boost.org/). Note that SPOT itself also depends on Boost. 
+Texada depends on a few non-standard libraries, [Google Test](https://code.google.com/p/googletest/), [SPOT](http://spot.lip6.fr/wiki/GetSpot), [Boost](http://www.boost.org/), and [Z3](https://github.com/Z3Prover/z3). Note that earlier versions of SPOT depend on BOOST.
 
 #### Google Test
 
@@ -91,6 +91,10 @@ To install SPOT, navigate to the extracted SPOT folder and run these commands:
     make install
 
 make install should place library files in a logical place for your OS. 
+
+#### Z3
+
+Z3 can be downloaded and installed following the instructions [here](https://github.com/Z3Prover/z3). As long as the location of the folders containing the Z3 executable, libraries, and include files are on your PATH, there should be no compile problems. 
 
 ### Cloning project
 
