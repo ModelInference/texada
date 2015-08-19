@@ -78,7 +78,7 @@ make-debug:
 test1:
 	@echo 'Objs no main: $(OBJS_NO_MAIN)'
 	@echo
-	@echo 'Objs no SMT: $(OBJS_NO_SMT)'
+	@echo 'test Objs no SMT: $(TEST_OBJS_NO_SMT)'
 	@echo
 	@echo 'Objs no smt no main: $(OBJS_NO_SMT_NO_MAIN)'
 	@echo
@@ -89,28 +89,28 @@ smtsetter:
 # Linking texadatest
 texadatest: $(OBJS_NO_MAIN_NO_SMT) $(TEST_OBJS_NO_SMT)
 	@echo 'Linking: $@'
-	$(CC) -L$(SPOT_LIB) -L$(GTEST_LIB) -o  "texadatest" $(OBJS_NO_MAIN_NO_SMT) $(TEST_OBJS_NO_SMT) $(LIBS) 
-	@echo 'Finished building target: $@'
+	$(CC) -L$(SPOT_LIB) -L$(GTEST_LIB) -o  "texadatest" $(OBJS_NO_SMT_NO_MAIN) $(TEST_OBJS_NO_SMT) $(LIBS) 
+	@echo 'Finished linking target: $@'
 	@echo ' '
 
 # Linking texada
 texada: $(OBJS_NO_SMT)
 	@echo 'Linking: $@'
 	$(CC) -L$(SPOT_LIB) -L$(GTEST_LIB) -o "texada" $(OBJS_NO_SMT) $(LIBS) 
-	@echo 'Linking linking target: $@'
+	@echo 'Finished linking target: $@'
 	@echo ' '
 	
 # Linking texada with
 texada-smt: $(OBJS)
 	@echo 'Linking: $@'
-	$(CC) -L$(SPOT_LIB) -L$(GTEST_LIB) -o "texada" $(OBJS) $(LIBS) -lz3 -D SMT
-	@echo 'Linking linking target: $@'
+	$(CC) -L$(SPOT_LIB) -L$(GTEST_LIB) -o "texada-smt" $(OBJS) $(LIBS) -lz3 
+	@echo 'Finished linking target: $@'
 	@echo ' '
 	
 # Linking texadatest with SMT
 texadatest-smt: $(OBJS_NO_MAIN) $(TEST_OBJS)
 	@echo 'Linking: $@'
-	$(CC) -L$(SPOT_LIB) -L$(GTEST_LIB) -o  "texadatest" $(OBJS_NO_MAIN) $(TEST_OBJS) $(LIBS) -lz3 -D SMT
+	$(CC) -L$(SPOT_LIB) -L$(GTEST_LIB) -o  "texadatest-smt" $(OBJS_NO_MAIN) $(TEST_OBJS) $(LIBS) -lz3 
 	@echo 'Finished linking target: $@'
 	@echo ' '
 
