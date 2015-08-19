@@ -63,7 +63,7 @@ mkdir=@mkdir -p $(@D)
 all: make-debug texada texadatest
 
 # SMT Target
-all: make-debug texada-smt texadatest-smt
+smt: make-debug texada-smt texadatest-smt
 
 make-debug:
 	@echo 'Sources: $(SOURCE)'
@@ -74,29 +74,29 @@ make-debug:
 # Linking texadatest
 texadatest: $(OBJS_NO_MAIN_NO_SMT) $(TEST_OBJS_NO_SMT)
 	@echo 'Linking: $@'
-	$(CC) -L$(SPOT_LIB) -L$(GTEST_LIB) -o  "texadatest" $(OBJS_NO_MAIN) $(TEST_OBJS) $(LIBS) 
+	$(CC) -L$(SPOT_LIB) -L$(GTEST_LIB) -o  "texadatest" $(OBJS_NO_MAIN_NO_SMT) $(TEST_OBJS_NO_SMT) $(LIBS) 
 	@echo 'Finished building target: $@'
 	@echo ' '
 
 # Linking texada
 texada: $(OBJS_NO_SMT)
 	@echo 'Linking: $@'
-	$(CC) -L$(SPOT_LIB) -L$(GTEST_LIB) -o "texada" $(OBJS) $(LIBS) 
-	@echo 'Linking building target: $@'
+	$(CC) -L$(SPOT_LIB) -L$(GTEST_LIB) -o "texada" $(OBJS_NO_SMT) $(LIBS) 
+	@echo 'Linking linking target: $@'
 	@echo ' '
 	
 # Linking texada with
 texada-smt: $(OBJS)
 	@echo 'Linking: $@'
-	$(CC) -L$(SPOT_LIB) -L$(GTEST_LIB) -o "texada" $(OBJS) $(LIBS) -lz3
-	@echo 'Linking building target: $@'
+	$(CC) -L$(SPOT_LIB) -L$(GTEST_LIB) -o "texada" $(OBJS) $(LIBS) -lz3 -D SMT
+	@echo 'Linking linking target: $@'
 	@echo ' '
 	
 # Linking texadatest with SMT
 texadatest-smt: $(OBJS_NO_MAIN) $(TEST_OBJS)
 	@echo 'Linking: $@'
-	$(CC) -L$(SPOT_LIB) -L$(GTEST_LIB) -o  "texadatest" $(OBJS_NO_MAIN) $(TEST_OBJS) $(LIBS) -lz3
-	@echo 'Finished building target: $@'
+	$(CC) -L$(SPOT_LIB) -L$(GTEST_LIB) -o  "texadatest" $(OBJS_NO_MAIN) $(TEST_OBJS) $(LIBS) -lz3 -D SMT
+	@echo 'Finished linking target: $@'
 	@echo ' '
 
 
@@ -112,7 +112,7 @@ $(OBJS): $(BIN)%.o: $(SRC)%.cpp
 $(TEST_OBJS): $(TESTS_BIN)%.o: $(TESTS_SRC)%.cpp
 	$(mkdir)
 	@echo 'Building: $<'
-	$(CC) $(CFLAGS)
+	$(CC) $(CFLAGS) 
 	@echo 'Finished building: $<'
 	@echo ' '
 
