@@ -75,6 +75,7 @@ vector<std::pair<std::map<std::string, std::string>, texada::statistic>> mine_ma
  */
 vector<std::pair<std::map<std::string, std::string>, texada::statistic>> mine_property_type(
         boost::program_options::variables_map opts) {
+    std::cout << "Can I even \n";
     // collect all relevant information from options
     // what trace type to use. TODO: update for pre_tree when added
     bool use_map = opts.count("map-trace");
