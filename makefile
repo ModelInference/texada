@@ -32,7 +32,9 @@ BIN_ROOT := $(TX_SRC)bin/
 BIN := $(BIN_ROOT)src/
 TESTS_SRC := $(TX_SRC)tests/
 TESTS_BIN := $(BIN_ROOT)tests/
+EXCLUDE := texadamain
 MAIN := texadamain
+SMTSET = 
 
 CC := g++
 CFLAGS = -std=c++11 -I$(SPOT_INCL) -I$(GTEST_INCL) -I$(BOOST_INCL) -O2 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o "$@" "$<"  
@@ -48,28 +50,41 @@ OBJS += \
 
 
 FILTER_OUT = $(foreach v,$(2),$(if $(findstring $(1),$(v)),,$(v)))
-OBJS_NO_MAIN := $(call FILTER_OUT,$(MAIN),$(OBJS))
-OBJS_NO_SMT := $(call FILTER_OUT, invariant-semantics, $(OBJS))
-OBJS_NO_SMT_NO_MAIN := $(call FILTER_OUT,$(MAIN),$(OBJS_NO_SMT))
+OBJS_NO_MAIN := $(call FILTER_OUT,$(EXCLUDE),$(OBJS))
+EXCLUDE = pptinvariantdecider
+OBJS_NO_SMT := $(call FILTER_OUT,$(EXCLUDE),$(OBJS))
+OBJS_NO_SMT_NO_MAIN := $(call FILTER_OUT,$(EXCLUDE),$(OBJS_NO_MAIN))
 
 TEST_OBJS+= \
  $(subst texada-src/tests,texada-src/bin/tests, $(patsubst %.cpp,%.o,$(wildcard $(TESTS_SRC)*.cpp)))
  
-TEST_OBJS_NO_SMT := $(call FILTER_OUT, pptinvariantdecider, $(TEST_OBJS))
+TEST_OBJS_NO_SMT := $(call FILTER_OUT,$(EXCLUDE),$(TEST_OBJS))
 
 mkdir=@mkdir -p $(@D)
 
+      
 # All Target
 all: make-debug texada texadatest
 
 # SMT Target
-smt: make-debug texada-smt texadatest-smt
+smt: make-debug smtsetter texada-smt texadatest-smt
 
 make-debug:
 	@echo 'Sources: $(SOURCE)'
 	@echo
 	@echo 'Objs: $(OBJS)'
 	@echo
+
+test1:
+	@echo 'Objs no main: $(OBJS_NO_MAIN)'
+	@echo
+	@echo 'Objs no SMT: $(OBJS_NO_SMT)'
+	@echo
+	@echo 'Objs no smt no main: $(OBJS_NO_SMT_NO_MAIN)'
+	@echo
+
+smtsetter:
+	SMTSET=-DSMT_SUPPORT
 
 # Linking texadatest
 texadatest: $(OBJS_NO_MAIN_NO_SMT) $(TEST_OBJS_NO_SMT)
@@ -104,7 +119,7 @@ texadatest-smt: $(OBJS_NO_MAIN) $(TEST_OBJS)
 $(OBJS): $(BIN)%.o: $(SRC)%.cpp
 	$(mkdir)
 	@echo 'Building: $<'
-	$(CC) $(CFLAGS)
+	$(CC) $(CFLAGS) $(SMTSET)
 	@echo 'Finished building: $<'
 	@echo ' '
 
@@ -112,7 +127,7 @@ $(OBJS): $(BIN)%.o: $(SRC)%.cpp
 $(TEST_OBJS): $(TESTS_BIN)%.o: $(TESTS_SRC)%.cpp
 	$(mkdir)
 	@echo 'Building: $<'
-	$(CC) $(CFLAGS) 
+	$(CC) $(CFLAGS) $(SMTSET)
 	@echo 'Finished building: $<'
 	@echo ' '
 
@@ -132,4 +147,4 @@ clean:
 	-$(RM) $(BIN_ROOT) texadatest texada
 	-@echo ' '
 
-.PHONY: all clean make-debug
+.PHONY: all clean make-debug test1 smtsetter
