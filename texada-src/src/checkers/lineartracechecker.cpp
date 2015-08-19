@@ -43,7 +43,7 @@ statistic linear_trace_checker::ap_check(const spot::ltl::atomic_prop *node,
     if (trace->is_satisfied(node->name())) {
         return statistic(true, 1, 1);
     } else {
-#ifdef SMT
+#ifdef  SMT_SUPPORT
         if (use_invariant_semantics){
             if (ap_holds(*trace, node->name(),translations)){
                 return statistic(true, 1, 1);
@@ -54,7 +54,7 @@ statistic linear_trace_checker::ap_check(const spot::ltl::atomic_prop *node,
 #endif
             return statistic(false, 0, 1);
         }
-#ifdef SMT
+#ifdef SMT_SUPPORT
 }
 #endif
 }
