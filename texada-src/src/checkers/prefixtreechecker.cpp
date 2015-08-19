@@ -137,7 +137,7 @@ map<int, statistic> prefix_tree_checker::ap_check(const spot::ltl::atomic_prop* 
             if (trace_pt->is_satisfied(prop)) {
                 return create_int_bool_map(trace_ids, statistic(true, 1, 1));
             } else {
-#ifdef SMT
+#ifdef SMT_SUPPORT
                 if (use_invariant_semantics){
                     if (ap_holds(trace_pt->get_event(), node->name(),translations)){
                         return create_int_bool_map(trace_ids, statistic(true, 1, 1));
@@ -155,13 +155,13 @@ map<int, statistic> prefix_tree_checker::ap_check(const spot::ltl::atomic_prop* 
         if (trace_pt->is_satisfied(node->name())) {
             return create_int_bool_map(trace_ids, statistic(true, 1, 1));
         } else {
-#ifdef SMT
+#ifdef SMT_SUPPORT
             if (use_invariant_semantics){
                 if (ap_holds(trace_pt->get_event(), node->name(),translations)){
                     return create_int_bool_map(trace_ids, statistic(true, 1, 1));
                 } else return create_int_bool_map(trace_ids, statistic(false, 0, 1));
             }  else
-#endif SMT
+#endif
                 return create_int_bool_map(trace_ids, statistic(false, 0, 1));
         }
     }

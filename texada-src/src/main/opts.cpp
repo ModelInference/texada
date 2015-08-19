@@ -47,7 +47,9 @@ boost::program_options::options_description get_options_description() {
             ("conf-threshold", boost::program_options::value<float>(),
             "only find instances above the given confidence threshold. Must be between 0 and 1 [default: 1]")
             ("print-stats", "print the support and confidence of each finding")
+#ifdef SMT_SUPPORT
             ("invariant-semantics-input", boost::program_options::value<std::string>(), "specify a file translating event strings to smtlibv2 [in the form decl: (...) inv: (...)], and use this information to make logical comparisions to determine if invariants hold [beta].")
+#endif
             ("use-global-thresholds", "make all inputed thresholds global [default: false]")
             ("output-json", "write output in json format [default: false]")
             ("out-file", boost::program_options::value<std::string>(), "write output to out file at specified location");

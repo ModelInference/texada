@@ -14,7 +14,7 @@
 #include <iostream>
 #include "statistic.h"
 #include "settings.h"
-#ifdef SMT
+#ifdef SMT_SUPPORT
 #include "../invariant-semantics/pptinvariantdecider.h"
 #endif
 #include "../instantiation-tools/pregeninstantspool.h"
