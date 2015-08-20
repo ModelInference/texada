@@ -79,14 +79,11 @@ boost::program_options::positional_options_description get_pos_opts_desc(){
  */
 boost::program_options::variables_map set_options(bool use_string,
         std::string input_string, int ac, char* av[]) {
-    std::cout << "Can i even\n";
     // setting up the program options
     // desc is the options description, i.e. all the allowed options
     boost::program_options::options_description desc =
             get_options_description();
-    std::cout << "Can i even\n";
     boost::program_options::positional_options_description pos_desc = get_pos_opts_desc();
-    std::cout << "Can i even\n";
 
     //parsing the options passed to command line
     boost::program_options::variables_map opts_map;
@@ -98,12 +95,10 @@ boost::program_options::variables_map set_options(bool use_string,
                         pos_desc).run(), opts_map);
 
     } else {
-        std::cout << "Can i even\n";
 
         boost::program_options::store(
                 boost::program_options::command_line_parser(ac, av).options(
                         desc).positional(pos_desc).run(), opts_map);
-        std::cout << "Can i even\n";
 
     }
 
