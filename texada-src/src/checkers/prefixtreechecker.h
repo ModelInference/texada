@@ -16,6 +16,9 @@
 #include <ltlast/allnodes.hh>
 #include <vector>
 #include "statistic.h"
+#ifdef SMT_SUPPORT
+#include "../invariant-semantics/pptinvariantdecider.h"
+#endif
 
 namespace texada {
 using std::vector;
