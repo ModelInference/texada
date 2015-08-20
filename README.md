@@ -51,7 +51,7 @@ compiled all the commands you need to run to get started on [this wiki page](htt
 
 ### Required libraries
 
-Texada depends on a few non-standard libraries, [Google Test](https://code.google.com/p/googletest/), [SPOT](http://spot.lip6.fr/wiki/GetSpot), [Boost](http://www.boost.org/), and [Z3](https://github.com/Z3Prover/z3). Note that earlier versions of SPOT depend on BOOST.
+Texada depends on a few non-standard libraries, [Google Test](https://code.google.com/p/googletest/), [SPOT](http://spot.lip6.fr/wiki/GetSpot), [Boost](http://www.boost.org/), and optionally [Z3](https://github.com/Z3Prover/z3). Note that the versions of SPOT currently compatible with Texada (1.2.4-1.2.6) also depend on BOOST.
 
 #### Google Test
 
@@ -94,7 +94,9 @@ make install should place library files in a logical place for your OS.
 
 #### Z3
 
-Z3 can be downloaded and installed following the instructions [here](https://github.com/Z3Prover/z3). As long as the location of the folders containing the Z3 executable, libraries, and include files are on your PATH, there should be no compile problems. We use version 4.4.0.
+Z3 will not be necessary for most installations of Texada. Z3 is necessary for so-called "invariant semantics" (i.e. allowing events in the log to have a logical structure beyond a string event). Compiling Texada with the default target (all) will not incorporate these invariant semantics.
+
+Only users desiring to use Texada with invariant semantics need to install Z3; in this case Texada must be built with the smt target (*make smt*). Z3 can be downloaded and installed following the instructions [here](https://github.com/Z3Prover/z3). As long as the location of the folders containing the Z3 executable, libraries, and include files are on your PATH, there should be no compile problems. We use version 4.4.0.
 
 ### Cloning project
 
@@ -121,7 +123,7 @@ In the top-level Texada directory, where the makefile exists, there is a file ca
 
 SPOT\_LIB will probably point to /pathtospot/spot/src/.libs if that is where libspot.a is. On a ubuntu machine, SPOT\_INCL will likely point to /usr/local/include/spot. The GTest libraries will be located wherever you built GTest and the GTest headers should be in /pathtogtest/gtest/include (GTEST_INCL should point there). BOOST_INCL may point to /usr/include/boost on a Ubunutu Machine; otherwise the Boost header files can be found in /pathtoboost/boost_1_56_5/boost.
 
-If building from shell, simply type the *make* command in the top-level directory.
+If building from shell, simply type the *make* command in the top-level directory. To make Texada with invariant semantics, type *make smt* instead. (Requires Z3)
 
 ##### If using Eclipse:
 
