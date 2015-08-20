@@ -118,6 +118,7 @@ vector<std::pair<std::map<std::string, std::string>, texada::statistic>> mine_pr
 
     bool use_invariant_semantics = false;
     shared_ptr<map<string,string>> translations = nullptr;
+#ifdef SMT_SUPPORT
     // Setting options for invariant semantics
     if (opts.count("invariant-semantics-input")){
        use_invariant_semantics = true;
@@ -126,6 +127,7 @@ vector<std::pair<std::map<std::string, std::string>, texada::statistic>> mine_pr
        t_parser.parse(t_infile);
        translations = t_parser.get_translations();
     }
+#endif
 
     // currently, only the vanilla configuration is supported for
     // the map and prefix checkers. So, stop program if a non-vanilla
