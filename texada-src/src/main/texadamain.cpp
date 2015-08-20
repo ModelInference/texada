@@ -171,10 +171,6 @@ void print_map_json(std::ostream & write_on,
  */
 int main(int ac, char* av[]) {
     try {
-        std::cout << " I CAN'T EVEN\n";
-        for (int i = 0; i < ac; i++){
-            std::cout << av[i] << "\n";
-        }
         boost::program_options::variables_map opts_map = texada::set_options(ac, av);
 
         if (opts_map.empty()) {

@@ -62,12 +62,23 @@ TEST_OBJS_NO_SMT := $(call FILTER_OUT,$(EXCLUDE),$(TEST_OBJS))
 
 mkdir=@mkdir -p $(@D)
 
-      
-# All Target
+# Var to check if last compilation was done with SMT flag or not
+
+# All Target: Need to update all builds if last compilation was SMT
+ifeq ($(wildcard texada),)
+all: clean make-debug texada texadatest
+else
 all: make-debug texada texadatest
+endif
 
 # SMT Target
+ifeq ($(wildcard texada-smt), )
+smt: clean make-debug smtsetter texada-smt texadatest-smt
+else
 smt: make-debug smtsetter texada-smt texadatest-smt
+endif
+
+print-%  : ; @echo $* = $($*)
 
 make-debug:
 	@echo 'Sources: $(SOURCE)'
@@ -75,17 +86,9 @@ make-debug:
 	@echo 'Objs: $(OBJS)'
 	@echo
 
-test1:
-	@echo 'Objs no main: $(OBJS_NO_MAIN)'
-	@echo
-	@echo 'test Objs no SMT: $(TEST_OBJS_NO_SMT)'
-	@echo
-	@echo 'Objs no smt no main: $(OBJS_NO_SMT_NO_MAIN)'
-	@echo
-
 smtsetter:
-	SMTSET=-DSMT_SUPPORT
-
+	$(eval SMTSET=-DSMT_SUPPORT)
+	
 # Linking texadatest
 texadatest: $(OBJS_NO_MAIN_NO_SMT) $(TEST_OBJS_NO_SMT)
 	@echo 'Linking: $@'
@@ -100,7 +103,7 @@ texada: $(OBJS_NO_SMT)
 	@echo 'Finished linking target: $@'
 	@echo ' '
 	
-# Linking texada with
+# Linking texada with SMT
 texada-smt: $(OBJS)
 	@echo 'Linking: $@'
 	$(CC) -L$(SPOT_LIB) -L$(GTEST_LIB) -o "texada-smt" $(OBJS) $(LIBS) -lz3 
@@ -144,7 +147,7 @@ $(TESTS):
 
 # Other Targets
 clean:
-	-$(RM) $(BIN_ROOT) texadatest texada
+	-$(RM) $(BIN_ROOT) texadatest texada texadatest-smt texada-smt
 	-@echo ' '
 
-.PHONY: all clean make-debug test1 smtsetter
+.PHONY: all clean make-debug smtsetter
