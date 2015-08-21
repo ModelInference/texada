@@ -354,29 +354,34 @@ There are two command line options which require regular expression arguments:
 -----------------------
 
 ~~~~
- Usage: texada [opt1] ... [optN] log-file
- 
- Required options: -f, log-file, one of [-l, -m, -p]
- 
- Options:
-   -h [ --help ]               produce help message
-   -f [ --property-type ] arg  property type to mine
-   --log-file arg              log file to mine on
-   -m [ --map-trace ]          mine on a trace in the form of a map
-   -l [ --linear-trace ]       mine on a linear trace
-   -p [ --prefix-tree-trace ]  mine on traces in prefix tree form
-   --pregen-instants           pregenerate property type instantiations. By default, Texada instantiates them on-the-fly. 
-   --allow-same-bindings       allow different formula variables to be bound to the same events. By default, Texada does not check instantiations of this type.
-   -c [ --config-file ] arg    specify file containing command line options. Any options entered directly to command line will override file options.
-   -e [ --event ] arg          specify a variable in the formula to be interpreted as a constant event.
-   -r [ --regex ] arg          regular expression to parse event types from log [default (?<ETYPE>.*)]
-   --trace-separator arg       regular expression matching trace separator lines in the log [default: --]
-   --parse-mult-prop       process given log as multi-propositional. Lines before and after event-separators [by default: ..] are treated as propositions making up a single event.
-   -i [ --ignore-nm-lines ]    ignore non-matching lines [default: false]
-   --no-vacuous-findings       filter out findings which are only vacuously true (i.e. sup-threshold = 1)
-   --sup-threshold arg         only find instances above the given support threshold [default: 0]
-   --sup-pot-threshold arg     only find instances above the given support potential threshold [default: 0]
-   --conf-threshold arg        only find instances above the given confidence threshold. Must be between 0 and 1 [default: 1]
-   --print-stats               print the support and confidence of each finding
-   --use-global-thresholds     make all inputed thresholds global [default: false]
+Usage: texada [opt1] ... [optN] log-file
+
+Required options: -f, log-file (positional option), one of [-l, -m, -p]
+
+Allowed options:
+  -h [ --help ]               produce help message
+  -f [ --property-type ] arg  property type to mine
+  --log-file arg              log file to mine on
+  -m [ --map-trace ]          mine on a trace in the form of a map
+  -l [ --linear-trace ]       mine on a linear trace
+  -p [ --prefix-tree-trace ]  mine on traces in prefix tree form
+  --pregen-instants           pre-generate property type instantiations. By default, Texada instantiates them on-the-fly. 
+  --allow-same-bindings       allow different formula variables to be bound to the same events. By default, Texada does not 
+                              check instantiations of this type.
+  -c [ --config-file ] arg    specify file containing command line options. Any options entered directly to command line will 
+                              override file options.
+  -e [ --event ] arg          specify a variable in the formula to be interpreted as a constant event.
+  -r [ --regex ] arg          regular expression to parse event types from log [default (?<ETYPE>.*)]
+  --trace-separator arg       regular expression matching trace separator lines in the log [default: --]
+  --parse-mult-prop           process given log as multi-propositional. Lines before and after event-separators
+                              [by default: ..] are treated as propositions making up a single event.
+  -i [ --ignore-nm-lines ]    ignore non-matching lines [default: false]
+  --no-vacuous-findings       filter out findings which are only vacuously true (i.e. sup-threshold = 1)
+  --sup-threshold arg         only find instances above the given support threshold [default: 0]
+  --sup-pot-threshold arg     only find instances above the given support potential threshold [default: 0]
+  --conf-threshold arg        only find instances above the given confidence threshold. Must be between 0 and 1 [default: 1]
+  --print-stats               print the support and confidence of each finding
+  --use-global-thresholds     make all inputed thresholds global [default: false]
+  --output-json               write output in json format [default: false]
+  --out-file arg              write output to out file at specified location
 ~~~~
