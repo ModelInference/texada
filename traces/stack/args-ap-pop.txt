@@ -1,1 +1,1 @@
--m -f '!"topAndPop()" W x' -e 'topAndPop()' ./traces/stack/StackAr_Texada.txt
+-m -f '!"topAndPop()" W x' -e 'topAndPop()' ./traces/stack/StackAr_texada.txt
