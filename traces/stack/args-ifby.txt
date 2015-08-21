@@ -1,0 +1,1 @@
+-m -f 'G(x->Xy)' ./traces/stack/StackAr_Texada.txt

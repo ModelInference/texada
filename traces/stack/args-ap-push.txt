@@ -1,0 +1,1 @@
+-m -f '!"push(java.lang.Object)" W x' -e 'push(java.lang.Object)' ./traces/stack/StackAr_Texada.txt
