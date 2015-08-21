@@ -175,12 +175,16 @@ int main(int ac, char* av[]) {
 
         if (opts_map.empty()) {
             std::cerr << "Error: no arguments provided. \n";
+            std::cout << "Usage: texada [opt1] ... [optN] log-file\n";
+            std::cout << "Required options: -f, log-file (positional option), one of [-l, -m, -p]\n";
             std::cout << texada::get_options_description() << "\n";
             return 1;
         }
 
         // outputs the option information if --help is inputted
         if (opts_map.count("help")) {
+            std::cout << "Usage: texada [opt1] ... [optN] log-file\n";
+            std::cout << "Required options: -f, log-file (positional option), one of [-l, -m, -p]\n";
             std::cout << texada::get_options_description() << "\n";
             return 0;
         }
