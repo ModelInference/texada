@@ -26,11 +26,11 @@ linear_trace_checker::linear_trace_checker(bool use_inv_s, shared_ptr<map<string
     translations = ptr;
 }
 
-
-
 statistic linear_trace_checker::check_on_trace(const spot::ltl::formula * node, const event * trace){
     return this->check(node, trace);
 }
+
+
 
 /**
  * Checking a single event on a trace means we check it on the first element of the trace
@@ -43,6 +43,7 @@ statistic linear_trace_checker::ap_check(const spot::ltl::atomic_prop *node,
     if (trace->is_satisfied(node->name())) {
         return statistic(true, 1, 1);
     } else {
+#ifdef  SMT_SUPPORT
         if (use_invariant_semantics){
             if (ap_holds(*trace, node->name(),translations)){
                 return statistic(true, 1, 1);
@@ -50,9 +51,12 @@ statistic linear_trace_checker::ap_check(const spot::ltl::atomic_prop *node,
                 return statistic(false, 0, 1);
             }
         } else {
+#endif
             return statistic(false, 0, 1);
         }
+#ifdef SMT_SUPPORT
 }
+#endif
 }
 
 /**

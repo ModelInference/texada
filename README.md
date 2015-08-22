@@ -51,11 +51,11 @@ compiled all the commands you need to run to get started on [this wiki page](htt
 
 ### Required libraries
 
-Texada depends on a few non-standard libraries, [Google Test](https://code.google.com/p/googletest/), [SPOT](http://spot.lip6.fr/wiki/GetSpot), and [Boost](http://www.boost.org/). Note that SPOT itself also depends on Boost. 
+Texada depends on a few non-standard libraries, [Google Test](https://code.google.com/p/googletest/), [SPOT](http://spot.lip6.fr/wiki/GetSpot), [Boost](http://www.boost.org/), and optionally [Z3](https://github.com/Z3Prover/z3). Note that the versions of SPOT currently compatible with Texada (1.2.4-1.2.6) also depend on BOOST.
 
 #### Google Test
 
-Google Test can be downloaded [here](http://code.google.com/p/googletest/). Follow the instructions on the website to build it. 
+Google Test can be downloaded [here](http://code.google.com/p/googletest/). Follow the instructions on the website to build it. We use gtest version 1.7.0. 
 
 To integrate with Texada, the location of Google Test headers and libraries will need to be inputted to uservars.mk (see "Building the project" below), so make note of where Google Test is being extracted and built.
 
@@ -67,7 +67,7 @@ To create a test, create a new Runner using 'Run As -> Run Configurations -> C/C
 
 #### Boost
 
-Boost can be downloaded [here](http://www.boost.org/doc/libs/1_56_0/more/getting_started/unix-variants.html) (for *nix machines) or [here](http://www.boost.org/doc/libs/1_56_0/more/getting_started/windows.html) (for Windows machines). Follow the instructions on the website to install it. Note that Texada depends on the non-header library, ProgramOptions, which needs to be built separately (see "5. Prepare to Use a Boost Library Binary" on the Boost website).
+Boost can be downloaded [here](http://www.boost.org/doc/libs/1_56_0/more/getting_started/unix-variants.html) (for *nix machines) or [here](http://www.boost.org/doc/libs/1_56_0/more/getting_started/windows.html) (for Windows machines). Follow the instructions on the website to install it. Note that Texada depends on the non-header library, ProgramOptions, which needs to be built separately (see "5. Prepare to Use a Boost Library Binary" on the Boost website). We use Texada with BOOST version 1.59.0.
 
 To integrate with Texada, the location of Boost headers will need to be inputted to uservars.mk (see "Building the project" below), so make note of where it is being extracted.
 
@@ -81,7 +81,7 @@ SPOT can be downloaded [here](http://spot.lip6.fr/wiki/GetSpot). Extract the fil
 
 To integrate with Texada, the location of SPOT headers and library will need to be inputted to uservars.mk (see "Building the project" below), so make note of where it is being extracted. 
 
-Note that SPOT requires the installation of the [Boost](http://www.boost.org/) libraries. Its full functionality requires Python 2.0+ headers, but if these are not already installed, they can be omitted for the purposes of Texada. 
+Texada currently is only compatible with Versions 1.2.4-1.2.6 of SPOT. Note that these versions require the installation of the [Boost](http://www.boost.org/) libraries. Its full functionality requires Python 2.0+ headers, but if these are not already installed, they can be omitted for the purposes of Texada. 
 
 To install SPOT, navigate to the extracted SPOT folder and run these commands:
 
@@ -91,6 +91,12 @@ To install SPOT, navigate to the extracted SPOT folder and run these commands:
     make install
 
 make install should place library files in a logical place for your OS. 
+
+#### Z3
+
+Z3 will not be necessary for most installations of Texada. Z3 is necessary for so-called "invariant semantics" (i.e. allowing events in the log to have a logical structure beyond a string event). Compiling Texada with the default target (all) will not incorporate these invariant semantics.
+
+Only users desiring to use Texada with invariant semantics need to install Z3; in this case Texada must be built with the smt target (*make smt*). Z3 can be downloaded and installed following the instructions [here](https://github.com/Z3Prover/z3). As long as the location of the folders containing the Z3 executable, libraries, and include files are on your PATH, there should be no compile problems. We use version 4.4.0.
 
 ### Cloning project
 
@@ -117,7 +123,7 @@ In the top-level Texada directory, where the makefile exists, there is a file ca
 
 SPOT\_LIB will probably point to /pathtospot/spot/src/.libs if that is where libspot.a is. On a ubuntu machine, SPOT\_INCL will likely point to /usr/local/include/spot. The GTest libraries will be located wherever you built GTest and the GTest headers should be in /pathtogtest/gtest/include (GTEST_INCL should point there). BOOST_INCL may point to /usr/include/boost on a Ubunutu Machine; otherwise the Boost header files can be found in /pathtoboost/boost_1_56_5/boost.
 
-If building from shell, simply type the *make* command in the top-level directory.
+If building from shell, simply type the *make* command in the top-level directory. To make Texada with invariant semantics, type *make smt* instead. (Requires Z3)
 
 ##### If using Eclipse:
 

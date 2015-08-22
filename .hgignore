@@ -5,6 +5,8 @@ uservars.mk
 texada-src/bin/*
 texada
 texadatest
+texada-smt
+texadatest-smt
 .cproject
 .cproject~
 
