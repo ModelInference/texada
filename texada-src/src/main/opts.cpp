@@ -47,10 +47,12 @@ boost::program_options::options_description get_options_description() {
             ("conf-threshold", boost::program_options::value<float>(),
             "only find instances above the given confidence threshold. Must be between 0 and 1 [default: 1]")
             ("print-stats", "print the support and confidence of each finding")
-            ("invariant-semantics-input", boost::program_options::value<std::string>(), "specify a file translating event strings to smtlibv2 [in the form decl: (...) inv: (...)], and use this information to make logical comparisions to determine if invariants hold [beta].")
             ("use-global-thresholds", "make all inputed thresholds global [default: false]")
             ("output-json", "write output in json format [default: false]")
             ("out-file", boost::program_options::value<std::string>(), "write output to out file at specified location");
+#ifdef SMT_SUPPORT
+      desc.add_options()("invariant-semantics-input", boost::program_options::value<std::string>(), "specify a file translating event strings to smtlibv2 [in the form decl: (...) inv: (...)], and use this information to make logical comparisions to determine if invariants hold [beta].");
+#endif
     return desc;
 
 }
@@ -77,13 +79,11 @@ boost::program_options::positional_options_description get_pos_opts_desc(){
  */
 boost::program_options::variables_map set_options(bool use_string,
         std::string input_string, int ac, char* av[]) {
-
     // setting up the program options
     // desc is the options description, i.e. all the allowed options
     boost::program_options::options_description desc =
             get_options_description();
     boost::program_options::positional_options_description pos_desc = get_pos_opts_desc();
-
 
     //parsing the options passed to command line
     boost::program_options::variables_map opts_map;
@@ -95,9 +95,11 @@ boost::program_options::variables_map set_options(bool use_string,
                         pos_desc).run(), opts_map);
 
     } else {
+
         boost::program_options::store(
                 boost::program_options::command_line_parser(ac, av).options(
                         desc).positional(pos_desc).run(), opts_map);
+
     }
 
     boost::program_options::notify(opts_map);
@@ -134,7 +136,6 @@ boost::program_options::variables_map set_options(int ac, char* av[]) {
  * @return
  */
 std::vector<std::string> string_to_args(std::string commands) {
-
     // separate arguments by spaces or newlines
     boost::char_separator<char> seperator(" \n\r");
     // split the arguments by spaces or newlines
@@ -180,7 +181,11 @@ std::vector<std::string> string_to_args(std::string commands) {
             //TODO: missing some cases, i.e. "ah"a
             // if we just found an opening quote, but there's an end
             // quote in this token, just push in the quoteless object
-            if ((*it).find_last_of("\'\"") == (*it).length() - 1) {
+            // But make sure the end quote is of the same type as the
+            // start quote
+            if ((*it).find_last_of("\'\"") == (*it).length() - 1
+                    && it->at((*it).find_last_of("\'\""))
+                           == it->at((*it).find_first_of("\'\""))) {
                 std::string first_element = std::string(*it);
                 quote_parsed_input.push_back(
                         first_element.substr(1, (*it).length() - 2));

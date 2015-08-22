@@ -17,7 +17,6 @@ ppt_invariant_decider::ppt_invariant_decider() {
     to_be_proved = "";
     declarations = set<string>();
     preconditions = set<string>();
-
 }
 
 ppt_invariant_decider::~ppt_invariant_decider() {

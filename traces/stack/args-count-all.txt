@@ -1,0 +1,1 @@
+-l -f 'G(x)' --conf-threshold 0 --use-global-thresholds --print-stats ./traces/stack/StackAr_texada.txt
