@@ -370,7 +370,7 @@ int main(int ac, char* av[]) {
         if (opts_map.count("out-file")) {
             realOutFile.close();
         }
-        for (int i = 0; i < formulae.size(); i++) {
+        for (int i = formulae.size() -1; i >= 0; i--) {
             formulae[i]->destroy();
         } //might not be ok
           // exception catching

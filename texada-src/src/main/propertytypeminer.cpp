@@ -138,16 +138,11 @@ vector<vector<std::pair<std::map<std::string, std::string>, texada::statistic>>>
         exit(1);
     }
 
-
-    /*
-     * End: Focus for code review Oct 22, 2014
-     */
-
-
     // the property type
     vector<string> prop_types = opts["property-type"].as<std::vector<std::string>>();
     // trace source
     string trace_source = opts["log-file"].as<std::string>();
+
 
     // if any constant events are specified in command line,
     // take these into count
@@ -163,7 +158,6 @@ vector<vector<std::pair<std::map<std::string, std::string>, texada::statistic>>>
         formulae.push_back(spot::ltl::parse(prop_types[i], parse_errs));
         assert(parse_errs.size() == 0);
     }
-
     // parse file
     std::ifstream infile(trace_source);
     if (infile.fail()) {
@@ -236,20 +230,19 @@ vector<vector<std::pair<std::map<std::string, std::string>, texada::statistic>>>
     }
     }
 
-
     // create the instantiators
     vector<instants_pool_creator *> instantiators;
 
     for (int i = 0; i < variable_vec.size(); i++){
 
     if (variable_vec[i]->empty()) {
-        instantiators[i] = new const_instants_pool(formulae[i]);
+        instantiators.push_back(new const_instants_pool(formulae[i]));
     } else if (pregen_instants) {
-        instantiators[i] = new pregen_instants_pool(event_set, variable_vec[i],
-                allow_reps, specified_formula_events);
+        instantiators.push_back(new pregen_instants_pool(event_set, variable_vec[i],
+                allow_reps, specified_formula_events));
     } else {
-        instantiators[i] = new otf_instants_pool(event_set,  variable_vec[i], allow_reps,
-                specified_formula_events);
+        instantiators.push_back(new otf_instants_pool(event_set,  variable_vec[i], allow_reps,
+                specified_formula_events));
     }
     }
 
@@ -261,22 +254,24 @@ vector<vector<std::pair<std::map<std::string, std::string>, texada::statistic>>>
     if (use_lin) {
         shared_ptr<std::multiset<vector<event> >> vector_trace_set =
                 dynamic_cast<linear_parser*>(parser)->return_vec_trace();
-        valid_instants_vec[i] = valid_instants_on_traces(formulae[i], instantiators[i],
-                vector_trace_set, c_settings, use_invariant_semantics, translations);
+        valid_instants_vec.push_back(valid_instants_on_traces(formulae[i], instantiators[i],
+                vector_trace_set, c_settings, use_invariant_semantics, translations));
     } else if (use_map) {
         shared_ptr<set<map<event, vector<long>>> > map_trace_set = dynamic_cast<map_parser*>(parser)->return_map_trace();
-        valid_instants_vec[i] = valid_instants_on_traces(formulae[i], instantiators[i],
-                map_trace_set, use_invariant_semantics, translations);
+        valid_instants_vec.push_back(valid_instants_on_traces(formulae[i], instantiators[i],
+                map_trace_set, use_invariant_semantics, translations));
     } else if (use_pretree) {
         shared_ptr<prefix_tree> prefix_tree_traces = dynamic_cast<prefix_tree_parser*>(parser)->return_prefix_trees();
-        valid_instants_vec[i] = valid_instants_on_traces(formulae[i], instantiators[i],
-                prefix_tree_traces, use_invariant_semantics, translations);
+        valid_instants_vec.push_back(valid_instants_on_traces(formulae[i], instantiators[i],
+                prefix_tree_traces, use_invariant_semantics, translations));
     }
     }
 
-    instantiators.clear();
+    for (int i = instantiators.size() -1 ; i >= 0 ; i--) {
+        delete instantiators[i];
+    }
     delete parser;
-    for (int i =0 ; i < formulae.size(); i++){
+    for (int i = formulae.size() - 1 ; i >= 0; i--){
         formulae[i]->destroy();
     } // might not be ok
     return valid_instants_vec;
