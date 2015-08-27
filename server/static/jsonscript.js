@@ -11,7 +11,9 @@
              var in_str = "{\"log\" : \"" + $("#log").val().replace(/\n/g, '\\n') + "\", \"args\" : \"" + $("#args").val() + "\"}"
             $.post("/texada/mine/", in_str, function( data ) {
               out_obj = jQuery.parseJSON(data)
-              var instants = out_obj["prop-instances"]
+              if (out_obj.length > 1)
+                 alert("Texada's web service supports only one property type and will only output results for the first specified property. Please separate your queries.")
+              var instants = out_obj[0]["prop-instances"]
               var stats = false
               bindings_str = "";
               instants_str = "";
@@ -34,7 +36,7 @@
                   // remove last comma
                   bindings_str = bindings_str.slice(0,-2)
                   bindings_str +=  "]</td>"
-                 instants_str += instantiateString(out_obj["prop-type"]["vars"], vars, out_obj["prop-type"]["str"])+ "</td>"
+                 instants_str += instantiateString(out_obj[0]["prop-type"]["vars"], vars, out_obj[0]["prop-type"]["str"])+ "</td>"
                  if (instants[i].hasOwnProperty("stats")){
                        var stat_str = '<td align= "center">'+ instants[i]["stats"]["support"] +"</td>" + '<td align= "center">'+ instants[i]["stats"]["support potential"] +"</td>" + '<td align= "center">'+ instants[i]["stats"]["confidence"] +"</td>"
                        bindings_str += stat_str
