@@ -36,8 +36,8 @@ TEST(PropertyTypeMinerTest, EventuallyEvent) {
         std::cerr << "Error: TEXADA_HOME is undefined. \n";
         FAIL();
     }
-    std::string texada_base = std::string(getenv("TEXADA_HOME"));
 
+    std::string texada_base = std::string(getenv("TEXADA_HOME"));
     std::vector<std::vector<std::pair<std::map<std::string, std::string>, texada::statistic>>> vec =
             texada::mine_lin_property_type("Fx",
                     texada_base
