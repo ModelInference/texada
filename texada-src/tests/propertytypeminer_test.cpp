@@ -766,3 +766,77 @@ TEST(PropertyTypeMinerTest, MultiProp) {
     ASSERT_TRUE(contains_instantiation2);
 }
 
+bool check_if_contains(std::map<std::string, std::string> map,
+        std::vector<std::pair<std::map<std::string, std::string>, texada::statistic>> map_vec){
+    for (std::vector<std::pair<std::map<std::string, std::string>, texada::statistic>>::iterator i = map_vec.begin();
+                   i != map_vec.end(); i++) {
+               if (map_compare((*i).first, map)) {
+                   return true;
+               }
+        }
+    return false;
+}
+
+TEST(PropertyTypeMinerTest, MultiFormulaRegression) {
+    if (getenv("TEXADA_HOME") == NULL) {
+        std::cerr << "Error: TEXADA_HOME is undefined. \n";
+        FAIL();
+    }
+    std::string texada_base = std::string(getenv("TEXADA_HOME"));
+
+    // find all valid instantiations of the property type
+    std::vector<std::vector<std::pair<std::map<std::string, std::string>, texada::statistic>>> set =
+            texada::mine_property_type(
+                    texada::set_options(
+                            "-f 'G(x -> XFy)' -f '!y W x' -f Fx -l "
+                                        + texada_base
+                                        + "/traces/parsing-tests/simple-pre-tree.txt"));
+    ASSERT_EQ(set[0].size(), 1);
+    ASSERT_EQ(set[1].size(), 7);
+    ASSERT_EQ(set[2].size(), 1);
+
+    std::map<std::string, std::string> inst_map;
+    inst_map.insert(std::pair<std::string, std::string>("x", "b"));
+    inst_map.insert(std::pair<std::string, std::string>("y", "d"));
+    ASSERT_TRUE(check_if_contains(inst_map,set[0]));
+
+    inst_map.clear();
+    inst_map.insert(std::pair<std::string, std::string>("x", "a"));
+    inst_map.insert(std::pair<std::string, std::string>("y", "b"));
+    ASSERT_TRUE(check_if_contains(inst_map,set[1]));
+
+    inst_map.clear();
+    inst_map.insert(std::pair<std::string, std::string>("x", "a"));
+    inst_map.insert(std::pair<std::string, std::string>("y", "c"));
+    ASSERT_TRUE(check_if_contains(inst_map,set[1]));
+
+    inst_map.clear();
+    inst_map.insert(std::pair<std::string, std::string>("x", "a"));
+    inst_map.insert(std::pair<std::string, std::string>("y", "d"));
+    ASSERT_TRUE(check_if_contains(inst_map,set[1]));
+
+    inst_map.clear();
+    inst_map.insert(std::pair<std::string, std::string>("x", "a"));
+    inst_map.insert(std::pair<std::string, std::string>("y", "e"));
+    ASSERT_TRUE(check_if_contains(inst_map,set[1]));
+
+    inst_map.clear();
+    inst_map.insert(std::pair<std::string, std::string>("x", "a"));
+    inst_map.insert(std::pair<std::string, std::string>("y", "f"));
+    ASSERT_TRUE(check_if_contains(inst_map,set[1]));
+
+    inst_map.clear();
+    inst_map.insert(std::pair<std::string, std::string>("x", "c"));
+    inst_map.insert(std::pair<std::string, std::string>("y", "f"));
+    ASSERT_TRUE(check_if_contains(inst_map,set[1]));
+
+    inst_map.clear();
+    inst_map.insert(std::pair<std::string, std::string>("x", "e"));
+    inst_map.insert(std::pair<std::string, std::string>("y", "f"));
+    ASSERT_TRUE(check_if_contains(inst_map,set[1]));
+
+    inst_map.clear();
+    inst_map.insert(std::pair<std::string, std::string>("x", "a"));
+    ASSERT_TRUE(check_if_contains(inst_map,set[2]));
+
+}

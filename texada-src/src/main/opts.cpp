@@ -21,7 +21,7 @@ boost::program_options::options_description get_options_description() {
     // desc is the options description, i.e. all the allowed options
     boost::program_options::options_description desc("Allowed options");
     desc.add_options()("help,h", "produce help message")("property-type,f",
-            boost::program_options::value<std::vector<std::string>>()->multitoken(),
+            boost::program_options::value<std::vector<std::string>>(),
             "property type to mine")("log-file",
             boost::program_options::value<std::string>(), "log file to mine on")(
             "map-trace,m", "mine on a trace in the form of a map")(
