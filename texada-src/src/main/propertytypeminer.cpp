@@ -44,7 +44,7 @@ namespace texada {
  * @param trace_source the input source of the trace
  * @return valid instantiations of the property type on the trace
  */
-vector<std::pair<std::map<std::string, std::string>, texada::statistic>> mine_lin_property_type(string formula_string,
+vector<vector<std::pair<std::map<std::string, std::string>, texada::statistic>>> mine_lin_property_type(string formula_string,
         string trace_source) {
     return mine_property_type(
             set_options("-f '" + formula_string + "' -l " + trace_source));
@@ -58,7 +58,7 @@ vector<std::pair<std::map<std::string, std::string>, texada::statistic>> mine_li
  * @param trace_source the input source of the trace
  * @return valid instantiations of the property type on the trace
  */
-vector<std::pair<std::map<std::string, std::string>, texada::statistic>> mine_map_property_type(string formula_string,
+vector<vector<std::pair<std::map<std::string, std::string>, texada::statistic>>> mine_map_property_type(string formula_string,
         string trace_source) {
     return mine_property_type(
             set_options("-f '" + formula_string + "' -m " + trace_source));
@@ -73,7 +73,7 @@ vector<std::pair<std::map<std::string, std::string>, texada::statistic>> mine_ma
  * @param use_map use map miner if true, linear miner otherwise
  * @return valid instantiations of the inputted formula on inputted trace set
  */
-vector<std::pair<std::map<std::string, std::string>, texada::statistic>> mine_property_type(
+vector<vector<std::pair<std::map<std::string, std::string>, texada::statistic>>> mine_property_type(
         boost::program_options::variables_map opts) {
     // collect all relevant information from options
     // what trace type to use. TODO: update for pre_tree when added
@@ -145,7 +145,7 @@ vector<std::pair<std::map<std::string, std::string>, texada::statistic>> mine_pr
 
 
     // the property type
-    string prop_type = opts["property-type"].as<std::string>();
+    vector<string> prop_types = opts["property-type"].as<std::vector<std::string>>();
     // trace source
     string trace_source = opts["log-file"].as<std::string>();
 
@@ -156,16 +156,19 @@ vector<std::pair<std::map<std::string, std::string>, texada::statistic>> mine_pr
         specified_formula_events = opts["event"].as<vector<string>>();
     }
 
-    //parse the ltl formula
+    //parse the ltl formulas
     spot::ltl::parse_error_list parse_errs;
-    const spot::ltl::formula* formula = spot::ltl::parse(prop_type, parse_errs);
-    assert(parse_errs.size() == 0);
+    vector<const spot::ltl::formula *> formulae;
+    for (int i = 0; i < prop_types.size(); i++){
+        formulae.push_back(spot::ltl::parse(prop_types[i], parse_errs));
+        assert(parse_errs.size() == 0);
+    }
 
     // parse file
     std::ifstream infile(trace_source);
     if (infile.fail()) {
         std::cerr << "Error: could not open file \n";
-        return std::vector<std::pair<std::map<std::string, std::string>, texada::statistic>>();
+        return vector<std::vector<std::pair<std::map<std::string, std::string>, texada::statistic>>>();
     }
 
     parser * parser;
@@ -204,13 +207,18 @@ vector<std::pair<std::map<std::string, std::string>, texada::statistic>> mine_pr
         }
     }
 
-    // create the set of formula's variables
-    shared_ptr<spot::ltl::atomic_prop_set> variables(
-            spot::ltl::atomic_prop_collect(formula));
+    // create the set of formulas' variables
+    vector<shared_ptr<spot::ltl::atomic_prop_set>> variable_vec;
+
+    for (int i = 0; i < formulae.size(); i++){
+        variable_vec.push_back(shared_ptr<spot::ltl::atomic_prop_set>(spot::ltl::atomic_prop_collect(formulae[i])));
+    }
+
+    for (int i = 0; i <variable_vec.size(); i++){
     // remove variables which are specified as constant events
     if (specified_formula_events.size() > 0) {
-        spot::ltl::atomic_prop_set::iterator it = variables->begin();
-        while (it != variables->end()) {
+        spot::ltl::atomic_prop_set::iterator it = variable_vec[i]->begin();
+        while (it != variable_vec[i]->end()) {
             bool erase = false;
             for (int i = 0; i < specified_formula_events.size(); i++) {
                 if ((*it)->name() == specified_formula_events.at(i)) {
@@ -220,49 +228,58 @@ vector<std::pair<std::map<std::string, std::string>, texada::statistic>> mine_pr
             if (erase) {
                 spot::ltl::atomic_prop_set::iterator toErase = it;
                 ++it;
-                variables->erase(toErase);
+                variable_vec[i]->erase(toErase);
             } else {
                 ++it;
             }
         }
     }
-
-    // create the instantiator
-    instants_pool_creator * instantiator;
-
-    if (variables->empty()) {
-        instantiator = new const_instants_pool(formula);
-    } else if (pregen_instants) {
-        instantiator = new pregen_instants_pool(event_set, variables,
-                allow_reps, specified_formula_events);
-    } else {
-        instantiator = new otf_instants_pool(event_set, variables, allow_reps,
-                specified_formula_events);
     }
 
-    vector<std::pair<std::map<std::string, std::string>, texada::statistic>> valid_instants;
+
+    // create the instantiators
+    vector<instants_pool_creator *> instantiators;
+
+    for (int i = 0; i < variable_vec.size(); i++){
+
+    if (variable_vec[i]->empty()) {
+        instantiators[i] = new const_instants_pool(formulae[i]);
+    } else if (pregen_instants) {
+        instantiators[i] = new pregen_instants_pool(event_set, variable_vec[i],
+                allow_reps, specified_formula_events);
+    } else {
+        instantiators[i] = new otf_instants_pool(event_set,  variable_vec[i], allow_reps,
+                specified_formula_events);
+    }
+    }
+
+
+    vector<vector<std::pair<std::map<std::string, std::string>, texada::statistic>>> valid_instants_vec;
+
+    for (int i = 0; i < formulae.size(); i++){
     // check all valid instantiations on each trace
     if (use_lin) {
         shared_ptr<std::multiset<vector<event> >> vector_trace_set =
                 dynamic_cast<linear_parser*>(parser)->return_vec_trace();
-        valid_instants = valid_instants_on_traces(formula, instantiator,
+        valid_instants_vec[i] = valid_instants_on_traces(formulae[i], instantiators[i],
                 vector_trace_set, c_settings, use_invariant_semantics, translations);
     } else if (use_map) {
         shared_ptr<set<map<event, vector<long>>> > map_trace_set = dynamic_cast<map_parser*>(parser)->return_map_trace();
-        valid_instants = valid_instants_on_traces(formula, instantiator,
+        valid_instants_vec[i] = valid_instants_on_traces(formulae[i], instantiators[i],
                 map_trace_set, use_invariant_semantics, translations);
     } else if (use_pretree) {
         shared_ptr<prefix_tree> prefix_tree_traces = dynamic_cast<prefix_tree_parser*>(parser)->return_prefix_trees();
-        valid_instants = valid_instants_on_traces(formula, instantiator,
+        valid_instants_vec[i] = valid_instants_on_traces(formulae[i], instantiators[i],
                 prefix_tree_traces, use_invariant_semantics, translations);
     }
+    }
 
-
-
-    delete instantiator;
+    instantiators.clear();
     delete parser;
-    formula->destroy();
-    return valid_instants;
+    for (int i =0 ; i < formulae.size(); i++){
+        formulae[i]->destroy();
+    } // might not be ok
+    return valid_instants_vec;
 
 }
 
