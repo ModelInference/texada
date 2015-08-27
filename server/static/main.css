@@ -48,33 +48,6 @@ body { background-color: white; }
     font-family: sans-serif; 
     font-size: 20px;
 }
-
-#nav {
-    float: left;
-}
-
-#nav li {
-    float: left;
-    list-style: none;
-    position: relative;
-}
-
-#nav li a {
-    padding: 1em 2em;
-}
-
-.navelem {
-    border: 1px solid #006;
-    background: #ccf;
-    font-family: sans-serif; 
-    font-size: 14px;
-}
-
-.navelem:hover {
-    border: 1px solid #f00;
-    background: #eef;
-}
-
 .button:hover {
     border: 1px solid #f00;
     background: #eef;
@@ -107,18 +80,10 @@ textarea {
 
 .hide{
 
-visibility: hidden;
+visibility: hidden
 
 }
 
-.abs{
+table#realout td + td { border-left:2px solid black; }
 
- top : 80px;
- right: 160 px;
-}
-
-
-.abs2{
-  right: 400 px;
-}
 -->
