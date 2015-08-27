@@ -306,13 +306,13 @@ int main(int ac, char* av[]) {
                 opts_map.count("out-file") ? realOutFile : std::cout);
 
         if (opts_map.count("output-json")) {
-            outFile << "{";
+            outFile << "[";
         }
         for (int i = 0; i < prop_types.size(); i++) {
-            if (i != 0) {
-                outFile << ", ";
-            }
             if (opts_map.count("output-json")) {
+                if (i != 0) {
+                    outFile << ", ";
+                }
                 std::shared_ptr<std::map<std::string, std::vector<int>>>var_pos_map =
                 get_var_pos(prop_types[i], &aps_vec[i]);
                 outFile << "{\"prop-type\": {\"str\": \"" << prop_types[i] << "\", \"vars\" : ";
@@ -364,7 +364,7 @@ int main(int ac, char* av[]) {
 
         }
         if (opts_map.count("output-json")) {
-            outFile << "}\n";
+            outFile << "]\n";
         }
 
         if (opts_map.count("out-file")) {
