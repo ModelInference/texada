@@ -7,7 +7,18 @@ a:active {color: red}    /* selected link */
 
 a   { text-decoration:none;  }
 
-body { background-color: white; }
+body { background-color: whitesmoke; }
+
+#home {
+    margin-left: auto;
+    margin-right: auto;
+    font: 14px Arial;
+    font-stretch: 10%;
+    width: 48%;
+    text-align:left;
+    background-color: white;
+    padding: 1%
+}
 
 header, nav, #form1, #allout{
     margin-left: auto;
@@ -19,6 +30,10 @@ header, nav, #form1, #allout{
     background-color: white;
     padding: 1%
 }
+
+ #form1, #allout{
+ display: none
+ }
 
 nav li {
     float: left; 
@@ -101,11 +116,6 @@ textarea {
     width: 300px;
 }
 
-.hide{
-
-visibility: hidden
-
-}
 
 table#realout td + td { border-left:2px solid black; }
 
