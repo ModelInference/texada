@@ -35,6 +35,10 @@ header, nav, #form1, #allout{
  display: none
 }
 
+#r {
+    display: none
+}
+
 nav li {
     float: left; 
 }
