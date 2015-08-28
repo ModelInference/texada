@@ -63,6 +63,10 @@ $( document ).ready(function() {
                  $("#realout").replaceWith('<table id="realout">' + bindings_str + '</table>')
                  output_loaded = true
               }}
+              $("#home").hide()
+              $("#form1").hide()
+              $("#allout").show()
+              $("#r").css( "display", "block")
             });
          });
 
