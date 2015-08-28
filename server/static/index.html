@@ -10,16 +10,15 @@
 
 
   <body>
-    <table id="main">
 
-      <tr><td colspan=2>
+
+      <header>
           <h2><a href="https://bitbucket.org/bestchai/texada">Texada</a>: temporal property miner</h2>
 <h3>Texada is a tool for extracting patterns in LTL format from totally-ordered sequences of events.</h3>
           <br/>
-      </td></tr>
+      </header>
 
-      <tr>
-        <td>
+
           <form id="form1" action="/texada/mine/" method="POST">
             <div><h3>Log:</h3>
               <textarea class="input" id="log" name="body" rows="15" cols="40">a
@@ -40,14 +39,11 @@ c
             <br/>
             <div><input class="button" id="mine" type="submit" value="Mine property instances"></div>
             </form>
-        </td>
-        <td id = "allout" valign="top">
+        <div id = "allout" >
 
-        </td>
-      </tr> 
+        </div>
 
-      <tr><td></td>
-<td>
+      
 <div id="footer">
 Last updated: August 18, 2015
 </div>
@@ -59,8 +55,8 @@ time-stamp-format: "%:b %:d, %:y"
 time-stamp-line-limit: -50
 End:
 -->
-</td></tr>
-    </table>
+
+      
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script> <!-- Should I use 2.1.4 instead-->
     <script src = "/static/jsonscript.js"></script>
 

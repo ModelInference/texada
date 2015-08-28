@@ -7,21 +7,15 @@ a:active {color: red}    /* selected link */
 
 a   { text-decoration:none;  }
 
-body { background-color: white; }
+body { background-color: #fafafa; }
 
-#main {
+header, #form1, #allout {
     margin-left: auto;
     margin-right: auto;
     font: 14px Arial;
     font-stretch: 10%;
     width: 50%;
     text-align:left;
-    padding: 0px 15px 15px;
-    cellpadding: 15px;
-    border: 1px solid;
-    border-color: #006400;
-    rules: none;
-    frame: box;
     background-color: white;
 }
 
