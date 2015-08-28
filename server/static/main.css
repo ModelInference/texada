@@ -7,17 +7,45 @@ a:active {color: red}    /* selected link */
 
 a   { text-decoration:none;  }
 
-body { background-color: #fafafa; }
+body { background-color: white; }
 
-header, #form1, #allout {
+header, nav, #form1, #allout{
     margin-left: auto;
     margin-right: auto;
     font: 14px Arial;
     font-stretch: 10%;
-    width: 50%;
+    width: 48%;
     text-align:left;
     background-color: white;
+    padding: 1%
 }
+
+nav li {
+    float: left; 
+}
+nav ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    font: 14px Arial;
+    font-stretch: 10%;
+}
+
+nav a:link, nav a:visited {
+    display: block;
+    width: 60px;
+    background-color: #ccf;
+    text-align: center;
+    padding: 4px;
+    text-decoration: none;
+    color: black
+}
+
+nav a:hover {
+    background-color: #eef;
+    color: black
+}
+
 
 #footer {
     float: right;
@@ -32,6 +60,7 @@ header, #form1, #allout {
     font-family: sans-serif; 
     font-size: 14px;
 }
+
 .input:hover {
     border: 1px solid #f00;
     background: #ffc;
