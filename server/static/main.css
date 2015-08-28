@@ -31,9 +31,9 @@ header, nav, #form1, #allout{
     padding: 1%
 }
 
- #form1, #allout{
+#form1, #allout{
  display: none
- }
+}
 
 nav li {
     float: left; 
