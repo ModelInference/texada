@@ -13,6 +13,7 @@
 #include <ltlparse/public.hh>
 #include <ltlvisit/apcollect.hh>
 #include <ltlvisit/tostring.hh>
+#include <time.h>
 
 #include <boost/program_options.hpp>
 
@@ -248,7 +249,8 @@ vector<vector<std::pair<std::map<std::string, std::string>, texada::statistic>>>
 
 
     vector<vector<std::pair<std::map<std::string, std::string>, texada::statistic>>> valid_instants_vec;
-
+ //   clock_t t;
+   // t = clock();
     for (int i = 0; i < formulae.size(); i++){
     // check all valid instantiations on each trace
     if (use_lin) {
@@ -266,6 +268,11 @@ vector<vector<std::pair<std::map<std::string, std::string>, texada::statistic>>>
                 prefix_tree_traces, use_invariant_semantics, translations));
     }
     }
+  //  t = clock() -t;
+  //  float secs = ((float) t)/CLOCKS_PER_SEC;
+  //  std::cout << "Took ";
+  //  std::cout << secs;
+  //  std::cout << "s to check.\n";
 
     for (int i = instantiators.size() -1 ; i >= 0 ; i--) {
         delete instantiators[i];
