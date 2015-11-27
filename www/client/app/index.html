@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>
+<html lang="en" ng-app="myApp" class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>
+<html lang="en" ng-app="myApp" class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>
+<html lang="en" ng-app="myApp" class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html lang="en" ng-app="myApp" class="no-js"> <!--<![endif]-->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Texada</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="app.css">
+
+</head>
+<body>
+<!--[if lt IE 7]>
+<p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade
+    your browser</a> to improve your experience.</p>
+<![endif]-->
+
+
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
+                    aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">Texada</a>
+        </div>
+        <div id="navbar" class="collapse navbar-collapse">
+            <ul class="nav navbar-nav">
+                <li class="active"><a href="#">Home</a></li>
+                <!-- <li><a href="#/view1">Other View</a></li> -->
+            </ul>
+        </div>
+        <!--/.nav-collapse -->
+    </div>
+</nav>
+
+<div class="container">
+    <div class="body"> <!-- add "ng-view" -->
+        <div class="starter-template">
+            <h1>Texada!</h1>
+
+            <p class="lead">
+                Texada is a research tool designed for extracting patterns from text data.
+            </p>
+
+            <p>Specifically, Texada mines temporal relations from totally-ordered sequences of events. To use Texada you
+                need to provide it with at least the following two inputs:
+            <ol>
+                <li>
+                    A user-defined linear temporal logic (LTL) formula whose atomic propositions are variables. We call
+                    this a property type.
+                </li>
+
+                <li>
+                    A text file containing multiple traces, each of which is composed of a totally ordered sequence of
+                    events. We call this a log.
+                </li>
+            </ol>
+            Texada's output is a set of LTL formulae that are instantiations of the input property type. That is, in an
+            instantiation, the variable atomic propositions are replaced with events from the log. Each formula in the
+            output satisfies all of the input traces in the input log. That is, each formula evaluates to true over each
+            of the traces.
+
+
+            </p>
+        </div>
+
+        <!-- Start Tabs -->
+        <ul class="nav nav-tabs">
+            <li class="active"><a data-toggle="tab" href="#input">Input</a></li>
+            <li><a data-toggle="tab" href="#output">Output</a></li>
+            <!-- <li class="dropdown">
+              <a data-toggle="dropdown" class="dropdown-toggle" href="#">Dropdown <b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                <li><a data-toggle="tab" href="#dropdown1">Dropdown1</a></li>
+                <li><a data-toggle="tab" href="#dropdown2">Dropdown2</a></li>
+              </ul>
+            </li> -->
+        </ul>
+
+        <div class="tab-content">
+            <div id="input" class="tab-pane fade in active">
+                <textarea id="inputText" class="form-control input-lg"></textarea>
+            </div>
+            <div id="output" class="tab-pane fade">
+                <h3>Results Fetched</h3>
+            </div>
+        </div>
+        <!-- End Tabs -->
+
+
+    </div>
+</div>
+
+
+<!-- In production use:
+<script src="//ajax.googleapis.com/ajax/libs/angularjs/x.x.x/angular.min.js"></script>
+-->
+
+<script src="bower_components/jquery/dist/jquery.min.js"></script>
+<script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="bower_components/angular/angular.js"></script>
+<script src="bower_components/angular-route/angular-route.js"></script>
+<script src="app.js"></script>
+<script src="view1/view1.js"></script>
+<script src="view2/view2.js"></script>
+<script src="components/version/version.js"></script>
+<script src="components/version/version-directive.js"></script>
+<script src="components/version/interpolate-filter.js"></script>
+</body>
+</html>
