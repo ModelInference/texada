@@ -29,6 +29,8 @@
     padding: 0;
 }
 
+/* This is where the custom CSS starts */
+
 .body {
     /* The body content */
     padding-top: 50px; /* To bring the  body right under the top navigation bar */
@@ -42,4 +44,10 @@
     font-family: Courier;
     color: #000;
     margin-top: 15px;
+}
+
+.outputList {
+    /* List of the properties found as output or the property instances */
+    font-family: Courier;
+    font-size: 12pt;
 }
