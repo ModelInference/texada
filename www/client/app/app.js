@@ -175,9 +175,13 @@ function showErrorModal(msg) {
     $("#errorModal").modal();
 }
 function addCommonProp() {
-    var commonProp = $("#chooseCommon").val() + " -l";
-    $("#argumentsText").val(commonProp);
-    $("#commonPropsModal").modal("hide");
+
+    var commonProp = $("#chooseCommon").val();
+    if (commonProp != "") {
+        $("#argumentsText").val(commonProp + " -l");
+        $("#commonPropsModal").modal("hide");
+    }
+
 }
 
 
