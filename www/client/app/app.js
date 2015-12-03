@@ -19,6 +19,8 @@ texada.controller("TexadaHomeCtrl", function ($scope) {
     $scope.ltl = "-f 'G(x->XFy)' -l";    // The LTL property to be mined
     $scope.text = "a\nb\nc\n--\nb\nb\nc\na\n--\nc\na\nb\nc\n--";   // The log/data to mine
 
+    $scope.commonPropSelected = "";
+
     $scope.commonProps = {
         "immediately-followed-by": "-f 'G(x->XFy)'",
         "perracotta\/alternating": "-f '(!yWx)&G((x->X(!xUy))&(y->X(!yWx)))'",
@@ -77,12 +79,13 @@ texada.controller("TexadaHomeCtrl", function ($scope) {
         $scope.ltl = commonProp;
         $("#commonPropsModal").modal("hide");
     };
+
     $scope.mine = function () {
         //$scope.text = $scope.text.replace(/\n/g, '\\n');
 
         var in_str = "{\"log\" : \"" + $scope.text.replace(/\n/g, '\\n') + "\", \"args\" : \"" + $scope.ltl.replace(/\n/g, "") + "\"}";
 
-        //       var parameters = {"log" : $scope.text.replace(/\n/g, '\\n'), "args" : $scope.ltl};
+        //var parameters = {"log" : $scope.text.replace(/\n/g, '\\n'), "args" : $scope.ltl};
 
         $.ajax({
             "method": "POST",

@@ -162,20 +162,12 @@
         <div class="modal-content">
             <div class="modal-header error-modal-header">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">Common Property Types</h4>
+                <h4 class="modal-title">Arguments</h4>
             </div>
             <div class="modal-body">
-                <p>Choose a common property type and click the button below:</p>
-                <select id="chooseCommon">
+                <select id="chooseCommon" ng-model="commonPropSelected" ng-change="addCommonProp()">
                     <option ng-repeat="(name, ltlprop) in commonProps" value="{{ltlprop}}">{{name}}</option>
                 </select>
-                <br/><br/>
-                <button class="btn btn-default" type="submit" ng-click="addCommonProp()">Add Argument</button>
-
-
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
             </div>
         </div>
 
