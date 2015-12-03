@@ -29,9 +29,14 @@ texada.controller("TexadaHomeCtrl", function ($scope) {
 
         //       var parameters = {"log" : $scope.text.replace(/\n/g, '\\n'), "args" : $scope.ltl};
 
-        $.post("/texada/mine/", in_str, function (data) {
+        $.ajax({
+            "method": "POST",
+            "url": "/texada/mine/",
+            "data": in_str
+        }).done(function (data) {
 
             var parsedData = jQuery.parseJSON(data);
+            console.log(parsedData);
             //Emptying previous output
             $scope.bindings = [];
             $scope.properties = [];
@@ -39,7 +44,7 @@ texada.controller("TexadaHomeCtrl", function ($scope) {
 
             // Will be edited
             if (parsedData.length != 1) {
-                alert("Sorry, there has been an error in mining the property.");
+                showErrorModal("Sorry, there has been an error in mining the property.");
                 $scope.$apply();
                 return;
             }
@@ -82,7 +87,13 @@ texada.controller("TexadaHomeCtrl", function ($scope) {
             $("#outputBtn").click();
 
 
-        })
+        }).fail(function () {
+            $scope.bindings = [];
+            $scope.properties = [];
+            showErrorModal("Sorry, there has been an error in mining the property.");
+            $scope.$apply();
+            return;
+        });
     }
 });
 // Tests
@@ -95,5 +106,11 @@ texada.controller("TexadaHomeCtrl", function ($scope) {
 $(document).ready(function () {
     // Activate tabs
     //$("#myTab li:eq(1) a").tab('show');
+
 });
+
+// Functions
+function showErrorModal(msg) {
+    $("#errorModal").modal();
+}
 
