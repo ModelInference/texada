@@ -172,6 +172,8 @@ $(document).ready(function () {
 function showErrorModal(msg) {
     $("#errorModal").modal();
 }
+
+/*
 function addCommonProp() {
 
     var commonProp = $("#chooseCommon").val();
@@ -186,5 +188,5 @@ function addCommonProp() {
     }
 
 }
-
+ */
 
