@@ -46,6 +46,12 @@
     margin-top: 15px;
 }
 
+#argumentsText {
+    /* The textbox for LTL arguments */
+    font-family: Courier
+}
+
+
 .outputList {
     /* List of the properties found as output or the property instances */
     font-family: Courier;
