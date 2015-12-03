@@ -16,8 +16,8 @@ var texada = angular.module('texadaApp', [/*
  }]);*/
 
 texada.controller("TexadaHomeCtrl", function ($scope) {
-    $scope.ltl = "";    // The LTL property to be mined
-    $scope.text = "";   // The log/data to mine
+    $scope.ltl = "-f 'G(x->XFy)' -l";    // The LTL property to be mined
+    $scope.text = "a\nb\nc\n--\nb\nb\nc\na\n--\nc\na\nb\nc\n--";   // The log/data to mine
     $scope.par = [1, 2, 3];
     $scope.bindings = [];      // The results fetched: the bindings found
     $scope.properties = [];    // The results fetched: the properties mined
