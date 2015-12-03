@@ -56,14 +56,14 @@ func mineHandler(w http.ResponseWriter, r *http.Request) {
 
         // Retrieve  data.
         decoder := json.NewDecoder(r.Body)
-        var in Input 
+        var in Input
         err := decoder.Decode(&in)
         if err != nil {
             fmt.Println(err.Error())
         }
 	log := in.Log
 	args := in.Args
-	
+
 	// Remove carriage returns from the input, and convert to []byte
 	log = strings.Replace(log,"\r","",-1)
 	args = strings.Replace(args,"\r","",-1)
@@ -145,9 +145,10 @@ func main() {
 	// Register handlers for different paths.
 	http.HandleFunc("/texada/", viewHandler)
 	http.HandleFunc("/texada/mine/", mineHandler)
-	
+
 	// Register static files handler
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
+	http.Handle("/app/", http.StripPrefix("/app/", http.FileServer(http.Dir("client/app/"))))
 
 	// Listen on port with default IP.
 	http.ListenAndServe(":" + port, nil)

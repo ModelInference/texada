@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <!--[if lt IE 7]>
-<html lang="en" ng-app="myApp" class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<html lang="en" ng-app="texadaApp" class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
 <!--[if IE 7]>
-<html lang="en" ng-app="myApp" class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<html lang="en" ng-app="texadaApp" class="no-js lt-ie9 lt-ie8"> <![endif]-->
 <!--[if IE 8]>
-<html lang="en" ng-app="myApp" class="no-js lt-ie9"> <![endif]-->
+<html lang="en" ng-app="texadaApp" class="no-js lt-ie9"> <![endif]-->
 <!--[if gt IE 8]><!-->
-<html lang="en" ng-app="myApp" class="no-js"> <!--<![endif]-->
+<html lang="en" ng-app="texadaApp" class="no-js"> <!--<![endif]-->
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -17,7 +17,7 @@
     <link rel="stylesheet" href="app.css">
 
 </head>
-<body>
+<body ng-controller="TexadaHomeCtrl">
 <!--[if lt IE 7]>
 <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade
     your browser</a> to improve your experience.</p>
@@ -80,7 +80,7 @@
         <!-- Start Tabs -->
         <ul class="nav nav-tabs">
             <li class="active"><a data-toggle="tab" href="#input">Input</a></li>
-            <li><a data-toggle="tab" href="#output">Output</a></li>
+            <li><a data-toggle="tab" href="#output" id="outputBtn">Output</a></li>
             <!-- <li class="dropdown">
               <a data-toggle="dropdown" class="dropdown-toggle" href="#">Dropdown <b class="caret"></b></a>
               <ul class="dropdown-menu">
@@ -92,12 +92,13 @@
 
         <div class="tab-content">
             <div id="input" class="tab-pane fade in active">
-                <textarea id="inputText" class="form-control input-lg"></textarea>
+                <textarea id="inputText" class="form-control input-lg" ng-model="text" placeholder="Log"></textarea>
                 <br/>
-                <input type="text" class="form-control input-lg" placeholder="LTL Property"/>
+                <input id="argumentsText" type="text" class="form-control input-lg" placeholder="Arguments"
+                       ng-model="ltl"/>
                 <br/>
-                <button class="btn btn-default" type="submit">Mine</button>
-                <br/>
+                <button class="btn btn-default" type="submit" ng-click="mine()">Mine</button>
+                <br/><br/>
             </div>
             <div id="output" class="tab-pane fade">
                 <h3>Results Fetched</h3>
@@ -106,15 +107,15 @@
                     <div class="col-md-6">
                         <h5>Bindings</h5>
                         <ol class="outputList">
-                            <li>[x: b, y: c]</li>
-                            <li>[x: a, y: d]</li>
-                            <li>[x: c, y: e]</li>
+                            <li ng-repeat="binding in bindings">
+                                [<span ng-repeat="b in binding">{{(b.count < 1)? "" : ", "}}{{b.prop}}: {{b.var}}</span>]
+                            </li>
                         </ol>
                     </div>
                     <div class="col-md-6">
                         <h5>Property Instances</h5>
                         <ol class="outputList">
-                            <li>G(b->XFc)</li>
+                            <li ng-repeat="prop in properties">{{prop.value}}</li>
                         </ol>
                     </div>
                 </div>
@@ -136,8 +137,6 @@
 <script src="bower_components/angular/angular.js"></script>
 <script src="bower_components/angular-route/angular-route.js"></script>
 <script src="app.js"></script>
-<script src="view1/view1.js"></script>
-<script src="view2/view2.js"></script>
 <script src="components/version/version.js"></script>
 <script src="components/version/version-directive.js"></script>
 <script src="components/version/interpolate-filter.js"></script>
