@@ -20,7 +20,7 @@ texada.controller("TexadaHomeCtrl", function ($scope) {
     $scope.text = "a\nb\nc\n--\nb\nb\nc\na\n--\nc\na\nb\nc\n--";   // The log/data to mine
 
     $scope.commonProps = {
-        "immediately-followed-by\/followedby": "-f 'G(x->XFy)'",
+        "immediately-followed-by": "-f 'G(x->XFy)'",
         "perracotta\/alternating": "-f '(!yWx)&G((x->X(!xUy))&(y->X(!yWx)))'",
         "perracotta\/causefirst": "-f '(!yWx)&G(x->XFy)'",
         "perracotta\/effectfirst": "-f 'G((x->X(!xUy))&(y->X(!yWx)))'",
