@@ -19,7 +19,7 @@ texada.controller("TexadaHomeCtrl", function ($scope) {
     $scope.ltl = "-f 'G(x->XFy)' -l";    // The LTL property to be mined
     $scope.text = "a\nb\nc\n--\nb\nb\nc\na\n--\nc\na\nb\nc\n--";   // The log/data to mine
 
-    //$scope.commonPropSelected = "";
+    $scope.commonPropSelected = "";
 
     $scope.commonProps = {
         "immediately-followed-by": "-f 'G(x->X y)'",
@@ -73,16 +73,14 @@ texada.controller("TexadaHomeCtrl", function ($scope) {
 
     $scope.bindings = [];      // The results fetched: the bindings found
     $scope.properties = [];    // The results fetched: the properties mined
-    /*
-     //Can't use ng-change because it runs before selected value is changedd
 
     $scope.addCommonProp = function () {
-     var commonProp = $("#chooseCommon").val() + " -l";
+        var commonProp = $scope.commonPropSelected + " -l";
      $scope.ltl = commonProp;
      $("#commonPropsModal").modal("hide");
 
      };
-     */
+
     $scope.mine = function () {
         //$scope.text = $scope.text.replace(/\n/g, '\\n');
 
@@ -178,7 +176,12 @@ function addCommonProp() {
 
     var commonProp = $("#chooseCommon").val();
     if (commonProp != "") {
-        $("#argumentsText").val(commonProp + " -l");
+        var appElement = document.querySelector('[ng-app=texadaApp]');
+
+        var $scope = angular.element(appElement).scope();
+        $scope.ltl = commonProp + " -l";
+        $scope.$apply();
+
         $("#commonPropsModal").modal("hide");
     }
 
