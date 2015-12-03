@@ -22,7 +22,7 @@ texada.controller("TexadaHomeCtrl", function ($scope) {
     //$scope.commonPropSelected = "";
 
     $scope.commonProps = {
-        "immediately-followed-by": "-f 'G(x->XFy)'",
+        "immediately-followed-by": "-f 'G(x->X y)'",
         "perracotta\/alternating": "-f '(!yWx)&G((x->X(!xUy))&(y->X(!yWx)))'",
         "perracotta\/causefirst": "-f '(!yWx)&G(x->XFy)'",
         "perracotta\/effectfirst": "-f 'G((x->X(!xUy))&(y->X(!yWx)))'",
