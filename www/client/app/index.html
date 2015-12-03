@@ -165,7 +165,9 @@
                 <h4 class="modal-title">Arguments</h4>
             </div>
             <div class="modal-body">
-                <select id="chooseCommon" ng-model="commonPropSelected" onchange="addCommonProp()">
+                <select id="chooseCommon" ng-model="commonPropSelected"
+                        ng-model-options="{updateOn: 'default blur', debounce: {default: 50, blur: 0} }"
+                        ng-change="addCommonProp()">
                     <option selected value="">Select an option...</option>
                     <option ng-repeat="(name, ltlprop) in commonProps" value="{{ltlprop}}">{{name}}</option>
                 </select>
