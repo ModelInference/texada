@@ -18,10 +18,16 @@ var texada = angular.module('texadaApp', [/*
 texada.controller("TexadaHomeCtrl", function ($scope) {
     $scope.ltl = "-f 'G(x->XFy)' -l";    // The LTL property to be mined
     $scope.text = "a\nb\nc\n--\nb\nb\nc\na\n--\nc\na\nb\nc\n--";   // The log/data to mine
-    $scope.par = [1, 2, 3];
+
+
     $scope.bindings = [];      // The results fetched: the bindings found
     $scope.properties = [];    // The results fetched: the properties mined
 
+    $scope.addCommonProp = function () {
+        var commonProp = $("#chooseCommon").val() + " -l";
+        $scope.ltl = commonProp;
+        $("#commonPropsModal").modal("hide");
+    };
     $scope.mine = function () {
         //$scope.text = $scope.text.replace(/\n/g, '\\n');
 
@@ -106,11 +112,13 @@ texada.controller("TexadaHomeCtrl", function ($scope) {
 $(document).ready(function () {
     // Activate tabs
     //$("#myTab li:eq(1) a").tab('show');
-
+    $("#chooseCommon").chosen({width: "100%"});
 });
 
 // Functions
 function showErrorModal(msg) {
     $("#errorModal").modal();
 }
+
+
 

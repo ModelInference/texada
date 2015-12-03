@@ -14,6 +14,7 @@
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="bower_components/chosen/chosen.min.css">
     <link rel="stylesheet" href="app.css">
 
 </head>
@@ -98,6 +99,10 @@
                        ng-model="ltl"/>
                 <br/>
                 <button class="btn btn-default" type="submit" ng-click="mine()">Mine</button>
+                &nbsp;&nbsp;
+                <button class="btn btn-default" data-toggle="modal" data-target="#commonPropsModal">Add Common
+                    Property
+                </button>
                 <br/><br/>
             </div>
             <div id="output" class="tab-pane fade">
@@ -150,6 +155,102 @@
 </div>
 
 
+<div id="commonPropsModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header error-modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Common Property Types</h4>
+            </div>
+            <div class="modal-body">
+                <p>Choose a common property type and click the button below:</p>
+                <select id="chooseCommon">
+                    <option value="-f 'G(x -> X y)'">immediately-followed-by</option>
+                    <option value="-f '(!y W x) & G((x -> X(!x U y))&(y -> X(!y W x)))'">perracotta/alternating</option>
+                    <option value="-f '(!y W x) & G(x -> XFy)'">perracotta/causefirst</option>
+                    <option value="-f 'G((x -> X(!x U y)) & (y -> X(!y W x)))'">perracotta/effectfirst</option>
+                    <option value="-f '(!y W x) & G((x -> XFy) & (y -> X(!y W x)))'">perracotta/multicause</option>
+                    <option value="-f '(!y W x) & G(x -> X(!x U y))'">perracotta/multieffect</option>
+                    <option value="-f 'G(x -> X(!x U y))'">perracotta/onecause</option>
+                    <option value="-f 'G((x -> XFy) & (y -> X(!y W x)))'">perracotta/oneeffect</option>
+                    <option value="-f 'G(x->XFy)'">perracotta/response</option>
+                    <option value="-f 'G(x -> XF y)'">synoptic/always-followed-by</option>
+                    <option value="-f 'Fy -> (!y U x)'">synoptic/always-precedes</option>
+                    <option value="-f 'G(x -> G !y)'">synoptic/never-followed-by</option>
+                    <option value="-f 'G(q -> G(!p))'">spec-patterns/absence/after_q</option>
+                    <option value="-f 'G(q & !r -> (!p W r))'">spec-patterns/absence/after_q_until_r</option>
+                    <option value="-f 'Fr -> (!p U r)'">spec-patterns/absence/before_r</option>
+                    <option value="-f 'G((q & !r & Fr) -> (!p U r))'">spec-patterns/absence/between_q_and_r</option>
+                    <option value="-f 'G(!p)'">spec-patterns/absence/globally</option>
+                    <option value="-f 'Fq -> (!q U (q & (!p W (p W (!p W (p W G!p))))))'">
+                        spec-patterns/bounded_existence/after_q
+                    </option>
+                    <option value="-f 'G(q -> ((!p & !r) U (r | ((p & !r) U (r | ((!p & !r) U (r | ((p & !r) U (r | (!p W r) | Gp)))))))))'">
+                        spec-patterns/bounded_existence/after_q_until_r
+                    </option>
+                    <option value="-f 'Fr -> ((!p & !r) U (r | ((p & !r) U (r | ((!p & !r) U (r | ((p & !r) U (r | (!p U r)))))))))'">
+                        spec-patterns/bounded_existence/before_r
+                    </option>
+                    <option value="-f 'G((q & Fr) -> ((!p & !r) U (r | ((p & !r) U (r | ((!p & !r) U (r | ((p & !r) U (r | (!p U r))))))))))'">
+                        spec-patterns/bounded_existence/between_q_and_r
+                    </option>
+                    <option value="-f '(!p W (p W (!p W (p W G!p))))'">spec-patterns/bounded_existence/globally</option>
+                    <option value="-f 'G (q -> G (p -> (s & !z & X(!z U t))))'">
+                        spec-patterns/constrained_chain/after_q
+                    </option>
+                    <option value="-f 'G (q -> (p -> (!r U (s & !r & !z & X((!r & !z) U t)))) U (r | G (p -> (s & !z & X(!z U t)))))'">
+                        spec-patterns/constrained_chain/after_q_until_r
+                    </option>
+                    <option value="-f 'Fr -> (p -> (!r U (s & !r & !z & X((!r & !z) U t)))) U r'">
+                        spec-patterns/constrained_chain/before_r
+                    </option>
+                    <option value="-f 'G ((q & Fr) -> (p -> (!r U (s & !r & !z & X((!r & !z) U t)))) U r)'">
+                        spec-patterns/constrained_chain/between_q_and_r
+                    </option>
+                    <option value="-f 'G (p -> F(s & !z & X(!z U t)))'">spec-patterns/constrained_chain/globally
+                    </option>
+                    <option value="-f 'G(!q) | F(q & Fp))'">spec-patterns/existence/after_q</option>
+                    <option value="-f 'G(q & !r -> (!r U (p & !r)))'">spec-patterns/existence/after_q_until_r</option>
+                    <option value="-f '!r W (p & !r)'">spec-patterns/existence/before_r</option>
+                    <option value="-f 'G(q & !r -> (!r W (p & !r)))'">spec-patterns/existence/between_q_and_r</option>
+                    <option value="-f 'F(p)'">spec-patterns/existence/globally</option>
+                    <option value="-f 'G!q | F(q & (!p W s))'">spec-patterns/precedence/after_q</option>
+                    <option value="-f 'G(q & !r -> (!p W (s | r)))'">spec-patterns/precedence/after_q_until_r</option>
+                    <option value="-f 'Fr -> (!p U (s | r))'">spec-patterns/precedence/before_r</option>
+                    <option value="-f 'G((q & !r & Fr) -> (!p U (s | r)))'">spec-patterns/precedence/between_q_and_r
+                    </option>
+                    <option value="-f '!p W s'">spec-patterns/precedence/globally</option>
+                    <option value="-f 'G(q -> G(p -> Fs))'">spec-patterns/response/after_q</option>
+                    <option value="-f 'G(q & !r -> ((p -> (!r U (s & !r))) W r)'">
+                        spec-patterns/response/after_q_until_r
+                    </option>
+                    <option value="-f 'Fr -> (p -> (!r U (s & !r))) U r'">spec-patterns/response/before_r</option>
+                    <option value="-f 'G((q & !r & Fr) -> (p -> (!r U (s & !r))) U r)'">
+                        spec-patterns/response/between_q_and_r
+                    </option>
+                    <option value="-f 'G(p -> Fs)'">spec-patterns/response/globally</option>
+                    <option value="-f 'G(q -> G(p))'">spec-patterns/universality/after_q</option>
+                    <option value="-f 'G(q & !r -> (p W r))'">spec-patterns/universality/after_q_until_r</option>
+                    <option value="-f 'Fr -> (p U r)'">spec-patterns/universality/before_r</option>
+                    <option value="-f 'G((q & !r & Fr) -> (p U r))'">spec-patterns/universality/between_q_and_r</option>
+                    <option value="-f 'G(p)'">spec-patterns/universality/globally</option>
+                </select>
+                <br/><br/>
+                <button class="btn btn-default" type="submit" ng-click="addCommonProp()">Add Type</button>
+
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
 <!-- In production use:
 <script src="//ajax.googleapis.com/ajax/libs/angularjs/x.x.x/angular.min.js"></script>
 -->
@@ -158,6 +259,7 @@
 <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
 <script src="bower_components/angular/angular.js"></script>
 <script src="bower_components/angular-route/angular-route.js"></script>
+<script src="bower_components/chosen/chosen.jquery.min.js"></script>
 <script src="app.js"></script>
 <script src="components/version/version.js"></script>
 <script src="components/version/version-directive.js"></script>
