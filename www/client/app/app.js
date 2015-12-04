@@ -16,12 +16,14 @@ var texada = angular.module('texadaApp', [/*
  }]);*/
 
 texada.controller("TexadaHomeCtrl", function ($scope) {
-    $scope.ltl = "-f 'G(x->XFy)' -l";    // The LTL property to be mined
+    //$scope.ltl = "-f 'G(x->XFy)' -l";    // The LTL property to be mined
     $scope.text = "a\nb\nc\n--\nb\nb\nc\na\n--\nc\na\nb\nc\n--";   // The log/data to mine
 
+    $scope.uploadOrText = "text";
     $scope.commonPropSelected = "";
 
     $scope.commonProps = {
+        "always-followed-by": "-f 'G(x->XFy)'",
         "immediately-followed-by": "-f 'G(x->X y)'",
         "perracotta\/alternating": "-f '(!yWx)&G((x->X(!xUy))&(y->X(!yWx)))'",
         "perracotta\/causefirst": "-f '(!yWx)&G(x->XFy)'",
@@ -81,79 +83,99 @@ texada.controller("TexadaHomeCtrl", function ($scope) {
 
      };
 
+
+    $scope.miningSuccess = function (data) {
+
+        var parsedData = jQuery.parseJSON(data);
+        console.log(parsedData);
+        //Emptying previous output
+        $scope.bindings = [];
+        $scope.properties = [];
+
+
+        // Will be edited
+        if (parsedData.length != 1) {
+            showErrorModal("Sorry, there has been an error in mining the property.");
+            $scope.$apply();
+            return;
+        }
+
+        // Variables with the current prop-type and instances
+        var instances = parsedData[0]['prop-instances'];
+        var propType = parsedData[0]['prop-type']['str'];    // needs to be changed later when multiple prop-type functionality is added
+
+
+        // Checking instances array is not empty
+        if (instances.length > 0) {
+
+            var vars = [];
+            var k = 0;
+            var p = 0;
+            // Iterating through the data
+            console.log(instances);
+            for (var key in instances) {
+
+                vars = [];
+                k = 0; // Count of props set to 0
+                for (var prop in instances[key]['vars']) {
+                    vars.push(
+                        {
+                            "prop": prop,
+                            "var": instances[key]['vars'][prop],
+                            "count": k
+                        });
+                    k++;
+                }
+
+                $scope.bindings.push(vars);
+                $scope.properties.push({value: propType, count: p});
+
+                p++;
+            }
+        }
+
+        $scope.$apply();
+        $("#outputBtn").click();
+
+
+    };
+
+    $scope.miningFailure = function () {
+        $scope.bindings = [];
+        $scope.properties = [];
+        showErrorModal("Sorry, there has been an error in mining the property.");
+        $scope.$apply();
+        return;
+    }
+
     $scope.mine = function () {
         //$scope.text = $scope.text.replace(/\n/g, '\\n');
 
         var in_str = "{\"log\" : \"" + $scope.text.replace(/\n/g, '\\n') + "\", \"args\" : \"" + $scope.ltl.replace(/\n/g, "") + "\"}";
 
         //var parameters = {"log" : $scope.text.replace(/\n/g, '\\n'), "args" : $scope.ltl};
-
-        $.ajax({
-            "method": "POST",
-            "url": "/texada/mine/",
-            "data": in_str
-        }).done(function (data) {
-
-            var parsedData = jQuery.parseJSON(data);
-            console.log(parsedData);
-            //Emptying previous output
-            $scope.bindings = [];
-            $scope.properties = [];
-
-
-            // Will be edited
-            if (parsedData.length != 1) {
-                showErrorModal("Sorry, there has been an error in mining the property.");
-                $scope.$apply();
-                return;
-            }
-
-            // Variables with the current prop-type and instances
-            var instances = parsedData[0]['prop-instances'];
-            var propType = parsedData[0]['prop-type']['str'];    // needs to be changed later when multiple prop-type functionality is added
-
-
-            // Checking instances array is not empty
-            if (instances.length > 0) {
-
-                var vars = [];
-                var k = 0;
-                var p = 0;
-                // Iterating through the data
-                console.log(instances);
-                for (var key in instances) {
-
-                    vars = [];
-                    k = 0; // Count of props set to 0
-                    for (var prop in instances[key]['vars']) {
-                        vars.push(
-                            {
-                                "prop": prop,
-                                "var": instances[key]['vars'][prop],
-                                "count": k
-                            });
-                        k++;
-                    }
-
-                    $scope.bindings.push(vars);
-                    $scope.properties.push({value: propType, count: p});
-
-                    p++;
-                }
-            }
-
-            $scope.$apply();
-            $("#outputBtn").click();
-
-
-        }).fail(function () {
-            $scope.bindings = [];
-            $scope.properties = [];
-            showErrorModal("Sorry, there has been an error in mining the property.");
-            $scope.$apply();
-            return;
-        });
+        var formData = new FormData($("#uploadForm")[0]);
+        console.log(formData);
+        if ($scope.uploadOrText == "upload") {
+            $.ajax({
+                "method": "POST",
+                "url": "/texada/uploadMine/",
+                "data": formData,
+                cache: false,
+                contentType: false,
+                processData: false
+            }).done($scope.miningSuccess).fail($scope.miningFailure);
+        }
+        else {
+            $.ajax({
+                "method": "POST",
+                "url": "/texada/mine/",
+                "data": in_str
+            }).done($scope.miningSuccess).fail($scope.miningFailure);
+        }
     }
+
+
 });
 // Tests
 
@@ -166,6 +188,16 @@ $(document).ready(function () {
     // Activate tabs
     //$("#myTab li:eq(1) a").tab('show');
     $("#chooseCommon").chosen({width: "100%"});
+
+    // initialize jQuery File Upload plugin
+    $('#fileupload').fileupload({
+        dataType: 'json',
+        done: function (e, data) {
+            $.each(data.result.files, function (index, file) {
+                $('<p/>').text(file.name).appendTo(document.body);
+            });
+        }
+    });
 });
 
 // Functions
