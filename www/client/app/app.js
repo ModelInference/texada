@@ -86,7 +86,16 @@ texada.controller("TexadaHomeCtrl", function ($scope) {
 
     $scope.miningSuccess = function (data) {
 
-        var parsedData = jQuery.parseJSON(data);
+        // Try to parse JSON
+        try {
+            var parsedData = jQuery.parseJSON(data);
+        }
+        catch (e) {
+            showErrorModal("Sorry, there has been an error in mining the property.");
+            $scope.$apply();
+            return;
+        }
+
         console.log(parsedData);
         //Emptying previous output
         $scope.bindings = [];
@@ -150,13 +159,14 @@ texada.controller("TexadaHomeCtrl", function ($scope) {
 
     $scope.mine = function () {
         //$scope.text = $scope.text.replace(/\n/g, '\\n');
-
         var in_str = "{\"log\" : \"" + $scope.text.replace(/\n/g, '\\n') + "\", \"args\" : \"" + $scope.ltl.replace(/\n/g, "") + "\"}";
 
         //var parameters = {"log" : $scope.text.replace(/\n/g, '\\n'), "args" : $scope.ltl};
         var formData = new FormData($("#uploadForm")[0]);
         console.log(formData);
         if ($scope.uploadOrText == "upload") {
+
+
             $.ajax({
                 "method": "POST",
                 "url": "/texada/uploadMine/",
@@ -185,19 +195,8 @@ texada.controller("TexadaHomeCtrl", function ($scope) {
 
 // Document ready
 $(document).ready(function () {
-    // Activate tabs
-    //$("#myTab li:eq(1) a").tab('show');
+    // Activate chosen (the search+dropdown plugin)
     $("#chooseCommon").chosen({width: "100%"});
-
-    // initialize jQuery File Upload plugin
-    $('#fileupload').fileupload({
-        dataType: 'json',
-        done: function (e, data) {
-            $.each(data.result.files, function (index, file) {
-                $('<p/>').text(file.name).appendTo(document.body);
-            });
-        }
-    });
 });
 
 // Functions
