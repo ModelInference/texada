@@ -161,6 +161,9 @@ func uploadMineHandler(w http.ResponseWriter, r *http.Request) {
 
 	fileB, err3 := ioutil.ReadFile(randString)
 	_ = err3
+
+	err7 := os.Remove(randString)
+	_ = err7
 	log := string(fileB)
 
 	printRequest(r)
