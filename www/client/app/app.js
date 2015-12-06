@@ -2,7 +2,7 @@
 
 // Declare app level module which depends on views, and components
 var texada = angular.module('texadaApp', [/*
-    'ngRoute',
+ 'ngRoute',
  'texada.view1',
  'texada.view2',
  'texada.0.1.0' */
@@ -21,67 +21,120 @@ texada.controller("TexadaHomeCtrl", function ($scope) {
 
     $scope.uploadOrText = "text";
     $scope.commonPropSelected = "";
-
+    /*
+     // Stripped spaces
+     $scope.commonProps = {
+     "always-followed-by": "-f 'G(x->XFy)'",
+     "immediately-followed-by": "-f 'G(x->X y)'",
+     "perracotta\/alternating": "-f '(!yWx)&G((x->X(!xUy))&(y->X(!yWx)))'",
+     "perracotta\/causefirst": "-f '(!yWx)&G(x->XFy)'",
+     "perracotta\/effectfirst": "-f 'G((x->X(!xUy))&(y->X(!yWx)))'",
+     "perracotta\/multicause": "-f '(!yWx)&G((x->XFy)&(y->X(!yWx)))'",
+     "perracotta\/multieffect": "-f '(!yWx)&G(x->X(!xUy))'",
+     "perracotta\/onecause": "-f 'G(x->X(!xUy))'",
+     "perracotta\/oneeffect": "-f 'G((x->XFy)&(y->X(!yWx)))'",
+     "perracotta\/response": "-f 'G(x->XFy)'",
+     "synoptic\/always-followed-by": "-f 'G(x->XFy)'",
+     "synoptic\/always-precedes": "-f 'Fy->(!yUx)'",
+     "synoptic\/never-followed-by": "-f 'G(x->G!y)'",
+     "spec-patterns\/absence\/after_q": "-f 'G(q->G(!p))'",
+     "spec-patterns\/absence\/after_q_until_r": "-f 'G(q&!r->(!pWr))'",
+     "spec-patterns\/absence\/before_r": "-f 'Fr->(!pUr)'",
+     "spec-patterns\/absence\/between_q_and_r": "-f 'G((q&!r&Fr)->(!pUr))'",
+     "spec-patterns\/absence\/globally": "-f 'G(!p)'",
+     "spec-patterns\/bounded_existence\/after_q": "-f 'Fq->(!qU(q&(!pW(pW(!pW(pWG!p))))))'",
+     "spec-patterns\/bounded_existence\/after_q_until_r": "-f 'G(q->((!p&!r)U(r|((p&!r)U(r|((!p&!r)U(r|((p&!r)U(r|(!pWr)|Gp)))))))))'",
+     "spec-patterns\/bounded_existence\/before_r": "-f 'Fr->((!p&!r)U(r|((p&!r)U(r|((!p&!r)U(r|((p&!r)U(r|(!pUr)))))))))'",
+     "spec-patterns\/bounded_existence\/between_q_and_r": "-f 'G((q&Fr)->((!p&!r)U(r|((p&!r)U(r|((!p&!r)U(r|((p&!r)U(r|(!pUr))))))))))'",
+     "spec-patterns\/bounded_existence\/globally": "-f '(!pW(pW(!pW(pWG!p))))'",
+     "spec-patterns\/constrained_chain\/after_q": "-f 'G(q->G(p->(s&!z&X(!zUt))))'",
+     "spec-patterns\/constrained_chain\/after_q_until_r": "-f 'G(q->(p->(!rU(s&!r&!z&X((!r&!z)Ut))))U(r|G(p->(s&!z&X(!zUt)))))'",
+     "spec-patterns\/constrained_chain\/before_r": "-f 'Fr->(p->(!rU(s&!r&!z&X((!r&!z)Ut))))Ur'",
+     "spec-patterns\/constrained_chain\/between_q_and_r": "-f 'G((q&Fr)->(p->(!rU(s&!r&!z&X((!r&!z)Ut))))Ur)'",
+     "spec-patterns\/constrained_chain\/globally": "-f 'G(p->F(s&!z&X(!zUt)))'",
+     "spec-patterns\/existence\/after_q": "-f 'G(!q)|F(q&Fp))'",
+     "spec-patterns\/existence\/after_q_until_r": "-f 'G(q&!r->(!rU(p&!r)))'",
+     "spec-patterns\/existence\/before_r": "-f '!rW(p&!r)'",
+     "spec-patterns\/existence\/between_q_and_r": "-f 'G(q&!r->(!rW(p&!r)))'",
+     "spec-patterns\/existence\/globally": "-f 'F(p)'",
+     "spec-patterns\/precedence\/after_q": "-f 'G!q|F(q&(!pWs))'",
+     "spec-patterns\/precedence\/after_q_until_r": "-f 'G(q&!r->(!pW(s|r)))'",
+     "spec-patterns\/precedence\/before_r": "-f 'Fr->(!pU(s|r))'",
+     "spec-patterns\/precedence\/between_q_and_r": "-f 'G((q&!r&Fr)->(!pU(s|r)))'",
+     "spec-patterns\/precedence\/globally": "-f '!pWs'",
+     "spec-patterns\/response\/after_q": "-f 'G(q->G(p->Fs))'",
+     "spec-patterns\/response\/after_q_until_r": "-f 'G(q&!r->((p->(!rU(s&!r)))Wr)'",
+     "spec-patterns\/response\/before_r": "-f 'Fr->(p->(!rU(s&!r)))Ur'",
+     "spec-patterns\/response\/between_q_and_r": "-f 'G((q&!r&Fr)->(p->(!rU(s&!r)))Ur)'",
+     "spec-patterns\/response\/globally": "-f 'G(p->Fs)'",
+     "spec-patterns\/universality\/after_q": "-f 'G(q->G(p))'",
+     "spec-patterns\/universality\/after_q_until_r": "-f 'G(q&!r->(pWr))'",
+     "spec-patterns\/universality\/before_r": "-f 'Fr->(pUr)'",
+     "spec-patterns\/universality\/between_q_and_r": "-f 'G((q&!r&Fr)->(pUr))'",
+     "spec-patterns\/universality\/globally": "-f 'G(p)'"
+     };
+     */
     $scope.commonProps = {
         "always-followed-by": "-f 'G(x->XFy)'",
-        "immediately-followed-by": "-f 'G(x->X y)'",
-        "perracotta\/alternating": "-f '(!yWx)&G((x->X(!xUy))&(y->X(!yWx)))'",
-        "perracotta\/causefirst": "-f '(!yWx)&G(x->XFy)'",
-        "perracotta\/effectfirst": "-f 'G((x->X(!xUy))&(y->X(!yWx)))'",
-        "perracotta\/multicause": "-f '(!yWx)&G((x->XFy)&(y->X(!yWx)))'",
-        "perracotta\/multieffect": "-f '(!yWx)&G(x->X(!xUy))'",
-        "perracotta\/onecause": "-f 'G(x->X(!xUy))'",
-        "perracotta\/oneeffect": "-f 'G((x->XFy)&(y->X(!yWx)))'",
+        "immediately-followed-by\/followedby": "-f 'G(x -> X y)'",
+        "perracotta\/alternating": "-f '(!y W x) & G((x -> X(!x U y))&(y -> X(!y W x)))'",
+        "perracotta\/causefirst": "-f '(!y W x) & G(x -> XFy)'",
+        "perracotta\/effectfirst": "-f 'G((x -> X(!x U y)) & (y -> X(!y W x)))'",
+        "perracotta\/multicause": "-f '(!y W x) & G((x -> XFy) & (y -> X(!y W x)))'",
+        "perracotta\/multieffect": "-f '(!y W x) & G(x -> X(!x U y))'",
+        "perracotta\/onecause": "-f 'G(x -> X(!x U y))'",
+        "perracotta\/oneeffect": "-f 'G((x -> XFy) & (y -> X(!y W x)))'",
         "perracotta\/response": "-f 'G(x->XFy)'",
-        "synoptic\/always-followed-by": "-f 'G(x->XFy)'",
-        "synoptic\/always-precedes": "-f 'Fy->(!yUx)'",
-        "synoptic\/never-followed-by": "-f 'G(x->G!y)'",
-        "spec-patterns\/absence\/after_q": "-f 'G(q->G(!p))'",
-        "spec-patterns\/absence\/after_q_until_r": "-f 'G(q&!r->(!pWr))'",
-        "spec-patterns\/absence\/before_r": "-f 'Fr->(!pUr)'",
-        "spec-patterns\/absence\/between_q_and_r": "-f 'G((q&!r&Fr)->(!pUr))'",
+        "synoptic\/always-followed-by": "-f 'G(x -> XF y)'",
+        "synoptic\/always-precedes": "-f 'Fy -> (!y U x)'",
+        "synoptic\/never-followed-by": "-f 'G(x -> G !y)'",
+        "spec-patterns\/absence\/after_q": "-f 'G(q -> G(!p))'",
+        "spec-patterns\/absence\/after_q_until_r": "-f 'G(q & !r -> (!p W r))'",
+        "spec-patterns\/absence\/before_r": "-f 'Fr -> (!p U r)'",
+        "spec-patterns\/absence\/between_q_and_r": "-f 'G((q & !r & Fr) -> (!p U r))'",
         "spec-patterns\/absence\/globally": "-f 'G(!p)'",
-        "spec-patterns\/bounded_existence\/after_q": "-f 'Fq->(!qU(q&(!pW(pW(!pW(pWG!p))))))'",
-        "spec-patterns\/bounded_existence\/after_q_until_r": "-f 'G(q->((!p&!r)U(r|((p&!r)U(r|((!p&!r)U(r|((p&!r)U(r|(!pWr)|Gp)))))))))'",
-        "spec-patterns\/bounded_existence\/before_r": "-f 'Fr->((!p&!r)U(r|((p&!r)U(r|((!p&!r)U(r|((p&!r)U(r|(!pUr)))))))))'",
-        "spec-patterns\/bounded_existence\/between_q_and_r": "-f 'G((q&Fr)->((!p&!r)U(r|((p&!r)U(r|((!p&!r)U(r|((p&!r)U(r|(!pUr))))))))))'",
-        "spec-patterns\/bounded_existence\/globally": "-f '(!pW(pW(!pW(pWG!p))))'",
-        "spec-patterns\/constrained_chain\/after_q": "-f 'G(q->G(p->(s&!z&X(!zUt))))'",
-        "spec-patterns\/constrained_chain\/after_q_until_r": "-f 'G(q->(p->(!rU(s&!r&!z&X((!r&!z)Ut))))U(r|G(p->(s&!z&X(!zUt)))))'",
-        "spec-patterns\/constrained_chain\/before_r": "-f 'Fr->(p->(!rU(s&!r&!z&X((!r&!z)Ut))))Ur'",
-        "spec-patterns\/constrained_chain\/between_q_and_r": "-f 'G((q&Fr)->(p->(!rU(s&!r&!z&X((!r&!z)Ut))))Ur)'",
-        "spec-patterns\/constrained_chain\/globally": "-f 'G(p->F(s&!z&X(!zUt)))'",
-        "spec-patterns\/existence\/after_q": "-f 'G(!q)|F(q&Fp))'",
-        "spec-patterns\/existence\/after_q_until_r": "-f 'G(q&!r->(!rU(p&!r)))'",
-        "spec-patterns\/existence\/before_r": "-f '!rW(p&!r)'",
-        "spec-patterns\/existence\/between_q_and_r": "-f 'G(q&!r->(!rW(p&!r)))'",
+        "spec-patterns\/bounded_existence\/after_q": "-f 'Fq -> (!q U (q & (!p W (p W (!p W (p W G!p))))))'",
+        "spec-patterns\/bounded_existence\/after_q_until_r": "-f 'G(q -> ((!p & !r) U (r | ((p & !r) U (r | ((!p & !r) U (r | ((p & !r) U (r | (!p W r) | Gp)))))))))'",
+        "spec-patterns\/bounded_existence\/before_r": "-f 'Fr -> ((!p & !r) U (r | ((p & !r) U (r | ((!p & !r) U (r | ((p & !r) U (r | (!p U r)))))))))'",
+        "spec-patterns\/bounded_existence\/between_q_and_r": "-f 'G((q & Fr) -> ((!p & !r) U (r | ((p & !r) U (r | ((!p & !r) U (r | ((p & !r) U (r | (!p U r))))))))))'",
+        "spec-patterns\/bounded_existence\/globally": "-f '(!p W (p W (!p W (p W G!p))))'",
+        "spec-patterns\/constrained_chain\/after_q": "-f 'G (q -> G (p -> (s & !z & X(!z U t))))'",
+        "spec-patterns\/constrained_chain\/after_q_until_r": "-f 'G (q -> (p -> (!r U (s & !r & !z & X((!r & !z) U t)))) U (r | G (p -> (s & !z & X(!z U t)))))'",
+        "spec-patterns\/constrained_chain\/before_r": "-f 'Fr -> (p -> (!r U (s & !r & !z & X((!r & !z) U t)))) U r'",
+        "spec-patterns\/constrained_chain\/between_q_and_r": "-f 'G ((q & Fr) -> (p -> (!r U (s & !r & !z & X((!r & !z) U t)))) U r)'",
+        "spec-patterns\/constrained_chain\/globally": "-f 'G (p -> F(s & !z & X(!z U t)))'",
+        "spec-patterns\/existence\/after_q": "-f 'G(!q) | F(q & Fp))'",
+        "spec-patterns\/existence\/after_q_until_r": "-f 'G(q & !r -> (!r U (p & !r)))'",
+        "spec-patterns\/existence\/before_r": "-f '!r W (p & !r)'",
+        "spec-patterns\/existence\/between_q_and_r": "-f 'G(q & !r -> (!r W (p & !r)))'",
         "spec-patterns\/existence\/globally": "-f 'F(p)'",
-        "spec-patterns\/precedence\/after_q": "-f 'G!q|F(q&(!pWs))'",
-        "spec-patterns\/precedence\/after_q_until_r": "-f 'G(q&!r->(!pW(s|r)))'",
-        "spec-patterns\/precedence\/before_r": "-f 'Fr->(!pU(s|r))'",
-        "spec-patterns\/precedence\/between_q_and_r": "-f 'G((q&!r&Fr)->(!pU(s|r)))'",
-        "spec-patterns\/precedence\/globally": "-f '!pWs'",
-        "spec-patterns\/response\/after_q": "-f 'G(q->G(p->Fs))'",
-        "spec-patterns\/response\/after_q_until_r": "-f 'G(q&!r->((p->(!rU(s&!r)))Wr)'",
-        "spec-patterns\/response\/before_r": "-f 'Fr->(p->(!rU(s&!r)))Ur'",
-        "spec-patterns\/response\/between_q_and_r": "-f 'G((q&!r&Fr)->(p->(!rU(s&!r)))Ur)'",
-        "spec-patterns\/response\/globally": "-f 'G(p->Fs)'",
-        "spec-patterns\/universality\/after_q": "-f 'G(q->G(p))'",
-        "spec-patterns\/universality\/after_q_until_r": "-f 'G(q&!r->(pWr))'",
-        "spec-patterns\/universality\/before_r": "-f 'Fr->(pUr)'",
-        "spec-patterns\/universality\/between_q_and_r": "-f 'G((q&!r&Fr)->(pUr))'",
+        "spec-patterns\/precedence\/after_q": "-f 'G!q | F(q & (!p W s))'",
+        "spec-patterns\/precedence\/after_q_until_r": "-f 'G(q & !r -> (!p W (s | r)))'",
+        "spec-patterns\/precedence\/before_r": "-f 'Fr -> (!p U (s | r))'",
+        "spec-patterns\/precedence\/between_q_and_r": "-f 'G((q & !r & Fr) -> (!p U (s | r)))'",
+        "spec-patterns\/precedence\/globally": "-f '!p W s'",
+        "spec-patterns\/response\/after_q": "-f 'G(q -> G(p -> Fs))'",
+        "spec-patterns\/response\/after_q_until_r": "-f 'G(q & !r -> ((p -> (!r U (s & !r))) W r)'",
+        "spec-patterns\/response\/before_r": "-f 'Fr -> (p -> (!r U (s & !r))) U r'",
+        "spec-patterns\/response\/between_q_and_r": "-f 'G((q & !r & Fr) -> (p -> (!r U (s & !r))) U r)'",
+        "spec-patterns\/response\/globally": "-f 'G(p -> Fs)'",
+        "spec-patterns\/universality\/after_q": "-f 'G(q -> G(p))'",
+        "spec-patterns\/universality\/after_q_until_r": "-f 'G(q & !r -> (p W r))'",
+        "spec-patterns\/universality\/before_r": "-f 'Fr -> (p U r)'",
+        "spec-patterns\/universality\/between_q_and_r": "-f 'G((q & !r & Fr) -> (p U r))'",
         "spec-patterns\/universality\/globally": "-f 'G(p)'"
     };
+
 
     $scope.bindings = [];      // The results fetched: the bindings found
     $scope.properties = [];    // The results fetched: the properties mined
 
     $scope.addCommonProp = function () {
         var commonProp = $scope.commonPropSelected + " -l";
-     $scope.ltl = commonProp;
-     $("#commonPropsModal").modal("hide");
+        $scope.ltl = commonProp;
+        $("#commonPropsModal").modal("hide");
 
-     };
+    };
 
 
     $scope.miningSuccess = function (data) {
@@ -205,19 +258,19 @@ function showErrorModal(msg) {
 }
 
 /*
-function addCommonProp() {
+ function addCommonProp() {
 
-    var commonProp = $("#chooseCommon").val();
-    if (commonProp != "") {
-        var appElement = document.querySelector('[ng-app=texadaApp]');
+ var commonProp = $("#chooseCommon").val();
+ if (commonProp != "") {
+ var appElement = document.querySelector('[ng-app=texadaApp]');
 
-        var $scope = angular.element(appElement).scope();
-        $scope.ltl = commonProp + " -l";
-        $scope.$apply();
+ var $scope = angular.element(appElement).scope();
+ $scope.ltl = commonProp + " -l";
+ $scope.$apply();
 
-        $("#commonPropsModal").modal("hide");
-    }
+ $("#commonPropsModal").modal("hide");
+ }
 
-}
+ }
  */
 
