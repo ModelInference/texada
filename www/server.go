@@ -217,13 +217,12 @@ func main() {
 	fmt.Printf("Using port: %s\n", port)
 
 	// Register handlers for different paths.
-	http.HandleFunc("/texada/", viewHandler)
 	http.HandleFunc("/texada/mine/", mineHandler)
 	http.HandleFunc("/texada/uploadMine/", uploadMineHandler)
 
 	// Register static files handler
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
-	http.Handle("/app/", http.StripPrefix("/app/", http.FileServer(http.Dir("client/app/"))))
+	http.Handle("/texada/", http.StripPrefix("/texada/", http.FileServer(http.Dir("client/app/"))))
 
 	// Listen on port with default IP.
 	http.ListenAndServe(":" + port, nil)
