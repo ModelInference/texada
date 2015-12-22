@@ -8,7 +8,9 @@
 # Installation (Unix-based systems) #
 1. Open Terminal
 2. cd {TEXADA_HOME}/www/client
-3. npm install
+3. sudo npm install
+4. cd {TEXADA_HOME}/www/client/app
+5. bower install
 
 
 # Running the server (Unix-based systems) #
