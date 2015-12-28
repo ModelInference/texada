@@ -1,6 +1,6 @@
 ## Texada ##
 
-# Installing Client-side Dependencies #
+# Installing Dependencies #
 
 # Pre-requisites #
 1. node.js - Download and install using the following Terminal commands
