@@ -16,7 +16,7 @@ var texada = angular.module('texadaApp', [/*
  }]);*/
 
 texada.controller("TexadaHomeCtrl", function ($scope) {
-    //$scope.ltl = "-f 'G(x->XFy)' -l";    // The LTL property to be mined
+    $scope.ltl = "-f 'G(x->XFy)' -l";    // The LTL property to be mined
     $scope.text = "a\nb\nc\n--\nb\nb\nc\na\n--\nc\na\nb\nc\n--";   // The log/data to mine
 
     $scope.uploadOrText = "text";
@@ -128,6 +128,18 @@ texada.controller("TexadaHomeCtrl", function ($scope) {
 
     $scope.bindings = [];      // The results fetched: the bindings found
     $scope.properties = [];    // The results fetched: the properties mined
+
+
+    $scope.$watch("uploadOrText", function (value, old) {
+        if (value == "upload") {
+            $("#inputText").attr("disabled", true);
+            $("#file").removeAttr("disabled");
+        }
+        else {
+            $("#file").attr("disabled", true);
+            $("#inputText").removeAttr("disabled");
+        }
+    });
 
     $scope.addCommonProp = function () {
         var commonProp = $scope.commonPropSelected + " -l";

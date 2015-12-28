@@ -99,18 +99,6 @@
                       onsubmit="return false">
                     <h4>Upload a file or paste your log below</h4>
                     <br/>
-
-                    <div class="row">
-                        <div class="col-md-1">
-                            <input type="radio" ng-model="uploadOrText" name="uploadOrText" value="upload"/>
-                        </div>
-                        <div class="col-md-11">
-                            <input type="file" name="file" id="file"/>
-                        </div>
-                    </div>
-
-                    <br/>
-
                     <div class="row">
                         <div class="col-md-1">
                             <input type="radio" ng-model="uploadOrText" name="uploadOrText" value="text"
@@ -119,6 +107,16 @@
                         <div class="col-md-11">
                             <textarea id="inputText" class="form-control input-lg" ng-model="text"
                                       placeholder="Log"></textarea>
+                        </div>
+                    </div>
+
+                    <br/>
+                    <div class="row">
+                        <div class="col-md-1">
+                            <input type="radio" ng-model="uploadOrText" name="uploadOrText" value="upload"/>
+                        </div>
+                        <div class="col-md-11">
+                            <input type="file" name="file" id="file" file-input="file" on-change="fileChange()"/>
                         </div>
                     </div>
 
