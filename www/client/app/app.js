@@ -16,7 +16,7 @@ var texada = angular.module('texadaApp', [/*
  }]);*/
 
 texada.controller("TexadaHomeCtrl", function ($scope) {
-    //$scope.ltl = "-f 'G(x->XFy)' -l";    // The LTL property to be mined
+    $scope.ltl = "-f 'G(x->XFy)' -l";    // The LTL property to be mined
     $scope.text = "a\nb\nc\n--\nb\nb\nc\na\n--\nc\na\nb\nc\n--";   // The log/data to mine
 
     $scope.uploadOrText = "text";
@@ -129,6 +129,67 @@ texada.controller("TexadaHomeCtrl", function ($scope) {
     $scope.bindings = [];      // The results fetched: the bindings found
     $scope.properties = [];    // The results fetched: the properties mined
 
+    $scope.$watch("ltl", function (value, old) {
+        if (value.length < 1) {
+            $("#mineButton").attr("disabled", true);
+        }
+        else {
+            if ($scope.uploadOrText == "upload") {
+                var uploadValue = $("#file").val();
+                if (uploadValue.length > 0) {
+                    $("#mineButton").removeAttr("disabled");
+                }
+            }
+            else {
+                if ($scope.text.length > 0) {
+                    $("#mineButton").removeAttr("disabled");
+                }
+            }
+        }
+    });
+
+    $scope.$watch("text", function (value, old) {
+        if ($scope.uploadOrText != "upload") {
+            if (value.length < 1) {
+                $("#mineButton").attr("disabled", true);
+            }
+            else if ($scope.ltl.length > 0) {
+                $("#mineButton").removeAttr("disabled");
+            }
+        }
+
+    });
+
+    $scope.$watch("uploadOrText", function (value, old) {
+        var uploadValue = $("#file").val();
+        var logValue = $scope.text;
+
+        if (value == "upload") {
+            $("#inputText").attr("disabled", true);
+            $("#file").removeAttr("disabled");
+
+            if (uploadValue.length < 1) {
+                $("#mineButton").attr("disabled", true);
+            }
+            else {
+                $("#mineButton").removeAttr("disabled");
+            }
+        }
+        else {
+            $("#file").attr("disabled", true);
+            $("#inputText").removeAttr("disabled");
+            if (logValue.length < 1) {
+                $("#mineButton").attr("disabled", true);
+            }
+            else {
+                $("#mineButton").removeAttr("disabled");
+            }
+        }
+        if ($scope.ltl.length < 1) {
+            $("#mineButton").attr("disabled", true);
+        }
+    });
+
     $scope.addCommonProp = function () {
         var commonProp = $scope.commonPropSelected + " -l";
         $scope.ltl = commonProp;
@@ -195,7 +256,7 @@ texada.controller("TexadaHomeCtrl", function ($scope) {
                 p++;
             }
         }
-
+        $("#outputBtn").css({display: "block"});
         $scope.$apply();
         $("#outputBtn").click();
 
@@ -255,6 +316,13 @@ $(document).ready(function () {
 // Functions
 function showErrorModal(msg) {
     $("#errorModal").modal();
+}
+
+// Called when file is selected
+function fileChange() {
+    if ($("#argumentsText").val().length > 0) {
+        $("#mineButton").removeAttr("disabled");
+    }
 }
 
 /*
