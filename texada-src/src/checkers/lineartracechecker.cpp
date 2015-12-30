@@ -72,6 +72,9 @@ statistic linear_trace_checker::until_check(const spot::ltl::binop* node,
     const spot::ltl::formula * p = node->first();
     const spot::ltl::formula * q = node->second();
 
+    
+    // recursive version
+    /*
     statistic stat_p;
     statistic stat_q;
 
@@ -92,7 +95,30 @@ statistic linear_trace_checker::until_check(const spot::ltl::binop* node,
     // if !q and p holds, check on the next suffix trace
     else {
         return statistic(stat_p, this->until_check(node, trace_pt + 1));
+    }*/
+    
+    // iterative version 
+    
+    statistic cur_stat_p;
+    statistic cur_stat_q;
+    statistic ret_stat = statistic(true, 0, 0);
+    
+    while (!trace_pt->is_terminal()){
+      if ((cur_stat_q = this->check(q, trace_pt)).is_satisfied){
+        return statistic(cur_stat_q,ret_stat);
+      }
+      else if (is_short_circuiting(cur_stat_p = this->check(p, trace_pt))) {
+        return statistic(cur_stat_p,ret_stat);
+      } else {
+        ret_stat = statistic(cur_stat_p, ret_stat);
+        trace_pt++;
+      }
+
     }
+    
+    // Dennis is not entirely sure about this base case (see above)
+    return statistic(ret_stat, statistic(false, 0, 1)); 
+    
 }
 
 /**
@@ -106,7 +132,7 @@ statistic linear_trace_checker::release_check(const spot::ltl::binop* node,
         const event* trace_pt, std::set<int> trace_ids) {
     const spot::ltl::formula * p = node->first();
     const spot::ltl::formula * q = node->second();
-
+/*
     statistic stat_p;
     statistic stat_q;
 
@@ -130,6 +156,28 @@ statistic linear_trace_checker::release_check(const spot::ltl::binop* node,
     else {
         return statistic(stat_q, this->release_check(node, trace_pt + 1));
     }
+    */
+    // iterative version
+        
+    statistic cur_stat_p;
+    statistic cur_stat_q;
+    statistic ret_stat = statistic(true, 0, 0);
+    
+    while (!trace_pt->is_terminal()){
+      if (is_short_circuiting(cur_stat_q = this->check(q, trace_pt))){
+        return statistic(cur_stat_q,ret_stat);
+      }
+      else if ((cur_stat_p = this->check(p, trace_pt)).is_satisfied){
+        return statistic(cur_stat_q,ret_stat);
+      } else {
+        ret_stat = statistic(cur_stat_q, ret_stat);
+        trace_pt++;
+      }
+
+    }
+    
+    // Dennis is not entirely sure about this base case (see above)
+    return statistic(ret_stat, statistic(true, 0, 0)); 
 
 }
 
@@ -145,6 +193,8 @@ statistic linear_trace_checker::strongrelease_check(const spot::ltl::binop* node
     const spot::ltl::formula * p = node->first();
     const spot::ltl::formula * q = node->second();
 
+    /*
+    //recursive version
     statistic stat_p;
     statistic stat_q;
 
@@ -166,7 +216,28 @@ statistic linear_trace_checker::strongrelease_check(const spot::ltl::binop* node
     // if the q holds, check on the next suffix trace
     else {
         return statistic(stat_q, this->strongrelease_check(node, trace_pt + 1));
+    }*/
+    
+    // iterative version
+        
+    statistic cur_stat_p;
+    statistic cur_stat_q;
+    statistic ret_stat = statistic(true, 0, 0);
+    
+    while (!trace_pt->is_terminal()){
+      if (is_short_circuiting(cur_stat_q = this->check(q, trace_pt))){
+        return statistic(cur_stat_q,ret_stat);
+      }
+      else if ((cur_stat_p = this->check(p, trace_pt)).is_satisfied){
+        return statistic(statistic(cur_stat_q, cur_stat_p), ret_stat);
+      } else {
+        ret_stat = statistic(cur_stat_q, ret_stat);
+        trace_pt++;
+      }
+
     }
+    
+    return statistic(ret_stat, statistic(false, 0, 1)); 
 
 }
 
@@ -182,6 +253,8 @@ statistic linear_trace_checker::weakuntil_check(const spot::ltl::binop* node,
     const spot::ltl::formula * p = node->first();
     const spot::ltl::formula * q = node->second();
 
+    // recursive version
+    /*
     statistic stat_p;
     statistic stat_q;
 
@@ -203,6 +276,26 @@ statistic linear_trace_checker::weakuntil_check(const spot::ltl::binop* node,
     else {
         return statistic(stat_p, this->weakuntil_check(node, trace_pt + 1, trace_ids));
     }
+    */
+    
+    // iterative version
+    statistic cur_stat_p;
+    statistic cur_stat_q;
+    statistic ret_stat = statistic(true, 0, 0);
+    
+    while (!trace_pt->is_terminal()){
+      if ((cur_stat_q = this->check(q, trace_pt)).is_satisfied){
+        return statistic(statistic(true,0,0),ret_stat);
+      }
+      else if (is_short_circuiting(cur_stat_p = this->check(p, trace_pt))) {
+        return statistic(cur_stat_p,ret_stat);
+      } else {
+        ret_stat = statistic(cur_stat_p, ret_stat);
+        trace_pt++;
+      }
+
+    }
+    return statistic(ret_stat, statistic(true, 0, 0)); 
 
 
 }
