@@ -210,6 +210,7 @@ statistic linear_trace_checker::weakuntil_check(const spot::ltl::binop* node,
 
 /**
  * Gp will be true if Gp is true on every trace suffix of the given
+ 
  * trace, i.e. if p holds at all time
  * @param node: the atomic proposition to check
  * @param trace: pointer to the start of the trace
@@ -220,6 +221,7 @@ statistic linear_trace_checker::globally_check(const spot::ltl::unop* node,
         const event* trace_pt, std::set<int> trace_ids) {
     const spot::ltl::formula * p = node->child();
 
+    /*
     statistic stat_p;
 
     // base case: if we're at END_VAR, return true to not effect &&
@@ -232,6 +234,23 @@ statistic linear_trace_checker::globally_check(const spot::ltl::unop* node,
         // all subsequent traces.
         return statistic(stat_p, this->globally_check(node, trace_pt + 1, trace_ids));
     }
+    */
+    // iterative version
+    statistic cur_stat;
+    statistic ret_stat = statistic(true,0,0);
+    
+    while (!trace_pt->is_terminal()){
+      if (is_short_circuiting (cur_stat = this->check(p, trace_pt))){
+        return statistic(cur_stat, ret_stat);
+      }
+      else {
+        ret_stat = statistic(cur_stat, ret_stat);
+      }
+      trace_pt++;
+    }
+    
+    return ret_stat;
+    
 }
 
 
@@ -247,7 +266,7 @@ statistic linear_trace_checker::finally_check(const spot::ltl::unop* node,
         const event* trace_pt, std::set<int> trace_ids) {
     const spot::ltl::formula * p = node->child();
 
-    statistic stat_p;
+    /*statistic stat_p;
 
     // base case: if we're at END_VAR, return false to not effect ||
     if (trace_pt->is_terminal()) {
@@ -258,7 +277,22 @@ statistic linear_trace_checker::finally_check(const spot::ltl::unop* node,
         //Return whether subformula is true on this trace, recursive check on
         // all subsequent traces.
         return this->finally_check(node, trace_pt+1, trace_ids);
+    }*/
+    
+    // TODO: why not combine the support, support pot here? (like in globally)
+    
+    statistic cur_stat;
+   // statistic ret_stat = statistic(true, 0, 0);
+    while (!trace_pt->is_terminal()){
+      if ((cur_stat = this->check(p,trace_pt)).is_satisfied){
+        return cur_stat;
+      }
+      else {
+        trace_pt++;
+      }      
     }
+    
+    return statistic(false,0,1);
 }
 
 
