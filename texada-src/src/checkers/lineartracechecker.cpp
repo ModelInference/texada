@@ -71,28 +71,26 @@ statistic linear_trace_checker::until_check(const spot::ltl::binop* node,
         const event* trace_pt, std::set<int> trace_ids) {
     const spot::ltl::formula * p = node->first();
     const spot::ltl::formula * q = node->second();
-
-    statistic stat_p;
-    statistic stat_q;
-
-    //if we get here, we did not see q: thus, false
-    if (trace_pt->is_terminal()) {
-        return statistic(false, 0, 1);  // Dennis: not entirely sure about this
+    
+    statistic cur_stat_p;
+    statistic cur_stat_q;
+    statistic ret_stat = statistic(true, 0, 0);
+    
+    while (!trace_pt->is_terminal()){
+      if ((cur_stat_q = this->check(q, trace_pt)).is_satisfied){
+        return statistic(cur_stat_q,ret_stat);
+      }
+      else if (is_short_circuiting(cur_stat_p = this->check(p, trace_pt))) {
+        return statistic(cur_stat_p,ret_stat);
+      } else {
+        ret_stat = statistic(cur_stat_p, ret_stat);
+        trace_pt++;
+      }
     }
-    // if the q holds here, we have not yet seen q or !p, (these
-    //  cause return) so true
-    else if ((stat_q = this->check(q, trace_pt)).is_satisfied) {
-        return stat_q;
-    }
-    // we know q does not hold from above, so if p does not hold,
-    // we have !p and !q, which violates p U q.
-    else if (is_short_circuiting(stat_p = this->check(p, trace_pt))) {
-        return stat_p;
-    }
-    // if !q and p holds, check on the next suffix trace
-    else {
-        return statistic(stat_p, this->until_check(node, trace_pt + 1));
-    }
+    
+    // Dennis is not entirely sure about this base case (see above)
+    return statistic(ret_stat, statistic(false, 0, 1)); 
+    
 }
 
 /**
@@ -107,29 +105,24 @@ statistic linear_trace_checker::release_check(const spot::ltl::binop* node,
     const spot::ltl::formula * p = node->first();
     const spot::ltl::formula * q = node->second();
 
-    statistic stat_p;
-    statistic stat_q;
-
-    //if we get here, q always held: true
-    if (trace_pt->is_terminal()) {
-        return statistic(true, 0, 0);   // Dennis: not entirely sure about this
+    statistic cur_stat_p;
+    statistic cur_stat_q;
+    statistic ret_stat = statistic(true, 0, 0);
+    
+    while (!trace_pt->is_terminal()){
+      if (is_short_circuiting(cur_stat_q = this->check(q, trace_pt))){
+        return statistic(cur_stat_q,ret_stat);
+      }
+      else if ((cur_stat_p = this->check(p, trace_pt)).is_satisfied){
+        return statistic(cur_stat_q,ret_stat);
+      } else {
+        ret_stat = statistic(cur_stat_q, ret_stat);
+        trace_pt++;
+      }
     }
-
-    // if !q occurs before p & q, false
-    else if (is_short_circuiting(stat_q = this->check(q, trace_pt))) {
-        return stat_q;
-    }
-
-    // we know from the previous if that q holds and held up to here,
-    // so if p also holds, return true
-    else if ((stat_p = this->check(p, trace_pt)).is_satisfied) {
-        return stat_q;
-    }
-
-    // if the q holds, check on the next suffix trace
-    else {
-        return statistic(stat_q, this->release_check(node, trace_pt + 1));
-    }
+    
+    // Dennis is not entirely sure about this base case (see above)
+    return statistic(ret_stat, statistic(true, 0, 0)); 
 
 }
 
@@ -144,29 +137,24 @@ statistic linear_trace_checker::strongrelease_check(const spot::ltl::binop* node
         const event* trace_pt, std::set<int> trace_ids) {
     const spot::ltl::formula * p = node->first();
     const spot::ltl::formula * q = node->second();
-
-    statistic stat_p;
-    statistic stat_q;
-
-    //if we get here, q always held, p never occurred: false
-    if (trace_pt->is_terminal()) {
-        return statistic(false, 0, 1);
+        
+    statistic cur_stat_p;
+    statistic cur_stat_q;
+    statistic ret_stat = statistic(true, 0, 0);
+    
+    while (!trace_pt->is_terminal()){
+      if (is_short_circuiting(cur_stat_q = this->check(q, trace_pt))){
+        return statistic(cur_stat_q,ret_stat);
+      }
+      else if ((cur_stat_p = this->check(p, trace_pt)).is_satisfied){
+        return statistic(statistic(cur_stat_q, cur_stat_p), ret_stat);
+      } else {
+        ret_stat = statistic(cur_stat_q, ret_stat);
+        trace_pt++;
+      }
     }
-    // if !q occurs before p & q, false
-    else if (is_short_circuiting(stat_q = this->check(q, trace_pt))) {
-        return stat_q;
-    }
-
-    // we know from the previous if that q holds and held up to here,
-    // so if p also holds, return true
-    else if ((stat_p = this->check(p, trace_pt)).is_satisfied) {
-        return statistic(stat_q, stat_p);
-    }
-
-    // if the q holds, check on the next suffix trace
-    else {
-        return statistic(stat_q, this->strongrelease_check(node, trace_pt + 1));
-    }
+    
+    return statistic(ret_stat, statistic(false, 0, 1)); 
 
 }
 
@@ -182,27 +170,23 @@ statistic linear_trace_checker::weakuntil_check(const spot::ltl::binop* node,
     const spot::ltl::formula * p = node->first();
     const spot::ltl::formula * q = node->second();
 
-    statistic stat_p;
-    statistic stat_q;
+    statistic cur_stat_p;
+    statistic cur_stat_q;
+    statistic ret_stat = statistic(true, 0, 0);
+    
+    while (!trace_pt->is_terminal()){
+      if ((cur_stat_q = this->check(q, trace_pt)).is_satisfied){
+        return statistic(statistic(true, 0, 0),ret_stat);
+      }
+      else if (is_short_circuiting(cur_stat_p = this->check(p, trace_pt))) {
+        return statistic(cur_stat_p,ret_stat);
+      } else {
+        ret_stat = statistic(cur_stat_p, ret_stat);
+        trace_pt++;
+      }
 
-    //if we get here, we did not see q or !p, so true.
-    if (trace_pt->is_terminal()) {
-        return statistic(true, 0, 0);
     }
-    // if the q holds here, we have not yet seen q or !p, (these
-    //  cause return) so true
-    else if ((stat_q = this->check(q, trace_pt)).is_satisfied) {
-        return statistic(true, 0, 0);
-    }
-    // we know q does not hold from above, so if p does not hold,
-    // we have !p and !q, which violates p U q.
-    else if (is_short_circuiting(stat_p = this->check(p, trace_pt))) {
-        return stat_p;
-    }
-    // if !q and p holds, check on the next suffix trace
-    else {
-        return statistic(stat_p, this->weakuntil_check(node, trace_pt + 1, trace_ids));
-    }
+    return statistic(ret_stat, statistic(true, 0, 0)); 
 
 
 }
@@ -210,6 +194,7 @@ statistic linear_trace_checker::weakuntil_check(const spot::ltl::binop* node,
 
 /**
  * Gp will be true if Gp is true on every trace suffix of the given
+ 
  * trace, i.e. if p holds at all time
  * @param node: the atomic proposition to check
  * @param trace: pointer to the start of the trace
@@ -220,18 +205,21 @@ statistic linear_trace_checker::globally_check(const spot::ltl::unop* node,
         const event* trace_pt, std::set<int> trace_ids) {
     const spot::ltl::formula * p = node->child();
 
-    statistic stat_p;
-
-    // base case: if we're at END_VAR, return true to not effect &&
-    if (trace_pt->is_terminal()) {
-        return statistic(true, 0, 0);
-    } else if (is_short_circuiting(stat_p = this->check(p, trace_pt))) {
-        return stat_p;
-    } else {
-        // Return whether subformula is true on this trace, recursive check on
-        // all subsequent traces.
-        return statistic(stat_p, this->globally_check(node, trace_pt + 1, trace_ids));
+    statistic cur_stat;
+    statistic ret_stat = statistic(true,0,0);
+    
+    while (!trace_pt->is_terminal()){
+      if (is_short_circuiting (cur_stat = this->check(p, trace_pt))){
+        return statistic(cur_stat, ret_stat);
+      }
+      else {
+        ret_stat = statistic(cur_stat, ret_stat);
+      }
+      trace_pt++;
     }
+    
+    return ret_stat;
+    
 }
 
 
@@ -247,18 +235,19 @@ statistic linear_trace_checker::finally_check(const spot::ltl::unop* node,
         const event* trace_pt, std::set<int> trace_ids) {
     const spot::ltl::formula * p = node->child();
 
-    statistic stat_p;
-
-    // base case: if we're at END_VAR, return false to not effect ||
-    if (trace_pt->is_terminal()) {
-        return statistic(false, 0, 1);
-    } else if ((stat_p = this->check(p, trace_pt)).is_satisfied) {
-        return stat_p;
-    } else {
-        //Return whether subformula is true on this trace, recursive check on
-        // all subsequent traces.
-        return this->finally_check(node, trace_pt+1, trace_ids);
+    // TODO: why not combine the support, support pot here? (like in globally)
+    
+    statistic cur_stat;
+    while (!trace_pt->is_terminal()){
+      if ((cur_stat = this->check(p,trace_pt)).is_satisfied){
+        return cur_stat;
+      }
+      else {
+        trace_pt++;
+      }      
     }
+    
+    return statistic(false,0,1);
 }
 
 
