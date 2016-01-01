@@ -53,7 +53,7 @@ private:
         map<string,string> relevant_instants;
         interval intvl;
         bool operator==(const memoization_key other) const {
-            return (formula == other.formula && intvl == other.intvl);
+            return (formula == other.formula && intvl == other.intvl && relevant_instants == other.relevant_instants);
         }
     };
 
