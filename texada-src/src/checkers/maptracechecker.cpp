@@ -348,9 +348,8 @@ statistic map_trace_checker::finally_check(const spot::ltl::unop* node,
 statistic map_trace_checker::next_check(const spot::ltl::unop* node, interval intvl,
         std::set<int> trace_ids) {
     const spot::ltl::formula* p = node->child();
-    // if the start and end of the interval are at the same place,
-    // the next event is the terminal: check there
-    if (intvl.start == intvl.end) {
+    // if we are starting at last event, next event is terminal and check there.
+    if (intvl.start == terminal_pos -1) {
         intvl.start = terminal_pos;
         intvl.end = terminal_pos;
         return this->check(p, intvl);
@@ -1021,7 +1020,7 @@ long map_trace_checker::find_first_occurrence(const spot::ltl::binop* node,
         // find first q on extended interval
         long first_occ_first = find_first_occurrence(node->first(), temp);
         long last_occ_neg_second;
-        // if q never occurs, q R p can still hold in !p never occurs on
+        // if q never occurs, q R p can still hold if !p never occurs on
         // the entire interval
         if (first_occ_first == -1) {
             // create and first last !p on extended interval
@@ -1428,7 +1427,7 @@ long map_trace_checker::find_last_occurrence(const spot::ltl::unop* node,
         temp.start = intvl.start;
         temp.end = terminal_pos - 1;
         // find last p
-        long last_occ_child = find_last_occurrence(node->child(), intvl);
+        long last_occ_child = find_last_occurrence(node->child(), temp);
         // is the last occurrence is out of range, the last Fp
         // is at the end of intvl
         if (last_occ_child > intvl.end)
