@@ -87,11 +87,6 @@ vector<vector<std::pair<std::map<std::string, std::string>, texada::statistic>>>
     bool pregen_instants = opts.count("pregen-instants");
 
     /*
-     * Begin: Focus for code review Oct 22, 2014
-     */
-
-
-    /*
      * Setting support, support-potential, and confidence thresholds.
      * By default: sup_threshold = 0; sup_pot_threshold = 0; conf_threshold = 1.00
      */
@@ -147,9 +142,9 @@ vector<vector<std::pair<std::map<std::string, std::string>, texada::statistic>>>
 
     // if any constant events are specified in command line,
     // take these into count
-    vector<string> specified_formula_events;
+    vector<string> constant_events;
     if (opts.count("event")) {
-        specified_formula_events = opts["event"].as<vector<string>>();
+        constant_events = opts["event"].as<vector<string>>();
     }
 
     //parse the ltl formulas
@@ -193,13 +188,11 @@ vector<vector<std::pair<std::map<std::string, std::string>, texada::statistic>>>
     parser->parse(infile);
 
     shared_ptr<set<string>> event_set = parser->return_props();
-    // if we don't want repetition and there are already events
-    // in the formula, we can just exclude them from the event set
-    // to start with
-    if (!allow_reps && (specified_formula_events.size() > 0)) {
-        for (unsigned int i = 0; i < specified_formula_events.size(); i++) {
-            event_set->erase(specified_formula_events.at(i));
-        }
+
+    // make different set of events to exclude for each formula
+    vector<vector<string>> exclude_event_sets;
+    for (unsigned int i = 0; i < formulae.size(); i++){
+        exclude_event_sets.push_back(vector<string>());
     }
 
     // create the set of formulas' variables
@@ -209,70 +202,96 @@ vector<vector<std::pair<std::map<std::string, std::string>, texada::statistic>>>
         variable_vec.push_back(shared_ptr<spot::ltl::atomic_prop_set>(spot::ltl::atomic_prop_collect(formulae[i])));
     }
 
-    for (unsigned int i = 0; i <variable_vec.size(); i++){
-    // remove variables which are specified as constant events
-    if (specified_formula_events.size() > 0) {
-        spot::ltl::atomic_prop_set::iterator it = variable_vec[i]->begin();
-        while (it != variable_vec[i]->end()) {
-            bool erase = false;
-            for (unsigned int i = 0; i < specified_formula_events.size(); i++) {
-                if ((*it)->name() == specified_formula_events.at(i)) {
-                    erase = true;
+    // add events which should be removed from the event set for each formula
+    if (!allow_reps && (constant_events.size() > 0)) {
+        // loop through the constant events
+        for (int i = constant_events.size() - 1; i >= 0; i--) {
+            // loop through each formula
+            for (unsigned int j = 0; j < formulae.size(); j++){
+                // loop through variables for each formula
+                for (set<const spot::ltl::atomic_prop*>::iterator it = variable_vec[j]->begin();
+                        it != variable_vec[j]->end(); it++){
+                    // add variable to events to be excluded if it appears in the formula
+                    if ((*it)->name() == constant_events[i]){
+                        exclude_event_sets[j].push_back(constant_events[i]);
+                        break;
+                    }
                 }
-            }
-            if (erase) {
-                spot::ltl::atomic_prop_set::iterator toErase = it;
-                ++it;
-                variable_vec[i]->erase(toErase);
-            } else {
-                ++it;
             }
         }
     }
+
+
+    // remove variables which are specified as constant events
+    for (unsigned int i = 0; i <variable_vec.size(); i++){
+        if (constant_events.size() > 0) {
+            spot::ltl::atomic_prop_set::iterator it = variable_vec[i]->begin();
+            while (it != variable_vec[i]->end()) {
+                bool erase = false;
+                for (unsigned int i = 0; i < constant_events.size(); i++) {
+                    if ((*it)->name() == constant_events.at(i)) {
+                        erase = true;
+                    }
+                }
+                if (erase) {
+                    spot::ltl::atomic_prop_set::iterator toErase = it;
+                    ++it;
+                    variable_vec[i]->erase(toErase);
+                } else {
+                    ++it;
+                }
+            }
+        }
     }
 
-    // create the instantiators
-    vector<instants_pool_creator *> instantiators;
-
-    for (unsigned int i = 0; i < variable_vec.size(); i++){
-
-    if (variable_vec[i]->empty()) {
-        instantiators.push_back(new const_instants_pool(formulae[i]));
-    } else if (pregen_instants) {
-        instantiators.push_back(new pregen_instants_pool(event_set, variable_vec[i],
-                allow_reps, specified_formula_events));
-    } else {
-        instantiators.push_back(new otf_instants_pool(event_set,  variable_vec[i], allow_reps,
-                specified_formula_events));
-    }
-    }
-
-
+    // create the instantiator
+    instants_pool_creator * instantiator;
+    // check everything
     vector<vector<std::pair<std::map<std::string, std::string>, texada::statistic>>> valid_instants_vec;
- //   clock_t t;
-   // t = clock();
     for (unsigned int i = 0; i < formulae.size(); i++){
-    // check all valid instantiations on each trace
-    if (use_lin) {
-        shared_ptr<std::multiset<vector<event> >> vector_trace_set =
-                dynamic_cast<linear_parser*>(parser)->return_vec_trace();
-        valid_instants_vec.push_back(valid_instants_on_traces(formulae[i], instantiators[i],
-                vector_trace_set, c_settings, use_invariant_semantics, translations));
-    } else if (use_map) {
-        shared_ptr<set<map<event, vector<long>>> > map_trace_set = dynamic_cast<map_parser*>(parser)->return_map_trace();
-        valid_instants_vec.push_back(valid_instants_on_traces(formulae[i], instantiators[i],
-                map_trace_set, use_invariant_semantics, translations));
-    } else if (use_pretree) {
-        shared_ptr<prefix_tree> prefix_tree_traces = dynamic_cast<prefix_tree_parser*>(parser)->return_prefix_trees();
-        valid_instants_vec.push_back(valid_instants_on_traces(formulae[i], instantiators[i],
-                prefix_tree_traces, use_invariant_semantics, translations));
-    }
-    }
+        // remove events to be excluded for this formula, if any
+        for (unsigned int j = 0; j < exclude_event_sets[i].size(); j++){
+            event_set->erase(exclude_event_sets[i].at(j));
+        }
+
+        // create the instantiators
+        if (variable_vec[i]->empty()) {
+            instantiator = new const_instants_pool(formulae[i]);
+        } else if (pregen_instants) {
+            instantiator = new pregen_instants_pool(event_set, variable_vec[i],
+                    allow_reps, constant_events);
+        } else {
+            instantiator = new otf_instants_pool(event_set,  variable_vec[i], allow_reps,
+                    constant_events);
+        }
+
+        // check all valid instantiations on each trace
+        if (use_lin) {
+            shared_ptr<std::multiset<vector<event> >> vector_trace_set =
+                    dynamic_cast<linear_parser*>(parser)->return_vec_trace();
+            valid_instants_vec.push_back(valid_instants_on_traces(formulae[i], instantiator,
+                    vector_trace_set, c_settings, use_invariant_semantics, translations));
+        } else if (use_map) {
+            shared_ptr<set<map<event, vector<long>>> > map_trace_set = dynamic_cast<map_parser*>(parser)->return_map_trace();
+            valid_instants_vec.push_back(valid_instants_on_traces(formulae[i], instantiator,
+                    map_trace_set, use_invariant_semantics, translations));
+        } else if (use_pretree) {
+            shared_ptr<prefix_tree> prefix_tree_traces = dynamic_cast<prefix_tree_parser*>(parser)->return_prefix_trees();
+            valid_instants_vec.push_back(valid_instants_on_traces(formulae[i], instantiator,
+                    prefix_tree_traces, use_invariant_semantics, translations));
+        }
+
+        // delete instantiator
+        delete instantiator;
+
+        // restore events that were excluded for this formula
+        for (unsigned int j = 0; j < exclude_event_sets[i].size(); j++){
+            event_set->insert(exclude_event_sets[i].at(j));
+        }
+
+       }
 
 
-    for (int i = instantiators.size() -1 ; i >= 0 ; i--) {
-        delete instantiators[i];
-    }
     delete parser;
     for (int i = formulae.size() - 1 ; i >= 0; i--){
         formulae[i]->destroy();

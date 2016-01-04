@@ -281,6 +281,7 @@ int main(int ac, char* av[]) {
         }
         std::vector<std::string> specified_formula_events = std::vector<
                 std::string>();
+
         for (int i = 0; i < prop_types.size(); i++) {
             for (std::set<std::string>::iterator it = aps_vec[i].begin();
                     it != aps_vec[i].end(); it++) {
