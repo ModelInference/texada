@@ -244,24 +244,45 @@ vector<vector<std::pair<std::map<std::string, std::string>, texada::statistic>>>
         }
     }
 
-    // create the instantiators for each formula
-    vector<instants_pool_creator *> instantiators;
-    for (unsigned int i = 0; i < variable_vec.size(); i++){
+    // create the instantiator
+    instants_pool_creator * instantiator;
+    // check everything
+    vector<vector<std::pair<std::map<std::string, std::string>, texada::statistic>>> valid_instants_vec;
+    for (unsigned int i = 0; i < formulae.size(); i++){
         // remove events to be excluded for this formula, if any
         for (unsigned int j = 0; j < exclude_event_sets[i].size(); j++){
-            std::cout << "erasing " << exclude_event_sets[i].at(j) << "\n";
             event_set->erase(exclude_event_sets[i].at(j));
         }
 
+        // create the instantiators
         if (variable_vec[i]->empty()) {
-            instantiators.push_back(new const_instants_pool(formulae[i]));
+            instantiator = new const_instants_pool(formulae[i]);
         } else if (pregen_instants) {
-            instantiators.push_back(new pregen_instants_pool(event_set, variable_vec[i],
-                    allow_reps, constant_events));
+            instantiator = new pregen_instants_pool(event_set, variable_vec[i],
+                    allow_reps, constant_events);
         } else {
-            instantiators.push_back(new otf_instants_pool(event_set,  variable_vec[i], allow_reps,
-                    constant_events));
+            instantiator = new otf_instants_pool(event_set,  variable_vec[i], allow_reps,
+                    constant_events);
         }
+
+        // check all valid instantiations on each trace
+        if (use_lin) {
+            shared_ptr<std::multiset<vector<event> >> vector_trace_set =
+                    dynamic_cast<linear_parser*>(parser)->return_vec_trace();
+            valid_instants_vec.push_back(valid_instants_on_traces(formulae[i], instantiator,
+                    vector_trace_set, c_settings, use_invariant_semantics, translations));
+        } else if (use_map) {
+            shared_ptr<set<map<event, vector<long>>> > map_trace_set = dynamic_cast<map_parser*>(parser)->return_map_trace();
+            valid_instants_vec.push_back(valid_instants_on_traces(formulae[i], instantiator,
+                    map_trace_set, use_invariant_semantics, translations));
+        } else if (use_pretree) {
+            shared_ptr<prefix_tree> prefix_tree_traces = dynamic_cast<prefix_tree_parser*>(parser)->return_prefix_trees();
+            valid_instants_vec.push_back(valid_instants_on_traces(formulae[i], instantiator,
+                    prefix_tree_traces, use_invariant_semantics, translations));
+        }
+
+        // delete instantiator
+        delete instantiator;
 
         // restore events that were excluded for this formula
         for (unsigned int j = 0; j < exclude_event_sets[i].size(); j++){
@@ -271,34 +292,6 @@ vector<vector<std::pair<std::map<std::string, std::string>, texada::statistic>>>
        }
 
 
-    vector<vector<std::pair<std::map<std::string, std::string>, texada::statistic>>> valid_instants_vec;
-
-    for (unsigned int i = 0; i < formulae.size(); i++){
-    // check all valid instantiations on each trace
-    if (use_lin) {
-        shared_ptr<std::multiset<vector<event> >> vector_trace_set =
-                dynamic_cast<linear_parser*>(parser)->return_vec_trace();
-        valid_instants_vec.push_back(valid_instants_on_traces(formulae[i], instantiators[i],
-                vector_trace_set, c_settings, use_invariant_semantics, translations));
-    } else if (use_map) {
-        shared_ptr<set<map<event, vector<long>>> > map_trace_set = dynamic_cast<map_parser*>(parser)->return_map_trace();
-        valid_instants_vec.push_back(valid_instants_on_traces(formulae[i], instantiators[i],
-                map_trace_set, use_invariant_semantics, translations));
-    } else if (use_pretree) {
-        shared_ptr<prefix_tree> prefix_tree_traces = dynamic_cast<prefix_tree_parser*>(parser)->return_prefix_trees();
-        valid_instants_vec.push_back(valid_instants_on_traces(formulae[i], instantiators[i],
-                prefix_tree_traces, use_invariant_semantics, translations));
-    }
-    }
-
-    for (int i = 0; i < valid_instants_vec.size(); i++){
-        std::cout << valid_instants_vec[i].size() << "\n";
-    }
-
-
-    for (int i = instantiators.size() -1 ; i >= 0 ; i--) {
-        delete instantiators[i];
-    }
     delete parser;
     for (int i = formulae.size() - 1 ; i >= 0; i--){
         formulae[i]->destroy();

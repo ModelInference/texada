@@ -619,11 +619,9 @@ TEST(CheckerEquivalencyTest, DISABLED_STprecedesPafterQ) {
 
 
     // check that the valid instantiations contain the one created above
-    bool contains_instated_form = false;
     for (std::vector<std::pair<std::map<std::string, std::string>, texada::statistic>>::iterator i = set1[0].begin();
             i != set1[0].end(); i++) {
         if (map_compare((*i).first, inst_map)) {
-            contains_instated_form = true;
             break;
         }
     }
