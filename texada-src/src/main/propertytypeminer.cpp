@@ -155,7 +155,7 @@ vector<vector<std::pair<std::map<std::string, std::string>, texada::statistic>>>
     //parse the ltl formulas
     spot::ltl::parse_error_list parse_errs;
     vector<const spot::ltl::formula *> formulae;
-    for (int i = 0; i < prop_types.size(); i++){
+    for (unsigned int i = 0; i < prop_types.size(); i++){
         formulae.push_back(spot::ltl::parse(prop_types[i], parse_errs));
         assert(parse_errs.size() == 0);
     }
@@ -197,7 +197,7 @@ vector<vector<std::pair<std::map<std::string, std::string>, texada::statistic>>>
     // in the formula, we can just exclude them from the event set
     // to start with
     if (!allow_reps && (specified_formula_events.size() > 0)) {
-        for (int i = 0; i < specified_formula_events.size(); i++) {
+        for (unsigned int i = 0; i < specified_formula_events.size(); i++) {
             event_set->erase(specified_formula_events.at(i));
         }
     }
@@ -205,17 +205,17 @@ vector<vector<std::pair<std::map<std::string, std::string>, texada::statistic>>>
     // create the set of formulas' variables
     vector<shared_ptr<spot::ltl::atomic_prop_set>> variable_vec;
 
-    for (int i = 0; i < formulae.size(); i++){
+    for (unsigned int i = 0; i < formulae.size(); i++){
         variable_vec.push_back(shared_ptr<spot::ltl::atomic_prop_set>(spot::ltl::atomic_prop_collect(formulae[i])));
     }
 
-    for (int i = 0; i <variable_vec.size(); i++){
+    for (unsigned int i = 0; i <variable_vec.size(); i++){
     // remove variables which are specified as constant events
     if (specified_formula_events.size() > 0) {
         spot::ltl::atomic_prop_set::iterator it = variable_vec[i]->begin();
         while (it != variable_vec[i]->end()) {
             bool erase = false;
-            for (int i = 0; i < specified_formula_events.size(); i++) {
+            for (unsigned int i = 0; i < specified_formula_events.size(); i++) {
                 if ((*it)->name() == specified_formula_events.at(i)) {
                     erase = true;
                 }
@@ -234,7 +234,7 @@ vector<vector<std::pair<std::map<std::string, std::string>, texada::statistic>>>
     // create the instantiators
     vector<instants_pool_creator *> instantiators;
 
-    for (int i = 0; i < variable_vec.size(); i++){
+    for (unsigned int i = 0; i < variable_vec.size(); i++){
 
     if (variable_vec[i]->empty()) {
         instantiators.push_back(new const_instants_pool(formulae[i]));
@@ -251,7 +251,7 @@ vector<vector<std::pair<std::map<std::string, std::string>, texada::statistic>>>
     vector<vector<std::pair<std::map<std::string, std::string>, texada::statistic>>> valid_instants_vec;
  //   clock_t t;
    // t = clock();
-    for (int i = 0; i < formulae.size(); i++){
+    for (unsigned int i = 0; i < formulae.size(); i++){
     // check all valid instantiations on each trace
     if (use_lin) {
         shared_ptr<std::multiset<vector<event> >> vector_trace_set =
@@ -268,11 +268,7 @@ vector<vector<std::pair<std::map<std::string, std::string>, texada::statistic>>>
                 prefix_tree_traces, use_invariant_semantics, translations));
     }
     }
-  //  t = clock() -t;
-  //  float secs = ((float) t)/CLOCKS_PER_SEC;
-  //  std::cout << "Took ";
-  //  std::cout << secs;
-  //  std::cout << "s to check.\n";
+
 
     for (int i = instantiators.size() -1 ; i >= 0 ; i--) {
         delete instantiators[i];
