@@ -192,14 +192,10 @@ vector<vector<std::pair<std::map<std::string, std::string>, texada::statistic>>>
     }
     parser->parse(infile);
 
-    shared_ptr<set<string>> event_set = parser->return_props();
-    // if we don't want repetition and there are already events
-    // in the formula, we can just exclude them from the event set
-    // to start with
-    if (!allow_reps && (specified_formula_events.size() > 0)) {
-        for (unsigned int i = 0; i < specified_formula_events.size(); i++) {
-            event_set->erase(specified_formula_events.at(i));
-        }
+    // make different event set for each formula
+    vector<shared_ptr<set<string>>> event_sets;
+    for (unsigned int i = 0; i < formulae.size(); i++){
+        event_sets.push_back(parser->return_props());
     }
 
     // create the set of formulas' variables
@@ -208,6 +204,28 @@ vector<vector<std::pair<std::map<std::string, std::string>, texada::statistic>>>
     for (unsigned int i = 0; i < formulae.size(); i++){
         variable_vec.push_back(shared_ptr<spot::ltl::atomic_prop_set>(spot::ltl::atomic_prop_collect(formulae[i])));
     }
+
+    // if we don't want repetition and there are already events
+    // in the formula, we can just exclude them from the event set
+    // to start with
+    if (!allow_reps && (specified_formula_events.size() > 0)) {
+        // loop through the constant events
+        for (unsigned int i = 0; i < specified_formula_events.size(); i++) {
+            // loop through each formula
+            for (unsigned int j = 0; j < formulae.size(); j++){
+                // loop through variables for each formula
+                for (set<const spot::ltl::atomic_prop*>::iterator it = variable_vec[j]->begin();
+                        it != variable_vec[j]->end(); it++){
+                    if ((*it)->name() == specified_formula_events[i]){
+                        event_sets[j]->erase(specified_formula_events.at(i));
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+
 
     for (unsigned int i = 0; i <variable_vec.size(); i++){
     // remove variables which are specified as constant events
@@ -239,10 +257,10 @@ vector<vector<std::pair<std::map<std::string, std::string>, texada::statistic>>>
     if (variable_vec[i]->empty()) {
         instantiators.push_back(new const_instants_pool(formulae[i]));
     } else if (pregen_instants) {
-        instantiators.push_back(new pregen_instants_pool(event_set, variable_vec[i],
+        instantiators.push_back(new pregen_instants_pool(event_sets[i], variable_vec[i],
                 allow_reps, specified_formula_events));
     } else {
-        instantiators.push_back(new otf_instants_pool(event_set,  variable_vec[i], allow_reps,
+        instantiators.push_back(new otf_instants_pool(event_sets[i],  variable_vec[i], allow_reps,
                 specified_formula_events));
     }
     }
