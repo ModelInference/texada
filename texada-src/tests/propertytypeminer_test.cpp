@@ -777,6 +777,41 @@ bool check_if_contains(std::map<std::string, std::string> map,
     return false;
 }
 
+TEST(PropertyTypeMinerTest, CheckerEquivalence){
+    if (getenv("TEXADA_HOME") == NULL) {
+        std::cerr << "Error: TEXADA_HOME is undefined. \n";
+        FAIL();
+    }
+    std::string texada_base = std::string(getenv("TEXADA_HOME"));
+
+    // find all valid instantiations of the property type
+    std::vector<std::vector<std::pair<std::map<std::string, std::string>, texada::statistic>>> setlin =
+            texada::mine_property_type(
+                    texada::set_options(
+                            "-l -f 'G (e5 U (G (e2 & X(<> e1) -> X(<> (e1 & <> e4)))))' -e 'e1' -e 'e2'  -e 'e4' -e 'e5' "
+                                        + texada_base
+                                        + "/traces/equivalency-tests/equivalency1.txt"));
+
+    std::vector<std::vector<std::pair<std::map<std::string, std::string>, texada::statistic>>> setmap =
+            texada::mine_property_type(
+                    texada::set_options(
+                            "-m -f 'G (e5 U (G (e2 & X(<> e1) -> X(<> (e1 & <> e4)))))' -e 'e1' -e 'e2'  -e 'e4' -e 'e5' "
+                                        + texada_base
+                                        + "/traces/equivalency-tests/equivalency1.txt"));
+
+    std::vector<std::vector<std::pair<std::map<std::string, std::string>, texada::statistic>>> setpre =
+            texada::mine_property_type(
+                    texada::set_options(
+                            "-l -f 'G (e5 U (G (e2 & X(<> e1) -> X(<> (e1 & <> e4)))))' -e 'e1' -e 'e2'  -e 'e4' -e 'e5' "
+                                        + texada_base
+                                        + "/traces/equivalency-tests/equivalency1.txt"));
+    // check that no instances are returned
+    ASSERT_EQ(setlin[0].size(),0);
+    ASSERT_EQ(setmap[0].size(),0);
+    ASSERT_EQ(setpre[0].size(),0);
+
+}
+
 TEST(PropertyTypeMinerTest, MultiFormulaRegression) {
     if (getenv("TEXADA_HOME") == NULL) {
         std::cerr << "Error: TEXADA_HOME is undefined. \n";
