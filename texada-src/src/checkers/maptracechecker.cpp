@@ -349,7 +349,7 @@ statistic map_trace_checker::next_check(const spot::ltl::unop* node, interval in
         std::set<int> trace_ids) {
     const spot::ltl::formula* p = node->child();
     // if we are starting at last event, next event is terminal and check there.
-    if (intvl.start == terminal_pos -1) {
+    if (intvl.start == terminal_pos -1 || intvl.start == terminal_pos) {
         intvl.start = terminal_pos;
         intvl.end = terminal_pos;
         return this->check(p, intvl);
