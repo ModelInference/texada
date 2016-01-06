@@ -1,32 +1,41 @@
-## Texada ##
+# Texada web-server installation instructions #
 
-# Installing Dependencies #
+## Pre-requisites ##
 
-# Pre-requisites #
-1. node.js - Download and install using the following Terminal commands
+The Texada web-server depends on (1) node.js and (2) Go lang. Here are the steps for installing these dependencies on Ubuntu (tested with Ubuntu 12.04.5).
+
+Install node.js:
+
+Add a comment to this line
+
   1. sudo apt-get purge nodejs npm
   2. sudo apt-get install -y python-software-properties python g++ make software-properties-common
   3. sudo add-apt-repository ppa:chris-lea/node.js
   4. sudo apt-get update
   5. sudo apt-get install nodejs
-2. Go - Download and install using the following Terminal commands
+
+Install Go lang:
+
+Add a comment to this line
+
   1. sudo apt-get install -y python-software-properties python g++ make software-properties-common
   2. sudo add-apt-repository ppa:gophers/go
   3. sudo apt-get update
   4. sudo apt-get install golang
 
 
-# Installation (Unix-based systems) #
-1. Open Terminal
-2. cd {TEXADA_HOME}/www/client
-3. sudo npm install
-4. cd app
-5. ../node_modules/bower/bin/bower install
+# Install the node.js web-app #
+
+1. cd {TEXADA_HOME}/www/client
+2. sudo npm install
+3. cd app
+4. ../node_modules/bower/bin/bower install
 
 
-# Running the server (Unix-based systems) #
-1. Open Terminal and enter the following commands
-2. cd {TEXADA_HOME}/www
-3. go run server.go {TEXADA_HOME}/texada {PORT}
+# Running the server #
 
-URL for the front end - http://localhost:{PORT}/texada
+1. cd {TEXADA_HOME}/www
+2. go run server.go {TEXADA_HOME}/texada {PORT}
+
+Add a comment to this line
+The default front-end URL is: http://localhost:{PORT}/texada
