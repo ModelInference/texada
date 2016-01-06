@@ -1,0 +1,23 @@
+===========================================================================
+Incrementer:::OBJECT
+this has only one value
+===========================================================================
+Incrementer.Incrementer():::EXIT
+===========================================================================
+Incrementer.increment(int):::ENTER
+x one of { 0, 1, 2 }
+===========================================================================
+Incrementer.increment(int):::EXIT
+return one of { 3, 4, 5 }
+===========================================================================
+Incrementer.main(java.lang.String[]):::ENTER
+args has only one value
+args.getClass().getName() == java.lang.String[].class
+args[] == []
+args[].toString == []
+===========================================================================
+Incrementer.main(java.lang.String[]):::EXIT
+args[] == orig(args[])
+args[] == []
+args[].toString == []
+

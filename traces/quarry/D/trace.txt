@@ -1,0 +1,27 @@
+..
+..
+x one of { 0, 1, 2 }
+..
+x one of { 1, 2, 3 }
+..
+this.x == orig(this.x)
+..
+this.x == orig(this.x)
+..
+x one of { 0, 1, 2 }
+..
+x one of { 1, 2, 3 }
+..
+this.x == orig(this.x)
+..
+this.x == orig(this.x)
+..
+x one of { 0, 1, 2 }
+..
+x one of { 1, 2, 3 }
+..
+this.x == orig(this.x)
+..
+this.x == orig(this.x)
+..
+--
