@@ -1,0 +1,28 @@
+..
+this.size == 0
+..
+..
+this.size >= 1
+this.size - orig(this.size) - 1 == 0
+..
+..
+this.size >= 1
+this.size - orig(this.size) - 1 == 0
+..
+this.size >= 1
+..
+this.size - orig(this.size) + 1 == 0
+..
+..
+this.size >= 1
+this.size - orig(this.size) - 1 == 0
+..
+this.size >= 1
+..
+this.size - orig(this.size) + 1 == 0
+..
+this.size >= 1
+..
+this.size - orig(this.size) + 1 == 0
+..
+--

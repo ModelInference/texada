@@ -1,0 +1,408 @@
+// Declarations for D
+// Declarations written Wed Jan 06 13:37:52 PST 2016
+
+decl-version 2.0
+var-comparability none
+
+ppt D.D():::ENTER
+ppt-type enter
+
+ppt D.D():::EXIT2
+ppt-type subexit
+parent parent D:::OBJECT 1
+variable this
+  var-kind variable 
+  dec-type D
+  rep-type hashcode
+  flags is_param
+  comparability 22
+  parent D:::OBJECT 1
+variable this.x
+  var-kind field x
+  enclosing-var this
+  dec-type int
+  rep-type int
+  comparability 22
+  parent D:::OBJECT 1
+
+ppt D.print(int):::ENTER
+ppt-type enter
+parent parent D:::OBJECT 1
+variable this
+  var-kind variable 
+  dec-type D
+  rep-type hashcode
+  flags is_param
+  comparability 22
+  parent D:::OBJECT 1
+variable this.x
+  var-kind field x
+  enclosing-var this
+  dec-type int
+  rep-type int
+  comparability 22
+  parent D:::OBJECT 1
+variable x
+  var-kind variable 
+  dec-type int
+  rep-type int
+  flags is_param
+  comparability 22
+
+ppt D.print(int):::EXIT7
+ppt-type subexit
+parent parent D:::OBJECT 1
+variable this
+  var-kind variable 
+  dec-type D
+  rep-type hashcode
+  flags is_param
+  comparability 22
+  parent D:::OBJECT 1
+variable this.x
+  var-kind field x
+  enclosing-var this
+  dec-type int
+  rep-type int
+  comparability 22
+  parent D:::OBJECT 1
+variable x
+  var-kind variable 
+  dec-type int
+  rep-type int
+  flags is_param
+  comparability 22
+
+ppt D.reprint(int):::ENTER
+ppt-type enter
+parent parent D:::OBJECT 1
+variable this
+  var-kind variable 
+  dec-type D
+  rep-type hashcode
+  flags is_param
+  comparability 22
+  parent D:::OBJECT 1
+variable this.x
+  var-kind field x
+  enclosing-var this
+  dec-type int
+  rep-type int
+  comparability 22
+  parent D:::OBJECT 1
+variable x
+  var-kind variable 
+  dec-type int
+  rep-type int
+  flags is_param
+  comparability 22
+
+ppt D.reprint(int):::EXIT11
+ppt-type subexit
+parent parent D:::OBJECT 1
+variable this
+  var-kind variable 
+  dec-type D
+  rep-type hashcode
+  flags is_param
+  comparability 22
+  parent D:::OBJECT 1
+variable this.x
+  var-kind field x
+  enclosing-var this
+  dec-type int
+  rep-type int
+  comparability 22
+  parent D:::OBJECT 1
+variable x
+  var-kind variable 
+  dec-type int
+  rep-type int
+  flags is_param
+  comparability 22
+
+ppt D.main(java.lang.String[]):::ENTER
+ppt-type enter
+variable args
+  var-kind variable 
+  dec-type java.lang.String[]
+  rep-type hashcode
+  flags is_param
+  comparability 22
+variable args.getClass().getName()
+  var-kind function getClass().getName()
+  enclosing-var args
+  dec-type java.lang.Class
+  rep-type java.lang.String
+  function-args args
+  flags synthetic classname
+  comparability 22
+variable args[..]
+  var-kind array 
+  enclosing-var args
+  array 1
+  dec-type java.lang.String[]
+  rep-type hashcode[]
+  comparability 22
+variable args[..].toString
+  var-kind function toString()
+  enclosing-var args[..]
+  array 1
+  dec-type java.lang.String[]
+  rep-type java.lang.String[]
+  function-args args[]
+  flags synthetic to_string
+  comparability 22
+
+ppt D.main(java.lang.String[]):::EXIT19
+ppt-type subexit
+variable args
+  var-kind variable 
+  dec-type java.lang.String[]
+  rep-type hashcode
+  flags is_param
+  comparability 22
+variable args.getClass().getName()
+  var-kind function getClass().getName()
+  enclosing-var args
+  dec-type java.lang.Class
+  rep-type java.lang.String
+  function-args args
+  flags synthetic classname
+  comparability 22
+variable args[..]
+  var-kind array 
+  enclosing-var args
+  array 1
+  dec-type java.lang.String[]
+  rep-type hashcode[]
+  comparability 22
+variable args[..].toString
+  var-kind function toString()
+  enclosing-var args[..]
+  array 1
+  dec-type java.lang.String[]
+  rep-type java.lang.String[]
+  function-args args[]
+  flags synthetic to_string
+  comparability 22
+
+ppt D:::OBJECT
+ppt-type object
+variable this
+  var-kind variable 
+  dec-type D
+  rep-type hashcode
+  flags is_param
+  comparability 22
+variable this.x
+  var-kind field x
+  enclosing-var this
+  dec-type int
+  rep-type int
+  comparability 22
+
+D.main(java.lang.String[]):::ENTER
+this_invocation_nonce
+0
+args
+659748578
+1
+args.getClass().getName()
+"java.lang.String[]"
+1
+args[..]
+[]
+1
+args[..].toString
+[]
+1
+
+D.D():::ENTER
+this_invocation_nonce
+1
+
+D.D():::EXIT2
+this_invocation_nonce
+1
+this
+240650537
+1
+this.x
+0
+1
+
+D.print(int):::ENTER
+this_invocation_nonce
+2
+this
+240650537
+1
+this.x
+0
+1
+x
+0
+1
+
+D.reprint(int):::ENTER
+this_invocation_nonce
+3
+this
+240650537
+1
+this.x
+0
+1
+x
+1
+1
+
+D.reprint(int):::EXIT11
+this_invocation_nonce
+3
+this
+240650537
+1
+this.x
+0
+1
+x
+1
+1
+
+D.print(int):::EXIT7
+this_invocation_nonce
+2
+this
+240650537
+1
+this.x
+0
+1
+x
+0
+1
+
+D.print(int):::ENTER
+this_invocation_nonce
+4
+this
+240650537
+1
+this.x
+0
+1
+x
+1
+1
+
+D.reprint(int):::ENTER
+this_invocation_nonce
+5
+this
+240650537
+1
+this.x
+0
+1
+x
+2
+1
+
+D.reprint(int):::EXIT11
+this_invocation_nonce
+5
+this
+240650537
+1
+this.x
+0
+1
+x
+2
+1
+
+D.print(int):::EXIT7
+this_invocation_nonce
+4
+this
+240650537
+1
+this.x
+0
+1
+x
+1
+1
+
+D.print(int):::ENTER
+this_invocation_nonce
+6
+this
+240650537
+1
+this.x
+0
+1
+x
+2
+1
+
+D.reprint(int):::ENTER
+this_invocation_nonce
+7
+this
+240650537
+1
+this.x
+0
+1
+x
+3
+1
+
+D.reprint(int):::EXIT11
+this_invocation_nonce
+7
+this
+240650537
+1
+this.x
+0
+1
+x
+3
+1
+
+D.print(int):::EXIT7
+this_invocation_nonce
+6
+this
+240650537
+1
+this.x
+0
+1
+x
+2
+1
+
+D.main(java.lang.String[]):::EXIT19
+this_invocation_nonce
+0
+args
+659748578
+1
+args.getClass().getName()
+"java.lang.String[]"
+1
+args[..]
+[]
+1
+args[..].toString
+[]
+1
+
+
+# EOF (added by Runtime.addShutdownHook)
