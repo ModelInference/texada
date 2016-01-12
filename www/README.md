@@ -31,6 +31,15 @@ Add a comment to this line
 3. cd app
 4. ../node_modules/bower/bin/bower install
 
+# Deploying updates #
+
+1. Deploy updated files (or updated version of the codebase)
+2. cd {TEXADA_HOME}/www/client
+3. sudo npm install
+4. cd app
+5. ../node_modules/bower/bin/bower install
+
+
 
 # Running the server #
 
