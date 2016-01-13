@@ -18,8 +18,11 @@ var texada = angular.module('texadaApp', [/*
 texada.controller("TexadaHomeCtrl", function ($scope) {
     $scope.ltl = "-f 'G(x->XFy)' -l";    // The LTL property to be mined
     $scope.text = "a\nb\nc\n--\nb\nb\nc\na\n--\nc\na\nb\nc\n--";   // The log/data to mine
-    $scope.uploadOrText = "text";
-    $scope.commonPropSelected = "";
+
+    $scope.uploadOrText = "text";      // File upload or textbox (textbox used as default)
+    $scope.commonPropSelected = "";    // Selected common prop
+
+    // Common property types to be used
     $scope.commonProps = {
         "always-followed-by": "-f 'G(x->XFy)'",
         "immediately-followed-by\/followedby": "-f 'G(x -> X y)'",
@@ -75,6 +78,7 @@ texada.controller("TexadaHomeCtrl", function ($scope) {
     $scope.bindings = [];      // The results fetched: the bindings found
     $scope.properties = [];    // The results fetched: the properties mined
 
+    // If args are empty, then disable mine button
     $scope.$watch("ltl", function (value, old) {
         if (value.length < 1) {
             $("#mineButton").attr("disabled", true);
@@ -94,6 +98,7 @@ texada.controller("TexadaHomeCtrl", function ($scope) {
         }
     });
 
+    // If log is empty, then disable mine button (if textbox is selected)
     $scope.$watch("text", function (value, old) {
         if ($scope.uploadOrText != "upload") {
             if (value.length < 1) {
@@ -106,6 +111,7 @@ texada.controller("TexadaHomeCtrl", function ($scope) {
 
     });
 
+    // If upload is selected but no file uploaded, disable mine button
     $scope.$watch("uploadOrText", function (value, old) {
         var uploadValue = $("#file").val();
         var logValue = $scope.text;
@@ -136,6 +142,7 @@ texada.controller("TexadaHomeCtrl", function ($scope) {
         }
     });
 
+    // Add common property type
     $scope.addCommonProp = function () {
         var commonProp = $scope.commonPropSelected + " -l";
         $scope.ltl = commonProp;
@@ -143,7 +150,7 @@ texada.controller("TexadaHomeCtrl", function ($scope) {
 
     };
 
-
+    // Server returned a 200 OK response
     $scope.miningSuccess = function (data) {
 
         // Try to parse JSON
@@ -151,20 +158,21 @@ texada.controller("TexadaHomeCtrl", function ($scope) {
             var parsedData = jQuery.parseJSON(data);
         }
         catch (e) {
-            showErrorModal("Sorry, there has been an error in mining the property.");
+            showErrorModal(data);
             $scope.$apply();
             return;
         }
 
         console.log(parsedData);
+
         //Emptying previous output
         $scope.bindings = [];
         $scope.properties = [];
 
 
-        // Will be edited
+        // Making sure there's only one property type
         if (parsedData.length != 1) {
-            showErrorModal("Sorry, there has been an error in mining the property.");
+            showErrorModal("Sorry, we support exactly one property type at a time.");
             $scope.$apply();
             return;
         }
@@ -180,6 +188,7 @@ texada.controller("TexadaHomeCtrl", function ($scope) {
             var vars = [];
             var k = 0;
             var p = 0;
+
             // Iterating through the data
             console.log(instances);
             for (var key in instances) {
@@ -202,31 +211,39 @@ texada.controller("TexadaHomeCtrl", function ($scope) {
                 p++;
             }
         }
+
+        // Show the output tab
         $("#outputBtn").css({display: "block"});
+
+        // Updata/apply new data
         $scope.$apply();
+
+        // Navigate to output tab
         $("#outputBtn").click();
 
 
     };
 
-    $scope.miningFailure = function () {
+    // Server returned an error
+    $scope.miningFailure = function (data) {
         $scope.bindings = [];
         $scope.properties = [];
-        showErrorModal("Sorry, there has been an error in mining the property.");
+        showErrorModal(data.responseText);
         $scope.$apply();
         return;
     }
 
+    // Click handler for the Mine button
     $scope.mine = function () {
-        //$scope.text = $scope.text.replace(/\n/g, '\\n');
+        // Arguments for the HTTP request
         var in_str = "{\"log\" : \"" + $scope.text.replace(/\n/g, '\\n') + "\", \"args\" : \"" + $scope.ltl.replace(/\n/g, "") + "\"}";
 
-        //var parameters = {"log" : $scope.text.replace(/\n/g, '\\n'), "args" : $scope.ltl};
+        // Form data (primarily used to retrieve file to be uploaded)
         var formData = new FormData($("#uploadForm")[0]);
-        console.log(formData);
+
+        // Decide whether file is being uploaded or not
         if ($scope.uploadOrText == "upload") {
-
-
+            // Send request to server (upload file)
             $.ajax({
                 "method": "POST",
                 "url": "/texada/uploadMine/",
@@ -260,7 +277,10 @@ $(document).ready(function () {
 });
 
 // Functions
+
+// Show the error modal
 function showErrorModal(msg) {
+    $("#errorMessage").text(msg);
     $("#errorModal").modal();
 }
 
@@ -271,20 +291,5 @@ function fileChange() {
     }
 }
 
-/*
- function addCommonProp() {
 
- var commonProp = $("#chooseCommon").val();
- if (commonProp != "") {
- var appElement = document.querySelector('[ng-app=texadaApp]');
-
- var $scope = angular.element(appElement).scope();
- $scope.ltl = commonProp + " -l";
- $scope.$apply();
-
- $("#commonPropsModal").modal("hide");
- }
-
- }
- */
 
