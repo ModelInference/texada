@@ -2,7 +2,6 @@ package main
 
 import (
 "html"
-"html/template"
 "encoding/json"
 "io"
 "io/ioutil"
@@ -15,8 +14,6 @@ import (
 "math/rand"
 )
 
-// Compile templates on start.
-var templates = template.Must(template.ParseFiles("static/index.html"))
 
 
 // The input to the webpage template, carries texada output.
@@ -34,13 +31,7 @@ type Input struct {
 // Where to find the texada binary
 var texadaCmd string
 
-// Display the template.
-func renderTemplate(w http.ResponseWriter, tmpl string, data interface{}) {
-	err := templates.ExecuteTemplate(w, tmpl+".html", data)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-	}
-}
+
 
 // Outputs an error string.
 func printErrorStr(s string) {
@@ -179,13 +170,7 @@ func uploadMineHandler(w http.ResponseWriter, r *http.Request) {
 
 
 
-// Handles GET of /texada/
-func viewHandler(w http.ResponseWriter, r *http.Request) {
-	printRequest(r)
 
-	result := Output{OutputTitle: "", OutputJSON: "", OutputDisplay: "none"}
-	renderTemplate(w, "index", result)
-}
 
 // Creates random string of letters (used for filename during upload)
 const letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -221,7 +206,6 @@ func main() {
 	http.HandleFunc("/texada/uploadMine/", uploadMineHandler)
 
 	// Register static files handler
-	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 	http.Handle("/texada/", http.StripPrefix("/texada/", http.FileServer(http.Dir("client/app/"))))
 
 	// Listen on port with default IP.
