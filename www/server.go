@@ -1,41 +1,37 @@
 package main
 
 import (
-"html"
-"encoding/json"
-"io"
-"io/ioutil"
-"net/http"
-"os/exec"
-"strings"
-"os"
-"fmt"
-"time"
-"math/rand"
+	"encoding/json"
+	"fmt"
+	"html"
+	"io"
+	"io/ioutil"
+	"math/rand"
+	"net/http"
+	"os"
+	"os/exec"
+	"strings"
+	"time"
 )
-
-
 
 // The input to the webpage template, carries texada output.
 type Output struct {
-	OutputTitle string
-	OutputJSON string
+	OutputTitle   string
+	OutputJSON    string
 	OutputDisplay string
 }
 
 type Input struct {
-	Log string `json:"log"`
+	Log  string `json:"log"`
 	Args string `json:"args"`
 }
 
 // Where to find the texada binary
 var texadaCmd string
 
-
-
 // Outputs an error string.
 func printErrorStr(s string) {
-	fmt.Println(time.Now(), "Error: " + s)
+	fmt.Println(time.Now(), "Error: "+s)
 }
 
 // Outputs the received http request to stdout.
@@ -44,15 +40,15 @@ func printRequest(r *http.Request) {
 }
 
 // Does the mining
-func mine(log string, args string, w http.ResponseWriter){
-    // Remove carriage returns from the input, and convert to []byte
-	log = strings.Replace(log,"\r","",-1)
-	args = strings.Replace(args,"\r","",-1)
+func mine(log string, args string, w http.ResponseWriter) {
+	// Remove carriage returns from the input, and convert to []byte
+	log = strings.Replace(log, "\r", "", -1)
+	args = strings.Replace(args, "\r", "", -1)
 	logbytes := []byte(log)
 	argsbytes := []byte(args)
 
 	// Save log to file.
-	logfile, err := ioutil.TempFile("/tmp/", "log-");
+	logfile, err := ioutil.TempFile("/tmp/", "log-")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -63,7 +59,7 @@ func mine(log string, args string, w http.ResponseWriter){
 	}
 
 	// Save args to file.
-	argsfile, err := ioutil.TempFile("/tmp/", "args-");
+	argsfile, err := ioutil.TempFile("/tmp/", "args-")
 	if err != nil {
 		os.Remove(logfile.Name())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -76,7 +72,7 @@ func mine(log string, args string, w http.ResponseWriter){
 		return
 	}
 
-	outbytes, err := exec.Command(texadaCmd,"--output-json","-c", argsfile.Name(), logfile.Name()).Output();
+	outbytes, err := exec.Command(texadaCmd, "--output-json", "-c", argsfile.Name(), logfile.Name()).Output()
 
 	if err != nil {
 		fmt.Println(err.Error())
@@ -89,20 +85,19 @@ func mine(log string, args string, w http.ResponseWriter){
 	os.Remove(argsfile.Name())
 	jsonstr := strings.TrimSpace(string(outbytes))
 	w.Write([]byte(jsonstr))
-        //fmt.Println(jsonstr)
+	//fmt.Println(jsonstr)
 	// cmdfull := cmd + " -c " + argsfile.Name() + " " + logfile.Name()
 
 	//result := Output{OutputTitle: "Texada output:", OutputJSON: jsonstr, OutputDisplay: "block"}
-        // wouldn't render, would just send the JSON back with w.Write
+	// wouldn't render, would just send the JSON back with w.Write
 	//renderTemplate(w, "index", result)
 }
-
 
 // Handles POST to /texada/mine/
 func mineHandler(w http.ResponseWriter, r *http.Request) {
 	printRequest(r)
 
-        // Retrieve  data.
+	// Retrieve  data.
 	decoder := json.NewDecoder(r.Body)
 	var in Input
 	err := decoder.Decode(&in)
@@ -111,7 +106,7 @@ func mineHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	log := in.Log
 	args := in.Args
-	mine(log,args,w)
+	mine(log, args, w)
 
 }
 
@@ -121,34 +116,31 @@ func uploadMineHandler(w http.ResponseWriter, r *http.Request) {
 	// The args to be mined
 	args := r.FormValue("args")
 
-    // The file to be mined
+	// The file to be mined
 	file, _, err := r.FormFile("file")
 
-	
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-
 	defer file.Close()
 
-    // Create random string to be used as temporary file name (for file upload)
+	// Create random string to be used as temporary file name (for file upload)
 	randString := RandStringBytes(20)
 
 	// Create file with the generated random string
 	out, err2 := os.Create(randString)
-
 
 	if err2 != nil {
 		http.Error(w, err2.Error(), http.StatusInternalServerError)
 		return
 	}
 
-    // will close the connection later
+	// will close the connection later
 	defer out.Close()
 
-    // write the content of the uploaded file to the temporary file
+	// write the content of the uploaded file to the temporary file
 	_, err = io.Copy(out, file)
 
 	if err != nil {
@@ -156,7 +148,7 @@ func uploadMineHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-    // Read contents of uploaded file
+	// Read contents of uploaded file
 	fileB, err3 := ioutil.ReadFile(randString)
 
 	if err3 != nil {
@@ -164,7 +156,7 @@ func uploadMineHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-    // Remove temporary file
+	// Remove temporary file
 	err4 := os.Remove(randString)
 
 	if err4 != nil {
@@ -172,23 +164,15 @@ func uploadMineHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-    // stringify contents of uploaded file
+	// stringify contents of uploaded file
 	log := string(fileB)
 
 	printRequest(r)
 
-
-
-
-    // mine the uploaded file with the given args
-	mine(log,args,w)
-
+	// mine the uploaded file with the given args
+	mine(log, args, w)
 
 }
-
-
-
-
 
 // Letters to be used for creating random file name
 const letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -228,5 +212,5 @@ func main() {
 	http.Handle("/texada/", http.StripPrefix("/texada/", http.FileServer(http.Dir("client/app/"))))
 
 	// Listen on port with default IP.
-	http.ListenAndServe(":" + port, nil)
+	http.ListenAndServe(":"+port, nil)
 }
