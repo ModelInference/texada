@@ -1,3 +1,15 @@
+/* This is an Go implementation of a simple web-server custom-made for
+the Texada website. Works with go version 1.2.1.
+
+The server communicates with the front-end using JSON messages,
+handles file uploads, and invokes the Texada binary to do the real
+work of mining property instances.
+
+Usage: go run server.go [texada-bin] [port]
+
+- texada-bin: location of the texada binary
+- port: TCP port on which the server will listen to HTTP GET requests
+*/
 package main
 
 import (
@@ -14,22 +26,23 @@ import (
 	"time"
 )
 
-// The input to the webpage template, carries texada output.
+// Texada output, which is the input to the webpage.
 type Output struct {
 	OutputTitle   string
 	OutputJSON    string
 	OutputDisplay string
 }
 
+// Texada input.
 type Input struct {
 	Log  string `json:"log"`
 	Args string `json:"args"`
 }
 
-// Where to find the texada binary
+// Where to find the texada binary.
 var texadaCmd string
 
-// Outputs an error string.
+// Outputs an error string to stdout.
 func printErrorStr(s string) {
 	fmt.Println(time.Now(), "Error: "+s)
 }
@@ -39,9 +52,9 @@ func printRequest(r *http.Request) {
 	fmt.Println(time.Now(), "REQ:", html.EscapeString(r.URL.Path), ", ip/port: ", r.RemoteAddr)
 }
 
-// Does the mining
+// Does the mining.
 func mine(log string, args string, w http.ResponseWriter) {
-	// Remove carriage returns from the input, and convert to []byte
+	// Remove carriage returns from the input, and convert to []byte.
 	log = strings.Replace(log, "\r", "", -1)
 	args = strings.Replace(args, "\r", "", -1)
 	logbytes := []byte(log)
@@ -72,7 +85,8 @@ func mine(log string, args string, w http.ResponseWriter) {
 		return
 	}
 
-	outbytes, err := exec.Command(texadaCmd, "--output-json", "-c", argsfile.Name(), logfile.Name()).Output()
+	outbytes, err := exec.Command(texadaCmd, "--output-json", "-c",
+		argsfile.Name(), logfile.Name()).Output()
 
 	if err != nil {
 		fmt.Println(err.Error())
@@ -85,12 +99,8 @@ func mine(log string, args string, w http.ResponseWriter) {
 	os.Remove(argsfile.Name())
 	jsonstr := strings.TrimSpace(string(outbytes))
 	w.Write([]byte(jsonstr))
-	//fmt.Println(jsonstr)
+	// fmt.Println(jsonstr)
 	// cmdfull := cmd + " -c " + argsfile.Name() + " " + logfile.Name()
-
-	//result := Output{OutputTitle: "Texada output:", OutputJSON: jsonstr, OutputDisplay: "block"}
-	// wouldn't render, would just send the JSON back with w.Write
-	//renderTemplate(w, "index", result)
 }
 
 // Handles POST to /texada/mine/
@@ -210,7 +220,6 @@ func main() {
 
 	// Register static files handler
 	http.Handle("/texada/", http.StripPrefix("/texada/", http.FileServer(http.Dir("client/app/"))))
-
 	// Listen on port with default IP.
 	http.ListenAndServe(":"+port, nil)
 }
