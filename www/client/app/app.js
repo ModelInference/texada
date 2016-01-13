@@ -205,7 +205,7 @@ texada.controller("TexadaHomeCtrl", function ($scope) {
             var parsedData = jQuery.parseJSON(data);
         }
         catch (e) {
-            showErrorModal("Sorry, there has been an error in mining the property.");
+            showErrorModal(data);
             $scope.$apply();
             return;
         }
@@ -218,7 +218,7 @@ texada.controller("TexadaHomeCtrl", function ($scope) {
 
         // Will be edited
         if (parsedData.length != 1) {
-            showErrorModal("Sorry, there has been an error in mining the property.");
+            showErrorModal("Sorry, we only support one property type.");
             $scope.$apply();
             return;
         }
@@ -263,10 +263,10 @@ texada.controller("TexadaHomeCtrl", function ($scope) {
 
     };
 
-    $scope.miningFailure = function () {
+    $scope.miningFailure = function (data) {
         $scope.bindings = [];
         $scope.properties = [];
-        showErrorModal("Sorry, there has been an error in mining the property.");
+        showErrorModal(data.responseText);
         $scope.$apply();
         return;
     }
@@ -315,6 +315,7 @@ $(document).ready(function () {
 
 // Functions
 function showErrorModal(msg) {
+    $("#errorMessage").text(msg);
     $("#errorModal").modal();
 }
 
