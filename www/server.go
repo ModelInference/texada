@@ -45,7 +45,7 @@ func printRequest(r *http.Request) {
 
 // Does the mining
 func mine(log string, args string, w http.ResponseWriter){
-// Remove carriage returns from the input, and convert to []byte
+    // Remove carriage returns from the input, and convert to []byte
 	log = strings.Replace(log,"\r","",-1)
 	args = strings.Replace(args,"\r","",-1)
 	logbytes := []byte(log)
@@ -115,46 +115,64 @@ func mineHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
+// Handle file upload and mine the uploaded file with given args
 func uploadMineHandler(w http.ResponseWriter, r *http.Request) {
-	
+
+	// The args to be mined
 	args := r.FormValue("args")
 
-	file, header, err := r.FormFile("file")
+    // The file to be mined
+	file, _, err := r.FormFile("file")
 
-	_ = header
-	 // the FormFile function takes in the POST input id file file, header, err := r.FormFile("file")
 	
 	if err != nil {
-		fmt.Fprintln(w, err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 
 	defer file.Close()
 
+    // Create random string to be used as temporary file name (for file upload)
 	randString := RandStringBytes(20)
+
+	// Create file with the generated random string
 	out, err2 := os.Create(randString)
 
 
 	if err2 != nil {
-		fmt.Fprintf(w, "Unable to create the file for writing. Check your write access privilege")
+		http.Error(w, err2.Error(), http.StatusInternalServerError)
 		return
 	}
 
+    // will close the connection later
 	defer out.Close()
 
-             // write the content from POST to the file
+    // write the content of the uploaded file to the temporary file
 	_, err = io.Copy(out, file)
 
 	if err != nil {
-		fmt.Fprintln(w, err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 
+    // Read contents of uploaded file
 	fileB, err3 := ioutil.ReadFile(randString)
-	_ = err3
 
-	err7 := os.Remove(randString)
-	_ = err7
+	if err3 != nil {
+		http.Error(w, err3.Error(), http.StatusInternalServerError)
+		return
+	}
+
+    // Remove temporary file
+	err4 := os.Remove(randString)
+
+	if err4 != nil {
+		http.Error(w, err4.Error(), http.StatusInternalServerError)
+		return
+	}
+
+    // stringify contents of uploaded file
 	log := string(fileB)
 
 	printRequest(r)
@@ -162,7 +180,7 @@ func uploadMineHandler(w http.ResponseWriter, r *http.Request) {
 
 
 
-
+    // mine the uploaded file with the given args
 	mine(log,args,w)
 
 
@@ -172,9 +190,10 @@ func uploadMineHandler(w http.ResponseWriter, r *http.Request) {
 
 
 
-// Creates random string of letters (used for filename during upload)
+// Letters to be used for creating random file name
 const letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
+// Create random string of letters
 func RandStringBytes(n int) string {
 	b := make([]byte, n)
 	for i := range b {
