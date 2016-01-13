@@ -20,7 +20,7 @@ texada.controller("TexadaHomeCtrl", function ($scope) {
     $scope.text = "a\nb\nc\n--\nb\nb\nc\na\n--\nc\na\nb\nc\n--";   // The log/data to mine
 
     $scope.uploadOrText = "text";      // File upload or textbox (textbox used as default)
-    $scope.commonPropSelected = "";    // Selected common prop
+    $scope.commonPropSelected = "";    // Selected common prop type
 
     // Common property types to be used
     $scope.commonProps = {
