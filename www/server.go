@@ -10,6 +10,7 @@ Usage: go run server.go [texada-bin] [port]
 - texada-bin: location of the texada binary
 - port: TCP port on which the server will listen to HTTP GET requests
 */
+
 package main
 
 import (
