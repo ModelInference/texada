@@ -141,10 +141,10 @@ func uploadMineHandler(w http.ResponseWriter, r *http.Request) {
 	randString := RandStringBytes(20)
 
 	// Create file with the generated random string
-	out, err2 := os.Create(randString)
+	out, err := os.Create(randString)
 
-	if err2 != nil {
-		http.Error(w, err2.Error(), http.StatusInternalServerError)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -160,18 +160,18 @@ func uploadMineHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Read contents of uploaded file
-	fileB, err3 := ioutil.ReadFile(randString)
+	fileB, err := ioutil.ReadFile(randString)
 
-	if err3 != nil {
-		http.Error(w, err3.Error(), http.StatusInternalServerError)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	// Remove temporary file
-	err4 := os.Remove(randString)
+	err = os.Remove(randString)
 
-	if err4 != nil {
-		http.Error(w, err4.Error(), http.StatusInternalServerError)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
