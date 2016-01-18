@@ -6,7 +6,7 @@ The Texada web-server depends on (1) node.js and (2) Go lang. Here are the steps
 
 Install node.js:
 
-Add a comment to this line
+Node.JS is needed to install further dependencies for the web application like Bower, Protractor, Jasmine, etc. It can be installed using apt-get on Linux systems. A detailed step-by-step guide is given below:
 
   1. sudo apt-get purge nodejs npm
   2. sudo apt-get install -y python-software-properties python g++ make software-properties-common
@@ -16,7 +16,7 @@ Add a comment to this line
 
 Install Go lang:
 
-Add a comment to this line
+Go lang is needed to run the web server that hosts the web version of Texada. It can be installed using apt-get on Linux systems. A detailed step-by-step guide is given below:
 
   1. sudo apt-get install -y python-software-properties python g++ make software-properties-common
   2. sudo add-apt-repository ppa:gophers/go
@@ -46,5 +46,5 @@ Add a comment to this line
 1. cd {TEXADA_HOME}/www
 2. go run server.go {TEXADA_HOME}/texada {PORT}
 
-Add a comment to this line
+Once the server is up and running, it can be accessed using a web browser.
 The default front-end URL is: http://localhost:{PORT}/texada
