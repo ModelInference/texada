@@ -160,7 +160,7 @@ func uploadMineHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Read contents of uploaded file
-	fileB, err := ioutil.ReadFile(randString)
+	fileContent, err := ioutil.ReadFile(randString)
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -176,20 +176,19 @@ func uploadMineHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// stringify contents of uploaded file
-	log := string(fileB)
+	logContent := string(fileContent)
 
 	printRequest(r)
 
 	// mine the uploaded file with the given args
-	mine(log, args, w)
+	mine(logContent, args, w)
 
 }
 
-// Letters to be used for creating random file name
-const letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-
 // Create random string of letters
 func RandStringBytes(n int) string {
+	// Letters to be used for creating random file name
+	const letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 	b := make([]byte, n)
 	for i := range b {
 		b[i] = letterBytes[rand.Intn(len(letterBytes))]
