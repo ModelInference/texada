@@ -15,7 +15,7 @@ var texada = angular.module('texadaApp', [/*
  });
  }]);*/
 
-texada.controller("TexadaHomeCtrl", function ($scope) {
+texada.controller("TexadaHomeCtrl", ["$scope", function ($scope) {
     $scope.ltl = "-f 'G(x->XFy)' -l";    // The LTL property to be mined
     $scope.text = "a\nb\nc\n--\nb\nb\nc\na\n--\nc\na\nb\nc\n--";   // The log/data to mine
 
@@ -263,7 +263,7 @@ texada.controller("TexadaHomeCtrl", function ($scope) {
     }
 
 
-});
+}]);
 // Tests
 
 
