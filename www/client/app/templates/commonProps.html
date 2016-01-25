@@ -1,0 +1,21 @@
+<div id="commonPropsModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header error-modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Arguments</h4>
+            </div>
+            <div class="modal-body">
+                <select id="chooseCommon" ng-model="commonPropSelected"
+                        ng-model-options="{updateOn: 'default blur', debounce: {default: 50, blur: 0} }"
+                        ng-change="addCommonProp()">
+                    <option selected value="">Select an option...</option>
+                    <option ng-repeat="(name, ltlprop) in commonProps" value="{{ltlprop}}">{{name}}</option>
+                </select>
+            </div>
+        </div>
+
+    </div>
+</div>

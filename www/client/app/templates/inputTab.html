@@ -1,0 +1,54 @@
+<Br/>
+
+<form method="post" id="uploadForm" action="/texada/uploadMine" enctype="multipart/form-data"
+      onsubmit="return false">
+    <h4>Upload a file or paste your log below</h4>
+    <br/>
+
+    <div class="row">
+        <div class="col-md-1">
+            <input type="radio" ng-model="uploadOrText" name="uploadOrText" value="text"
+                   checked="checked"/>
+        </div>
+        <div class="col-md-11">
+                            <textarea id="inputText" class="form-control input-lg" ng-model="text"
+                                      placeholder="Log"></textarea>
+        </div>
+    </div>
+
+    <br/>
+
+    <div class="row">
+        <div class="col-md-1">
+            <input type="radio" ng-model="uploadOrText" name="uploadOrText" value="upload"/>
+        </div>
+        <div class="col-md-11">
+            <input type="file" name="file" id="file" onchange="fileChange()"/>
+        </div>
+    </div>
+
+
+    <br/>
+
+    <div class="row">
+        <div class="col-md-2">
+            <button class="btn btn-default browse-btn" data-toggle="modal"
+                    data-target="#commonPropsModal">
+                Browse Arguments...
+            </button>
+            <Br/>
+        </div>
+        <div class="col-md-10">
+            <input id="argumentsText" name="args" type="text" class="form-control input-lg"
+                   placeholder="Arguments"
+                   ng-model="ltl"/>
+
+
+        </div>
+    </div>
+    <br/>
+    <button class="btn btn-default" type="submit" ng-click="mine()" id="mineButton">Mine</button>
+    &nbsp;&nbsp;
+
+    <br/><br/>
+</form>
