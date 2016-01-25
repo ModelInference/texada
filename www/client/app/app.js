@@ -267,6 +267,8 @@
     }]);
 
     // Directives
+
+    // Custom directive for the commonProps modal
     texada.directive("commonProps", function () {
         return {
             restrict: 'E',
@@ -280,6 +282,7 @@
         }
     });
 
+    // Custom directive for the commonProps modal
     texada.directive("errorMessage", function () {
         return {
             restrict: 'E',
@@ -288,6 +291,7 @@
         }
     });
 
+    // Custom directive for the splash screen
     texada.directive("splashScreen", function () {
         return {
             restrict: 'A',
@@ -296,6 +300,7 @@
         }
     });
 
+    // Custom directive for the input tab
     texada.directive("inputTab", function () {
         return {
             restrict: 'A',
@@ -304,6 +309,7 @@
         }
     });
 
+    // Custom directive for the output tab
     texada.directive("outputTab", function () {
         return {
             restrict: 'A',
