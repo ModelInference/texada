@@ -48,3 +48,16 @@ Go lang is needed to run the web server that hosts the web version of Texada. It
 
 Once the server is up and running, it can be accessed using a web browser.
 The default front-end URL is: http://localhost:{PORT}/texada
+
+
+# Running End-To-End Tests #
+
+Dependency:
+Install Sellenium web server (this is needed to run end-to-end tests)
+1. cd {TEXADA_HOME}/www/client
+2. node_modules/protractor/bin/webdriver-manager update --stand-alone
+
+Run:
+1. Run the server at port 8080 using the steps shown above
+2. cd {TEXADA_HOME}/www/client/e2e-tests
+3. ../node_modules/protractor/bin/protractor
