@@ -58,6 +58,6 @@ Install Sellenium web server (this is needed to run end-to-end tests)
 2. node_modules/protractor/bin/webdriver-manager update --stand-alone
 
 Run:
-1. Run the server at port 8080 using the steps shown above
+1. Run the server at port 8080 using the steps shown above and then open up the Terminal
 2. cd {TEXADA_HOME}/www/client/e2e-tests
 3. ../node_modules/protractor/bin/protractor

@@ -5,8 +5,13 @@ exports.config = {
         '*.js'
     ],
 
-    capabilities: {
+    /*capabilities: {
         'browserName': 'chrome'
+     },*/
+
+    capabilities: {
+        'browserName': 'phantomjs',
+        'phantomjs.binary.path': "../node_modules/phantomjs/bin/phantomjs"
     },
 
     baseUrl: 'http://localhost:8080/texada/',
