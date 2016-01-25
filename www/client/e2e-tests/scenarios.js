@@ -3,7 +3,9 @@
 
 describe('Texada', function () {
     beforeEach(function () {
+        browser.ignoreSynchronization = true;
         browser.get('');
+        browser.waitForAngular();
     });
 
     it('should have splash screen video loaded', function () {
