@@ -16,7 +16,7 @@
      });
      }]);*/
 
-    texada.controller("TexadaHomeCtrl", ["$scope", function ($scope) {
+    texada.controller("TexadaHomeCtrl", ["$scope", "$http", function ($scope, $http) {
         $scope.ltl = "-f 'G(x->XFy)' -l";    // The LTL property to be mined
         $scope.text = "a\nb\nc\n--\nb\nb\nc\na\n--\nc\na\nb\nc\n--";   // The log/data to mine
 
@@ -153,6 +153,7 @@
 
         // Server returned a 200 OK response
         $scope.miningSuccess = function (data) {
+            data = data.data;
 
             // Try to parse JSON
             try {
@@ -212,15 +213,9 @@
                     p++;
                 }
             }
-
             // Show the output tab
             $("#outputBtn").css({display: "block"});
-
-            // Updata/apply new data
-            $scope.$apply();
-
-            // Navigate to output tab
-            $("#outputBtn").click();
+            $("#outputBtn").tab("show");
 
 
         };
@@ -245,21 +240,36 @@
             // Decide whether file is being uploaded or not
             if ($scope.uploadOrText == "upload") {
                 // Send request to server (upload file)
-                $.ajax({
+                /*$.ajax({
                     "method": "POST",
                     "url": "/texada/uploadMine/",
                     "data": formData,
                     cache: false,
                     contentType: false,
                     processData: false
-                }).done($scope.miningSuccess).fail($scope.miningFailure);
+                 }).done($scope.miningSuccess).fail($scope.miningFailure);*/
+                $http({
+                    "method": "POST",
+                    "url": "/texada/uploadMine/",
+                    "data": formData,
+                    cache: false,
+                    headers: {'Content-Type': undefined},
+                    transformRequest: undefined,
+                    transformResponse: undefined
+                }).then($scope.miningSuccess, $scope.miningFailure);
             }
             else {
-                $.ajax({
+                /*$.ajax({
                     "method": "POST",
                     "url": "/texada/mine/",
                     "data": in_str
-                }).done($scope.miningSuccess).fail($scope.miningFailure);
+                 }).done($scope.miningSuccess).fail($scope.miningFailure);*/
+                $http({
+                    "method": "POST",
+                    "url": "/texada/mine/",
+                    "data": in_str,
+                    transformResponse: undefined
+                }).then($scope.miningSuccess, $scope.miningFailure);
             }
         }
 
