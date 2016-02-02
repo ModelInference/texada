@@ -5,7 +5,7 @@
         <h5>Bindings</h5>
         <ol class="outputList">
             <li ng-repeat="binding in bindings">
-                [<span ng-repeat="b in binding">{{(b.count < 1)? "" : ", "}}{{b.prop}}: {{b.var}}</span>]
+                [<span ng-repeat="b in binding">{{(b.count < 1)? "" : ", "}}<span>{{b.prop}}</span>: <span>{{b.var}}</span></span>]
             </li>
         </ol>
     </div>
