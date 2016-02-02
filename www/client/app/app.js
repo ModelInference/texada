@@ -248,7 +248,7 @@
                     contentType: false,
                     processData: false
                  }).done($scope.miningSuccess).fail($scope.miningFailure);*/
-                $http({
+                return $http({
                     "method": "POST",
                     "url": "/texada/uploadMine/",
                     "data": formData,
@@ -264,7 +264,7 @@
                     "url": "/texada/mine/",
                     "data": in_str
                  }).done($scope.miningSuccess).fail($scope.miningFailure);*/
-                $http({
+                return $http({
                     "method": "POST",
                     "url": "/texada/mine/",
                     "data": in_str,
