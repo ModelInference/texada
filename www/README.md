@@ -53,7 +53,7 @@ The default front-end URL is - http://localhost:{PORT}/texada
 # Running End-To-End Tests #
 
 Dependency:
-Install Sellenium web server (this is needed to run end-to-end tests through Protractor)
+Install Sellenium web server (this is needed to run end-to-end tests)
 
 1. cd {TEXADA_HOME}/www/client
 2. node_modules/protractor/bin/webdriver-manager update --stand-alone
