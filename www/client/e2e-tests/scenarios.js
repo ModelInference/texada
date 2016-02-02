@@ -28,6 +28,23 @@ describe('Texada', function () {
         browser.sleep(500);
         expect($("#output").isDisplayed()).toBeTruthy();
 
+        var expectedProps = ["x", "y"];
+
+        element.all(by.binding('b.prop')).then(function(items){
+            expect(items.length).toBe(2);
+            for(var i = 0; i < items.length; i++){
+                expect(items[i].getText()).toBe(expectedProps[i]);
+            }
+        });
+
+        var expectedVars = ["b", "c"];
+
+        element.all(by.binding('b.var')).then(function(items){
+            expect(items.length).toBe(2);
+            for(var i = 0; i < items.length; i++){
+                expect(items[i].getText()).toBe(expectedVars[i]);
+            }
+        });
 
     });
 
