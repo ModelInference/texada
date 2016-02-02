@@ -21,7 +21,7 @@ describe('Texada', function () {
         expect($("#inputText").getAttribute("value")).not.toBe("");
     });
 
-    it('should submit form if mine clicked', function () {
+    it('should show one property type with appropriate bindings given the default LTL and log', function () {
         $("#inputBtn").click();
         browser.sleep(500);
         $("#mineButton").click();
