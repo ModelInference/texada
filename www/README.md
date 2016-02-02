@@ -47,7 +47,7 @@ Go lang is needed to run the web server that hosts the web version of Texada. It
 2. go run server.go {TEXADA_HOME}/texada {PORT}
 
 Once the server is up and running, it can be accessed using a web browser.
-The default front-end URL is: http://localhost:{PORT}/texada
+The default front-end URL is - http://localhost:{PORT}/texada
 
 
 # Running End-To-End Tests #
