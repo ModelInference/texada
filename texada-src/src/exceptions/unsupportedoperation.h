@@ -10,12 +10,12 @@
 
 namespace texada {
     // Custom exception for unsupported property type
-    class unsupportedoperation: public std::exception
+    class unsupported_operation_exception: public std::exception
     {
     private:
         const char* msg;
     public:
-        unsupportedoperation(const char* msg);
+        unsupported_operation_exception(const char* msg);
         virtual const char* what() const throw();
     };
 }
