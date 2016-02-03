@@ -18,6 +18,7 @@
 #include "../instantiation-tools/apsubbingcloner.h"
 #include "../parsers/parser.h"
 #include "../checkers/statistic.h"
+#include "../exceptions/unsupportedoperation.h"
 
 // PRINTING HELPERS
 
@@ -375,6 +376,9 @@ int main(int ac, char* av[]) {
             formulae[i]->destroy();
         } //might not be ok
           // exception catching
+    } catch (texada::unsupported_operation_exception& e) {
+        std::cerr << "Unsupported Operation Error: " << e.what() << "\n";
+        return 1;
     } catch (std::exception& e) {
         std::cerr << "Error: " << e.what() << "\n";
         return 1;

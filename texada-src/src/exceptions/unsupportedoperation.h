@@ -13,9 +13,9 @@ namespace texada {
     class unsupported_operation_exception: public std::exception
     {
     private:
-        const char* msg;
+        std::string msg;
     public:
-        unsupported_operation_exception(const char* msg);
+        unsupported_operation_exception(std::string msg);
         virtual const char* what() const throw();
     };
 }
