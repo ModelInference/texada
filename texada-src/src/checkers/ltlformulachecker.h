@@ -152,7 +152,7 @@ namespace texada {
                 }
 
                 default:
-                    throw texada::unsupported_operation_exception("Unsupported binary operator."); // TODO: Add opkind later
+                    throw texada::unsupported_operation_exception("Unsupported binary operator, only xor, =>, <=>, U, R, W and M are supported.");
 
             }
         }
@@ -193,7 +193,7 @@ namespace texada {
 
                     // Other operators are not LTL, don't support them
                 default:
-                    throw texada::unsupported_operation_exception("Unsupported unary operator.");
+                    throw texada::unsupported_operation_exception("Unsupported unary operator, only G, F, X and ! supported.");
 
             }
         }
@@ -219,7 +219,7 @@ namespace texada {
                     return and_check(node, trace_pt, trace_ids);
                 }
                 default:
-                    throw texada::unsupported_operation_exception("Unsupported multiple operator.");
+                    throw texada::unsupported_operation_exception("Unsupported multiple operator, only & and | supported.");
 
             }
 
@@ -227,15 +227,15 @@ namespace texada {
 
         // unsupported types get default throwing behaviour
         return_type check(const spot::ltl::automatop *node) {
-            //TODO: throw
-            std::cerr << "Type automatop unsupported. \n";
-            return false_check(std::set<int>());
+            // taus actually did this
+            throw texada::unsupported_operation_exception("Automatop operators unsupported. \n");
+
         }
 
         return_type check(const spot::ltl::bunop *node) {
-            //TODO:throw
-            std::cerr << "Type bunop unsupported. \n";
-            return false_check(std::set<int>());
+            // taus actually did this
+            throw texada::unsupported_operation_exception("Bunop operators unsupported. \n");
+
         }
 
         // pure virtual methods used in cases.
