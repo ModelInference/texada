@@ -48,6 +48,43 @@ describe('Texada', function () {
 
     });
 
+    it('should show no property type with appropriate bindings given the immediately followed by LTL and default log', function () {
+        var ltl = "-f 'G(x -> X y)' -l";
+        $("#inputBtn").click();
+        browser.sleep(500);
+
+        $("#argumentsText").clear().then(function () {
+            $("#argumentsText").click().then(function () {
+                $("#argumentsText").sendKeys(ltl).then(function () {
+                    $("#argumentsText").getAttribute("value").then(function (ltlVal) {
+                        expect(ltlVal).toEqual(ltl);
+
+                        $("#inputBtn").click();
+                        browser.sleep(500);
+                        $("#mineButton").click();
+                        browser.sleep(500);
+
+                        expect($("#output").isDisplayed()).toBeTruthy();
+
+
+                        element.all(by.binding('b.prop')).then(function (items) {
+                            expect(items.length).toBe(0);
+                        });
+
+
+                        element.all(by.binding('b.var')).then(function (items) {
+                            expect(items.length).toBe(0);
+                        });
+
+                    });
+                });
+            });
+
+        });
+
+
+    });
+
     it('should not enable mine button if log is empty', function () {
         $("#inputBtn").click();
         browser.sleep(500);

@@ -16,7 +16,7 @@
     "karma-junit-reporter": "^0.2.2",
     "protractor": "^2.1.0",
     "shelljs": "^0.2.6",
-    "phantomjs": "*"
+    "phantomjs-prebuilt": "*"
   },
   "scripts": {
     "prestart": "npm install",
