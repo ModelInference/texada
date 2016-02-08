@@ -19,7 +19,7 @@
     texada.controller("TexadaHomeCtrl", ["$scope", "$http", function ($scope, $http) {
         $scope.ltl = "-f 'G(x->XFy)' -l";    // The LTL property to be mined
         $scope.text = "a\nb\nc\n--\nb\nb\nc\na\n--\nc\na\nb\nc\n--";   // The log/data to mine
-
+        $scope.defaultErrorMessage = "Sorry, an unknown error occurred.";
         $scope.uploadOrText = "text";      // File upload or textbox (textbox used as default)
         $scope.commonPropSelected = "";    // Selected common prop
 
@@ -224,6 +224,11 @@
         $scope.miningFailure = function (data) {
             $scope.bindings = [];
             $scope.properties = [];
+            console.log(data);
+            if(data.status != 200) {
+                showErrorModal($scope.defaultErrorMessage);
+                return;
+            }
             showErrorModal(data.responseText);
             $scope.$apply();
             return;
