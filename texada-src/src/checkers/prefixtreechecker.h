@@ -47,12 +47,10 @@ private:
      * both the next types are not supported.
      */
     statistic check_on_single_trace(const spot::ltl::automatop* node) {
-        std::cerr << "Type automatop unsupported. \n";
-        return statistic(false, 0, 0);
+        throw texada::unsupported_type_exception("Type automatop unsupported.");
     }
     statistic check_on_single_trace(const spot::ltl::bunop* node) {
-        std::cerr << "Type bunop unsupported. \n";
-        return statistic(false, 0, 0);
+        throw texada::unsupported_type_exception("Type bunop unsupported.");
     }
 
     virtual map<int, statistic> check_on_kids(const spot::ltl::formula* node,
