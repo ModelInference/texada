@@ -13,6 +13,7 @@
 #include <iostream>
 #include "statistic.h"
 #include "../exceptions/unsupportedoperation.h"
+#include "../exceptions/unsupportedtype.h"
 
 namespace texada {
 
@@ -227,15 +228,11 @@ namespace texada {
 
         // unsupported types get default throwing behaviour
         return_type check(const spot::ltl::automatop *node) {
-            //TODO: throw
-            std::cerr << "Type automatop unsupported. \n";
-            return false_check(std::set<int>());
+            throw texada::unsupported_type_exception("Type automatop unsupported.");
         }
 
         return_type check(const spot::ltl::bunop *node) {
-            //TODO:throw
-            std::cerr << "Type bunop unsupported. \n";
-            return false_check(std::set<int>());
+            throw texada::unsupported_type_exception("Type bunop unsupported.");
         }
 
         // pure virtual methods used in cases.

@@ -140,21 +140,17 @@ private:
      * automatop and bunop are not supported.
      */
     long find_first_occurrence(const spot::ltl::automatop*) {
-        std::cerr << "Type automatop unsupported. \n";
-        return -1;
+        throw texada::unsupported_type_exception("Type automatop unsupported.");
     }
     long find_first_occurrence(const spot::ltl::bunop*) {
-        std::cerr << "Type bunop unsupported. \n";
-        return -1;
+        throw texada::unsupported_type_exception("Type bunop unsupported.");
     }
 
     long find_last_occurrence(const spot::ltl::automatop*) {
-        std::cerr << "Type automatop unsupported. \n";
-        return -1;
+        throw texada::unsupported_type_exception("Type automatop unsupported.");
     }
     long find_last_occurrence(const spot::ltl::bunop*) {
-        std::cerr << "Type bunop unsupported. \n";
-        return -1;
+        throw texada::unsupported_type_exception("Type bunop unsupported.");
     }
 
 };
