@@ -13,6 +13,7 @@
 #include <iostream>
 #include "statistic.h"
 #include "../exceptions/unsupportedoperation.h"
+#include "../exceptions/unsupportedtype.h"
 
 namespace texada {
 
@@ -152,7 +153,7 @@ namespace texada {
                 }
 
                 default:
-                    throw texada::unsupported_operation_exception("Unsupported binary operator, only xor, =>, <=>, U, R, W and M are supported.");
+                    throw texada::unsupported_operation_exception("Unsupported binary operator."); // TODO: Add opkind later
 
             }
         }
@@ -193,7 +194,7 @@ namespace texada {
 
                     // Other operators are not LTL, don't support them
                 default:
-                    throw texada::unsupported_operation_exception("Unsupported unary operator, only G, F, X and ! supported.");
+                    throw texada::unsupported_operation_exception("Unsupported unary operator.");
 
             }
         }
@@ -219,7 +220,7 @@ namespace texada {
                     return and_check(node, trace_pt, trace_ids);
                 }
                 default:
-                    throw texada::unsupported_operation_exception("Unsupported multiple operator, only & and | supported.");
+                    throw texada::unsupported_operation_exception("Unsupported multiple operator.");
 
             }
 
@@ -227,15 +228,11 @@ namespace texada {
 
         // unsupported types get default throwing behaviour
         return_type check(const spot::ltl::automatop *node) {
-            // taus actually did this
-            throw texada::unsupported_operation_exception("Automatop operators unsupported. \n");
-
+            throw texada::unsupported_type_exception("Type automatop unsupported.");
         }
 
         return_type check(const spot::ltl::bunop *node) {
-            // taus actually did this
-            throw texada::unsupported_operation_exception("Bunop operators unsupported. \n");
-
+            throw texada::unsupported_type_exception("Type bunop unsupported.");
         }
 
         // pure virtual methods used in cases.

@@ -19,6 +19,7 @@
 #include "../parsers/parser.h"
 #include "../checkers/statistic.h"
 #include "../exceptions/unsupportedoperation.h"
+#include "../exceptions/unsupportedtype.h"
 
 // PRINTING HELPERS
 
@@ -378,6 +379,9 @@ int main(int ac, char* av[]) {
           // exception catching
     } catch (texada::unsupported_operation_exception& e) {
         std::cerr << "Unsupported Operation Error: " << e.what() << "\n";
+        return 1;
+    } catch (texada::unsupported_type_exception& e) {
+        std::cerr << "Unsupported Type Error: " << e.what() << "\n";
         return 1;
     } catch (std::exception& e) {
         std::cerr << "Error: " << e.what() << "\n";
