@@ -144,6 +144,7 @@ Texada comes with a stand-alone web-server that allows you to interact with the 
 For an example of this interface, try the deployed [Texada service](http://bestchai.bitbucket.org/texada/).
 
 To install the web-server you'll need:
+
 * Install the texada binary following instructions above
 * NodeJS and related JavaScript dependencies for the web-client
 * Go lang for the web-server
