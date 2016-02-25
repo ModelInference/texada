@@ -5,11 +5,5 @@
 #include "unsupportedtype.h"
 
 namespace texada {
-    unsupported_type_exception::unsupported_type_exception(std::string message){
-        msg = message;
-    }
-
-    const char* unsupported_type_exception::what() const throw(){
-        return msg.c_str();
-    }
+    unsupported_type_exception::unsupported_type_exception(std::string message) : general_exception::general_exception(message){}
 }

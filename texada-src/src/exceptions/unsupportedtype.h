@@ -7,14 +7,13 @@
 
 #include <iostream>
 #include <exception>
+#include "generalexception.h"
 
 namespace texada {
-    class unsupported_type_exception : public std::exception {
-    private:
-        std::string msg;
+    // Custom exception for unsupported type
+    class unsupported_type_exception : public texada::general_exception {
     public:
         unsupported_type_exception(std::string msg);
-        virtual const char* what() const throw();
     };
 }
 

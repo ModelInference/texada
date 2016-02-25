@@ -7,16 +7,13 @@
 
 #include <iostream>
 #include <exception>
+#include "generalexception.h"
 
 namespace texada {
-    // Custom exception for unsupported property type
-    class unsupported_operation_exception: public std::exception
-    {
-    private:
-        std::string msg;
+    // Custom exception for unsupported operation
+    class unsupported_operation_exception: public texada::general_exception {
     public:
         unsupported_operation_exception(std::string msg);
-        virtual const char* what() const throw();
     };
 }
 
