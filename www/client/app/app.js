@@ -18,7 +18,7 @@
 
     texada.controller("TexadaHomeCtrl", ["$scope", "$http", function ($scope, $http) {
         $scope.ltl = "-f 'G(x->XFy)' -l";    // The LTL property to be mined
-//        $scope.text = "a\nb\nc\n--\nb\nb\nc\na\n--\nc\na\nb\nc\n--";   // The log/data to mine
+        $scope.currentPropertyType = "always-followed-by"; // LTL property name to display
         // The log/data to mine
         $scope.text = "StackAr(int)\n\
 isFull()\n\
@@ -1397,62 +1397,75 @@ isEmpty()\n\
 
         // Common property types to be used
         $scope.commonProps = {
-            "always-followed-by": "-f 'G(x->XFy)'",
-            "immediately-followed-by\/followedby": "-f 'G(x -> X y)'",
-            "perracotta\/alternating": "-f '(!y W x) & G((x -> X(!x U y))&(y -> X(!y W x)))'",
-            "perracotta\/causefirst": "-f '(!y W x) & G(x -> XFy)'",
-            "perracotta\/effectfirst": "-f 'G((x -> X(!x U y)) & (y -> X(!y W x)))'",
-            "perracotta\/multicause": "-f '(!y W x) & G((x -> XFy) & (y -> X(!y W x)))'",
-            "perracotta\/multieffect": "-f '(!y W x) & G(x -> X(!x U y))'",
-            "perracotta\/onecause": "-f 'G(x -> X(!x U y))'",
-            "perracotta\/oneeffect": "-f 'G((x -> XFy) & (y -> X(!y W x)))'",
-            "perracotta\/response": "-f 'G(x->XFy)'",
-            "synoptic\/always-followed-by": "-f 'G(x -> XF y)'",
-            "synoptic\/always-precedes": "-f 'Fy -> (!y U x)'",
-            "synoptic\/never-followed-by": "-f 'G(x -> G !y)'",
-            "spec-patterns\/absence\/after_q": "-f 'G(q -> G(!p))'",
-            "spec-patterns\/absence\/after_q_until_r": "-f 'G(q & !r -> (!p W r))'",
-            "spec-patterns\/absence\/before_r": "-f 'Fr -> (!p U r)'",
-            "spec-patterns\/absence\/between_q_and_r": "-f 'G((q & !r & Fr) -> (!p U r))'",
-            "spec-patterns\/absence\/globally": "-f 'G(!p)'",
-            "spec-patterns\/bounded_existence\/after_q": "-f 'Fq -> (!q U (q & (!p W (p W (!p W (p W G!p))))))'",
-            "spec-patterns\/bounded_existence\/after_q_until_r": "-f 'G(q -> ((!p & !r) U (r | ((p & !r) U (r | ((!p & !r) U (r | ((p & !r) U (r | (!p W r) | Gp)))))))))'",
-            "spec-patterns\/bounded_existence\/before_r": "-f 'Fr -> ((!p & !r) U (r | ((p & !r) U (r | ((!p & !r) U (r | ((p & !r) U (r | (!p U r)))))))))'",
-            "spec-patterns\/bounded_existence\/between_q_and_r": "-f 'G((q & Fr) -> ((!p & !r) U (r | ((p & !r) U (r | ((!p & !r) U (r | ((p & !r) U (r | (!p U r))))))))))'",
-            "spec-patterns\/bounded_existence\/globally": "-f '(!p W (p W (!p W (p W G!p))))'",
-            "spec-patterns\/constrained_chain\/after_q": "-f 'G (q -> G (p -> (s & !z & X(!z U t))))'",
-            "spec-patterns\/constrained_chain\/after_q_until_r": "-f 'G (q -> (p -> (!r U (s & !r & !z & X((!r & !z) U t)))) U (r | G (p -> (s & !z & X(!z U t)))))'",
-            "spec-patterns\/constrained_chain\/before_r": "-f 'Fr -> (p -> (!r U (s & !r & !z & X((!r & !z) U t)))) U r'",
-            "spec-patterns\/constrained_chain\/between_q_and_r": "-f 'G ((q & Fr) -> (p -> (!r U (s & !r & !z & X((!r & !z) U t)))) U r)'",
-            "spec-patterns\/constrained_chain\/globally": "-f 'G (p -> F(s & !z & X(!z U t)))'",
-            "spec-patterns\/existence\/after_q": "-f 'G(!q) | F(q & Fp))'",
-            "spec-patterns\/existence\/after_q_until_r": "-f 'G(q & !r -> (!r U (p & !r)))'",
-            "spec-patterns\/existence\/before_r": "-f '!r W (p & !r)'",
-            "spec-patterns\/existence\/between_q_and_r": "-f 'G(q & !r -> (!r W (p & !r)))'",
-            "spec-patterns\/existence\/globally": "-f 'F(p)'",
-            "spec-patterns\/precedence\/after_q": "-f 'G!q | F(q & (!p W s))'",
-            "spec-patterns\/precedence\/after_q_until_r": "-f 'G(q & !r -> (!p W (s | r)))'",
-            "spec-patterns\/precedence\/before_r": "-f 'Fr -> (!p U (s | r))'",
-            "spec-patterns\/precedence\/between_q_and_r": "-f 'G((q & !r & Fr) -> (!p U (s | r)))'",
-            "spec-patterns\/precedence\/globally": "-f '!p W s'",
-            "spec-patterns\/response\/after_q": "-f 'G(q -> G(p -> Fs))'",
-            "spec-patterns\/response\/after_q_until_r": "-f 'G(q & !r -> ((p -> (!r U (s & !r))) W r)'",
-            "spec-patterns\/response\/before_r": "-f 'Fr -> (p -> (!r U (s & !r))) U r'",
-            "spec-patterns\/response\/between_q_and_r": "-f 'G((q & !r & Fr) -> (p -> (!r U (s & !r))) U r)'",
-            "spec-patterns\/response\/globally": "-f 'G(p -> Fs)'",
-            "spec-patterns\/universality\/after_q": "-f 'G(q -> G(p))'",
-            "spec-patterns\/universality\/after_q_until_r": "-f 'G(q & !r -> (p W r))'",
-            "spec-patterns\/universality\/before_r": "-f 'Fr -> (p U r)'",
-            "spec-patterns\/universality\/between_q_and_r": "-f 'G((q & !r & Fr) -> (p U r))'",
-            "spec-patterns\/universality\/globally": "-f 'G(p)'"
+            "always-followed-by": "G(x->XFy)",
+            "immediately-followed-by\/followedby": "G(x -> X y)",
+            "perracotta\/alternating": "(!y W x) & G((x -> X(!x U y))&(y -> X(!y W x)))",
+            "perracotta\/causefirst": "(!y W x) & G(x -> XFy)",
+            "perracotta\/effectfirst": "G((x -> X(!x U y)) & (y -> X(!y W x)))",
+            "perracotta\/multicause": "(!y W x) & G((x -> XFy) & (y -> X(!y W x)))",
+            "perracotta\/multieffect": "(!y W x) & G(x -> X(!x U y))",
+            "perracotta\/onecause": "G(x -> X(!x U y))",
+            "perracotta\/oneeffect": "G((x -> XFy) & (y -> X(!y W x)))",
+            "perracotta\/response": "G(x->XFy)",
+            "synoptic\/always-followed-by": "G(x -> XF y)",
+            "synoptic\/always-precedes": "Fy -> (!y U x)",
+            "synoptic\/never-followed-by": "G(x -> G !y)",
+            "spec-patterns\/absence\/after_q": "G(q -> G(!p))",
+            "spec-patterns\/absence\/after_q_until_r": "G(q & !r -> (!p W r))",
+            "spec-patterns\/absence\/before_r": "Fr -> (!p U r)",
+            "spec-patterns\/absence\/between_q_and_r": "G((q & !r & Fr) -> (!p U r))",
+            "spec-patterns\/absence\/globally": "G(!p)",
+            "spec-patterns\/bounded_existence\/after_q": "Fq -> (!q U (q & (!p W (p W (!p W (p W G!p))))))",
+            "spec-patterns\/bounded_existence\/after_q_until_r": "G(q -> ((!p & !r) U (r | ((p & !r) U (r | ((!p & !r) U (r | ((p & !r) U (r | (!p W r) | Gp)))))))))",
+            "spec-patterns\/bounded_existence\/before_r": "Fr -> ((!p & !r) U (r | ((p & !r) U (r | ((!p & !r) U (r | ((p & !r) U (r | (!p U r)))))))))",
+            "spec-patterns\/bounded_existence\/between_q_and_r": "G((q & Fr) -> ((!p & !r) U (r | ((p & !r) U (r | ((!p & !r) U (r | ((p & !r) U (r | (!p U r))))))))))",
+            "spec-patterns\/bounded_existence\/globally": "(!p W (p W (!p W (p W G!p))))",
+            "spec-patterns\/constrained_chain\/after_q": "G (q -> G (p -> (s & !z & X(!z U t))))",
+            "spec-patterns\/constrained_chain\/after_q_until_r": "G (q -> (p -> (!r U (s & !r & !z & X((!r & !z) U t)))) U (r | G (p -> (s & !z & X(!z U t)))))",
+            "spec-patterns\/constrained_chain\/before_r": "Fr -> (p -> (!r U (s & !r & !z & X((!r & !z) U t)))) U r",
+            "spec-patterns\/constrained_chain\/between_q_and_r": "G ((q & Fr) -> (p -> (!r U (s & !r & !z & X((!r & !z) U t)))) U r)",
+            "spec-patterns\/constrained_chain\/globally": "G (p -> F(s & !z & X(!z U t)))",
+            "spec-patterns\/existence\/after_q": "G(!q) | F(q & Fp))",
+            "spec-patterns\/existence\/after_q_until_r": "G(q & !r -> (!r U (p & !r)))",
+            "spec-patterns\/existence\/before_r": "!r W (p & !r)",
+            "spec-patterns\/existence\/between_q_and_r": "G(q & !r -> (!r W (p & !r)))",
+            "spec-patterns\/existence\/globally": "F(p)",
+            "spec-patterns\/precedence\/after_q": "G!q | F(q & (!p W s))",
+            "spec-patterns\/precedence\/after_q_until_r": "G(q & !r -> (!p W (s | r)))",
+            "spec-patterns\/precedence\/before_r": "Fr -> (!p U (s | r))",
+            "spec-patterns\/precedence\/between_q_and_r": "G((q & !r & Fr) -> (!p U (s | r)))",
+            "spec-patterns\/precedence\/globally": "!p W s",
+            "spec-patterns\/response\/after_q": "G(q -> G(p -> Fs))",
+            "spec-patterns\/response\/after_q_until_r": "G(q & !r -> ((p -> (!r U (s & !r))) W r)",
+            "spec-patterns\/response\/before_r": "Fr -> (p -> (!r U (s & !r))) U r",
+            "spec-patterns\/response\/between_q_and_r": "G((q & !r & Fr) -> (p -> (!r U (s & !r))) U r)",
+            "spec-patterns\/response\/globally": "G(p -> Fs)",
+            "spec-patterns\/universality\/after_q": "G(q -> G(p))",
+            "spec-patterns\/universality\/after_q_until_r": "G(q & !r -> (p W r))",
+            "spec-patterns\/universality\/before_r": "Fr -> (p U r)",
+            "spec-patterns\/universality\/between_q_and_r": "G((q & !r & Fr) -> (p U r))",
+            "spec-patterns\/universality\/globally": "G(p)"
         };
 
 
         $scope.bindings = [];      // The results fetched: the bindings found
         $scope.properties = [];    // The results fetched: the properties mined
 
+
+        // Respond to changes in the args text box.
         // If args are empty, then disable mine button
         $scope.$watch("ltl", function (value, old) {
+
+            // Loop through the common property types object key-val
+            // and find the name of the selected property.
+            $scope.currentPropertyType = "--";
+            for (var key in $scope.commonProps) {
+                if ($scope.getPropTexadaCmd($scope.commonProps[key]) == value) {
+                    // Set property name displayed on page.
+                    $scope.currentPropertyType = key;
+                }
+            }
+        
             if (value.length < 1) {
                 $("#mineButton").attr("disabled", true);
             }
@@ -1515,12 +1528,19 @@ isEmpty()\n\
             }
         });
 
+        // This converts a property string in LTL format into a
+        // version that we can pass to texada on the command line
+        // (adding the necessary texada command line flags).
+        $scope.getPropTexadaCmd = function(prop) {
+            return "-f '" + prop + "' -l";
+        };
+
+
         // Add common property type
         $scope.addCommonProp = function () {
-            var commonProp = $scope.commonPropSelected + " -l";
+            var commonProp = $scope.getPropTexadaCmd($scope.commonPropSelected);
             $scope.ltl = commonProp;
             $("#commonPropsModal").modal("hide");
-
         };
 
         // Server returned a 200 OK response
