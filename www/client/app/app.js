@@ -1397,7 +1397,6 @@ isEmpty()\n\
 
         // Common property types to be used
         $scope.commonProps = {
-            "always-followed-by": "G(x->XFy)",
             "immediately-followed-by\/followedby": "G(x -> X y)",
             "perracotta\/alternating": "(!y W x) & G((x -> X(!x U y))&(y -> X(!y W x)))",
             "perracotta\/causefirst": "(!y W x) & G(x -> XFy)",
