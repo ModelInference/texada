@@ -62,16 +62,24 @@ public class InvariantUnifier {
               missingSlices.remove(varInfosToStringList(slice));
 
           }
+          // remove any slices that don't apply
+          removeInvalidSlices(missingSlices, ppt);
           // if we are missing some slices at the ppt, add them 
-          if (!missingSlices.isEmpty()){
+          if (!missingSlices.isEmpty()){             
              for (List<String> varinfoNames : missingSlices){
+                //  System.out.print("Adding slice: ");
+                 // for (String var: varinfoNames){   
+                 //     System.out.print(var + " ");
+                 // }
+                //  System.out.println("\n to: " + ppt.name());
+                 // printPpt(ppt);
                  VarInfo[] vinfos = varInfosPerName.get(varinfoNames);
                  if (vinfos != null){
                    // create new varinfos with the correct parent
-                   VarInfo[] newVinfos = VarInfo.arrayclone_simple(vinfos);//new VarInfo[vinfos.length];
+                   VarInfo[] newVinfos = new VarInfo[vinfos.length];
                    for (int i = 0 ; i <vinfos.length; i++){
-                       //newVinfos[i] = new VarInfo(vinfos[i]);
-                       newVinfos[i].ppt = ppt;
+                       newVinfos[i] = ppt.find_var_by_name(vinfos[i].name());//new VarInfo(vinfos[i]);
+                      // newVinfos[i].ppt = ppt;
                    }
                    PptSlice newSlice;
                    switch (newVinfos.length){
@@ -102,6 +110,30 @@ public class InvariantUnifier {
              }
           }
 
+      }
+   }
+
+   // Removes any items from slices
+   private void removeInvalidSlices (Set<List<String>> slices, PptTopLevel ppt){
+      Iterator<List<String>> it = slices.iterator();
+      Set<String> pptVars = new HashSet<String>();
+      for (VarInfo vi: ppt.var_infos){
+          pptVars.add(vi.str_name());
+      }
+      while (it.hasNext()){
+          List<String> currentVars = it.next();
+          for (String name: currentVars){
+              if (!pptVars.contains(name)){
+               //   System.out.print("Removing slice: ");
+                  //for (String var: currentVars){   
+                 //     System.out.print(var + " ");
+                //  }
+                //  System.out.println("\n from: ");
+                //  printPpt(ppt);
+                  it.remove();
+                  break;
+              } 
+          }
       }
    }
 
@@ -147,20 +179,6 @@ public class InvariantUnifier {
       return rtnMap;
    }
 
-   // do these have same rep?
-   private boolean haveSameRepr(Invariant inv1, Invariant inv2){
-      return (inv1.format().equals(inv2.format()));
-   }
-
-   // returns true if inv is in listInvs, where we consider repr() equality as equality
-   public boolean inListByRepr(Invariant inv, List<Invariant> listInvs){
-     for (Invariant listInv : listInvs) {
-         if (haveSameRepr(inv, listInv)){
-            return true;
-         }
-     }
-     return false;
-   }
 
    // returns true if inv is in listInvs, by isSameInvariant
    public boolean inList(Invariant inv, List<Invariant> listInvs){
@@ -196,12 +214,25 @@ public class InvariantUnifier {
       return retList;
    }
 
+   private void printPpt(PptTopLevel ppt){
+    System.out.println("Printing ppt: " + ppt.name);
+    for (PptSlice slice : ppt.views_iterable()){
+         System.out.print("     "); 
+         printSlice(slice);
+    }
+   }
+   private void printSlice(PptSlice slice){
+     System.out.println("Printing slice: " + slice.name());
+     for (Invariant inv: slice.invs){
+         System.out.println("           " + inv.format()); 
+     }
+   }
 
    
    public PptMap getPptMap(){
      return this.map;
    }
- 
+ /*
    // returns false if the invariants are not identical over all slices.
    public boolean sanityCheck(){
    for (PptTopLevel ppt : map.all_ppts()){
@@ -236,7 +267,7 @@ public class InvariantUnifier {
      return true;
 
    }
-
+*/
    public static void main(String [] args) {
      if (args.length != 1){
         System.out.println("Error: you must provide a .inv or .inv.gz file to the command line, and nothing else.");
@@ -249,7 +280,7 @@ public class InvariantUnifier {
       InvariantUnifier unifier = new InvariantUnifier(map);
       unifier.unifyInvariants();
       // uncomment line below to test if this actually unified invariants. 
-      if (!unifier.sanityCheck()) {System.out.println("This is bad!!"); return;}
+      //if (!unifier.sanityCheck()) {System.out.println("This is bad!!"); return;}
      
       int invIndex = args[0].indexOf(".inv");
       // TODO: should this just be a .inv file? or just a .inv.gz file?
