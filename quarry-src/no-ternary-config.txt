@@ -1,0 +1,2 @@
+daikon.inv.ternary.threeScalar.LinearTernary.enabled = false
+daikon.inv.ternary.threeScalar.LinearTernaryFloat.enabled = false
