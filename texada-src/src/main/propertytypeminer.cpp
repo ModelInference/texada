@@ -23,6 +23,7 @@
 #include "../parsers/mapparser.h"
 #include "../parsers/prefixtreeparser.h"
 #include "../instantiation-tools/constinstantspool.h"
+#include "../instantiation-tools/scopedinstantspoolcreator.h"
 #include "../instantiation-tools/pregeninstantspool.h"
 #include "../instantiation-tools/otfinstantspool.h"
 #include "../instantiation-tools/instantspoolcreator.h"
@@ -85,6 +86,8 @@ vector<vector<std::pair<std::map<std::string, std::string>, texada::statistic>>>
     bool allow_reps = opts.count("allow-same-bindings");
     // whether to pregenerate instantiations
     bool pregen_instants = opts.count("pregen-instants");
+    // whether to generate with scope sematics
+    bool scope_semantics = opts.count("scope-semantics");
 
     /*
      * Setting support, support-potential, and confidence thresholds.
@@ -253,12 +256,14 @@ vector<vector<std::pair<std::map<std::string, std::string>, texada::statistic>>>
         for (unsigned int j = 0; j < exclude_event_sets[i].size(); j++){
             event_set->erase(exclude_event_sets[i].at(j));
         }
-
         // create the instantiators
         if (variable_vec[i]->empty()) {
             instantiator = new const_instants_pool(formulae[i]);
         } else if (pregen_instants) {
             instantiator = new pregen_instants_pool(event_set, variable_vec[i],
+                    allow_reps, constant_events);
+        } else if (scope_semantics){
+            instantiator = new scoped_instants_pool_creator(event_set, variable_vec[i],
                     allow_reps, constant_events);
         } else {
             instantiator = new otf_instants_pool(event_set,  variable_vec[i], allow_reps,
