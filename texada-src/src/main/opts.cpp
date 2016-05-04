@@ -48,6 +48,7 @@ boost::program_options::options_description get_options_description() {
             "only find instances above the given confidence threshold. Must be between 0 and 1 [default: 1]")
             ("print-stats", "print the support and confidence of each finding")
             ("use-global-thresholds", "make all inputed thresholds global [default: false]")
+            ("scope-semantics", "instantiate with scope semantics [default: false]")
             ("output-json", "write output in json format [default: false]")
             ("out-file", boost::program_options::value<std::string>(), "write output to out file at specified location");
 #ifdef SMT_SUPPORT
