@@ -6,6 +6,7 @@
  */
 
 #include "scopedinstantspoolcreator.h"
+#include <math.h>
 
 namespace texada {
 
