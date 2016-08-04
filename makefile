@@ -21,10 +21,13 @@ endif
 ifndef BOOST_INCL
   $(error BOOST_INCL variable is not set (see uservars.mk.example))
 endif
+ifndef BOOST_LIB
+  $(error BOOST_LIB variable is not set (see uservars.mk.example))
+endif
 
 RM := rm -rf
 
-LIBS := -lspot -lgtest -lpthread -lgtest_main -lboost_program_options -lboost_regex 
+LIBS := -lspot -lgtest -lpthread -lgtest_main -lboost_program_options -lboost_regex  -lm
 
 TX_SRC := texada-src/
 SRC := $(TX_SRC)src/
@@ -92,14 +95,14 @@ smtsetter:
 # Linking texadatest
 texadatest: $(OBJS_NO_MAIN_NO_SMT) $(TEST_OBJS_NO_SMT)
 	@echo 'Linking: $@'
-	$(CC) -L$(SPOT_LIB) -L$(GTEST_LIB) -o  "texadatest" $(OBJS_NO_SMT_NO_MAIN) $(TEST_OBJS_NO_SMT) $(LIBS) 
+	$(CC) -L$(BOOST_LIB) -L$(SPOT_LIB) -L$(GTEST_LIB) -o  "texadatest" $(OBJS_NO_SMT_NO_MAIN) $(TEST_OBJS_NO_SMT) $(LIBS) 
 	@echo 'Finished linking target: $@'
 	@echo ' '
 
 # Linking texada
 texada: $(OBJS_NO_SMT)
 	@echo 'Linking: $@'
-	$(CC) -L$(SPOT_LIB) -L$(GTEST_LIB) -o "texada" $(OBJS_NO_SMT) $(LIBS) 
+	$(CC) -L$(BOOST_LIB) -L$(SPOT_LIB) -L$(GTEST_LIB) -o "texada" $(OBJS_NO_SMT) $(LIBS) 
 	@echo 'Finished linking target: $@'
 	@echo ' '
 	

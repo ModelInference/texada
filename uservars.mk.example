@@ -23,3 +23,6 @@ GTEST_INCL:=/path/to/gtest/headers/
 
 #### Specify path to BOOST headers
 BOOST_INCL:=/path/to/boost/headers
+
+#### Specify path to BOOST libraries
+BOOST_LIB:=/path/to/boost/libs

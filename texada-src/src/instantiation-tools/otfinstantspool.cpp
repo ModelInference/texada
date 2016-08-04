@@ -9,6 +9,7 @@
 #include <ltlvisit/apcollect.hh>
 #include <ltlvisit/tostring.hh>
 #include "apsubbingcloner.h"
+#include <math.h>
 
 namespace texada {
 
