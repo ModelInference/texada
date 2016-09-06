@@ -68,12 +68,11 @@ To create a test, create a new Runner using 'Run As -> Run Configurations -> C/C
 
 #### Boost
 
-Boost can be downloaded [here](http://www.boost.org/doc/libs/1_56_0/more/getting_started/unix-variants.html) (for *nix machines) or [here](http://www.boost.org/doc/libs/1_56_0/more/getting_started/windows.html) (for Windows machines). Follow the instructions on the website to install it. Note that Texada depends on the non-header library, ProgramOptions, which needs to be built separately (see "5. Prepare to Use a Boost Library Binary" on the Boost website). We use Texada with BOOST version 1.59.0.
+Boost can be downloaded [here](http://www.boost.org/doc/libs/1_56_0/more/getting_started/unix-variants.html) (for *nix machines) or [here](http://www.boost.org/doc/libs/1_56_0/more/getting_started/windows.html) (for Windows machines). Follow the instructions on the website to install it. Note that Texada depends on the non-header libraries, ProgramOptions and regex, which needs to be built separately (see "5. Prepare to Use a Boost Library Binary" on the Boost website). We have used Texada with BOOST versions 1.59.0-1.61.0.
 
 To integrate with Texada, the location of Boost headers will need to be inputted to uservars.mk (see "Building the project" below), so make note of where it is being extracted.
 
 Texada uses boost_program_options and not boost_program_options-mt. An older installation of Boost may only have the -mt version. 
-
 #### SPOT
 
 SPOT can be downloaded [here](http://spot.lip6.fr/wiki/GetSpot). Extract the file with:
