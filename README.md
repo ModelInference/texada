@@ -93,12 +93,6 @@ To install SPOT, navigate to the extracted SPOT folder and run these commands:
 
 make install should place library files in a logical place for your OS. 
 
-#### Z3
-
-Z3 will not be necessary for most installations of Texada. Z3 is necessary for so-called "invariant semantics" (i.e. allowing events in the log to have a logical structure beyond a string event). Compiling Texada with the default target (all) will not incorporate these invariant semantics.
-
-Only users desiring to use Texada with invariant semantics need to install Z3; in this case Texada must be built with the smt target (*make smt*). Z3 can be downloaded and installed following the instructions [here](https://github.com/Z3Prover/z3). As long as the location of the folders containing the Z3 executable, libraries, and include files are on your PATH, there should be no compile problems. We use version 4.4.0.
-
 ### Cloning project
 
 An installation of mercurial is required. On *nix machines, sudo apt-get install mercurial should be sufficient. If using Eclipse, get the [MercurialEclipse](http://mercurial.selenic.com/wiki/MercurialEclipse) plug-in.
