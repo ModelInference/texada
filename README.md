@@ -6,6 +6,12 @@
 A demo showing how to use Texada to validate properties of a solution to the [dining philosophers problem](https://en.wikipedia.org/wiki/Dining_philosophers_problem).
 
 
+Texada is also described in two papers published at ASE 2015:
+
+ * Main paper: [General LTL Specification Mining](http://ieeexplore.ieee.org/document/7371998/)
+ * Tool paper: [Investigating Program Behavior Using the Texada LTL Specifications Miner](http://ieeexplore.ieee.org/document/7372082/)
+
+
 ## Table of contents
 * [Overview](#markdown-header-overview)
 * [Installation guide](#markdown-header-installation-guide)
