@@ -1,6 +1,3 @@
-## Try the [Texada service](http://bestchai.bitbucket.org/texada/) from your browser ##
------------------------
-
 [![Screenshot](https://bitbucket.org/bestchai/texada/raw/default/images/play-demo-video.jpg)](https://youtu.be/sNeGZG1LN9U)
 
 A demo showing how to use Texada to validate properties of a solution to the [dining philosophers problem](https://en.wikipedia.org/wiki/Dining_philosophers_problem).
@@ -139,8 +136,6 @@ To build, press ctrl/cmd-b or right-click on the project and click "Build Projec
 -----------------------
 
 Texada comes with a stand-alone web-server that allows you to interact with the command-line tool through a web browser.
-
-For an example of this interface, try the deployed [Texada service](http://bestchai.bitbucket.org/texada/).
 
 To install the web-server you'll need:
 
