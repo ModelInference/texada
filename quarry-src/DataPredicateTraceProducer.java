@@ -1,4 +1,5 @@
 import daikon.*;
+import daikon.chicory.Runtime.TerminationMessage;
 import daikon.split.PptSplitter;
 import daikon.inv.*;
 import daikon.inv.binary.BinaryInvariant;
@@ -86,14 +87,14 @@ public class DataPredicateTraceProducer {
            OptionalDataException, IOException, ClassNotFoundException {
     try {
       if (args.length==0) {
-          throw new Daikon.TerminationMessage(usage);
+          throw new TerminationMessage(usage);
       }
       mainHelper(args);
-    } catch (Daikon.TerminationMessage e) {
+    } catch (TerminationMessage e) {
       System.err.println(e.getMessage());
       System.exit(1);
     }
-    // Any exception other than Daikon.TerminationMessage gets propagated.
+    // Any exception other than TerminationMessage gets propagated.
     // This simplifies debugging by showing the stack trace.
   }
 
@@ -101,9 +102,9 @@ public class DataPredicateTraceProducer {
    * This does the work of main, but it never calls System.exit, so it
    * is appropriate to be called progrmmatically.
    * Termination of the program with a message to the user is indicated by
-   * throwing Daikon.TerminationMessage.
+   * throwing TerminationMessage.
    * @see #main(String[])
-   * @see daikon.Daikon.TerminationMessage
+   * @see daikon.chicory.Runtime.TerminationMessage
    **/
   public static void mainHelper(final String[] args)
     throws FileNotFoundException, StreamCorruptedException,
@@ -133,7 +134,7 @@ public class DataPredicateTraceProducer {
         String option_name = longopts[g.getLongind()].getName();
         if (Daikon.help_SWITCH.equals(option_name)) {
           System.out.println(usage);
-          throw new Daikon.TerminationMessage();
+          throw new TerminationMessage();
         } else if (conf_SWITCH.equals (option_name)) {
           doConf = true;
         } else if (filter_SWITCH.equals (option_name)) {
@@ -147,7 +148,7 @@ public class DataPredicateTraceProducer {
         } else if (dir_SWITCH.equals (option_name)) {
           dir_file = new File (Daikon.getOptarg(g));
           if (!dir_file.exists() || !dir_file.isDirectory())
-             throw new Daikon.TerminationMessage ("Error reading the directory "+dir_file);
+             throw new TerminationMessage ("Error reading the directory "+dir_file);
 
         } else if (output_SWITCH.equals (option_name)) {
           File output_file = new File (Daikon.getOptarg(g));
@@ -164,7 +165,7 @@ public class DataPredicateTraceProducer {
           LogHelper.setLevel("daikon.Debug", LogHelper.FINE);
           String error = Debug.add_track (Daikon.getOptarg(g));
           if (error != null) {
-            throw new Daikon.TerminationMessage ("Error parsing track argument '"
+            throw new TerminationMessage ("Error parsing track argument '"
                                 + Daikon.getOptarg(g) + "' - " + error);
           }
         } else {
@@ -174,7 +175,7 @@ public class DataPredicateTraceProducer {
         break;
       case 'h':
         System.out.println(usage);
-        throw new Daikon.TerminationMessage();
+        throw new TerminationMessage();
       case '?':
         break; // getopt() already printed an error
       default:
@@ -201,7 +202,7 @@ public class DataPredicateTraceProducer {
       String filename = file.toString();
       if (filename.indexOf(".inv") != -1) {
         if (inv_file != null) {
-          throw new Daikon.TerminationMessage ("multiple inv files specified" + Global.lineSep + usage);
+          throw new TerminationMessage ("multiple inv files specified" + Global.lineSep + usage);
         }
         inv_file = file;
       } else if (filename.indexOf(".dtrace") != -1) {
@@ -212,7 +213,7 @@ public class DataPredicateTraceProducer {
     }
     if (dir_file==null) {
       if (inv_file == null) {
-          throw new Daikon.TerminationMessage ("No inv file specified" + Global.lineSep + usage);
+          throw new TerminationMessage ("No inv file specified" + Global.lineSep + usage);
       }
       checkInvariants(inv_file);
       return;
@@ -222,17 +223,17 @@ public class DataPredicateTraceProducer {
     // Yoav additions:
     File[] filesInDir = dir_file.listFiles();
     if (filesInDir == null || filesInDir.length==0)
-          throw new Daikon.TerminationMessage("The directory "+dir_file+" is empty"+ Global.lineSep + usage);
+          throw new TerminationMessage("The directory "+dir_file+" is empty"+ Global.lineSep + usage);
     ArrayList<File> invariants = new ArrayList<File>();
     for (File f: filesInDir)
        if (f.toString().indexOf(".inv") != -1) invariants.add(f);
     if (invariants.size()==0)
-          throw new Daikon.TerminationMessage("Did not find any invariant files in the directory "+dir_file+ Global.lineSep + usage);
+          throw new TerminationMessage("Did not find any invariant files in the directory "+dir_file+ Global.lineSep + usage);
     ArrayList<File> dtraces = new ArrayList<File>();
     for (File f: filesInDir)
        if (f.toString().indexOf(".dtrace") != -1) dtraces.add(f);
     if (dtraces.size()==0)
-          throw new Daikon.TerminationMessage("Did not find any dtrace files in the directory "+dir_file+ Global.lineSep + usage);
+          throw new TerminationMessage("Did not find any dtrace files in the directory "+dir_file+ Global.lineSep + usage);
 
     System.out.println("Collecting data for invariants files "+invariants+" and dtrace files "+dtraces);
 
@@ -305,7 +306,7 @@ public class DataPredicateTraceProducer {
           activeInvariants.add(inv);
 
           //String n = invariant2str(ppt, inv);
-          //if (!allInvariants.contains(inv) && allInvariantsStr.contains(n)) throw new Daikon.TerminationMessage("Two invariants have the same ppt.name+inv.rep:"+n);
+          //if (!allInvariants.contains(inv) && allInvariantsStr.contains(n)) throw new TerminationMessage("Two invariants have the same ppt.name+inv.rep:"+n);
           allInvariants.add(inv);
           //allInvariantsStr.add(n);
         }
