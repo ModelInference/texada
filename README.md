@@ -6,6 +6,21 @@ A demo showing how to use Texada to validate properties of a solution to the [di
 Texada is also described in two papers published at ASE 2015:
 
  * Main paper: [General LTL Specification Mining](http://ieeexplore.ieee.org/document/7371998/)
+ ```
+C. Lemieux, D. Park and I. Beschastnikh, General LTL Specification Mining.
+2015 30th IEEE/ACM International Conference on Automated Software Engineering (ASE),
+Lincoln, NE, 2015, pp. 81-92, doi: 10.1109/ASE.2015.71.
+ ```
+ Bibtex:
+ ```
+ @InProceedings{Lemieux2015,
+  author    = {C. {Lemieux} and D. {Park} and I. {Beschastnikh}},
+  title     = {{General LTL Specification Mining}}, 
+  booktitle = {30th IEEE/ACM International Conference on Automated Software Engineering (ASE)}, 
+  year      = {2015},
+  pages     = {81-92},
+}
+ ```
  * Tool paper: [Investigating Program Behavior Using the Texada LTL Specifications Miner](http://ieeexplore.ieee.org/document/7372082/)
 
 
