@@ -215,7 +215,7 @@ which says that the event ```c``` is always followed by event ```d```. You can c
 
 ## Additional options
 
-A more advanced invocation of Texada, using additional options, looks like this (note that this example covers a subset of possible options; see [Command line usage screen](#markdown-header-command-line-usage-screen) below for a full listing):
+A more advanced invocation of Texada, using additional options, looks like this (note that this example covers a subset of possible options; see [Command line usage screen](#command-line-usage-screen) below for a full listing):
 
     ./texada -m -f 'G(x -> X(F(y)))' --log-file logfile.txt -r 'SUCCESS: (?<ETYPE>.*)' 'FAIL: (?<ETYPE>.*)' --trace-separator 'end' -i
 
