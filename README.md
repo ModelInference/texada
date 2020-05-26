@@ -25,11 +25,11 @@ Lincoln, NE, 2015, pp. 81-92, doi: 10.1109/ASE.2015.71.
 
 
 ## Table of contents
-* [Overview](#markdown-header-overview)
-* [Installation guide](#markdown-header-installation-guide)
-* [Web-interface installation guide](#markdown-header-web-interface-installation-guide)
-* [Usage guide](#markdown-header-usage-guide)
-* [Command line usage screen](#markdown-header-command-line-usage-screen)
+* [Overview](#overview)
+* [Installation guide](#installation-guide)
+* [Web-interface installation guide](#web-interface-installation-guide)
+* [Usage guide](#usage-guide)
+* [Command line usage screen](#command-line-usage-screen)
 
 
 # Overview
@@ -89,7 +89,8 @@ Boost can be downloaded [here](http://www.boost.org/doc/libs/1_56_0/more/getting
 
 To integrate with Texada, the location of Boost headers will need to be inputted to uservars.mk (see "Building the project" below), so make note of where it is being extracted.
 
-Texada uses boost_program_options and not boost_program_options-mt. An older installation of Boost may only have the -mt version. 
+Texada uses boost_program_options and not boost_program_options-mt. An older installation of Boost may only have the -mt version.
+
 #### SPOT
 
 SPOT can be downloaded [here](http://spot.lip6.fr/wiki/GetSpot). Extract the file with:
