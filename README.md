@@ -1,4 +1,4 @@
-[![Screenshot](https://github.com/bestchai/texada/raw/master/images/play-demo-video.jpg)](https://youtu.be/sNeGZG1LN9U)
+[![Screenshot](https://github.com/ModelInference/texada/raw/master/images/play-demo-video.jpg)](https://youtu.be/sNeGZG1LN9U)
 
 A demo showing how to use Texada to validate properties of a solution to the [dining philosophers problem](https://en.wikipedia.org/wiki/Dining_philosophers_problem).
 
@@ -38,7 +38,7 @@ Texada working from a freshly cloned repository. Texada has been
 tested on Linux and OSX. 
 
 If you are installing on Ubuntu, we have
-compiled all the commands you need to run to get started on [this wiki page](https://bitbucket.org/bestchai/texada/wiki/Automating_Texada_installation_on_Ubuntu).
+compiled all the commands you need to run to get started on [this wiki page](https://github.com/ModelInference/texada/wiki/Automating-Texada-installation-on-Ubuntu).
 
 ### Directory Structure
 
@@ -95,17 +95,6 @@ To install SPOT, navigate to the extracted SPOT folder and run these commands:
 
 make install should place library files in a logical place for your OS. 
 
-### Cloning project
-
-An installation of mercurial is required. On *nix machines, sudo apt-get install mercurial should be sufficient. If using Eclipse, get the [MercurialEclipse](http://mercurial.selenic.com/wiki/MercurialEclipse) plug-in.
-
-Create a [Bitbucket account](https://bitbucket.org/) and navigate to the [Texada code base](https://bitbucket.org/bestchai/texada). Clicking on "Clone" will give you the correct terminal command to clone, something like:
-hg clone https://yourusername@bitbucket.org/bestchai/texada
-
-From there, you can either run this command directly from terminal whilst in the directory you wish to clone to, or go from Eclipse. 
-
-To clone from Eclipse run File->Import->Mercurial->Clone From Existing Mercurial Repository to import the project to your workspace. This process is detailed in the above link to MercurialEclipse.
-
 ### Building the project
 
 To run tests and the runtime comparison option from command line, you must define the environment variable TEXADA_HOME to the location of the top level directory in which the makefile, texada-src/ and traces/ is found. The location should begin with a forward slash and end without one, as in */path/to/texada/home*. 
@@ -143,7 +132,7 @@ To install the web-server you'll need:
 * NodeJS and related JavaScript dependencies for the web-client
 * Go lang for the web-server
  
-Follow the [detailed web-interface installation guide](https://bitbucket.org/bestchai/texada/src/1ed67d80f3b44533c1c35bdaee07bce5eac5341f/www/?at=default).
+   Follow the [detailed web-interface installation guide](https://github.com/ModelInference/texada/tree/master/www).
 
 
 # Usage guide
