@@ -31,8 +31,8 @@ Lincoln, NE, 2015, pp. 81-92, doi: 10.1109/ASE.2015.71.
 * [Usage guide](#markdown-header-usage-guide)
 * [Command line usage screen](#markdown-header-command-line-usage-screen)
 
+
 # Overview
------------------------
 
 Texada is a research tool designed for extracting patterns from text data. Specifically, Texada mines temporal relations from totally-ordered sequences of events. To use Texada you need to provide it with at least the following two inputs:
 
@@ -46,7 +46,6 @@ As an example, consider the LTL property type that encodes the "x always followe
 
 
 # Installation guide
------------------------
 
 Texada is developed in C++. This section describes the steps to get
 Texada working from a freshly cloned repository. Texada has been
@@ -137,7 +136,6 @@ To build, press ctrl/cmd-b or right-click on the project and click "Build Projec
 
 
 # Web-interface Installation guide
------------------------
 
 Texada comes with a stand-alone web-server that allows you to interact with the command-line tool through a web browser.
 
@@ -151,7 +149,6 @@ To install the web-server you'll need:
 
 
 # Usage guide
------------------------
 
 Texada is a command line tool. The following assumes that you were
 able to install Texada by following the installation instructions and
@@ -367,7 +364,6 @@ There are two command line options which require regular expression arguments:
 
 
 # Command line usage screen
------------------------
 
 ~~~~
 Usage: texada [opt1] ... [optN] log-file
