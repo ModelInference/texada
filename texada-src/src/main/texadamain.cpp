@@ -9,9 +9,8 @@
 #include <string>
 #include <memory>
 #include "opts.h"
-#include <ltlvisit/tostring.hh>
-#include <ltlparse/public.hh>
-#include <ltlvisit/apcollect.hh>
+#include "../instantiation-tools/texadatospotmapping.h"
+
 
 #include "propertytypeminer.h"
 #include "jsontreeprinter.h"
@@ -28,6 +27,9 @@
  * @param instant the instantiation and its statistic
  * @param print_stats whether to print the statistics as well
  */
+
+using namespace texada;
+
 void print_json(std::ostream & outfile,
         std::pair<std::map<std::string, std::string>, texada::statistic> instant,
         int print_stats) {
@@ -264,18 +266,18 @@ int main(int ac, char* av[]) {
         std::vector<std::string> prop_types = opts_map["property-type"].as<
                 std::vector<std::string>>();
 
-        std::vector<const spot::ltl::formula *> formulae;
-        std::vector<std::shared_ptr<spot::ltl::atomic_prop_set>> atomic_props_vec;
+        std::vector<const ltl::formula *> formulae;
+        std::vector<std::shared_ptr<ltl::atomic_prop_set>> atomic_props_vec;
         std::vector<std::set<std::string>> aps_vec;
         // we'll only get here if there are no parse errors, so no need to check the error list
-        spot::ltl::parse_error_list pel = spot::ltl::parse_error_list();
+        ltl::parse_error_list pel = ltl::parse_error_list();
         for (int i = 0; i < prop_types.size(); i++) {
-             formulae.push_back(spot::ltl::parse(prop_types[i], pel));
+             formulae.push_back(ltl::parse(prop_types[i], pel));
             // get vars of formula
-            atomic_props_vec.push_back(std::shared_ptr<spot::ltl::atomic_prop_set>(
-                    spot::ltl::atomic_prop_collect(formulae[i])));
+            atomic_props_vec.push_back(std::shared_ptr<ltl::atomic_prop_set>(
+                    ltl::atomic_prop_collect(formulae[i])));
             aps_vec.push_back(std::set<std::string>());
-            for (spot::ltl::atomic_prop_set::iterator it =
+            for (ltl::atomic_prop_set::iterator it =
                     atomic_props_vec[i]->begin();
                     it != atomic_props_vec[i]->end(); it++) {
                 aps_vec[i].insert((*it)->name());
@@ -336,9 +338,9 @@ int main(int ac, char* av[]) {
                         outFile << ", ";
                     print_json(outFile, *it, opts_map.count("print-stats"));
                 } else {
-                    const spot::ltl::formula * valid_form = texada::instantiate(
+                    const ltl::formula * valid_form = texada::instantiate(
                             formulae[i], it->first, specified_formula_events);
-                    outFile << spot::ltl::to_string(valid_form) << "\n";
+                    outFile << ltl::to_string(valid_form) << "\n";
                     valid_form->destroy();
 
                     // if printing is turned on, print the statistics of each valid finding
