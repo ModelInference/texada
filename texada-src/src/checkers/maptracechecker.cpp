@@ -8,8 +8,8 @@
 #include "maptracechecker.h"
 #include "../instantiation-tools/apsubbingcloner.h"
 #include "../instantiation-tools/subformulaapcollector.h"
-#include <ltlvisit/nenoform.hh>
-#include <ltlvisit/tostring.hh>
+#include "../instantiation-tools/texadatospotmapping.h"
+#include "../instantiation-tools/texadanenoform.h"
 #include <algorithm>
 #include <deque>
 #include "statistic.h"
@@ -59,7 +59,7 @@ namespace texada {
  * @param node formula to check
  * @return true if node holds on the trace, false otherwise
  */
-    statistic map_trace_checker::check_on_trace(const spot::ltl::formula *node,
+    statistic map_trace_checker::check_on_trace(const ltl::formula *node,
                                                 interval intvl) {
         // TODO: Adjust this
         use_memo = false;
@@ -74,7 +74,7 @@ namespace texada {
  * @param node formula to check
  * @return true if node holds on the trace, false otherwise
  */
-    statistic map_trace_checker::check_on_trace(const spot::ltl::formula *node,
+    statistic map_trace_checker::check_on_trace(const ltl::formula *node,
                                                 map<string, string> instantiation_map_,
                                                 interval intvl) {
         use_memo = true;
@@ -92,7 +92,7 @@ namespace texada {
  * @param trace_ids
  * @return true if node holds over intvl, false otherwise
  */
-    statistic map_trace_checker::ap_check(const spot::ltl::atomic_prop *node,
+    statistic map_trace_checker::ap_check(const ltl::atomic_prop *node,
                                           interval intvl, std::set<int> trace_ids) {
         // TODO: refactor to legitimately to an AP check on intvl.start: need to
         // collect APs and form an event. Maybe actually don't totally refactor; only
@@ -125,10 +125,10 @@ namespace texada {
  * @param trace_ids
  * @return
  */
-    statistic map_trace_checker::until_check(const spot::ltl::binop *node,
+    statistic map_trace_checker::until_check(const ltl::binop *node,
                                              interval intvl, std::set<int> trace_ids) {
-        const spot::ltl::formula *p = node->first();
-        const spot::ltl::formula *q = node->second();
+        const ltl::formula *p = node->first();
+        const ltl::formula *q = node->second();
         // U deals with all the future, so extend interval
         intvl.end = terminal_pos - 1;
         // find q
@@ -141,7 +141,7 @@ namespace texada {
         // construct !p
         bool orig = use_memo;
         use_memo = false;
-        const spot::ltl::formula *not_p = spot::ltl::negative_normal_form(p, true);
+        const ltl::formula *not_p = ltl::negative_normal_form(p, true);
         // check that !p never occurs
         long first_occ_not_p = find_first_occurrence(not_p, intvl);
         // clean up !p
@@ -169,10 +169,10 @@ namespace texada {
  * @param trace_ids
  * @return
  */
-    statistic map_trace_checker::release_check(const spot::ltl::binop *node,
+    statistic map_trace_checker::release_check(const ltl::binop *node,
                                                interval intvl, std::set<int> trace_ids) {
-        const spot::ltl::formula *p = node->first();
-        const spot::ltl::formula *q = node->second();
+        const ltl::formula *p = node->first();
+        const ltl::formula *q = node->second();
 
         // need to make sure there's no violation of R after end of intvl
         intvl.end = terminal_pos - 1;
@@ -180,7 +180,7 @@ namespace texada {
         // construct and find the first occurrence of !q
         bool orig = use_memo;
         use_memo = false;
-        const spot::ltl::formula *not_q = spot::ltl::negative_normal_form(q, true);
+        const ltl::formula *not_q = ltl::negative_normal_form(q, true);
         long first_occ_not_q = find_first_occurrence(not_q, intvl);
         not_q->destroy();
         use_memo = orig;
@@ -212,10 +212,10 @@ namespace texada {
  * @param trace_ids
  * @return
  */
-    statistic map_trace_checker::weakuntil_check(const spot::ltl::binop *node,
+    statistic map_trace_checker::weakuntil_check(const ltl::binop *node,
                                                  interval intvl, std::set<int> trace_ids) {
-        const spot::ltl::formula *p = node->first();
-        const spot::ltl::formula *q = node->second();
+        const ltl::formula *p = node->first();
+        const ltl::formula *q = node->second();
         // need to make sure there's no violation of W after intvl.end
         intvl.end = terminal_pos - 1;
         // Find first q
@@ -224,7 +224,7 @@ namespace texada {
         bool orig = use_memo;
         use_memo = false;
         // construct and find first !p
-        const spot::ltl::formula *not_p = spot::ltl::negative_normal_form(p, true);
+        const ltl::formula *not_p = ltl::negative_normal_form(p, true);
         long first_occ_not_p = find_first_occurrence(not_p, intvl);
         not_p->destroy();
         use_memo = orig;
@@ -254,10 +254,10 @@ namespace texada {
  * @param trace_ids
  * @return
  */
-    statistic map_trace_checker::strongrelease_check(const spot::ltl::binop *node,
+    statistic map_trace_checker::strongrelease_check(const ltl::binop *node,
                                                      interval intvl, std::set<int> trace_ids) {
-        const spot::ltl::formula *p = node->first();
-        const spot::ltl::formula *q = node->second();
+        const ltl::formula *p = node->first();
+        const ltl::formula *q = node->second();
 
         // need to make sure there's no violation of R after end of intvl
         intvl.end = terminal_pos - 1;
@@ -265,7 +265,7 @@ namespace texada {
         bool orig = use_memo;
         use_memo = false;
         // construct and find the first occurrence of !q
-        const spot::ltl::formula *not_q = spot::ltl::negative_normal_form(q, true);
+        const ltl::formula *not_q = ltl::negative_normal_form(q, true);
         long first_occ_not_q = find_first_occurrence(not_q, intvl);
         not_q->destroy();
         use_memo = orig;
@@ -299,16 +299,16 @@ namespace texada {
  * @param trace_ids
  * @return
  */
-    statistic map_trace_checker::globally_check(const spot::ltl::unop *node,
+    statistic map_trace_checker::globally_check(const ltl::unop *node,
                                                 interval intvl, std::set<int> trace_ids) {
-        const spot::ltl::formula *p = node->child();
+        const ltl::formula *p = node->child();
         // Globally operator holds on all future events, so
         // extend interval until terminal point
         intvl.end = terminal_pos - 1;
         //construct and find first !p
         bool orig = use_memo;
         use_memo = false;
-        const spot::ltl::formula *not_p = spot::ltl::negative_normal_form(p, true);
+        const ltl::formula *not_p = ltl::negative_normal_form(p, true);
         long first_occ = find_first_occurrence(not_p, intvl);
         use_memo = orig;
         not_p->destroy();
@@ -325,9 +325,9 @@ namespace texada {
  * @param trace_ids
  * @return
  */
-    statistic map_trace_checker::finally_check(const spot::ltl::unop *node,
+    statistic map_trace_checker::finally_check(const ltl::unop *node,
                                                interval intvl, std::set<int> trace_ids) {
-        const spot::ltl::formula *p = node->child();
+        const ltl::formula *p = node->child();
         // Finally operator holds on all future events, so
         // extend interval until terminal point.
         intvl.end = terminal_pos - 1;
@@ -345,9 +345,11 @@ namespace texada {
  * @param trace_ids
  * @return
  */
-    statistic map_trace_checker::next_check(const spot::ltl::unop *node, interval intvl,
+    statistic map_trace_checker::next_check(const ltl::unop *node, interval intvl,
                                             std::set<int> trace_ids) {
-        const spot::ltl::formula *p = node->child();
+
+	const ltl::formula *p = node->child();
+	
         // if we are starting at last event, next event is terminal and check there.
         if (intvl.start == terminal_pos - 1 || intvl.start == terminal_pos) {
             intvl.start = terminal_pos;
@@ -367,29 +369,29 @@ namespace texada {
  * @param intvl interval to search in
  * @return first occurence of node in intvl, -1 if not found.
  */
-    long map_trace_checker::find_first_occurrence(const spot::ltl::formula *node,
+    long map_trace_checker::find_first_occurrence(const ltl::formula *node,
                                                   interval intvl) {
         switch (node->kind()) {
-            case spot::ltl::formula::Constant:
+            case ltl::formula::Constant:
                 return find_first_occurrence(
-                        static_cast<const spot::ltl::constant *>(node), intvl);
-            case spot::ltl::formula::AtomicProp:
+                        static_cast<const ltl::constant *>(node), intvl);
+            case ltl::formula::AtomicProp:
                 return find_first_occurrence(
-                        static_cast<const spot::ltl::atomic_prop *>(node), intvl);
-            case spot::ltl::formula::UnOp:
-                return find_first_occurrence(static_cast<const spot::ltl::unop *>(node),
+                        static_cast<const ltl::atomic_prop *>(node), intvl);
+            case ltl::formula::UnOp:
+                return find_first_occurrence(static_cast<const ltl::unop *>(node),
                                              intvl);
-            case spot::ltl::formula::BinOp:
-                return find_first_occurrence(static_cast<const spot::ltl::binop *>(node),
+            case ltl::formula::BinOp:
+                return find_first_occurrence(static_cast<const ltl::binop *>(node),
                                              intvl);
-            case spot::ltl::formula::MultOp:
+            case ltl::formula::MultOp:
                 return find_first_occurrence(
-                        static_cast<const spot::ltl::multop *>(node), intvl);
-            case spot::ltl::formula::BUnOp:
-                return find_first_occurrence(static_cast<const spot::ltl::bunop *>(node));
-            case spot::ltl::formula::AutomatOp:
+                        static_cast<const ltl::multop *>(node), intvl);
+            case ltl::formula::BUnOp:
+                return find_first_occurrence(static_cast<const ltl::bunop *>(node));
+            case ltl::formula::AutomatOp:
                 return find_first_occurrence(
-                        static_cast<const spot::ltl::automatop *>(node));
+                        static_cast<const ltl::automatop *>(node));
             default:
                 return -1;
         }
@@ -403,13 +405,13 @@ namespace texada {
  * @param first_occ the first occ of node on the interval intvl
  * @return first_occ
  */
-    long map_trace_checker::return_and_add_first(const spot::ltl::formula *node,
+    long map_trace_checker::return_and_add_first(const ltl::formula *node,
                                                  interval intvl, long first_occ) {
-        if (use_memo || (node->kind() == spot::ltl::formula::AtomicProp)) {
+        if (use_memo || (node->kind() == ltl::formula::AtomicProp)) {
             memoization_key key;
             switch (node->kind()) {
-                case spot::ltl::formula::AtomicProp:
-                    key = setup_key_ap(static_cast<const spot::ltl::atomic_prop *> (node), intvl);
+                case ltl::formula::AtomicProp:
+                    key = setup_key_ap(static_cast<const ltl::atomic_prop *> (node), intvl);
                     break;
                 default:
                     key = setup_key(node, intvl);
@@ -459,13 +461,13 @@ namespace texada {
  * @param last_occ the last occ of node on the interval intvl
  * @return last_occ
  */
-    long map_trace_checker::return_and_add_last(const spot::ltl::formula *node,
+    long map_trace_checker::return_and_add_last(const ltl::formula *node,
                                                 interval intvl, long last_occ) {
-        if (use_memo || (node->kind() == spot::ltl::formula::AtomicProp)) {
+        if (use_memo || (node->kind() == ltl::formula::AtomicProp)) {
             memoization_key key;
             switch (node->kind()) {
-                case spot::ltl::formula::AtomicProp:
-                    key = setup_key_ap(static_cast<const spot::ltl::atomic_prop *> (node), intvl);
+                case ltl::formula::AtomicProp:
+                    key = setup_key_ap(static_cast<const ltl::atomic_prop *> (node), intvl);
                     break;
                 default:
                     key = setup_key(node, intvl);
@@ -497,12 +499,13 @@ namespace texada {
  * @return first occurrence position, -1 if not found.
  */
     long map_trace_checker::find_first_occurrence(
-            const spot::ltl::atomic_prop *node, interval intvl) {
+            const ltl::atomic_prop *node, interval intvl) {
         // retrieve memoized value
         memoization_key key = setup_key_ap(node, intvl);
         std::unordered_map<memoization_key, long, memoization_key_hash>::iterator it =
                 first_occ_map.find(key);
         if (it != first_occ_map.end()) {
+            //printf("ap not in trace");
             return it->second;
         }
         try {
@@ -555,6 +558,11 @@ namespace texada {
                              * does not occur within intvl
                              */
                         else {
+
+
+
+
+
                             return return_and_add_first(node, intvl, -1);
                         }
                     }
@@ -623,7 +631,7 @@ namespace texada {
  * @param intvl interval to check in
  * @return first occurrence of node in intvl
  */
-    long map_trace_checker::find_first_occurrence(const spot::ltl::multop *node,
+    long map_trace_checker::find_first_occurrence(const ltl::multop *node,
                                                   interval intvl) {
         if (use_memo) {
             memoization_key key = setup_key(node, intvl);
@@ -634,12 +642,12 @@ namespace texada {
             }
         }
 
-        spot::ltl::multop::type opkind = node->op();
+        ltl::multop::type opkind = node->op();
         switch (opkind) {
 
             // Or case: total_first_occ set to max. Go through all
             // children to find smallest first_occ
-            case spot::ltl::multop::Or: {
+            case ltl::multop::Or: {
                 //set up for iteration
                 int numkids = node->size();
                 long total_first_occ = LONG_MAX;
@@ -659,7 +667,7 @@ namespace texada {
 
                 // in the and case the earliest occurrence of the and can only be
                 // at the latest of the first occurrences of the children
-            case spot::ltl::multop::And: {
+            case ltl::multop::And: {
                 //set up iteration
                 int numkids = node->size();
                 long total_first_occ = -1;
@@ -707,7 +715,7 @@ namespace texada {
  * @param intvl interval to search in
  * @return first occurrence of node in intvl, -1 if not found.
  */
-    long map_trace_checker::find_first_occurrence(const spot::ltl::unop *node,
+    long map_trace_checker::find_first_occurrence(const ltl::unop *node,
                                                   interval intvl) {
 
         if (use_memo) {
@@ -719,12 +727,12 @@ namespace texada {
             }
         }
 
-        spot::ltl::unop::type optype = node->op();
+        ltl::unop::type optype = node->op();
 
         switch (optype) {
 
             // Not case.
-            case spot::ltl::unop::Not: {
+            case ltl::unop::Not: {
                 // Given !p, find first p
                 long first_true = find_first_occurrence(node->child(), intvl);
                 // if first occurrence of p is not the first event,
@@ -745,7 +753,7 @@ namespace texada {
 
                 // Find the first occurrence of the child in the interval of nexts.
                 // Return the corresponding event that comes before it.
-            case spot::ltl::unop::X: {
+            case ltl::unop::X: {
                 intvl.start++;
                 intvl.end++;
                 long first_occ = find_first_occurrence(node->child(), intvl);
@@ -758,7 +766,7 @@ namespace texada {
 
                 // Globally: Given Gp, find the last occurrence of !p; first globally will
                 // be after that.
-            case spot::ltl::unop::G: {
+            case ltl::unop::G: {
                 // creating extended interval to preserve intvl.end;
                 // !p may occur after intvl.end and violate Gp
                 interval temp;
@@ -768,8 +776,8 @@ namespace texada {
                 bool orig = use_memo;
                 use_memo = false;
                 // create and find last occurrence of !p
-                const spot::ltl::formula *neg_norm_child =
-                        spot::ltl::negative_normal_form(node->child(), true);
+                const ltl::formula *neg_norm_child =
+                        ltl::negative_normal_form(node->child(), true);
                 long last_neg_occ = find_last_occurrence(neg_norm_child, temp);
                 neg_norm_child->destroy();
                 use_memo = orig;
@@ -789,7 +797,7 @@ namespace texada {
                 // Finally: given Fp, find the first occurrence of p from the start of the
                 // interval to the end of the trace. If it occurs at any time, then the first
                 // Fp is at the front of the interval.
-            case spot::ltl::unop::F: {
+            case ltl::unop::F: {
                 intvl.end = terminal_pos - 1;
                 long first_occ = find_first_occurrence(node->child(), intvl);
                 if (first_occ == -1)
@@ -811,9 +819,9 @@ namespace texada {
  * @param intvl interval to check in
  * @return first occurrence of node in intvl
  */
-    long map_trace_checker::find_first_occurrence(const spot::ltl::binop *node,
+    long map_trace_checker::find_first_occurrence(const ltl::binop *node,
                                                   interval intvl) {
-        spot::ltl::binop::type opkind = node->op();
+        ltl::binop::type opkind = node->op();
         if (use_memo) {
             memoization_key key = setup_key(node, intvl);
             std::unordered_map<memoization_key, long, memoization_key_hash>::iterator it =
@@ -827,7 +835,7 @@ namespace texada {
             //XOr case: Take the first of each one, unless they're at the same place.
             // Return the smallest of the first. If they're at the same place, we'll
             // need to find the next firsts.
-            case spot::ltl::binop::Xor: {
+            case ltl::binop::Xor: {
                 // if we have p xor q, find first p and q
                 long first_occ_first = find_first_occurrence(node->first(), intvl);
                 long first_occ_second = find_first_occurrence(node->second(), intvl);
@@ -856,12 +864,12 @@ namespace texada {
 
                 // Find first of negation of first, and find first of validity of last.
                 // return whichever is earlier.
-            case spot::ltl::binop::Implies: {
+            case ltl::binop::Implies: {
                 bool orig = use_memo;
                 use_memo = false;
                 // Given p -> q, find first !p
-                const spot::ltl::formula *neg_norm_first =
-                        spot::ltl::negative_normal_form(node->first(), true);
+                const ltl::formula *neg_norm_first =
+                        ltl::negative_normal_form(node->first(), true);
                 long first_occ_neg_first = find_first_occurrence(neg_norm_first, intvl);
                 neg_norm_first->destroy();
                 use_memo = orig;
@@ -884,7 +892,7 @@ namespace texada {
             }
 
                 //Equiv case: return first where neither occur, of first where both occur.
-            case spot::ltl::binop::Equiv: {
+            case ltl::binop::Equiv: {
                 // given p<->q, find first p and q
                 long first_occ_first = find_first_occurrence(node->first(), intvl);
                 long first_occ_second = find_first_occurrence(node->second(), intvl);
@@ -910,7 +918,7 @@ namespace texada {
 
                 // Until case: given p U q, find first occurrence of q and last occurrence
                 // of !p before it
-            case spot::ltl::binop::U: {
+            case ltl::binop::U: {
                 // q might first occur after the end of intvl;
                 // but also need to preserve intvl.end
                 interval temp;
@@ -927,8 +935,8 @@ namespace texada {
                 temp.end = first_occ_second - 1;
                 bool orig = use_memo;
                 use_memo = false;
-                const spot::ltl::formula *neg_norm_first =
-                        spot::ltl::negative_normal_form(node->first(), true);
+                const ltl::formula *neg_norm_first =
+                        ltl::negative_normal_form(node->first(), true);
                 long last_occ_neg_first = find_last_occurrence(neg_norm_first, temp);
                 neg_norm_first->destroy();
                 use_memo = orig;
@@ -948,7 +956,7 @@ namespace texada {
             }
 
                 //Weak until case: identical to until except base case. Given p W q...
-            case spot::ltl::binop::W: {
+            case ltl::binop::W: {
                 // q might first occur after the end of intvl;
                 // but also need to preserve intvl.end
                 interval temp;
@@ -965,8 +973,8 @@ namespace texada {
                     bool orig = use_memo;
                     use_memo = false;
                     // create and find last occurrence of !p
-                    const spot::ltl::formula *neg_norm_first =
-                            spot::ltl::negative_normal_form(node->first(), true);
+                    const ltl::formula *neg_norm_first =
+                            ltl::negative_normal_form(node->first(), true);
                     last_occ_neg_first = find_last_occurrence(neg_norm_first, temp);
                     neg_norm_first->destroy();
                     use_memo = orig;
@@ -989,8 +997,8 @@ namespace texada {
                 bool orig = use_memo;
                 use_memo = false;
                 // find last !p before q
-                const spot::ltl::formula *neg_norm_first =
-                        spot::ltl::negative_normal_form(node->first(), true);
+                const ltl::formula *neg_norm_first =
+                        ltl::negative_normal_form(node->first(), true);
                 last_occ_neg_first = find_last_occurrence(neg_norm_first, temp);
                 neg_norm_first->destroy();
                 use_memo = orig;
@@ -1008,7 +1016,7 @@ namespace texada {
             }
 
                 // Release case:
-            case spot::ltl::binop::R: {
+            case ltl::binop::R: {
                 // given q R p; first q might occur after the end
                 // of intvl, so create extended interval
                 interval temp;
@@ -1024,8 +1032,8 @@ namespace texada {
                     // create and first last !p on extended interval
                     bool orig = use_memo;
                     use_memo = false;
-                    const spot::ltl::formula *neg_norm_second =
-                            spot::ltl::negative_normal_form(node->second(), true);
+                    const ltl::formula *neg_norm_second =
+                            ltl::negative_normal_form(node->second(), true);
                     last_occ_neg_second = find_last_occurrence(neg_norm_second, temp);
                     neg_norm_second->destroy();
                     use_memo = orig;
@@ -1045,8 +1053,8 @@ namespace texada {
                 // create and find last !p before (inclusive) first q
                 bool orig = use_memo;
                 use_memo = false;
-                const spot::ltl::formula *neg_norm_second =
-                        spot::ltl::negative_normal_form(node->second(), true);
+                const ltl::formula *neg_norm_second =
+                        ltl::negative_normal_form(node->second(), true);
                 last_occ_neg_second = find_last_occurrence(neg_norm_second, temp);
                 neg_norm_second->destroy();
                 use_memo = orig;
@@ -1073,7 +1081,7 @@ namespace texada {
             }
 
                 // Strong release: identical to release except base case:
-            case spot::ltl::binop::M: {
+            case ltl::binop::M: {
                 // given q M p first q might occur after the end
                 // of intvl, so create extended interval
                 interval temp;
@@ -1090,8 +1098,8 @@ namespace texada {
                 // create and find last !p before (inclusive) q
                 bool orig = use_memo;
                 use_memo = false;
-                const spot::ltl::formula *neg_norm_second =
-                        spot::ltl::negative_normal_form(node->second(), true);
+                const ltl::formula *neg_norm_second =
+                        ltl::negative_normal_form(node->second(), true);
                 long last_occ_neg_second = find_last_occurrence(neg_norm_second, temp);
                 neg_norm_second->destroy();
                 use_memo = orig;
@@ -1127,15 +1135,15 @@ namespace texada {
  * @param intvl interval to check in
  * @return first occurrence of node in intvl
  */
-    long map_trace_checker::find_first_occurrence(const spot::ltl::constant *node,
+    long map_trace_checker::find_first_occurrence(const ltl::constant *node,
                                                   interval intvl) {
-        spot::ltl::constant::type value = node->val();
+        ltl::constant::type value = node->val();
         switch (value) {
-            case spot::ltl::constant::True:
+            case ltl::constant::True:
                 return intvl.start;
-            case spot::ltl::constant::False:
+            case ltl::constant::False:
                 return -1;
-            case spot::ltl::constant::EmptyWord:
+            case ltl::constant::EmptyWord:
                 std::cerr << "We came across the empty word. Returning -1. \n";
                 return -1;
             default:
@@ -1150,29 +1158,29 @@ namespace texada {
  * @param intvl interval to search in
  * @return last occurence of node in intvl, -1 if not found.
  */
-    long map_trace_checker::find_last_occurrence(const spot::ltl::formula *node,
+    long map_trace_checker::find_last_occurrence(const ltl::formula *node,
                                                  interval intvl) {
         switch (node->kind()) {
-            case spot::ltl::formula::Constant:
+            case ltl::formula::Constant:
                 return find_last_occurrence(
-                        static_cast<const spot::ltl::constant *>(node), intvl);
-            case spot::ltl::formula::AtomicProp:
+                        static_cast<const ltl::constant *>(node), intvl);
+            case ltl::formula::AtomicProp:
                 return find_last_occurrence(
-                        static_cast<const spot::ltl::atomic_prop *>(node), intvl);
-            case spot::ltl::formula::UnOp:
-                return find_last_occurrence(static_cast<const spot::ltl::unop *>(node),
+                        static_cast<const ltl::atomic_prop *>(node), intvl);
+            case ltl::formula::UnOp:
+                return find_last_occurrence(static_cast<const ltl::unop *>(node),
                                             intvl);
-            case spot::ltl::formula::BinOp:
-                return find_last_occurrence(static_cast<const spot::ltl::binop *>(node),
+            case ltl::formula::BinOp:
+                return find_last_occurrence(static_cast<const ltl::binop *>(node),
                                             intvl);
-            case spot::ltl::formula::MultOp:
-                return find_last_occurrence(static_cast<const spot::ltl::multop *>(node),
+            case ltl::formula::MultOp:
+                return find_last_occurrence(static_cast<const ltl::multop *>(node),
                                             intvl);
-            case spot::ltl::formula::BUnOp:
-                return find_last_occurrence(static_cast<const spot::ltl::bunop *>(node));
-            case spot::ltl::formula::AutomatOp:
+            case ltl::formula::BUnOp:
+                return find_last_occurrence(static_cast<const ltl::bunop *>(node));
+            case ltl::formula::AutomatOp:
                 return find_last_occurrence(
-                        static_cast<const spot::ltl::automatop *>(node));
+                        static_cast<const ltl::automatop *>(node));
             default:
                 return -1;
         }
@@ -1184,7 +1192,7 @@ namespace texada {
  * @param intvl interval to search in
  * @return last occurrence position, -1 if not found.
  */
-    long map_trace_checker::find_last_occurrence(const spot::ltl::atomic_prop *node,
+    long map_trace_checker::find_last_occurrence(const ltl::atomic_prop *node,
                                                  interval intvl) {
         // retrieve memoized value
         memoization_key key = setup_key_ap(node, intvl);
@@ -1260,7 +1268,7 @@ namespace texada {
  * @param intvl interval to check in
  * @return last occurrence of node in intvl
  */
-    long map_trace_checker::find_last_occurrence(const spot::ltl::multop *node,
+    long map_trace_checker::find_last_occurrence(const ltl::multop *node,
                                                  interval intvl) {
 
         if (use_memo) {
@@ -1272,12 +1280,12 @@ namespace texada {
             }
         }
 
-        spot::ltl::multop::type opkind = node->op();
+        ltl::multop::type opkind = node->op();
         switch (opkind) {
 
             // Or case: total_last_occ set to min. If the last occ of any of the events
             // is greater than total_last_occ, set total_last_occ to that.
-            case spot::ltl::multop::Or: {
+            case ltl::multop::Or: {
                 int numkids = node->size();
                 long total_last_occ = -1;
                 for (int i = 0; i < numkids; i++) {
@@ -1293,10 +1301,11 @@ namespace texada {
                 // and check all other events there. If one doesn't check out, then
                 // if there's still space before us in the original search interval, we find
                 // the last there; if there isn't, we return -1.
-            case spot::ltl::multop::And: {
+            case ltl::multop::And: {
                 int numkids = node->size();
                 long total_last_occ = LONG_MAX;
                 // take the earliest of last occurrences of all children
+                //printf("node kids: %d \n", numkids);
                 for (int i = 0; i < numkids; i++) {
                     long last_occ = find_last_occurrence(node->nth(i), intvl);
                     if (last_occ == -1)
@@ -1342,7 +1351,7 @@ namespace texada {
  * @param intvl interval to search in
  * @return last occurrence of node in intvl, -1 if not found.
  */
-    long map_trace_checker::find_last_occurrence(const spot::ltl::unop *node,
+    long map_trace_checker::find_last_occurrence(const ltl::unop *node,
                                                  interval intvl) {
 
         if (use_memo) {
@@ -1354,12 +1363,12 @@ namespace texada {
             }
         }
 
-        spot::ltl::unop::type optype = node->op();
+        ltl::unop::type optype = node->op();
 
         switch (optype) {
 
             // Not case:
-            case spot::ltl::unop::Not: {
+            case ltl::unop::Not: {
                 // given !p, find first p in the interval
                 long last_child = find_last_occurrence(node->child(), intvl);
                 // if p is the last event
@@ -1380,7 +1389,7 @@ namespace texada {
             }
 
                 // Next case:
-            case spot::ltl::unop::X: {
+            case ltl::unop::X: {
                 // shift interval so we can switch the question from
                 // find Xp to find p
                 intvl.start++;
@@ -1396,7 +1405,7 @@ namespace texada {
             }
 
                 // Globally case:
-            case spot::ltl::unop::G: {
+            case ltl::unop::G: {
                 // given Gp:
                 // extend interval to check for last !p in the end
                 interval temp;
@@ -1405,8 +1414,8 @@ namespace texada {
                 // create and find last !p
                 bool orig = use_memo;
                 use_memo = false;
-                const spot::ltl::formula *neg_norm_child =
-                        spot::ltl::negative_normal_form(node->child(), true);
+                const ltl::formula *neg_norm_child =
+                        ltl::negative_normal_form(node->child(), true);
                 long last_neg_child = find_last_occurrence(neg_norm_child, temp);
                 neg_norm_child->destroy();
                 use_memo = orig;
@@ -1419,7 +1428,7 @@ namespace texada {
             }
 
                 // Finally case:
-            case spot::ltl::unop::F: {
+            case ltl::unop::F: {
                 // Given Fp:
                 //
                 interval temp;
@@ -1448,15 +1457,15 @@ namespace texada {
  * @param intvl interval to check in
  * @return last occurrence of node in intvl
  */
-    long map_trace_checker::find_last_occurrence(const spot::ltl::constant *node,
+    long map_trace_checker::find_last_occurrence(const ltl::constant *node,
                                                  interval intvl) {
-        spot::ltl::constant::type value = node->val();
+        ltl::constant::type value = node->val();
         switch (value) {
-            case spot::ltl::constant::True:
+            case ltl::constant::True:
                 return intvl.end;
-            case spot::ltl::constant::False:
+            case ltl::constant::False:
                 return -1;
-            case spot::ltl::constant::EmptyWord:
+            case ltl::constant::EmptyWord:
                 std::cerr << "We came across the empty word. Returning -1. \n";
                 return -1;
             default:
@@ -1470,7 +1479,7 @@ namespace texada {
  * @param intvl interval to check in
  * @return last occurrence of node in intvl
  */
-    long map_trace_checker::find_last_occurrence(const spot::ltl::binop *node,
+    long map_trace_checker::find_last_occurrence(const ltl::binop *node,
                                                  interval intvl) {
 
         if (use_memo) {
@@ -1481,12 +1490,12 @@ namespace texada {
                 return it->second;
             }
         }
-        spot::ltl::binop::type opkind = node->op();
+        ltl::binop::type opkind = node->op();
 
         switch (opkind) {
 
             // Xor case:
-            case spot::ltl::binop::Xor: {
+            case ltl::binop::Xor: {
                 // given p xor q, find last p and last q
                 long last_first = find_last_occurrence(node->first(), intvl);
                 long last_second = find_last_occurrence(node->second(), intvl);
@@ -1516,13 +1525,13 @@ namespace texada {
                 // Return the last negation of the first or occurrence of the last.
                 // If they are both equal to -1, then the last else will be entered
                 // and -1 will be returned.
-            case spot::ltl::binop::Implies: {
+            case ltl::binop::Implies: {
                 // given p -> q
                 bool orig = use_memo;
                 use_memo = false;
                 // construct and find last !p
-                const spot::ltl::formula *neg_norm_first =
-                        spot::ltl::negative_normal_form(node->first(), true);
+                const ltl::formula *neg_norm_first =
+                        ltl::negative_normal_form(node->first(), true);
                 long last_neg_first = find_last_occurrence(neg_norm_first, intvl);
                 neg_norm_first->destroy();
                 use_memo = orig;
@@ -1537,7 +1546,7 @@ namespace texada {
             }
 
                 // Equiv case: p <-> q
-            case ::spot::ltl::binop::Equiv: {
+            case ltl::binop::Equiv: {
                 // find last p and last q
                 long last_first = find_last_occurrence(node->first(), intvl);
                 long last_second = find_last_occurrence(node->second(), intvl);
@@ -1566,7 +1575,7 @@ namespace texada {
                 // Until case: given p U q, if there is a q after the end
                 // of intvl, the last element of interval might be p U q;
                 // else the last q in the interval is the last p U q.
-            case ::spot::ltl::binop::U: {
+            case ltl::binop::U: {
 
                 if (intvl.end < terminal_pos - 1) {
                     // create interval after interval
@@ -1589,8 +1598,8 @@ namespace texada {
                     // interval end
                     bool orig = use_memo;
                     use_memo = false;
-                    const spot::ltl::formula *neg_norm_first =
-                            spot::ltl::negative_normal_form(node->first(), true);
+                    const ltl::formula *neg_norm_first =
+                            ltl::negative_normal_form(node->first(), true);
                     long last_first = find_last_occurrence(neg_norm_first, temp);
                     neg_norm_first->destroy();
                     use_memo = orig;
@@ -1604,12 +1613,12 @@ namespace texada {
             }
 
                 // Similar to until, given p W q:
-            case ::spot::ltl::binop::W: {
+            case ltl::binop::W: {
                 // create !p
                 bool orig = use_memo;
                 use_memo = false;
-                const spot::ltl::formula *neg_norm_first =
-                        spot::ltl::negative_normal_form(node->first(), true);
+                const ltl::formula *neg_norm_first =
+                        ltl::negative_normal_form(node->first(), true);
                 use_memo = orig;
 
                 if (intvl.end < terminal_pos - 1) {
@@ -1668,13 +1677,13 @@ namespace texada {
                 // Release case: q R p
                 // Similar to weak until, but due to pickiness around having q & p at
                 // the release case, recurses.
-            case ::spot::ltl::binop::R: {
+            case ltl::binop::R: {
                 // Given q R p:
                 // create !p
                 bool orig = use_memo;
                 use_memo = false;
-                const spot::ltl::formula *neg_norm_second =
-                        spot::ltl::negative_normal_form(node->second(), true);
+                const ltl::formula *neg_norm_second =
+                        ltl::negative_normal_form(node->second(), true);
                 use_memo = orig;
                 // create the interval "after" intvl
                 interval temp;
@@ -1733,13 +1742,13 @@ namespace texada {
 
                 // Same as weak release, but we don't consider whether the last
                 // element is p, as that is not valid for strong release.
-            case ::spot::ltl::binop::M: {
+            case ltl::binop::M: {
                 // Given q M p:
                 // create !p
                 bool orig = use_memo;
                 use_memo = false;
-                const spot::ltl::formula *neg_norm_second =
-                        spot::ltl::negative_normal_form(node->second(), true);
+                const ltl::formula *neg_norm_second =
+                        ltl::negative_normal_form(node->second(), true);
                 use_memo = orig;
 
                 // create interval after intvl
@@ -1800,7 +1809,7 @@ namespace texada {
  * @param intvl
  * @return
  */
-    map_trace_checker::memoization_key map_trace_checker::setup_key(const spot::ltl::formula *node, interval intvl) {
+    map_trace_checker::memoization_key map_trace_checker::setup_key(const ltl::formula *node, interval intvl) {
         map_trace_checker::memoization_key memo_key;
         memo_key.formula = node;
         memo_key.intvl = intvl;
@@ -1828,7 +1837,7 @@ namespace texada {
  * @param intvl
  * @return
  */
-    map_trace_checker::memoization_key map_trace_checker::setup_key_ap(const spot::ltl::atomic_prop *ap,
+    map_trace_checker::memoization_key map_trace_checker::setup_key_ap(const ltl::atomic_prop *ap,
                                                                        interval intvl) {
         map_trace_checker::memoization_key memo_key;
         memo_key.formula = ap;
@@ -1852,12 +1861,12 @@ namespace texada {
  * @param node
  * @return
  */
-    set<string> map_trace_checker::aps_of_form(const spot::ltl::formula *node) {
-        map<const spot::ltl::formula *, set<string>>::iterator set_pair =
+    set<string> map_trace_checker::aps_of_form(const ltl::formula *node) {
+        map<const ltl::formula *, set<string>>::iterator set_pair =
                 relevant_bindings_map->find(node);
         if (set_pair == relevant_bindings_map->end()) {
             std::cerr
-            << "Could not find the atomic props for " << spot::ltl::to_string(node) << " in the map.\n";
+            << "Could not find the atomic props for " << ltl::to_string(node) << " in the map.\n";
             return set<string>();
             //TODO: exception
         }
@@ -1870,7 +1879,7 @@ namespace texada {
  * are contained in which subformula) to bindings_map
  * @param bindings_map
  */
-    void map_trace_checker::add_relevant_bindings(map<const spot::ltl::formula *, set<string>> *bindings_map) {
+    void map_trace_checker::add_relevant_bindings(map<const ltl::formula *, set<string>> *bindings_map) {
         relevant_bindings_map = bindings_map;
 
     }
@@ -1899,7 +1908,7 @@ namespace texada {
  * @return all valid instantiations
  */
     vector<std::pair<map<string, string>, statistic>> valid_instants_on_traces(
-            const spot::ltl::formula *prop_type,
+            const ltl::formula *prop_type,
             instants_pool_creator *instantiator,
             shared_ptr<set<map<event, vector<long>>> > traces,
             bool use_invar_semantics,
@@ -1941,7 +1950,7 @@ namespace texada {
                     instantiation_to_pass.emplace(*events_it, *events_it);
                 }
             }
-            // const spot::ltl::formula * instantiated_prop_type = instantiate(prop_type,*current_instantiation, instantiator->get_events_to_exclude());
+            // const ltl::formula * instantiated_prop_type = instantiate(prop_type,*current_instantiation, instantiator->get_events_to_exclude());
             // is the instantiation valid?
             statistic global_stat = statistic(true, 0, 0);
             for (int i = 0; i < num_traces; i++) {
