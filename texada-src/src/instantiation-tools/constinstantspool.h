@@ -18,14 +18,14 @@ namespace texada {
 
 class const_instants_pool: public instants_pool_creator {
 public:
-    const_instants_pool(const spot::ltl::formula * prop_type);
+    const_instants_pool(const ltl::formula * prop_type);
     virtual ~const_instants_pool();
     shared_ptr<map<string,string>> get_next_instantiation();
 
 private:
     shared_ptr<map<string,string>> instantiation;
 
-    void instantiate(const spot::ltl::formula * formula);
+    void instantiate(const ltl::formula * formula);
 };
 
 } /* namespace texada */

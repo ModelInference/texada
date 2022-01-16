@@ -10,7 +10,7 @@
 
 namespace texada {
 
-const_instants_pool::const_instants_pool(const spot::ltl::formula * formula) {
+const_instants_pool::const_instants_pool(const ltl::formula * formula) {
     instantiation = std::make_shared<map<string, string>>();
     instantiate(formula);
 }
@@ -27,10 +27,10 @@ shared_ptr<map<string, string>> const_instants_pool::get_next_instantiation() {
     return instantiation;
 }
 
-void const_instants_pool::instantiate(const spot::ltl::formula * formula) {
-    shared_ptr<spot::ltl::atomic_prop_set> variables(
-            spot::ltl::atomic_prop_collect(formula));
-    for (spot::ltl::atomic_prop_set::iterator it = variables->begin();
+void const_instants_pool::instantiate(const ltl::formula * formula) {
+    shared_ptr<ltl::atomic_prop_set> variables(
+            ltl::atomic_prop_collect(formula));
+    for (ltl::atomic_prop_set::iterator it = variables->begin();
             it != variables->end(); it++) {
         std::pair<string, string> mapping ((*it)->name(), (*it)->name());
         instantiation->insert(mapping);

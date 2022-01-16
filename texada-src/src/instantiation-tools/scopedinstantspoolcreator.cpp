@@ -11,7 +11,7 @@
 namespace texada {
 
 scoped_instants_pool_creator::scoped_instants_pool_creator(shared_ptr<set<string>> events,
-        shared_ptr<spot::ltl::atomic_prop_set> ltlevents, bool allow_reps,
+        shared_ptr<ltl::atomic_prop_set> ltlevents, bool allow_reps,
         vector<string> exclude_events) :
         instants_pool_creator(events, ltlevents, allow_reps, exclude_events)  {
     scope_events = new set<string>();
@@ -26,13 +26,13 @@ scoped_instants_pool_creator::scoped_instants_pool_creator(shared_ptr<set<string
         }
     }
     std::cout << "Number of predicates: " << predicate_events->size() << "\n";
-    scope_aps = new set<const spot::ltl::atomic_prop *>();
-    predicate_aps = new set<const spot::ltl::atomic_prop *>();
-    for (spot::ltl::atomic_prop_set::iterator it = formula_vars->begin(); it != formula_vars->end(); it++){
-        const spot::ltl::atomic_prop * var = *it;
-        string varname = var->name();
+    scope_aps = new set<const ltl::atomic_prop *>();
+    predicate_aps = new set<const ltl::atomic_prop *>();
+    for (ltl::atomic_prop_set::iterator it = formula_vars->begin(); it != formula_vars->end(); it++){
+        const ltl::atomic_prop * var = *it;
+	std::string varname = var->name();
         if (varname.find("scope_") == 0){
-            //std::cout << varname << " is a scope ap\n";
+            std::cout << varname << " is a scope ap\n";
             scope_aps->insert(var);
         } else {
            // std::cout << varname << " is a predicate ap\n";
@@ -73,11 +73,11 @@ void scoped_instants_pool_creator::set_up_iteration_tracker() {
     // |y->a|y->a|y->a|y->a|y->b|y->b|y->b|y->b|y->c|y->c|y->c|y->c|y->d|y->d|y->d|y->d|...
     // |z->a|z->b|z->c|z->d|z->a|z->b|z->c|z->d|z->a|z->b|z->c|z->d|z->a|z->b|z->c|z->d|...
     // as the order in which the mappings are created.
-    set<const spot::ltl::atomic_prop *>::iterator predicate_vars_it = predicate_aps->begin();
+    set<const ltl::atomic_prop *>::iterator predicate_vars_it = predicate_aps->begin();
     for (int i = 0; i < predicate_vars_size; i++) {
         iter_store insert;
         insert.mapto = events_it;
-        const spot::ltl::atomic_prop * var = *predicate_vars_it;
+        const ltl::atomic_prop * var = *predicate_vars_it;
         insert.mapfrom = var->name();
         insert.switchvar = pow(predicate_events->size(), predicate_vars_size - 1 - i);
         iteration_tracker.push_back(insert);

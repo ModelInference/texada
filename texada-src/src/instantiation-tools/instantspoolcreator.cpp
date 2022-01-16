@@ -11,7 +11,7 @@
 namespace texada {
 
 instants_pool_creator::instants_pool_creator(shared_ptr<set<string>> events_,
-        shared_ptr<spot::ltl::atomic_prop_set> ltlevents, bool allow_reps,
+        shared_ptr<ltl::atomic_prop_set> ltlevents, bool allow_reps,
         vector<string> exclude_events) :
         formula_vars(ltlevents), unique_events(events_), allow_repetition(allow_reps) ,
         events_to_exclude(exclude_events){

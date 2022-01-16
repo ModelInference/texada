@@ -6,7 +6,7 @@
  */
 
 #include "subformulaapcollector.h"
-#include <ltlvisit/apcollect.hh>
+#include "texadatospotmapping.h"
 #include <iostream>
 
 namespace texada {
@@ -20,17 +20,16 @@ subformula_ap_collector::~subformula_ap_collector() {
     // TODO Auto-generated destructor stub
 }
 
-void subformula_ap_collector::doit(const spot::ltl::atomic_prop* ap) {
+void subformula_ap_collector::doit(const ltl::atomic_prop* ap) {
 }
 
-void subformula_ap_collector::doit(const spot::ltl::constant* c) {
+void subformula_ap_collector::doit(const ltl::constant* c) {
 
 }
-void subformula_ap_collector::doit_default(const spot::ltl::formula* f) {
-    spot::ltl::atomic_prop_set * atomic_props = spot::ltl::atomic_prop_collect(
-            f);
+void subformula_ap_collector::doit_default(const ltl::formula* f) {
+    ltl::atomic_prop_set * atomic_props = ltl::atomic_prop_collect(f);
     std::set<std::string> ap_names;
-    for (spot::ltl::atomic_prop_set::iterator it = atomic_props->begin();
+    for (ltl::atomic_prop_set::iterator it = atomic_props->begin();
             it != atomic_props->end(); it++) {
         ap_names.insert((*it)->name());
     }

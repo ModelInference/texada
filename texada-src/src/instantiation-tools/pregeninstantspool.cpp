@@ -16,7 +16,7 @@ namespace texada {
  * @param ltlevents set of atomic propositions to be replaced
  */
 pregen_instants_pool::pregen_instants_pool(shared_ptr<set<string>> events_,
-        shared_ptr<spot::ltl::atomic_prop_set> ltlevents, bool allow_reps,
+        shared_ptr<ltl::atomic_prop_set> ltlevents, bool allow_reps,
         vector<string> exclude_events) :
         instants_pool_creator(events_, ltlevents, allow_reps, exclude_events) {
     // We are creating a vector with the exact size required to store
@@ -57,12 +57,12 @@ void pregen_instants_pool::instantiate_array() {
 
     int lvl = 0;
     int f_var_size = formula_vars->size();
-    for (set<const spot::ltl::atomic_prop*>::iterator formula_it =
+    for (set<const ltl::atomic_prop*>::iterator formula_it =
             formula_vars->begin(); formula_it != formula_vars->end();
             ++formula_it) {
         assert(lvl < f_var_size);
         // inst_fxn has a string->string map, so get name of atomic prop
-        const spot::ltl::atomic_prop* event_var = *formula_it;
+        const ltl::atomic_prop* event_var = *formula_it;
         string name = event_var->name();
         // now traverse the array to fill this level
         traverse_and_fill(name, lvl, num_unique_events);

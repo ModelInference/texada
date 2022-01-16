@@ -9,21 +9,23 @@
 #define TEXADA_SRC_SRC_INSTANTIATION_TOOLS_SCOPEDINSTANTSPOOLCREATOR_H_
 
 #include "instantspoolcreator.h"
+#include "texadatospotmapping.h"
+
 
 namespace texada {
 
 class scoped_instants_pool_creator: public instants_pool_creator {
 public:
     scoped_instants_pool_creator(shared_ptr<set<string>> events,
-            shared_ptr<spot::ltl::atomic_prop_set> ltlevents, bool allow_reps,
+            shared_ptr<ltl::atomic_prop_set> ltlevents, bool allow_reps,
             vector<string> exclude_events);
     virtual ~scoped_instants_pool_creator();
     shared_ptr<map<string,string>>  get_next_instantiation();
 private:
     set<string> * scope_events;
     set<string> * predicate_events;
-    set<const spot::ltl::atomic_prop *> * scope_aps;
-    set<const spot::ltl::atomic_prop *> * predicate_aps;
+    set<const ltl::atomic_prop *> * scope_aps;
+    set<const ltl::atomic_prop *> * predicate_aps;
     // structure to help create instantiations on the fly,
     // to allow a single pass through.
     struct iter_store{

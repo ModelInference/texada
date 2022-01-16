@@ -6,15 +6,13 @@
  */
 
 #include "otfinstantspool.h"
-#include <ltlvisit/apcollect.hh>
-#include <ltlvisit/tostring.hh>
 #include "apsubbingcloner.h"
 #include <math.h>
 
 namespace texada {
 
 otf_instants_pool::otf_instants_pool(shared_ptr<set<string>> events,
-        shared_ptr<spot::ltl::atomic_prop_set> ltlevents, bool allow_reps,
+        shared_ptr<ltl::atomic_prop_set> ltlevents, bool allow_reps,
         vector<string> exclude_events) :
         instants_pool_creator(events, ltlevents, allow_reps, exclude_events) {
     set_up_iteration_tracker();
@@ -53,11 +51,11 @@ void otf_instants_pool::set_up_iteration_tracker() {
     // |y->a|y->a|y->a|y->a|y->b|y->b|y->b|y->b|y->c|y->c|y->c|y->c|y->d|y->d|y->d|y->d|...
     // |z->a|z->b|z->c|z->d|z->a|z->b|z->c|z->d|z->a|z->b|z->c|z->d|z->a|z->b|z->c|z->d|...
     // as the order in which the mappings are created.
-    spot::ltl::atomic_prop_set::iterator form_vars_it = formula_vars->begin();
+    ltl::atomic_prop_set::iterator form_vars_it = formula_vars->begin();
     for (int i = 0; i < form_vars_size; i++) {
         iter_store insert;
         insert.mapto = events_it;
-        const spot::ltl::atomic_prop * var = *form_vars_it;
+        const ltl::atomic_prop* var = *form_vars_it;
         insert.mapfrom = var->name();
         insert.switchvar = pow(unique_events->size(), form_vars_size - 1 - i);
         iteration_tracker.push_back(insert);
