@@ -9,9 +9,7 @@
  */
 
 #include "../src/instantiation-tools/apsubbingcloner.h"
-
-#include <ltlparse/public.hh>
-#include <ltlvisit/tostring.hh>
+#include "../src/instantiation-tools/texadatospotmapping.h"
 #include <map>
 #include <string>
 #include <gtest/gtest.h>
@@ -29,12 +27,12 @@ TEST(AtomicPropositionSubbingClonerTest, SimpleTest){
 
     //parsing original formula...
     std::string input = "G(x -> Fy)";
-    spot::ltl::parse_error_list pel;
-    const spot::ltl::formula* f = spot::ltl::parse(input, pel);
-    ASSERT_EQ(input,spot::ltl::to_string(f));
+    texada::ltl::parse_error_list pel;
+    const texada::ltl::formula* f = texada::ltl::parse(input, pel);
+    ASSERT_EQ(input,texada::ltl::to_string(f));
 
     //checking ap subbing cloner
-    const spot::ltl::formula* instantiatedf = texada::instantiate(f,map,std::vector<std::string>());
+    const texada::ltl::formula* instantiatedf = texada::instantiate(f,map,std::vector<std::string>());
     ASSERT_EQ("G(a -> Fb)", to_string(instantiatedf));
     f->destroy();
     instantiatedf->destroy();
@@ -53,16 +51,16 @@ TEST(AtomicPropositionSubbingClonerTest, SimpleConstantEventTest){
 
     //parsing original formula...
     std::string input = "G(x -> Fy)";
-    spot::ltl::parse_error_list pel;
-    const spot::ltl::formula* f = spot::ltl::parse(input, pel);
-    ASSERT_EQ(input,spot::ltl::to_string(f));
+    texada::ltl::parse_error_list pel;
+    const texada::ltl::formula* f = texada::ltl::parse(input, pel);
+    ASSERT_EQ(input,texada::ltl::to_string(f));
 
     // add x to replace vector
     std::vector<std::string> dont_replace;
     dont_replace.push_back("x");
 
     //checking ap subbing cloner
-    const spot::ltl::formula* instantiatedf = texada::instantiate(f,map,dont_replace);
+    const texada::ltl::formula* instantiatedf = texada::instantiate(f,map,dont_replace);
     ASSERT_EQ("G(x -> Fb)", to_string(instantiatedf));
     f->destroy();
     //TODO: why is this causing a segfault?

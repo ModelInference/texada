@@ -7,8 +7,8 @@
 
 #include "../src/instantiation-tools/pregeninstantspool.h"
 #include <gtest/gtest.h>
-#include <ltlparse/public.hh>
-#include <ltlvisit/apcollect.hh>
+#include "../src/instantiation-tools/texadatospotmapping.h"
+
 /**
  * Tests the creation of the pool of instantiation functions
  * by checking if the returned array contains all 2-event
@@ -19,9 +19,9 @@ TEST(InstantiatorPoolCreatorTest,TwoBindingsThreeEvents) {
 
     //Set up to get the atomic propositions from a property type
     std::string input = "G(x -> Fy)";
-    spot::ltl::parse_error_list pel;
-    const spot::ltl::formula* f = spot::ltl::parse(input, pel);
-    std::shared_ptr<spot::ltl::atomic_prop_set> formula_vars(spot::ltl::atomic_prop_collect(
+    texada::ltl::parse_error_list pel;
+    const texada::ltl::formula* f = texada::ltl::parse(input, pel);
+    std::shared_ptr<texada::ltl::atomic_prop_set> formula_vars(texada::ltl::atomic_prop_collect(
             f));
     // create a set of events
     std::shared_ptr<std::set<std::string>> events = std::make_shared<
@@ -64,9 +64,9 @@ TEST(InstantiatorPoolCreatorTest,TwoBindingsThreeEvents) {
 TEST(InstantiatorPoolCreatorTest,CheckNoRepetition) {
     //Set up to get the atomic propositions from a property type
     std::string input = "G(x -> Fy)";
-    spot::ltl::parse_error_list pel;
-    const spot::ltl::formula* f = spot::ltl::parse(input, pel);
-    std::shared_ptr<spot::ltl::atomic_prop_set> formula_vars (spot::ltl::atomic_prop_collect(
+    texada::ltl::parse_error_list pel;
+    const texada::ltl::formula* f = texada::ltl::parse(input, pel);
+    std::shared_ptr<texada::ltl::atomic_prop_set> formula_vars (texada::ltl::atomic_prop_collect(
             f));
     // create a set of events
     std::shared_ptr<std::set<std::string>> events = std::make_shared<
