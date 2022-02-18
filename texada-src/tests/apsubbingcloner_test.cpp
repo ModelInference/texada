@@ -26,14 +26,14 @@ TEST(AtomicPropositionSubbingClonerTest, SimpleTest){
     map.insert(std::pair<std::string,std::string>("y","b"));
 
     //parsing original formula...
-    std::string input = "G(x -> Fy)";
+    std::string input = "[](x -> <>y)";
     texada::ltl::parse_error_list pel;
     const texada::ltl::formula* f = texada::ltl::parse(input, pel);
     ASSERT_EQ(input,texada::ltl::to_string(f));
 
     //checking ap subbing cloner
     const texada::ltl::formula* instantiatedf = texada::instantiate(f,map,std::vector<std::string>());
-    ASSERT_EQ("G(a -> Fb)", to_string(instantiatedf));
+    ASSERT_EQ("[](a -> <>b)", to_string(instantiatedf));
     f->destroy();
     instantiatedf->destroy();
 
@@ -50,7 +50,7 @@ TEST(AtomicPropositionSubbingClonerTest, SimpleConstantEventTest){
     map.insert(std::pair<std::string,std::string>("y","b"));
 
     //parsing original formula...
-    std::string input = "G(x -> Fy)";
+    std::string input = "[](x -> <>y)";
     texada::ltl::parse_error_list pel;
     const texada::ltl::formula* f = texada::ltl::parse(input, pel);
     ASSERT_EQ(input,texada::ltl::to_string(f));
@@ -61,7 +61,7 @@ TEST(AtomicPropositionSubbingClonerTest, SimpleConstantEventTest){
 
     //checking ap subbing cloner
     const texada::ltl::formula* instantiatedf = texada::instantiate(f,map,dont_replace);
-    ASSERT_EQ("G(x -> Fb)", to_string(instantiatedf));
+    ASSERT_EQ("[](x -> <>b)", to_string(instantiatedf));
     f->destroy();
     //TODO: why is this causing a segfault?
 
