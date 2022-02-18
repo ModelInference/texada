@@ -8,8 +8,8 @@
 #include "maptracechecker.h"
 #include "../instantiation-tools/apsubbingcloner.h"
 #include "../instantiation-tools/subformulaapcollector.h"
-#include "../instantiation-tools/texadatospotmapping.h"
-#include "../instantiation-tools/texadanenoform.h"
+#include "../formula/texadatospotmapping.h"
+#include "../formula/texadanenoform.h"
 #include <algorithm>
 #include <deque>
 #include "statistic.h"

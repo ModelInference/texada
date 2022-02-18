@@ -11,8 +11,8 @@
 #include "../src/checkers/statistic.h"
 #include "../src/checkers/settings.h"
 
-#include "../src/instantiation-tools/texadatospotmapping.h"
-#include "../src/instantiation-tools/texadasimplify.h"
+#include "../src/formula/texadatospotmapping.h"
+#include "../src/formula/texadasimplify.h"
 
 #include <gtest/gtest.h>
 

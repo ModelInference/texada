@@ -8,7 +8,7 @@
 #ifndef PROPERTYTYPEMINER_H_
 #define PROPERTYTYPEMINER_H_
 
-#include "../instantiation-tools/texadatospotmapping.h"
+#include "../formula/texadatospotmapping.h"
 #include <set>
 #include <boost/program_options.hpp>
 #include <vector>

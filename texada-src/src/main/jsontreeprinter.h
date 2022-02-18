@@ -9,8 +9,8 @@
 #define JSONTREEPRINTER_H_
 
 #include <fstream>
-#include "../instantiation-tools/texadapostfix.h"
-#include "../instantiation-tools/texada_allnodes.h"
+#include "../formula/texadapostfix.h"
+#include "../formula/texada_allnodes.h"
 
 namespace texada {
 

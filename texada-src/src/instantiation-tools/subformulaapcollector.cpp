@@ -6,7 +6,7 @@
  */
 
 #include "subformulaapcollector.h"
-#include "texadatospotmapping.h"
+#include "../formula/texadatospotmapping.h"
 #include <iostream>
 
 namespace texada {

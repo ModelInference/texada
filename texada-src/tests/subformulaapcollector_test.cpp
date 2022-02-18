@@ -6,7 +6,7 @@
  */
 
 #include <gtest/gtest.h>
-#include "../src/instantiation-tools/texadatospotmapping.h"
+#include "../src/formula/texadatospotmapping.h"
 #include "../src/instantiation-tools/subformulaapcollector.h"
 
 TEST(SubFormulaAPCollectorTest, BasicTraversal) {

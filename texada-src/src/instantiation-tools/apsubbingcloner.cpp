@@ -7,7 +7,7 @@
 
 #include "apsubbingcloner.h"
 
-#include "texadatospotmapping.h"
+#include "../formula/texadatospotmapping.h"
 #include <map>
 #include <iostream>
 #include <exception>

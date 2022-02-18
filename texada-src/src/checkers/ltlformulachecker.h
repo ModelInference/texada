@@ -9,8 +9,8 @@
 #define LTLFORMULACHECKER_H_
 
 #include <set>
-#include "../instantiation-tools/texadatospotmapping.h"
-#include "../instantiation-tools/texada_allnodes.h"
+#include "../formula/texadatospotmapping.h"
+#include "../formula/texada_allnodes.h"
 #include <iostream>
 #include "statistic.h"
 #include "../exceptions/unsupportedoperation.h"

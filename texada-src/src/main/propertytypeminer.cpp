@@ -10,7 +10,7 @@
 #include <fstream>
 #include <assert.h>
 
-#include "../instantiation-tools/texadatospotmapping.h"
+#include "../formula/texadatospotmapping.h"
 #include <time.h>
 
 #include <boost/program_options.hpp>

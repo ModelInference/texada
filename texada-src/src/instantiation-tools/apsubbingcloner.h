@@ -8,7 +8,7 @@
 #ifndef APSUBBINGCLONER_H_
 #define APSUBBINGCLONER_H_
 
-#include "texadatospotmapping.h"
+#include "../formula/texadatospotmapping.h"
 #include <string>
 #include <map>
 

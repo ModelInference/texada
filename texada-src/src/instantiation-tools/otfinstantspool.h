@@ -8,7 +8,7 @@
 #ifndef OTFINSTANTSPOOL_H_
 #define OTFINSTANTSPOOL_H_
 
-#include "texadatospotmapping.h"
+#include "../formula/texadatospotmapping.h"
 #include "instantspoolcreator.h"
 #include "../trace/event.h"
 #include <string>

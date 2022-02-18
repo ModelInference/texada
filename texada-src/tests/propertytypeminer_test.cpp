@@ -9,7 +9,7 @@
 #include "../src/main/opts.h"
 #include "../src/checkers/statistic.h"
 #include <gtest/gtest.h>
-#include "../src/instantiation-tools/texadatospotmapping.h"
+#include "../src/formula/texadatospotmapping.h"
 #include <array>
 #include <fstream>
 #include <time.h>

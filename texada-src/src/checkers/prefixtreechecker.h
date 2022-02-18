@@ -17,7 +17,7 @@
 #include "statistic.h"
 #ifdef SMT_SUPPORT
 #include "../invariant-semantics/pptinvariantdecider.h"
-#include "../instantiation-tools/texadatospotmapping.h"
+#include "../formula/texadatospotmapping.h"
 #endif
 
 namespace texada {

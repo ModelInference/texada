@@ -10,7 +10,7 @@
 #include "../src/instantiation-tools/subformulaapcollector.h"
 #include "../src/parsers/prefixtreeparser.h"
 #include <gtest/gtest.h>
-#include "../src/instantiation-tools/texadatospotmapping.h"
+#include "../src/formula/texadatospotmapping.h"
 #include <fstream>
 
 texada::prefix_tree * create_simple_tree() {

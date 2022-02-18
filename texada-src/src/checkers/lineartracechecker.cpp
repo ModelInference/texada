@@ -9,8 +9,8 @@
 #include "boolbasedchecker.h"
 #include "../instantiation-tools/apsubbingcloner.h"
 #include "../instantiation-tools/pregeninstantspool.h"
-#include "../instantiation-tools/texadatospotmapping.h"
-#include "../instantiation-tools/texadasimplify.h"
+#include "../formula/texadatospotmapping.h"
+#include "../formula/texadasimplify.h"
 #include "statistic.h"
 #include "settings.h"
 namespace texada {

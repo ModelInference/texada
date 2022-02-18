@@ -8,7 +8,7 @@
 #include "prefixtreechecker.h"
 #include "../instantiation-tools/apsubbingcloner.h"
 #include "../instantiation-tools/subformulaapcollector.h"
-#include "../instantiation-tools/texadatospotmapping.h"
+#include "../formula/texadatospotmapping.h"
 
 namespace texada {
 

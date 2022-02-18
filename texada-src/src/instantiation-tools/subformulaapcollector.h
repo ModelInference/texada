@@ -8,8 +8,8 @@
 #ifndef SUBFORMULAAPCOLLECTOR_H_
 #define SUBFORMULAAPCOLLECTOR_H_
 
-#include "texadatospotmapping.h"
-#include "texadapostfix.h"
+#include "../formula/texadatospotmapping.h"
+#include "../formula/texadapostfix.h"
 #include <map>
 #include <set>
 #include <string>

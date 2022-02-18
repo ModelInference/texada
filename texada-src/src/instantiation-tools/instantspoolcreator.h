@@ -14,7 +14,7 @@
 #include <set>
 #include <string>
 
-#include "texadatospotmapping.h"
+#include "../formula/texadatospotmapping.h"
 
 namespace texada {
 using std::shared_ptr;

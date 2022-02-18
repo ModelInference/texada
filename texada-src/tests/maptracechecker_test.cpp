@@ -10,8 +10,8 @@
 #include "../src/instantiation-tools/subformulaapcollector.h"
 
 #include <gtest/gtest.h>
-#include "../src/instantiation-tools/texadatospotmapping.h"
-#include "../src/instantiation-tools/texadanenoform.h"
+#include "../src/formula/texadatospotmapping.h"
+#include "../src/formula/texadanenoform.h"
 
 #include <climits>
 #include <fstream>

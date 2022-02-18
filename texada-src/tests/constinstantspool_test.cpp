@@ -13,7 +13,7 @@
 #include "../src/trace/prefixtree.h"
 #include "../src/trace/event.h"
 #include <gtest/gtest.h>
-#include "../src/instantiation-tools/texadatospotmapping.h"
+#include "../src/formula/texadatospotmapping.h"
 
 /**
  * Checks that const_inst_pool is able to translate an ltl

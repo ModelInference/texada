@@ -9,7 +9,7 @@
  */
 
 #include "../src/instantiation-tools/apsubbingcloner.h"
-#include "../src/instantiation-tools/texadatospotmapping.h"
+#include "../src/formula/texadatospotmapping.h"
 #include <map>
 #include <string>
 #include <gtest/gtest.h>

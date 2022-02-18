@@ -12,7 +12,7 @@
 #include "statistic.h"
 #include "settings.h"
 #include "interval.h"
-#include "../instantiation-tools/texadatospotmapping.h"
+#include "../formula/texadatospotmapping.h"
 #include "../exceptions/unsupportedoperation.h"
 
 namespace texada {

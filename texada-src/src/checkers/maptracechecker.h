@@ -11,7 +11,7 @@
 #include <map>
 #include <unordered_map>
 #include <vector>
-#include "../instantiation-tools/texadatospotmapping.h"
+#include "../formula/texadatospotmapping.h"
 #include <boost/functional/hash.hpp>
 #include <boost/unordered_map.hpp>
 #include "../instantiation-tools/pregeninstantspool.h"

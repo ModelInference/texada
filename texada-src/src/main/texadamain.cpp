@@ -9,7 +9,7 @@
 #include <string>
 #include <memory>
 #include "opts.h"
-#include "../instantiation-tools/texadatospotmapping.h"
+#include "../formula/texadatospotmapping.h"
 
 
 #include "propertytypeminer.h"

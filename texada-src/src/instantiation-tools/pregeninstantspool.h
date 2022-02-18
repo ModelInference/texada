@@ -12,7 +12,7 @@
 #include <string>
 #include <map>
 #include <memory>
-#include "texadatospotmapping.h"
+#include "../formula/texadatospotmapping.h"
 #include "instantspoolcreator.h"
 
 

@@ -9,7 +9,7 @@
 #define TEXADA_SRC_SRC_INSTANTIATION_TOOLS_SCOPEDINSTANTSPOOLCREATOR_H_
 
 #include "instantspoolcreator.h"
-#include "texadatospotmapping.h"
+#include "../formula/texadatospotmapping.h"
 
 
 namespace texada {

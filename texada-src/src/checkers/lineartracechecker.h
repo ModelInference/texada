@@ -18,7 +18,7 @@
 #include "../invariant-semantics/pptinvariantdecider.h"
 #endif
 #include "../instantiation-tools/pregeninstantspool.h"
-#include "../instantiation-tools/texadatospotmapping.h"
+#include "../formula/texadatospotmapping.h"
 
 namespace texada {
 

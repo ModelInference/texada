@@ -7,7 +7,7 @@
 
 #include "../src/instantiation-tools/pregeninstantspool.h"
 #include <gtest/gtest.h>
-#include "../src/instantiation-tools/texadatospotmapping.h"
+#include "../src/formula/texadatospotmapping.h"
 
 /**
  * Tests the creation of the pool of instantiation functions
