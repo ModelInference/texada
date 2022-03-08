@@ -46,7 +46,7 @@ As an example, consider the LTL property type that encodes the "x always followe
 
 Two version of Texada are currently supported:
 * Texada with SPOT 1.2.4-1.2.6 support, which is in the `master` branch of this repository
-* Texada with SPOT 2.X support, which is in the `spot-2.x` branch of this repository. This version has two key differences:
+* Texada with SPOT 2.X support, which is in the `spot-2.x` branch of this repository. Thanks to [Christopher Banks](https://github.com/cjbanks) for this contribution. This version has two key differences:
    - Code in the `texada-src/src/formula` directory is licensed under GPL-3.0.
    - Formulas are output in [SPIN](http://spinroot.com/spin/Man/ltl.html) format; `[](a ->X<>(b))` rather than `G(a ->XF(b))`.
 
