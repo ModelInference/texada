@@ -1,5 +1,7 @@
 Unless otherwise noted, projects in the Texada repository are
 distributed under the 3-clause BSD license, which appears below.
+Note that the code in the `texada-src/src/formula/` folder is 
+under a GPL 3.0 License, reproduced in that folder.  
 
 Copyright (c) 2018, University of British Columbia
 

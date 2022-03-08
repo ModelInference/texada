@@ -10,12 +10,8 @@
 #include "../src/instantiation-tools/subformulaapcollector.h"
 
 #include <gtest/gtest.h>
-
-#include <ltlparse/public.hh>
-#include <ltlvisit/nenoform.hh>
-#include <ltlvisit/tostring.hh>
-#include <ltlenv/defaultenv.hh>
-#include <ltlparse/public.hh>
+#include "../src/formula/texadatospotmapping.h"
+#include "../src/formula/texadanenoform.h"
 
 #include <climits>
 #include <fstream>
@@ -52,96 +48,96 @@ TEST(MapCheckerTest,SmallTrace){
 
     // create checker and parse error list to parse formula later on
     texada::map_trace_checker checker = texada::map_trace_checker(&trace_map);
-    spot::ltl::parse_error_list pel;
+    texada::ltl::parse_error_list pel;
 
     // Tests to try and cover the "check" functions
 
     std::string input = "G(a->Fb)";
-    const spot::ltl::formula* f = spot::ltl::parse(input, pel);
+    const texada::ltl::formula* f = texada::ltl::parse(input, pel);
     //std::cout << "Failing?\n";
     ASSERT_TRUE((checker.check_on_trace(f)).is_satisfied);
     f->destroy();
 
     //until
     input = "a U b";
-    f = spot::ltl::parse(input,pel);
+    f = texada::ltl::parse(input,pel);
     ASSERT_TRUE((checker.check_on_trace(f)).is_satisfied);
     f->destroy();
 
     //weak until
     input = "a W b";
-    f = spot::ltl::parse(input,pel);
+    f = texada::ltl::parse(input,pel);
     ASSERT_TRUE((checker.check_on_trace(f)).is_satisfied);
     f->destroy();
 
     //release
     input = "b R a";
-    f = spot::ltl::parse(input,pel);
+    f = texada::ltl::parse(input,pel);
     ASSERT_FALSE((checker.check_on_trace(f)).is_satisfied);
     f->destroy();
 
     //strong release
     input = "b M a";
-    f = spot::ltl::parse(input,pel);
+    f = texada::ltl::parse(input,pel);
     ASSERT_FALSE((checker.check_on_trace(f)).is_satisfied);
     f->destroy();
 
     //xor
     input = "b xor a";
-    f = spot::ltl::parse(input,pel);
+    f = texada::ltl::parse(input,pel);
     ASSERT_TRUE((checker.check_on_trace(f)).is_satisfied);
     f->destroy();
 
     //equiv, iff
     input = "b <-> a";
-    f = spot::ltl::parse(input,pel);
+    f = texada::ltl::parse(input,pel);
     ASSERT_FALSE((checker.check_on_trace(f)).is_satisfied);
     f->destroy();
 
     //impliies
     input = "a -> b";
-    f = spot::ltl::parse(input,pel);
+    f = texada::ltl::parse(input,pel);
     ASSERT_FALSE((checker.check_on_trace(f)).is_satisfied);
     f->destroy();
 
     input = "a -> Fb";
-    f = spot::ltl::parse(input,pel);
+    f = texada::ltl::parse(input,pel);
     ASSERT_TRUE((checker.check_on_trace(f)).is_satisfied);
     f->destroy();
 
     //or
     input = "a | b";
-    f = spot::ltl::parse(input,pel);
+    f = texada::ltl::parse(input,pel);
     ASSERT_TRUE((checker.check_on_trace(f)).is_satisfied);
     f->destroy();
 
     //and
     input = "a & b";
-    f = spot::ltl::parse(input,pel);
+    f = texada::ltl::parse(input,pel);
     ASSERT_FALSE((checker.check_on_trace(f)).is_satisfied);
     f->destroy();
 
     //finally
     input = "Fa";
-    f = spot::ltl::parse(input,pel);
+    f = texada::ltl::parse(input,pel);
     ASSERT_TRUE((checker.check_on_trace(f)).is_satisfied);
     f->destroy();
 
     //globally
     input = "Ga";
-    f = spot::ltl::parse(input,pel);
+    f = texada::ltl::parse(input,pel);
     ASSERT_FALSE((checker.check_on_trace(f)).is_satisfied);
     f->destroy();
 
     // next
     input = "Xa";
-    f = spot::ltl::parse(input,pel);
+    f = texada::ltl::parse(input,pel);
     ASSERT_TRUE((checker.check_on_trace(f)).is_satisfied);
     f->destroy();
 
     // not
     input = "!b";
-    f = spot::ltl::parse(input,pel);
+    f = texada::ltl::parse(input,pel);
     ASSERT_TRUE((checker.check_on_trace(f)).is_satisfied);
     f->destroy();
 
@@ -149,61 +145,61 @@ TEST(MapCheckerTest,SmallTrace){
 
     // first occ next
     input = "G(X!a)";
-    f = spot::ltl::parse(input,pel);
+    f = texada::ltl::parse(input,pel);
     ASSERT_FALSE((checker.check_on_trace(f)).is_satisfied);
     f->destroy();
 
     // first occ U
     input = "G(!a R !b)";
-    f = spot::ltl::parse(input,pel);
+    f = texada::ltl::parse(input,pel);
     ASSERT_FALSE((checker.check_on_trace(f)).is_satisfied);
     f->destroy();
 
     //first occ W
     input = "G(!a M !b)";
-    f = spot::ltl::parse(input,pel);
+    f = texada::ltl::parse(input,pel);
     ASSERT_FALSE((checker.check_on_trace(f)).is_satisfied);
     f->destroy();
 
     // first occ R
     input = "G(!b U !a)";
-    f = spot::ltl::parse(input,pel);
+    f = texada::ltl::parse(input,pel);
     ASSERT_TRUE((checker.check_on_trace(f)).is_satisfied);
     f->destroy();
 
     // first occ M
     input = "G(!b W !a)";
-    f = spot::ltl::parse(input,pel);
+    f = texada::ltl::parse(input,pel);
     ASSERT_TRUE((checker.check_on_trace(f)).is_satisfied);
     f->destroy();
 
     //first occ G
     input = "F(G b)";
-    f = spot::ltl::parse(input,pel);
+    f = texada::ltl::parse(input,pel);
     ASSERT_TRUE((checker.check_on_trace(f)).is_satisfied);
     f->destroy();
 
     //first occ F
     input = "F(F a)";
-    f = spot::ltl::parse(input,pel);
+    f = texada::ltl::parse(input,pel);
     ASSERT_TRUE((checker.check_on_trace(f)).is_satisfied);
     f->destroy();
 
     //first occ ->
     input = "F(a->b)";
-    f = spot::ltl::parse(input,pel);
+    f = texada::ltl::parse(input,pel);
     ASSERT_TRUE((checker.check_on_trace(f)).is_satisfied);
     f->destroy();
 
     //first occ xor
     input = "G(!(a xor b))";
-    f = spot::ltl::parse(input,pel);
+    f = texada::ltl::parse(input,pel);
     ASSERT_FALSE((checker.check_on_trace(f)).is_satisfied);
     f->destroy();
 
     //first occ <->
     input = "F((a<->b))";
-    f = spot::ltl::parse(input,pel);
+    f = texada::ltl::parse(input,pel);
     ASSERT_FALSE((checker.check_on_trace(f)).is_satisfied);
     f->destroy();
 }
@@ -219,8 +215,8 @@ TEST(MapCheckerTest,ResourceAllocation){
     std::string file_source = texada_home + "/traces/resource-allocation/smallabc.txt";
 
     // parse the ltl formula
-    spot::ltl::parse_error_list pel;
-    const spot::ltl::formula* formula = spot::ltl::parse("(!(b | c) W a) & G((b -> XFc) & (a -> X((!a U c) & (!c U b))) & (c -> X(!(b | c) W a)))", pel);
+    texada::ltl::parse_error_list pel;
+    const texada::ltl::formula* formula = texada::ltl::parse("(!(b | c) W a) & G((b -> XFc) & (a -> X((!a U c) & (!c U b))) & (c -> X(!(b | c) W a)))", pel);
 
 
     // parse log file
@@ -263,11 +259,11 @@ TEST(MapCheckerTest, SmallMemoization){
 
     // create checker and parse error list to parse formula later on
     texada::map_trace_checker checker = texada::map_trace_checker(&trace_map);
-    spot::ltl::parse_error_list pel;
+    texada::ltl::parse_error_list pel;
     
     
     std::string input = "G(x->Fy)";
-    const spot::ltl::formula* f = spot::ltl::parse(input, pel);
+    const texada::ltl::formula* f = texada::ltl::parse(input, pel);
     
     // collect subformulae aps for memoization
     texada::subformula_ap_collector * collector = new texada::subformula_ap_collector();
@@ -306,11 +302,11 @@ TEST(MapCheckerTest, DISABLED_CheckingOrder){
 
    // create checker and parse error list to parse formula later on
    texada::map_trace_checker checker = texada::map_trace_checker(&(*(trace_set->begin())));
-   spot::ltl::parse_error_list pel;
+   texada::ltl::parse_error_list pel;
 
 
    std::string input = "G((q & Fr) -> ((!p & !r) U (r | ((p & !r) U (r | ((!p & !r) U (r | ((p & !r) U (r | (!p U r)))))))))) & G((q & Fr) -> ((!s & !r) U (r | ((s & !r) U (r | ((!s & !r) U (r | ((s & !r) U (r | (!s U r)))))))))";
-   const spot::ltl::formula* f = spot::ltl::parse(input, pel);
+   const texada::ltl::formula* f = texada::ltl::parse(input, pel);
    float A[4];
    float B[4];
    float C[4];

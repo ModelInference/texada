@@ -12,7 +12,7 @@
 #include "statistic.h"
 #include "settings.h"
 #include "interval.h"
-#include "ltlvisit/tostring.hh"
+#include "../formula/texadatospotmapping.h"
 #include "../exceptions/unsupportedoperation.h"
 
 namespace texada {
@@ -73,10 +73,10 @@ namespace texada {
          * @param trace_ids
          * @return
          */
-        virtual statistic xor_check(const spot::ltl::binop *node, T trace_pt,
+        virtual statistic xor_check(const ltl::binop *node, T trace_pt,
                                     std::set<int> trace_ids) {
-            const spot::ltl::formula *p = node->first();
-            const spot::ltl::formula *q = node->second();
+            const ltl::formula *p = node->first();
+            const ltl::formula *q = node->second();
             statistic stat_p = this->check(p, trace_pt);
             statistic stat_q = this->check(q, trace_pt);
             statistic stat = statistic(true, 0, 0);
@@ -98,10 +98,10 @@ namespace texada {
          * @param trace_ids
          * @return
          */
-        virtual statistic equiv_check(const spot::ltl::binop *node,
+        virtual statistic equiv_check(const ltl::binop *node,
                                       T trace_pt, std::set<int> trace_ids) {
-            const spot::ltl::formula *p = node->first();
-            const spot::ltl::formula *q = node->second();
+            const ltl::formula *p = node->first();
+            const ltl::formula *q = node->second();
             statistic stat_p = this->check(p, trace_pt);
             statistic stat_q = this->check(q, trace_pt);
             statistic stat = statistic(true, 0, 0);
@@ -119,10 +119,10 @@ namespace texada {
          * @param trace_ids
          * @return
          */
-        virtual statistic implies_check(const spot::ltl::binop *node,
+        virtual statistic implies_check(const ltl::binop *node,
                                         T trace_pt, std::set<int> trace_ids) {
-            const spot::ltl::formula *p = node->first();
-            const spot::ltl::formula *q = node->second();
+            const ltl::formula *p = node->first();
+            const ltl::formula *q = node->second();
             if (!this->check(p, trace_pt).is_satisfied) {
                 return statistic(true, 0, 0);
             } else {
@@ -140,9 +140,9 @@ namespace texada {
          * @param trace_ids
          * @return
          */
-        virtual statistic not_check(const spot::ltl::unop *node, T trace_pt,
+        virtual statistic not_check(const ltl::unop *node, T trace_pt,
                                     std::set<int> trace_ids) {
-            const spot::ltl::formula *p = node->child();
+            const ltl::formula *p = node->child();
             statistic stat_p = this->check(p, trace_pt);
             if (stat_p.is_satisfied) {
                 return statistic(false, 0, 1);
@@ -160,7 +160,7 @@ namespace texada {
          * @param trace_ids
          * @return
          */
-        virtual statistic and_check(const spot::ltl::multop *node, T trace_pt,
+        virtual statistic and_check(const ltl::multop *node, T trace_pt,
                                     std::set<int> trace_ids) {
             int numkids = node->size();
             // In the case that the checker is configured to ignore statistics,
@@ -190,7 +190,7 @@ namespace texada {
          * @param trace_ids
          * @return
          */
-        virtual statistic or_check(const spot::ltl::multop *node, T trace_pt,
+        virtual statistic or_check(const ltl::multop *node, T trace_pt,
                                    std::set<int> trace_ids) {
             int numkids = node->size();
             // In the case that the checker is configured to ignore statistics,
@@ -257,43 +257,43 @@ namespace texada {
          * @param node the formula to find the interval of
          * @return
          */
-        virtual interval get_interval(const spot::ltl::formula *node) {
+        virtual interval get_interval(const ltl::formula *node) {
             switch (node->kind()) {
                 // interval(true) = interval(false) = interval(p) = [0,0]
-                case spot::ltl::formula::Constant:
-                case spot::ltl::formula::AtomicProp:
+                case ltl::formula::Constant:
+                case ltl::formula::AtomicProp:
                     return interval(0, 0);
 
-                case spot::ltl::formula::UnOp: {
-                    const spot::ltl::unop *unode = static_cast<const spot::ltl::unop *>(node);
+                case ltl::formula::UnOp: {
+                    const ltl::unop *unode = static_cast<const ltl::unop *>(node);
                     switch (unode->op()) {
                         // interval(Gp) = interval(Fp) = [0,inf+]
-                        case spot::ltl::unop::G:
-                        case spot::ltl::unop::F:
+                        case ltl::unop::G:
+                        case ltl::unop::F:
                             return interval(0, LONG_MAX);
                             // interval(Xp) = interval(p) + 1 (i.e. increment both the start and the end of interval(p))
-                        case spot::ltl::unop::X:
+                        case ltl::unop::X:
                             return get_interval(unode->child()) + 1;
                             // interval(Not(p)) = interval(p)
-                        case spot::ltl::unop::Not:
+                        case ltl::unop::Not:
                             return get_interval(unode->child());
                         default:
                             throw texada::unsupported_operation_exception("Unsupported unary operator.");
                     }
                 }
 
-                case spot::ltl::formula::BinOp: {
-                    const spot::ltl::binop *bnode = static_cast<const spot::ltl::binop *>(node);
+                case ltl::formula::BinOp: {
+                    const ltl::binop *bnode = static_cast<const ltl::binop *>(node);
                     switch (bnode->op()) {
                         // interval(pUq) = interval(pRq) = interval(pWq) = interval(pMq) = [0,inf+]
-                        case spot::ltl::binop::U:
-                        case spot::ltl::binop::R:
-                        case spot::ltl::binop::W:
-                        case spot::ltl::binop::M:
+                        case ltl::binop::U:
+                        case ltl::binop::R:
+                        case ltl::binop::W:
+                        case ltl::binop::M:
                             return interval(0, LONG_MAX);
-                        case spot::ltl::binop::Xor:
-                        case spot::ltl::binop::Equiv:
-                        case spot::ltl::binop::Implies: {
+                        case ltl::binop::Xor:
+                        case ltl::binop::Equiv:
+                        case ltl::binop::Implies: {
                             interval intvl(LONG_MAX, -LONG_MAX);
                             interval intvl_i = get_interval(bnode->first());
                             if (intvl.start > intvl_i.start) {
@@ -313,16 +313,16 @@ namespace texada {
                         }
 
                         default:
-                            throw texada::unsupported_operation_exception("Unsupported binary operator " + spot::ltl::to_string(node) + ".");
+                            throw texada::unsupported_operation_exception("Unsupported binary operator " + ltl::to_string(node) + ".");
                     }
                 }
 
-                case spot::ltl::formula::MultOp: {
-                    const spot::ltl::multop *mnode = static_cast<const spot::ltl::multop *>(node);
+                case ltl::formula::MultOp: {
+                    const ltl::multop *mnode = static_cast<const ltl::multop *>(node);
                     switch (mnode->op()) {
                         // interval(Or{p_i}) = interval(And{p_i}) = [a,b], where a = min{p_i.start} and b = max{p_i.end}
-                        case spot::ltl::multop::Or:
-                        case spot::ltl::multop::And: {
+                        case ltl::multop::Or:
+                        case ltl::multop::And: {
                             interval intvl(LONG_MAX, -LONG_MAX);
                             interval intvl_i;
                             for (int i = 0; i < mnode->size(); i++) {
@@ -341,8 +341,8 @@ namespace texada {
                     }
                 }
 
-                case spot::ltl::formula::BUnOp:
-                case spot::ltl::formula::AutomatOp:
+                case ltl::formula::BUnOp:
+                case ltl::formula::AutomatOp:
                 default:
                     return interval(-1, -1);
             }

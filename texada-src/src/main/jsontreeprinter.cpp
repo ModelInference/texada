@@ -15,34 +15,35 @@ json_tree_printer::json_tree_printer(std::ostream & of) : outfile(of) {
 json_tree_printer::~json_tree_printer() {
 }
 
-void json_tree_printer::visit(const spot::ltl::atomic_prop *ap){
+void json_tree_printer::visit(const ltl::atomic_prop *ap){
     outfile << "{\"atomic-prop\" : \"" << ap->name() << "\"}";
 }
-void json_tree_printer::visit(const spot::ltl::unop *uo){
+void json_tree_printer::visit(const ltl::unop *uo){
     outfile << "{";
     switch(uo->op()){
-    case spot::ltl::unop::type::F:
+    case ltl::unop::type::F:
         outfile << "\"F\"";
+
         break;
-    case spot::ltl::unop::type::G:
+    case ltl::unop::type::G:
         outfile << "\"G\"";
         break;
-    case spot::ltl::unop::type::X:
+    case ltl::unop::type::X:
         outfile << "\"X\"";
         break;
-    case spot::ltl::unop::type::Not:
+    case ltl::unop::type::Not:
         outfile << "\"!\"";
         break;
-    case spot::ltl::unop::type::Closure:
+    case ltl::unop::type::Closure:
         outfile << "\"Closure\"";
         break;
-    case spot::ltl::unop::type::NegClosure:
+    case ltl::unop::type::NegClosure:
         outfile << "\"NegClosure\"";
         break;
-    case spot::ltl::unop::type::NegClosureMarked:
+    case ltl::unop::type::NegClosureMarked:
         outfile << "\"NegClosureMarker\"";
         break;
-    case spot::ltl::unop::type::Finish:
+    case ltl::unop::type::Finish:
         outfile << "\"Finish\"";
         break;
     }
@@ -51,34 +52,34 @@ void json_tree_printer::visit(const spot::ltl::unop *uo){
     outfile << "]}";
 }
 
-void json_tree_printer::visit(const spot::ltl::binop *bp){
+void json_tree_printer::visit(const ltl::binop *bp){
     outfile << "{";
      switch(bp->op()){
-     case spot::ltl::binop::type::Equiv:
+     case ltl::binop::type::Equiv:
          outfile << "\"<->\"";
          break;
-     case spot::ltl::binop::type::Implies:
+     case ltl::binop::type::Implies:
          outfile << "\"->\"";
          break;
-     case spot::ltl::binop::type::U:
+     case ltl::binop::type::U:
          outfile << "\"U\"";
          break;
-     case spot::ltl::binop::type::W:
+     case ltl::binop::type::W:
          outfile << "\"W\"";
          break;
-     case spot::ltl::binop::type::R:
+     case ltl::binop::type::R:
          outfile << "\"R\"";
          break;
-     case spot::ltl::binop::type::M:
+     case ltl::binop::type::M:
          outfile << "\"M\"";
          break;
-     case spot::ltl::binop::type::EConcat:
+     case ltl::binop::type::EConcat:
          outfile << "\"EConcat\"";
          break;
-     case spot::ltl::binop::type::EConcatMarked:
+     case ltl::binop::type::EConcatMarked:
         outfile << "\"EConcatMarked\"";
          break;
-     case spot::ltl::binop::type::UConcat:
+     case ltl::binop::type::UConcat:
          outfile << "\"UConcat\"";
          break;
      }
@@ -89,28 +90,28 @@ void json_tree_printer::visit(const spot::ltl::binop *bp){
      outfile << "]}";
 }
 
-void json_tree_printer::visit(const spot::ltl::multop *mo){
+void json_tree_printer::visit(const ltl::multop *mo){
     outfile << "{";
     switch(mo->op()){
-    case spot::ltl::multop::type::And:
+    case ltl::multop::type::And:
         outfile << "\"And\"";
         break;
-    case spot::ltl::multop::type::AndNLM:
+    case ltl::multop::type::AndNLM:
         outfile << "\"AndNLM\"";
         break;
-    case spot::ltl::multop::type::AndRat:
+    case ltl::multop::type::AndRat:
         outfile << "\"AndRat\"";
         break;
-    case spot::ltl::multop::type::Or:
+    case ltl::multop::type::Or:
         outfile << "\"Or\"";
         break;
-    case spot::ltl::multop::type::OrRat:
+    case ltl::multop::type::OrRat:
         outfile << "\"OrRay\"";
         break;
-    case spot::ltl::multop::type::Concat:
+    case ltl::multop::type::Concat:
         outfile << "\"Concat\"";
         break;
-    case spot::ltl::multop::type::Fusion:
+    case ltl::multop::type::Fusion:
         outfile << "\"Fusion\"";
         break;
     }
@@ -122,15 +123,15 @@ void json_tree_printer::visit(const spot::ltl::multop *mo){
     }
     outfile << "]}";
 }
-void json_tree_printer::visit(const spot::ltl::constant *c){
+void json_tree_printer::visit(const ltl::constant *c){
     switch(c->val()){
-    case spot::ltl::constant::type::False:
+    case ltl::constant::type::False:
         outfile << "false";
         break;
-    case spot::ltl::constant::type::True:
+    case ltl::constant::type::True:
         outfile << "true";
         break;
-    case spot::ltl::constant::type::EmptyWord:
+    case ltl::constant::type::EmptyWord:
         outfile << "\"emptyword\"";
         break;
     }

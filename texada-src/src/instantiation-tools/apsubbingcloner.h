@@ -8,7 +8,9 @@
 #ifndef APSUBBINGCLONER_H_
 #define APSUBBINGCLONER_H_
 
-#include <ltlast/allnodes.hh>
+#include "../formula/texadatospotmapping.h"
+#include <string>
+#include <map>
 
 /**
  * Used to instantiate a property type given an instantiation function;
@@ -19,7 +21,7 @@
 
 namespace texada {
 
-const spot::ltl::formula* instantiate(const spot::ltl::formula*,
+const ltl::formula* instantiate(const ltl::formula*,
         std::map<std::string, std::string>&,
         std::vector<std::string> not_replaced = std::vector<std::string>());
 

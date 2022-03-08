@@ -13,8 +13,7 @@
 #include "../src/trace/prefixtree.h"
 #include "../src/trace/event.h"
 #include <gtest/gtest.h>
-#include <ltlparse/public.hh>
-#include <ltlvisit/apcollect.hh>
+#include "../src/formula/texadatospotmapping.h"
 
 /**
  * Checks that const_inst_pool is able to translate an ltl
@@ -24,8 +23,8 @@
 TEST(ConstInstantsPoolTest,BasicFormula) {
     // Create formula to pass into instantiator
     std::string input = "G(x -> Fy)";
-    spot::ltl::parse_error_list pel;
-    const spot::ltl::formula* f = spot::ltl::parse(input, pel);
+    texada::ltl::parse_error_list pel;
+    const texada::ltl::formula* f = texada::ltl::parse(input, pel);
 
     texada::const_instants_pool instantiator = texada::const_instants_pool(f);
     std::shared_ptr<std::map<std::string, std::string>> returned_map = instantiator.get_next_instantiation();
@@ -42,8 +41,8 @@ TEST(ConstInstantsPoolTest,BasicFormula) {
 TEST(ConstInstantsPoolTest,UsableByLinearChecker) {
     // Create formula to pass into instantiator
     std::string input = "G(a -> FXc)";
-    spot::ltl::parse_error_list pel;
-    const spot::ltl::formula* f = spot::ltl::parse(input, pel);
+    texada::ltl::parse_error_list pel;
+    const texada::ltl::formula* f = texada::ltl::parse(input, pel);
 
     texada::const_instants_pool* instantiator = new texada::const_instants_pool(f);
 
@@ -68,15 +67,15 @@ TEST(ConstInstantsPoolTest,UsableByLinearChecker) {
     ASSERT_EQ(l_valid_instants.at(0).first.at("a"), "a");
     ASSERT_EQ(l_valid_instants.at(0).first.at("c"), "c");
 
-    f->destroy();
+    //f->destroy();
     delete instantiator;
 }
 
 TEST(ConstInstantsPoolTest,UsableByMapChecker) {
     // Create formula to pass into instantiator
     std::string input = "G(a -> FXc)";
-    spot::ltl::parse_error_list pel;
-    const spot::ltl::formula* f = spot::ltl::parse(input, pel);
+    texada::ltl::parse_error_list pel;
+    const texada::ltl::formula* f = texada::ltl::parse(input, pel);
 
     texada::const_instants_pool* instantiator = new texada::const_instants_pool(f);
 
@@ -120,8 +119,8 @@ TEST(ConstInstantsPoolTest,UsableByMapChecker) {
 TEST(ConstInstantsPoolTest,UsableByPrefixChecker) {
     // Create formula to pass into instantiator
     std::string input = "G(a -> FXc)";
-    spot::ltl::parse_error_list pel;
-    const spot::ltl::formula* f = spot::ltl::parse(input, pel);
+    texada::ltl::parse_error_list pel;
+    const texada::ltl::formula* f = texada::ltl::parse(input, pel);
 
     texada::const_instants_pool* instantiator = new texada::const_instants_pool(f);
 

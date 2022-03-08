@@ -11,11 +11,10 @@
 #include <set>
 #include <string>
 #include <map>
-#include <ltlast/allnodes.hh>
-#include <ltlvisit/apcollect.hh>
 #include <memory>
-
+#include "../formula/texadatospotmapping.h"
 #include "instantspoolcreator.h"
+
 
 namespace texada {
 using std::shared_ptr;
@@ -33,7 +32,7 @@ class pregen_instants_pool: public instants_pool_creator {
 public:
 
     pregen_instants_pool(shared_ptr<set<string>> events,
-            shared_ptr<spot::ltl::atomic_prop_set>, bool allow_reps,
+            shared_ptr<ltl::atomic_prop_set>, bool allow_reps,
             vector<string> exclude_events);
     virtual ~pregen_instants_pool();
     void reset_insantiations();

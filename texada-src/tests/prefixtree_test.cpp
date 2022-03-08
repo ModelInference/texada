@@ -10,7 +10,7 @@
 #include "../src/instantiation-tools/subformulaapcollector.h"
 #include "../src/parsers/prefixtreeparser.h"
 #include <gtest/gtest.h>
-#include <ltlparse/public.hh>
+#include "../src/formula/texadatospotmapping.h"
 #include <fstream>
 
 texada::prefix_tree * create_simple_tree() {
@@ -173,8 +173,8 @@ TEST(PrefixTreeCheckerTest, TestSimpleTree) {
     texada::prefix_tree * all_traces = create_simple_tree();
 
     //parse formulae
-    spot::ltl::parse_error_list pe_list;
-    const spot::ltl::formula * afby_form = spot::ltl::parse("G(a->XFb)",
+    texada::ltl::parse_error_list pe_list;
+    const texada::ltl::formula * afby_form = texada::ltl::parse("G(a->XFb)",
             pe_list);
 
     texada::prefix_tree_checker checker;
@@ -202,15 +202,15 @@ TEST(PrefixTreeCheckerTest, TestOnTrace) {
     parser.parse(infile);
     std::shared_ptr<texada::prefix_tree> trace_set =
             parser.return_prefix_trees();
-    spot::ltl::parse_error_list pe_list;
-    const spot::ltl::formula * afby_form = spot::ltl::parse("G(b->XFd)",
+    texada::ltl::parse_error_list pe_list;
+    const texada::ltl::formula * afby_form = texada::ltl::parse("G(b->XFd)",
             pe_list);
     texada::prefix_tree_checker checker;
     ASSERT_TRUE(
             (checker.check_on_trace(afby_form, trace_set->get_trace_start(texada::event("a")))).is_satisfied);
     afby_form->destroy(); // not sure if this is needed
 
-    afby_form = spot::ltl::parse("G(x->XFy)", pe_list);
+    afby_form = texada::ltl::parse("G(x->XFy)", pe_list);
     std::map<std::string, std::string> inst_map;
     inst_map.emplace("x", "b");
     inst_map.emplace("y", "d");
@@ -244,8 +244,8 @@ TEST(PrefixTreeCheckerTest, RessourceAlloc) {
     std::string res_alloc =
             "(!(b|c) W a)& G((a->X((!a U c)&(!c U b)))&(c->X(!(b|c) W a)))";
 
-    spot::ltl::parse_error_list pe_list;
-    const spot::ltl::formula * resalloc_form = spot::ltl::parse(res_alloc,
+    texada::ltl::parse_error_list pe_list;
+    const texada::ltl::formula * resalloc_form = texada::ltl::parse(res_alloc,
             pe_list);
 
     texada::prefix_tree_checker checker;

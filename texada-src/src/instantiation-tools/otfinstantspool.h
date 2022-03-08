@@ -8,7 +8,7 @@
 #ifndef OTFINSTANTSPOOL_H_
 #define OTFINSTANTSPOOL_H_
 
-#include <ltlast/allnodes.hh>
+#include "../formula/texadatospotmapping.h"
 #include "instantspoolcreator.h"
 #include "../trace/event.h"
 #include <string>
@@ -48,9 +48,9 @@ private:
 
 public:
 	otf_instants_pool(shared_ptr<set<string>>  events,
-	        shared_ptr<spot::ltl::atomic_prop_set> ltlevents, bool allow_reps, vector<string> exclude_events);
+	        shared_ptr<ltl::atomic_prop_set> ltlevents, bool allow_reps, vector<string> exclude_events);
 	virtual ~otf_instants_pool();
-	vector<map<string, string>> return_valid_instants(const spot::ltl::formula * node,
+	vector<map<string, string>> return_valid_instants(const ltl::formula * node,
 	        set<vector<event>>);
 	shared_ptr<map<string,string>>  get_next_instantiation();
 

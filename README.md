@@ -44,6 +44,11 @@ Texada's output is a set of LTL formulae that are instantiations of the input pr
 
 As an example, consider the LTL property type that encodes the "x always followed by y" temporal relation between "x" and "y": G(x -> XF(y)). This property states that whenever an event of type "x" appears in a trace, it must be followed in the same trace by an event of type "y". Given an input log with two traces: "a,b,a,b,c" and "c,a,b,b", then Texada will output the property instantiations G(a -> XF(b)). That is, in the input two traces, "a is always followed by b".
 
+Two version of Texada are currently supported:
+* Texada with SPOT 1.2.4-1.2.6 support, which is in the `master` branch of this repository
+* Texada with SPOT 2.X support, which is in the `spot-2.x` branch of this repository. This version has two key differences:
+   - Code in the `texada-src/src/formula` directory is licensed under GPL-3.0.
+   - Formulas are output in [SPIN](http://spinroot.com/spin/Man/ltl.html) format; `[](a ->X<>(b))` rather than `G(a ->XF(b))`.
 
 # Installation guide
 
@@ -69,7 +74,7 @@ compiled all the commands you need to run to get started on [this wiki page](htt
 
 ### Required libraries
 
-Texada depends on a few non-standard libraries, [Google Test](https://code.google.com/p/googletest/), [SPOT](http://spot.lip6.fr/wiki/GetSpot), [Boost](http://www.boost.org/), and optionally [Z3](https://github.com/Z3Prover/z3). Note that the versions of SPOT currently compatible with Texada (1.2.4-1.2.6) also depend on BOOST.
+Texada depends on a few non-standard libraries, [Google Test](https://code.google.com/p/googletest/), [SPOT](http://spot.lip6.fr/wiki/GetSpot), [Boost](http://www.boost.org/), and optionally [Z3](https://github.com/Z3Prover/z3). 
 
 #### Google Test
 
@@ -85,7 +90,7 @@ To create a test, create a new Runner using 'Run As -> Run Configurations -> C/C
 
 #### Boost
 
-Boost can be downloaded [here](http://www.boost.org/doc/libs/1_56_0/more/getting_started/unix-variants.html) (for *nix machines) or [here](http://www.boost.org/doc/libs/1_56_0/more/getting_started/windows.html) (for Windows machines). Follow the instructions on the website to install it. Note that Texada depends on the non-header libraries, ProgramOptions and regex, which needs to be built separately (see "5. Prepare to Use a Boost Library Binary" on the Boost website). We have used Texada with BOOST versions 1.59.0-1.61.0.
+Boost can be downloaded [here](http://www.boost.org/doc/libs/1_56_0/more/getting_started/unix-variants.html) (for *nix machines) or [here](http://www.boost.org/doc/libs/1_56_0/more/getting_started/windows.html) (for Windows machines). Follow the instructions on the website to install it. Note that Texada depends on the non-header libraries, ProgramOptions and regex, which needs to be built separately (see "5. Prepare to Use a Boost Library Binary" on the Boost website). We have used Texada with BOOST versions 1.59.0-1.77.0.
 
 To integrate with Texada, the location of Boost headers will need to be inputted to uservars.mk (see "Building the project" below), so make note of where it is being extracted.
 
@@ -99,7 +104,7 @@ SPOT can be downloaded [here](http://spot.lip6.fr/wiki/GetSpot). Extract the fil
 
 To integrate with Texada, the location of SPOT headers and library will need to be inputted to uservars.mk (see "Building the project" below), so make note of where it is being extracted. 
 
-Texada currently is only compatible with Versions 1.2.4-1.2.6 of SPOT. Note that these versions require the installation of the [Boost](http://www.boost.org/) libraries. Its full functionality requires Python 2.0+ headers, but if these are not already installed, they can be omitted for the purposes of Texada. 
+The version of Texada in the `master` branch is compatible with SPOT 1.2.4-1.2.6, which is also dependent on BOOST. The version of Texada in the `spot-2.x` branch is compatible wiSPOT versions 2.X. 
 
 To install SPOT, navigate to the extracted SPOT folder and run these commands:
 

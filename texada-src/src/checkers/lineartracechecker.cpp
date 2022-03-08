@@ -9,9 +9,8 @@
 #include "boolbasedchecker.h"
 #include "../instantiation-tools/apsubbingcloner.h"
 #include "../instantiation-tools/pregeninstantspool.h"
-#include "ltlvisit/tostring.hh"
-#include "ltlvisit/simplify.hh"
-#include "tgba/bdddict.hh"
+#include "../formula/texadatospotmapping.h"
+#include "../formula/texadasimplify.h"
 #include "statistic.h"
 #include "settings.h"
 namespace texada {
@@ -26,7 +25,7 @@ linear_trace_checker::linear_trace_checker(bool use_inv_s, shared_ptr<map<string
     translations = ptr;
 }
 
-statistic linear_trace_checker::check_on_trace(const spot::ltl::formula * node, const event * trace){
+statistic linear_trace_checker::check_on_trace(const ltl::formula * node, const event * trace){
     return this->check(node, trace);
 }
 
@@ -38,7 +37,7 @@ statistic linear_trace_checker::check_on_trace(const spot::ltl::formula * node, 
  * @param trace: pointer to the start of the trace
  * @return whether node holds on trace
  */
-statistic linear_trace_checker::ap_check(const spot::ltl::atomic_prop *node,
+statistic linear_trace_checker::ap_check(const ltl::atomic_prop *node,
         const event *trace, std::set<int> trace_ids) {
     if (trace->is_satisfied(node->name())) {
         return statistic(true, 1, 1);
@@ -67,10 +66,10 @@ statistic linear_trace_checker::ap_check(const spot::ltl::atomic_prop *node,
  * @param trace_ids
  * @return
  */
-statistic linear_trace_checker::until_check(const spot::ltl::binop* node,
+statistic linear_trace_checker::until_check(const ltl::binop* node,
         const event* trace_pt, std::set<int> trace_ids) {
-    const spot::ltl::formula * p = node->first();
-    const spot::ltl::formula * q = node->second();
+    const ltl::formula * p = node->first();
+    const ltl::formula * q = node->second();
     
     statistic cur_stat_p;
     statistic cur_stat_q;
@@ -100,10 +99,10 @@ statistic linear_trace_checker::until_check(const spot::ltl::binop* node,
  * @param trace_ids
  * @return
  */
-statistic linear_trace_checker::release_check(const spot::ltl::binop* node,
+statistic linear_trace_checker::release_check(const ltl::binop* node,
         const event* trace_pt, std::set<int> trace_ids) {
-    const spot::ltl::formula * p = node->first();
-    const spot::ltl::formula * q = node->second();
+    const ltl::formula * p = node->first();
+    const ltl::formula * q = node->second();
 
     statistic cur_stat_p;
     statistic cur_stat_q;
@@ -133,10 +132,10 @@ statistic linear_trace_checker::release_check(const spot::ltl::binop* node,
  * @param trace_ids
  * @return
  */
-statistic linear_trace_checker::strongrelease_check(const spot::ltl::binop* node,
+statistic linear_trace_checker::strongrelease_check(const ltl::binop* node,
         const event* trace_pt, std::set<int> trace_ids) {
-    const spot::ltl::formula * p = node->first();
-    const spot::ltl::formula * q = node->second();
+    const ltl::formula * p = node->first();
+    const ltl::formula * q = node->second();
         
     statistic cur_stat_p;
     statistic cur_stat_q;
@@ -165,10 +164,10 @@ statistic linear_trace_checker::strongrelease_check(const spot::ltl::binop* node
  * @param trace_ids
  * @return
  */
-statistic linear_trace_checker::weakuntil_check(const spot::ltl::binop* node,
+statistic linear_trace_checker::weakuntil_check(const ltl::binop* node,
         const event* trace_pt, std::set<int> trace_ids) {
-    const spot::ltl::formula * p = node->first();
-    const spot::ltl::formula * q = node->second();
+    const ltl::formula * p = node->first();
+    const ltl::formula * q = node->second();
 
     statistic cur_stat_p;
     statistic cur_stat_q;
@@ -201,9 +200,9 @@ statistic linear_trace_checker::weakuntil_check(const spot::ltl::binop* node,
  * @param trace_ids
  * @return
  */
-statistic linear_trace_checker::globally_check(const spot::ltl::unop* node,
+statistic linear_trace_checker::globally_check(const ltl::unop* node,
         const event* trace_pt, std::set<int> trace_ids) {
-    const spot::ltl::formula * p = node->child();
+    const ltl::formula * p = node->child();
 
     statistic cur_stat;
     statistic ret_stat = statistic(true,0,0);
@@ -231,12 +230,11 @@ statistic linear_trace_checker::globally_check(const spot::ltl::unop* node,
  * @param trace_ids
  * @return
  */
-statistic linear_trace_checker::finally_check(const spot::ltl::unop* node,
+statistic linear_trace_checker::finally_check(const ltl::unop* node,
         const event* trace_pt, std::set<int> trace_ids) {
-    const spot::ltl::formula * p = node->child();
+    const ltl::formula * p = node->child();
 
     // TODO: why not combine the support, support pot here? (like in globally)
-    
     statistic cur_stat;
     while (!trace_pt->is_terminal()){
       if ((cur_stat = this->check(p,trace_pt)).is_satisfied){
@@ -259,9 +257,9 @@ statistic linear_trace_checker::finally_check(const spot::ltl::unop* node,
  * @param trace_ids
  * @return
  */
-statistic linear_trace_checker::next_check(const spot::ltl::unop* node,
+statistic linear_trace_checker::next_check(const ltl::unop* node,
         const event* trace_pt, std::set<int> trace_ids) {
-    const spot::ltl::formula * p = node->child();
+    const ltl::formula * p = node->child();
     // if we are at the terminal event, the next event is also a terminal
     // event. Since we are traversing a finite tree, this will terminate.
     if (trace_pt->is_terminal()) {
@@ -279,7 +277,7 @@ statistic linear_trace_checker::next_check(const spot::ltl::unop* node,
  * @return
  */
 vector<std::pair<map<string, string>, statistic>> valid_instants_on_traces(
-        const spot::ltl::formula * prop_type,
+        const ltl::formula * prop_type,
         instants_pool_creator * instantiator,
         shared_ptr<std::multiset<vector<event>>> traces,
         bool use_invar_semantics,
@@ -298,7 +296,7 @@ vector<std::pair<map<string, string>, statistic>> valid_instants_on_traces(
  * @return
  */
 vector<std::pair<map<string, string>, statistic>> valid_instants_on_traces(
-        const spot::ltl::formula * prop_type,
+        const ltl::formula * prop_type,
         instants_pool_creator * instantiator,
         shared_ptr<std::multiset<vector<event>>> traces,
         settings c_settings,
@@ -316,7 +314,7 @@ vector<std::pair<map<string, string>, statistic>> valid_instants_on_traces(
     checker.configure(c_settings);
     // simplifier for turning formulas into negative normal form so that
     // statistics of formulae involving not, xor, <-> can be computed.
-    std::unique_ptr<spot::ltl::ltl_simplifier> simplifier(new spot::ltl::ltl_simplifier());
+    std::unique_ptr<ltl::ltl_simplifier> simplifier(new ltl::ltl_simplifier());
 
     // Loop through each instantiation, filtering out those which are invalid (the notion of invalidity
     // depending on the given checker settings).
@@ -329,16 +327,17 @@ vector<std::pair<map<string, string>, statistic>> valid_instants_on_traces(
         if (current_instantiation == NULL) {
             break;
         }
-        const spot::ltl::formula * instantiated_prop_type = instantiate(prop_type,*current_instantiation,
+        const ltl::formula * instantiated_prop_type = instantiate(prop_type,*current_instantiation,
                 instantiator->get_events_to_exclude());
         // unless checker is configured for the vanilla setting, turn formula into negative normal form.
         // note that the the operators xor, <->, and -> will be reduced to basic operators by the below code.
         if (!c_settings.is_vanilla()) {
             // move original formula to a temp ptr to be destroyed
-            const spot::ltl::formula * to_delete = instantiated_prop_type;
+            const ltl::formula * to_delete = instantiated_prop_type;
             instantiated_prop_type = simplifier->negative_normal_form(instantiated_prop_type);
             to_delete->destroy();
         }
+
         // the meaning of validity will depend on the user inputed settings
         bool valid = true;
         statistic global_stat = statistic(true, 0, 0);

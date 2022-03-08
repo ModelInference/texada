@@ -8,7 +8,7 @@
 #ifndef LINEARTRACECHECKER_H_
 #define LINEARTRACECHECKER_H_
 
-#include <ltlast/allnodes.hh>
+
 #include "../trace/event.h"
 #include "boolbasedchecker.h"
 #include <iostream>
@@ -18,6 +18,7 @@
 #include "../invariant-semantics/pptinvariantdecider.h"
 #endif
 #include "../instantiation-tools/pregeninstantspool.h"
+#include "../formula/texadatospotmapping.h"
 
 namespace texada {
 
@@ -34,25 +35,25 @@ public:
 	linear_trace_checker(bool, shared_ptr<map<string,string>>);
 	virtual ~linear_trace_checker() {};
 
-	statistic check_on_trace(const spot::ltl::formula* node, const event *trace);
+	statistic check_on_trace(const ltl::formula* node, const event *trace);
 
 private:
 
-	virtual statistic ap_check(const spot::ltl::atomic_prop* node,
+	virtual statistic ap_check(const ltl::atomic_prop* node,
 	            const event* trace_pt, std::set<int> trace_ids = std::set<int>());
-    virtual statistic until_check(const spot::ltl::binop* node,
+    virtual statistic until_check(const ltl::binop* node,
             const event* trace_pt, std::set<int> trace_ids = std::set<int>());
-    virtual statistic release_check(const spot::ltl::binop* node,
+    virtual statistic release_check(const ltl::binop* node,
             const event* trace_pt, std::set<int> trace_ids = std::set<int>());
-    virtual statistic strongrelease_check(const spot::ltl::binop* node,
+    virtual statistic strongrelease_check(const ltl::binop* node,
                 const event* trace_pt, std::set<int> trace_ids = std::set<int>());
-    virtual statistic weakuntil_check(const spot::ltl::binop* node,
+    virtual statistic weakuntil_check(const ltl::binop* node,
             const event* trace_pt, std::set<int> trace_ids = std::set<int>());
-    virtual statistic globally_check(const spot::ltl::unop* node,
+    virtual statistic globally_check(const ltl::unop* node,
             const event* trace_pt, std::set<int> trace_ids = std::set<int>());
-    virtual statistic finally_check(const spot::ltl::unop* node,
+    virtual statistic finally_check(const ltl::unop* node,
             const event* trace_pt, std::set<int> trace_ids = std::set<int>());
-    virtual statistic next_check(const spot::ltl::unop* node,
+    virtual statistic next_check(const ltl::unop* node,
             const event* trace_pt, std::set<int> trace_ids = std::set<int>());
 
     // use invariant semantics
@@ -71,7 +72,7 @@ private:
  * print_stats = false
  */
 vector<std::pair<map<string, string>, statistic>> valid_instants_on_traces(
-        const spot::ltl::formula * prop_type,
+        const ltl::formula * prop_type,
         instants_pool_creator * instantiator,
         shared_ptr<std::multiset<vector<event>>> traces,
         bool use_invar_semantics = false,
@@ -81,7 +82,7 @@ vector<std::pair<map<string, string>, statistic>> valid_instants_on_traces(
  * Finds valid instants on traces based on given configuration
  */
 vector<std::pair<map<string, string>, statistic>> valid_instants_on_traces(
-        const spot::ltl::formula * prop_type,
+        const ltl::formula * prop_type,
         instants_pool_creator * instantiator,
         shared_ptr<std::multiset<vector<event>>> traces,
         settings c_settings,

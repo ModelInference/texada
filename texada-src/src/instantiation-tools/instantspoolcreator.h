@@ -14,8 +14,7 @@
 #include <set>
 #include <string>
 
-#include <ltlast/allnodes.hh>
-#include <ltlvisit/apcollect.hh>
+#include "../formula/texadatospotmapping.h"
 
 namespace texada {
 using std::shared_ptr;
@@ -30,7 +29,7 @@ class instants_pool_creator {
 
 public:
     instants_pool_creator(shared_ptr<set<string>>  events,
-            shared_ptr<spot::ltl::atomic_prop_set> ltlevents, bool allow_reps,
+            shared_ptr<ltl::atomic_prop_set> ltlevents, bool allow_reps,
             vector<string> exclude_events = vector<string>());
     instants_pool_creator();
     virtual ~instants_pool_creator();
@@ -41,7 +40,7 @@ public:
 protected:
     shared_ptr<set<string>>  unique_events;
     vector<string> events_to_exclude;
-    shared_ptr<spot::ltl::atomic_prop_set> formula_vars;
+    shared_ptr<ltl::atomic_prop_set> formula_vars;
     bool allow_repetition = false;
     int traversal_var = 0;
 

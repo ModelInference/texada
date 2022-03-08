@@ -11,9 +11,8 @@
 #include "../src/checkers/statistic.h"
 #include "../src/checkers/settings.h"
 
-#include <ltlparse/public.hh>
-#include <ltlvisit/tostring.hh>
-#include "ltlvisit/simplify.hh"
+#include "../src/formula/texadatospotmapping.h"
+#include "../src/formula/texadasimplify.h"
 
 #include <gtest/gtest.h>
 
@@ -35,8 +34,8 @@ TEST(LinearTraceCheckerTest, AFby) {
 
     // parse the formula
     std::string input = "G(a->Fb)";
-    spot::ltl::parse_error_list pel;
-    const spot::ltl::formula* f = spot::ltl::parse(input, pel);
+    texada::ltl::parse_error_list pel;
+    const texada::ltl::formula* f = texada::ltl::parse(input, pel);
 
     // create a new linear checker
 
@@ -48,20 +47,20 @@ TEST(LinearTraceCheckerTest, AFby) {
 
     // G(a->Fa) also holds because F includes the present as well as the future
     input = "G(a->Fa)";
-    f = spot::ltl::parse(input, pel);
+    f = texada::ltl::parse(input, pel);
     ASSERT_TRUE((checker->check_on_trace(f,trace)).is_satisfied);
     f->destroy();
 
     // Adding the next operator makes F talk exclusively about future events;
     // G(a->XFa) does not hold
     input = "G(a->XFa)";
-    f = spot::ltl::parse(input, pel);
+    f = texada::ltl::parse(input, pel);
     ASSERT_FALSE((checker->check_on_trace(f,trace)).is_satisfied);
     f->destroy();
 
     // b is not always followed by a.
     input = "G(b->Fa)";
-    f = spot::ltl::parse(input, pel);
+    f = texada::ltl::parse(input, pel);
     ASSERT_FALSE((checker->check_on_trace(f,trace)).is_satisfied);
     f->destroy();
 
@@ -83,19 +82,19 @@ TEST(LinearTraceCheckerTest, NextNext) {
 
     // set up checker and parse error list necessary for parsing and checking
     texada::linear_trace_checker* checker = new texada::linear_trace_checker();
-    spot::ltl::parse_error_list pel;
+    texada::ltl::parse_error_list pel;
 
     // G(b->XXa) should force the checker to go "beyond" the end of the trace
     // and should return false since the terminal event, which is infinitely
     // appended to the end of the trace, is not a.
     std::string input = "G(b->XXa)";
-    const spot::ltl::formula* f = spot::ltl::parse(input, pel);
+    const texada::ltl::formula* f = texada::ltl::parse(input, pel);
     ASSERT_FALSE((checker->check_on_trace(f,trace)).is_satisfied);
     f->destroy();
 
     // G(b->XX!a) should return true because the terminal event is not a
     input = "G(b->XX!a)";
-    f = spot::ltl::parse(input, pel);
+    f = texada::ltl::parse(input, pel);
     ASSERT_TRUE((checker->check_on_trace(f,trace)).is_satisfied);
     f->destroy();
 
@@ -128,9 +127,9 @@ TEST(LinearTraceCheckerTest,Alternating) {
 
     // alternating input in string form
     std::string alti = "((!s)W p)&G((p->X((!p)U s))&(s->X((!s)W p)))";
-    spot::ltl::parse_error_list pel;
+    texada::ltl::parse_error_list pel;
     // alternating formula is parsed from alternating input
-    const spot::ltl::formula* altf = spot::ltl::parse(alti, pel);
+    const texada::ltl::formula* altf = texada::ltl::parse(alti, pel);
 
     // create checker
     texada::linear_trace_checker* checker = new texada::linear_trace_checker();
@@ -159,8 +158,8 @@ TEST(LinearTraceCheckerTest,Until) {
 
     //parse formula
     std::string input = "p U q";
-    spot::ltl::parse_error_list pel;
-    const spot::ltl::formula* f = spot::ltl::parse(input, pel);
+    texada::ltl::parse_error_list pel;
+    const texada::ltl::formula* f = texada::ltl::parse(input, pel);
 
     texada::linear_trace_checker* checker = new texada::linear_trace_checker();
 
@@ -169,7 +168,7 @@ TEST(LinearTraceCheckerTest,Until) {
     f->destroy();
 
     input = "!p U q";
-    f = spot::ltl::parse(input, pel);
+    f = texada::ltl::parse(input, pel);
 
     // !p U q should also be true
     ASSERT_TRUE((checker->check_on_trace(f, trace)).is_satisfied);
@@ -196,49 +195,49 @@ TEST(LinearTraceCheckerTest, SupAndSupPot) {
 
     texada::linear_trace_checker* checker = new texada::linear_trace_checker();
     checker->configure(texada::settings(0,0,1.0,false,true));
-    std::unique_ptr<spot::ltl::ltl_simplifier> simplifier(new spot::ltl::ltl_simplifier());
+    std::unique_ptr<texada::ltl::ltl_simplifier> simplifier(new texada::ltl::ltl_simplifier());
 
     // Tests to try and cover the support and support-potential measurements of findings
 
     std::string input = "G(a->Fb)";
-    spot::ltl::parse_error_list pel;
-    const spot::ltl::formula* f = spot::ltl::parse(input, pel);
+    texada::ltl::parse_error_list pel;
+    const texada::ltl::formula* f = texada::ltl::parse(input, pel);
     ASSERT_EQ(3, checker->check_on_trace(f, trace).support);
     ASSERT_EQ(4, checker->check_on_trace(f, trace).support_potential);
     f->destroy();
 
     //until
     input = "a U b";
-    f = spot::ltl::parse(input,pel);
+    f = texada::ltl::parse(input,pel);
     ASSERT_EQ(4, (checker->check_on_trace(f, trace)).support);
     ASSERT_EQ(5, (checker->check_on_trace(f, trace)).support_potential);
     f->destroy();
 
     //weak until
     input = "a W b";
-    f = spot::ltl::parse(input,pel);
+    f = texada::ltl::parse(input,pel);
     ASSERT_EQ(3, (checker->check_on_trace(f, trace)).support);
     ASSERT_EQ(4, (checker->check_on_trace(f, trace)).support_potential);
     f->destroy();
 
     //release
     input = "b R a";
-    f = spot::ltl::parse(input,pel);
+    f = texada::ltl::parse(input,pel);
     ASSERT_EQ(3, (checker->check_on_trace(f, trace)).support);
     ASSERT_EQ(5, (checker->check_on_trace(f, trace)).support_potential);
     f->destroy();
 
     //strong release
     input = "b M a";
-    f = spot::ltl::parse(input,pel);
+    f = texada::ltl::parse(input,pel);
     ASSERT_EQ(4, (checker->check_on_trace(f, trace)).support);
     ASSERT_EQ(6, (checker->check_on_trace(f, trace)).support_potential);
     f->destroy();
 
     //xor
     input = "b xor a";
-    f = spot::ltl::parse(input,pel);
-    const spot::ltl::formula * to_delete = f;
+    f = texada::ltl::parse(input,pel);
+    const texada::ltl::formula * to_delete = f;
     f = simplifier->negative_normal_form(f);
     to_delete->destroy();
     ASSERT_EQ(2, (checker->check_on_trace(f, trace)).support);
@@ -247,7 +246,7 @@ TEST(LinearTraceCheckerTest, SupAndSupPot) {
 
     //equiv, iff
     input = "b <-> a";
-    f = spot::ltl::parse(input,pel);
+    f = texada::ltl::parse(input,pel);
     to_delete = f;
     f = simplifier->negative_normal_form(f);
     to_delete->destroy();
@@ -257,7 +256,7 @@ TEST(LinearTraceCheckerTest, SupAndSupPot) {
 
     //implies
     input = "a -> b";
-    f = spot::ltl::parse(input,pel);
+    f = texada::ltl::parse(input,pel);
     to_delete = f;
     f = simplifier->negative_normal_form(f);
     to_delete->destroy();
@@ -266,7 +265,7 @@ TEST(LinearTraceCheckerTest, SupAndSupPot) {
     f->destroy();
 
     input = "a -> Fb";
-    f = spot::ltl::parse(input,pel);
+    f = texada::ltl::parse(input,pel);
     to_delete = f;
     f = simplifier->negative_normal_form(f);
     to_delete->destroy();
@@ -276,35 +275,35 @@ TEST(LinearTraceCheckerTest, SupAndSupPot) {
 
     //or
     input = "a | b";
-    f = spot::ltl::parse(input,pel);
+    f = texada::ltl::parse(input,pel);
     ASSERT_EQ(1, (checker->check_on_trace(f, trace)).support);
     ASSERT_EQ(1, (checker->check_on_trace(f, trace)).support_potential);
     f->destroy();
 
     //and
     input = "a & b";
-    f = spot::ltl::parse(input,pel);
+    f = texada::ltl::parse(input,pel);
     ASSERT_EQ(1, (checker->check_on_trace(f, trace)).support);
     ASSERT_EQ(2, (checker->check_on_trace(f, trace)).support_potential);
     f->destroy();
 
     //finally
     input = "Fa";
-    f = spot::ltl::parse(input,pel);
+    f = texada::ltl::parse(input,pel);
     ASSERT_EQ(1, (checker->check_on_trace(f, trace)).support);
     ASSERT_EQ(1, (checker->check_on_trace(f, trace)).support_potential);
     f->destroy();
 
     //globally
     input = "Ga";
-    f = spot::ltl::parse(input,pel);
+    f = texada::ltl::parse(input,pel);
     ASSERT_EQ(4, (checker->check_on_trace(f, trace)).support);
     ASSERT_EQ(6, (checker->check_on_trace(f, trace)).support_potential);
     f->destroy();
 
     //never
     input = "!Ga";
-    f = spot::ltl::parse(input,pel);
+    f = texada::ltl::parse(input,pel);
     to_delete = f;
     f = simplifier->negative_normal_form(f);
     to_delete->destroy();
@@ -314,14 +313,14 @@ TEST(LinearTraceCheckerTest, SupAndSupPot) {
 
     // next
     input = "Xa";
-    f = spot::ltl::parse(input,pel);
+    f = texada::ltl::parse(input,pel);
     ASSERT_EQ(1, (checker->check_on_trace(f, trace)).support);
     ASSERT_EQ(1, (checker->check_on_trace(f, trace)).support_potential);
     f->destroy();
 
     // not
     input = "!b";
-    f = spot::ltl::parse(input,pel);
+    f = texada::ltl::parse(input,pel);
     ASSERT_EQ(1, (checker->check_on_trace(f, trace)).support);
     ASSERT_EQ(1, (checker->check_on_trace(f, trace)).support_potential);
     f->destroy();

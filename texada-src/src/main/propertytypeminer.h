@@ -8,8 +8,7 @@
 #ifndef PROPERTYTYPEMINER_H_
 #define PROPERTYTYPEMINER_H_
 
-#include <ltlast/predecl.hh>
-
+#include "../formula/texadatospotmapping.h"
 #include <set>
 #include <boost/program_options.hpp>
 #include <vector>

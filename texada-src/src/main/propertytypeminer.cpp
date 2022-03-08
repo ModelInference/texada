@@ -10,9 +10,7 @@
 #include <fstream>
 #include <assert.h>
 
-#include <ltlparse/public.hh>
-#include <ltlvisit/apcollect.hh>
-#include <ltlvisit/tostring.hh>
+#include "../formula/texadatospotmapping.h"
 #include <time.h>
 
 #include <boost/program_options.hpp>
@@ -151,10 +149,10 @@ vector<vector<std::pair<std::map<std::string, std::string>, texada::statistic>>>
     }
 
     //parse the ltl formulas
-    spot::ltl::parse_error_list parse_errs;
-    vector<const spot::ltl::formula *> formulae;
+    ltl::parse_error_list parse_errs;
+    vector<const ltl::formula *> formulae;
     for (unsigned int i = 0; i < prop_types.size(); i++){
-        formulae.push_back(spot::ltl::parse(prop_types[i], parse_errs));
+        formulae.push_back(ltl::parse(prop_types[i], parse_errs));
         assert(parse_errs.size() == 0);
     }
     // parse file
@@ -199,10 +197,9 @@ vector<vector<std::pair<std::map<std::string, std::string>, texada::statistic>>>
     }
 
     // create the set of formulas' variables
-    vector<shared_ptr<spot::ltl::atomic_prop_set>> variable_vec;
-
+    vector<shared_ptr<ltl::atomic_prop_set>> variable_vec;
     for (unsigned int i = 0; i < formulae.size(); i++){
-        variable_vec.push_back(shared_ptr<spot::ltl::atomic_prop_set>(spot::ltl::atomic_prop_collect(formulae[i])));
+        variable_vec.push_back(shared_ptr<ltl::atomic_prop_set>(ltl::atomic_prop_collect(formulae[i])));
     }
 
     // add events which should be removed from the event set for each formula
@@ -212,7 +209,7 @@ vector<vector<std::pair<std::map<std::string, std::string>, texada::statistic>>>
             // loop through each formula
             for (unsigned int j = 0; j < formulae.size(); j++){
                 // loop through variables for each formula
-                for (set<const spot::ltl::atomic_prop*>::iterator it = variable_vec[j]->begin();
+                for (set<const ltl::atomic_prop*>::iterator it = variable_vec[j]->begin();
                         it != variable_vec[j]->end(); it++){
                     // add variable to events to be excluded if it appears in the formula
                     if ((*it)->name() == constant_events[i]){
@@ -228,7 +225,7 @@ vector<vector<std::pair<std::map<std::string, std::string>, texada::statistic>>>
     // remove variables which are specified as constant events
     for (unsigned int i = 0; i <variable_vec.size(); i++){
         if (constant_events.size() > 0) {
-            spot::ltl::atomic_prop_set::iterator it = variable_vec[i]->begin();
+            ltl::atomic_prop_set::iterator it = variable_vec[i]->begin();
             while (it != variable_vec[i]->end()) {
                 bool erase = false;
                 for (unsigned int i = 0; i < constant_events.size(); i++) {
@@ -237,7 +234,7 @@ vector<vector<std::pair<std::map<std::string, std::string>, texada::statistic>>>
                     }
                 }
                 if (erase) {
-                    spot::ltl::atomic_prop_set::iterator toErase = it;
+                    ltl::atomic_prop_set::iterator toErase = it;
                     ++it;
                     variable_vec[i]->erase(toErase);
                 } else {

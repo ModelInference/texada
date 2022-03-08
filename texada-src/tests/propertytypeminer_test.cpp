@@ -9,8 +9,7 @@
 #include "../src/main/opts.h"
 #include "../src/checkers/statistic.h"
 #include <gtest/gtest.h>
-#include <ltlvisit/tostring.hh>
-#include <ltlparse/public.hh>
+#include "../src/formula/texadatospotmapping.h"
 #include <array>
 #include <fstream>
 #include <time.h>

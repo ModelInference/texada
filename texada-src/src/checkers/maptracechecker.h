@@ -11,7 +11,7 @@
 #include <map>
 #include <unordered_map>
 #include <vector>
-#include <ltlast/allnodes.hh>
+#include "../formula/texadatospotmapping.h"
 #include <boost/functional/hash.hpp>
 #include <boost/unordered_map.hpp>
 #include "../instantiation-tools/pregeninstantspool.h"
@@ -31,8 +31,8 @@ public:
     map_trace_checker(const map<event, vector<long>>*);
     map_trace_checker(const map<event, vector<long>>*, bool, shared_ptr<map<string,string>>);
     virtual ~map_trace_checker();
-    statistic check_on_trace(const spot::ltl::formula *, interval intvl = interval());
-    statistic check_on_trace(const spot::ltl::formula *, map<string,string>, interval intvl = interval());
+    statistic check_on_trace(const ltl::formula *, interval intvl = interval());
+    statistic check_on_trace(const ltl::formula *, map<string,string>, interval intvl = interval());
     /**
      * This class uses relative positions to check to occurrence of events. As
      * such, it has three extra groups of functions: find first, last and all
@@ -42,14 +42,14 @@ public:
 
     // things for memoization
     void add_relevant_bindings(
-            map<const spot::ltl::formula*, set<string>> * bindings_map);
+            map<const ltl::formula*, set<string>> * bindings_map);
     void clear_memo();
     int num_memo_elements();
 
 private:
 
     struct memoization_key {
-        const spot::ltl::formula* formula;
+        const ltl::formula* formula;
         map<string,string> relevant_instants;
         interval intvl;
         bool operator==(const memoization_key other) const {
@@ -91,72 +91,72 @@ private:
     map<string,string> instantiation_map;
     // keeps track of which bindings should be stored for each formula node:
     // switch for each different formula checker
-    map<const spot::ltl::formula*, set<string>> * relevant_bindings_map;
+    map<const ltl::formula*, set<string>> * relevant_bindings_map;
     // use invariant semantics
     bool use_invariant_semantics;
     shared_ptr<map<string,string>> translations;
 
     //memoization things
-    memoization_key setup_key(const spot::ltl::formula*, interval);
-    memoization_key setup_key_ap(const spot::ltl::atomic_prop*, interval);
-    long return_and_add_first(const spot::ltl::formula*, interval, long);
-    long return_and_add_last(const spot::ltl::formula*, interval, long);
-    set<string> aps_of_form(const spot::ltl::formula*);
+    memoization_key setup_key(const ltl::formula*, interval);
+    memoization_key setup_key_ap(const ltl::atomic_prop*, interval);
+    long return_and_add_first(const ltl::formula*, interval, long);
+    long return_and_add_last(const ltl::formula*, interval, long);
+    set<string> aps_of_form(const ltl::formula*);
 
 
-    virtual statistic ap_check(const spot::ltl::atomic_prop* node,
+    virtual statistic ap_check(const ltl::atomic_prop* node,
             interval intvl, std::set<int> trace_ids = std::set<int>());
-    virtual statistic until_check(const spot::ltl::binop* node,
+    virtual statistic until_check(const ltl::binop* node,
             interval intvl, std::set<int> trace_ids = std::set<int>());
-    virtual statistic release_check(const spot::ltl::binop* node,
+    virtual statistic release_check(const ltl::binop* node,
             interval intvl, std::set<int> trace_ids = std::set<int>());
-    virtual statistic weakuntil_check(const spot::ltl::binop* node,
+    virtual statistic weakuntil_check(const ltl::binop* node,
             interval intvl, std::set<int> trace_ids = std::set<int>());
-    virtual statistic strongrelease_check(const spot::ltl::binop* node,
+    virtual statistic strongrelease_check(const ltl::binop* node,
                 interval intvl, std::set<int> trace_ids = std::set<int>());
-    virtual statistic globally_check(const spot::ltl::unop* node,
+    virtual statistic globally_check(const ltl::unop* node,
             interval intvl, std::set<int> trace_ids = std::set<int>());
-    virtual statistic finally_check(const spot::ltl::unop* node,
+    virtual statistic finally_check(const ltl::unop* node,
             interval intvl, std::set<int> trace_ids = std::set<int>());
-    virtual statistic next_check(const spot::ltl::unop* node,
+    virtual statistic next_check(const ltl::unop* node,
             interval intvl, std::set<int> trace_ids = std::set<int>());
 
-    long find_first_occurrence(const spot::ltl::formula*, interval);
-    long find_first_occurrence(const spot::ltl::multop*, interval);
-    long find_first_occurrence(const spot::ltl::unop*, interval);
-    long find_first_occurrence(const spot::ltl::constant*, interval);
-    long find_first_occurrence(const spot::ltl::binop*, interval);
-    long find_first_occurrence(const spot::ltl::atomic_prop*, interval);
+    long find_first_occurrence(const ltl::formula*, interval);
+    long find_first_occurrence(const ltl::multop*, interval);
+    long find_first_occurrence(const ltl::unop*, interval);
+    long find_first_occurrence(const ltl::constant*, interval);
+    long find_first_occurrence(const ltl::binop*, interval);
+    long find_first_occurrence(const ltl::atomic_prop*, interval);
 
 
-    long find_last_occurrence(const spot::ltl::formula*, interval);
-    long find_last_occurrence(const spot::ltl::atomic_prop*, interval);
-    long find_last_occurrence(const spot::ltl::multop*, interval);
-    long find_last_occurrence(const spot::ltl::unop*, interval);
-    long find_last_occurrence(const spot::ltl::constant*, interval);
-    long find_last_occurrence(const spot::ltl::binop*, interval);
+    long find_last_occurrence(const ltl::formula*, interval);
+    long find_last_occurrence(const ltl::atomic_prop*, interval);
+    long find_last_occurrence(const ltl::multop*, interval);
+    long find_last_occurrence(const ltl::unop*, interval);
+    long find_last_occurrence(const ltl::constant*, interval);
+    long find_last_occurrence(const ltl::binop*, interval);
 
     /**
      * automatop and bunop are not supported.
      */
-    long find_first_occurrence(const spot::ltl::automatop*) {
+    long find_first_occurrence(const ltl::automatop*) {
         throw texada::unsupported_type_exception("Type automatop unsupported.");
     }
-    long find_first_occurrence(const spot::ltl::bunop*) {
+    long find_first_occurrence(const ltl::bunop*) {
         throw texada::unsupported_type_exception("Type bunop unsupported.");
     }
 
-    long find_last_occurrence(const spot::ltl::automatop*) {
+    long find_last_occurrence(const ltl::automatop*) {
         throw texada::unsupported_type_exception("Type automatop unsupported.");
     }
-    long find_last_occurrence(const spot::ltl::bunop*) {
+    long find_last_occurrence(const ltl::bunop*) {
         throw texada::unsupported_type_exception("Type bunop unsupported.");
     }
 
 };
 
 vector<std::pair<map<string, string>, statistic>> valid_instants_on_traces(
-        const spot::ltl::formula * prop_type,
+        const ltl::formula * prop_type,
         instants_pool_creator * instantiator,
         shared_ptr<set<map<event, vector<long>>>>,
         bool use_invar_semantics = false,
