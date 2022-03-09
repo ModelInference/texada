@@ -102,9 +102,11 @@ SPOT can be downloaded [here](http://spot.lip6.fr/wiki/GetSpot). Extract the fil
 
     tar -zxvf spot-version.tar.gz
 
-To integrate with Texada, the location of SPOT headers and library will need to be inputted to uservars.mk (see "Building the project" below), so make note of where it is being extracted. 
+Note that:
+- the `master` branch is compatible with SPOT 1.2.4-1.2.6, which is also dependent on BOOST. 
+- the `spot-2.x` branch is compatible with SPOT versions 2.X. 
 
-The version of Texada in the `master` branch is compatible with SPOT 1.2.4-1.2.6, which is also dependent on BOOST. The version of Texada in the `spot-2.x` branch is compatible wiSPOT versions 2.X. 
+To integrate with Texada, the location of SPOT headers and library will need to be inputted to uservars.mk (see "Building the project" below), so make note of where it is being extracted. 
 
 To install SPOT, navigate to the extracted SPOT folder and run these commands:
 
