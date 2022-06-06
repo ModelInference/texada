@@ -211,7 +211,7 @@ By default, Texada interprets ```--``` as a trace separator; so the above log wo
 
 Now, suppose that we want to find out whether there are events x and y, such instances of x is always followed by an instance of y. In LTL this can be expressed as G(x -> XF(y)). To determine such pairs of events we run Texada as follows:
 
-    ./texada -m -f 'G(x -> X(F(y)))' --log-file basic_log.txt
+    ./texada -m -f 'G(x -> X(F(y)))' --log-file basic_log.txt --no-vacuous-findings
 
 This produces the following output:
 
