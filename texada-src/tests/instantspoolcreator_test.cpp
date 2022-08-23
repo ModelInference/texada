@@ -6,6 +6,7 @@
  */
 
 #include "../src/instantiation-tools/pregeninstantspool.h"
+#include "../src/instantiation-tools/otfinstantspool.h"
 #include <gtest/gtest.h>
 #include <ltlparse/public.hh>
 #include <ltlvisit/apcollect.hh>
@@ -89,6 +90,99 @@ TEST(InstantiatorPoolCreatorTest,CheckNoRepetition) {
     ASSERT_EQ(returned_array->at(6), *instantiator.get_next_instantiation());
     ASSERT_EQ(returned_array->at(7), *instantiator.get_next_instantiation());
     ASSERT_TRUE(instantiator.get_next_instantiation() == NULL);
+
+    f->destroy();
+
+}
+
+TEST(InstantiatorPoolCreatorTest,OnTheFlyTest) {
+
+    //Set up to get the atomic propositions from a property type
+    std::string input = "G(x -> Fy)";
+    spot::ltl::parse_error_list pel;
+    const spot::ltl::formula* f = spot::ltl::parse(input, pel);
+    std::shared_ptr<spot::ltl::atomic_prop_set> formula_vars(spot::ltl::atomic_prop_collect(
+            f));
+    // create a set of events
+    std::shared_ptr<std::set<std::string>> events = std::make_shared<
+            std::set<std::string>>();
+    events->insert("a");
+    events->insert("b");
+    events->insert("c");
+
+    // now create the event instantiator
+    texada::otf_instants_pool instantiator = texada::otf_instants_pool(
+            events, formula_vars, true ,std::vector<std::string>());
+
+    auto instantiation = instantiator.get_next_instantiation();
+    ASSERT_EQ(instantiation->at("x"), "a");
+    ASSERT_EQ(instantiation->at("y"), "a");
+    instantiation = instantiator.get_next_instantiation();
+    ASSERT_EQ(instantiation->at("x"), "a");
+    ASSERT_EQ(instantiation->at("y"), "b");
+    instantiation = instantiator.get_next_instantiation();
+    ASSERT_EQ(instantiation->at("x"), "a");
+    ASSERT_EQ(instantiation->at("y"), "c");
+    instantiation = instantiator.get_next_instantiation();
+    ASSERT_EQ(instantiation->at("x"), "b");
+    ASSERT_EQ(instantiation->at("y"), "a");
+    instantiation = instantiator.get_next_instantiation();
+    ASSERT_EQ(instantiation->at("x"), "b");
+    ASSERT_EQ(instantiation->at("y"), "b");
+    instantiation = instantiator.get_next_instantiation();
+    ASSERT_EQ(instantiation->at("x"), "b");
+    ASSERT_EQ(instantiation->at("y"), "c");
+    instantiation = instantiator.get_next_instantiation();
+    ASSERT_EQ(instantiation->at("x"), "c");
+    ASSERT_EQ(instantiation->at("y"), "a");
+    instantiation = instantiator.get_next_instantiation();
+    ASSERT_EQ(instantiation->at("x"), "c");
+    ASSERT_EQ(instantiation->at("y"), "b");
+    instantiation = instantiator.get_next_instantiation();
+    ASSERT_EQ(instantiation->at("x"), "c");
+    ASSERT_EQ(instantiation->at("y"), "c");
+
+    f->destroy();
+
+}
+
+TEST(InstantiatorPoolCreatorTest,OnTheFlyTestNoDuplicates) {
+
+    //Set up to get the atomic propositions from a property type
+    std::string input = "G(x -> Fy)";
+    spot::ltl::parse_error_list pel;
+    const spot::ltl::formula* f = spot::ltl::parse(input, pel);
+    std::shared_ptr<spot::ltl::atomic_prop_set> formula_vars(spot::ltl::atomic_prop_collect(
+            f));
+    // create a set of events
+    std::shared_ptr<std::set<std::string>> events = std::make_shared<
+            std::set<std::string>>();
+    events->insert("a");
+    events->insert("b");
+    events->insert("c");
+
+    // now create the event instantiator
+    texada::otf_instants_pool instantiator = texada::otf_instants_pool(
+            events, formula_vars, false ,std::vector<std::string>());
+
+    auto instantiation = instantiator.get_next_instantiation();
+    ASSERT_EQ(instantiation->at("x"), "a");
+    ASSERT_EQ(instantiation->at("y"), "b");
+    instantiation = instantiator.get_next_instantiation();
+    ASSERT_EQ(instantiation->at("x"), "a");
+    ASSERT_EQ(instantiation->at("y"), "c");
+    instantiation = instantiator.get_next_instantiation();
+    ASSERT_EQ(instantiation->at("x"), "b");
+    ASSERT_EQ(instantiation->at("y"), "a");
+    instantiation = instantiator.get_next_instantiation();
+    ASSERT_EQ(instantiation->at("x"), "b");
+    ASSERT_EQ(instantiation->at("y"), "c");
+    instantiation = instantiator.get_next_instantiation();
+    ASSERT_EQ(instantiation->at("x"), "c");
+    ASSERT_EQ(instantiation->at("y"), "a");
+    instantiation = instantiator.get_next_instantiation();
+    ASSERT_EQ(instantiation->at("x"), "c");
+    ASSERT_EQ(instantiation->at("y"), "b");
 
     f->destroy();
 
