@@ -67,51 +67,48 @@ void otf_instants_pool::set_up_iteration_tracker() {
 }
 
 /**
-Returns true if the provided map has any duplicate bindings.
-*/
-bool map_has_duplicates(shared_ptr<map<string, string>> inst_map_at_pos){
-    set<string> found_so_far;        
-    for (map<string, string>::iterator map_it = inst_map_at_pos->begin();
-        map_it != inst_map_at_pos->end(); map_it++) {
-        if (found_so_far.find(map_it->second) == found_so_far.end()) {
-            found_so_far.insert(map_it->second);
-        } else {
-            return false;
-        }
-    }
-    return true;
-}
-
-/**
  * Creates a vector containing all valid instantiation functions. Dynamically creates
  * instantiations, and rejects them or checks them according to how the position
  * @return
  */
 shared_ptr<map<string, string>> otf_instants_pool::get_next_instantiation() {
     shared_ptr<map<string, string>> inst_map_at_pos = std::make_shared<
-        map<string, string>>();
-    do {
-        inst_map_at_pos->clear();
-        if (traversal_var >= pow(unique_events->size(), iteration_tracker.size())) {
-            return NULL;
-        }
-        //update the iteration tracker for the current position. On 1st entry,
-        // the line it->mapto++; should push it->mapto to events.end(),
-        // thus correctly starting at events.begin()
-        for (vector<iter_store>::iterator it = iteration_tracker.begin();
-                it != iteration_tracker.end(); it++) {
-            if (traversal_var % it->switchvar == 0) {
-                it->mapto++;
-                if (it->mapto == unique_events->end())
-                    it->mapto = unique_events->begin();
-            }
-            inst_map_at_pos->emplace(it->mapfrom, *(it->mapto));
-        }
-        traversal_var++;
+            map<string, string>>();
+
+    if (traversal_var >= pow(unique_events->size(), iteration_tracker.size())) {
+        return NULL;
     }
-    /* If this map has repetitions and that's not allowed, skip to the next instantiation. */
-    while (!allow_repetition && map_has_duplicates(inst_map_at_pos));
-    
+
+    //update the iteration tracker for the current position. On 1st entry,
+    // the line it->mapto++; should push it->mapto to events.end(),
+    // thus correctly starting at events.begin()
+    for (vector<iter_store>::iterator it = iteration_tracker.begin();
+            it != iteration_tracker.end(); it++) {
+        if (traversal_var % it->switchvar == 0) {
+            it->mapto++;
+            if (it->mapto == unique_events->end())
+                it->mapto = unique_events->begin();
+        }
+        inst_map_at_pos->emplace(it->mapfrom, *(it->mapto));
+    }
+
+    // if we don't allow repetition, check that this map is valid
+    if (!allow_repetition) {
+        set<string> found_so_far;
+        for (map<string, string>::iterator map_it = inst_map_at_pos->begin();
+                map_it != inst_map_at_pos->end(); map_it++) {
+            if (found_so_far.find(map_it->second) == found_so_far.end()) {
+                found_so_far.insert(map_it->second);
+            } else {
+                traversal_var++;
+                return get_next_instantiation();
+            }
+
+        }
+    }
+
+    // end
+    traversal_var++;
     return inst_map_at_pos;
 
 }
