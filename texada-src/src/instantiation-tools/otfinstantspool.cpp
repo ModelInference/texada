@@ -76,10 +76,10 @@ bool map_has_duplicates(shared_ptr<map<string, string>> inst_map_at_pos){
         if (found_so_far.find(map_it->second) == found_so_far.end()) {
             found_so_far.insert(map_it->second);
         } else {
-            return false;
+            return true;
         }
     }
-    return true;
+    return false;
 }
 
 /**
