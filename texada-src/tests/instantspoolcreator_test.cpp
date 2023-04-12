@@ -184,7 +184,37 @@ TEST(InstantiatorPoolCreatorTest,OnTheFlyTestNoDuplicates) {
     ASSERT_EQ(instantiation->at("x"), "c");
     ASSERT_EQ(instantiation->at("y"), "b");
 
+    ASSERT_EQ(instantiator.get_next_instantiation(), nullptr);
+
     f->destroy();
 
 }
 
+TEST(InstantiatorPoolCreatorTest,OnTheFlyNoDuplicatesBigFormula) {
+
+    //Set up to get the atomic propositions from a property type
+    std::string input = "G (q -> (p -> (!r U (s & !r & !z & X((!r & !z) U t)))) U (r | G (p -> (s & !z & X(!z U t)))))";
+    spot::ltl::parse_error_list pel;
+    const spot::ltl::formula* f = spot::ltl::parse(input, pel);
+    std::shared_ptr<spot::ltl::atomic_prop_set> formula_vars(spot::ltl::atomic_prop_collect(
+            f));
+    // create a set of events
+    std::shared_ptr<std::set<std::string>> events = std::make_shared<
+            std::set<std::string>>();
+    events->insert("a");
+    events->insert("b");
+    events->insert("c");
+    events->insert("d");
+    events->insert("e");
+    events->insert("f");
+
+    // now create the event instantiator
+    texada::otf_instants_pool instantiator = texada::otf_instants_pool(
+            events, formula_vars, false ,std::vector<std::string>());
+
+    int non_null_instants = 0;
+    while (instantiator.get_next_instantiation() != nullptr){
+        non_null_instants +=1;
+    }
+    ASSERT_EQ(non_null_instants, 6*5*4*3*2);
+}
